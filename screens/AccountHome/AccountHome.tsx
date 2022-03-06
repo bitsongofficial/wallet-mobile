@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { RootStackScreenProps } from "../../types";
-import { Btn } from "./components";
+import { Btn } from "components";
 import { useCallback } from "react";
 
 export default function AccountHome({
