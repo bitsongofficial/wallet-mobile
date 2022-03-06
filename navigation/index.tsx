@@ -16,12 +16,7 @@ import { ColorSchemeName, Pressable } from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import AccountHome from "../screens/AccountHome";
-import CreateWallet from "../screens/CreateWallet";
-import ModalScreen from "../screens/ModalScreen";
-import NotFoundScreen from "../screens/NotFoundScreen";
-import TabOneScreen from "../screens/TabOneScreen";
-import TabTwoScreen from "../screens/TabTwoScreen";
+import * as  Screens from "../screens"
 import {
   RootStackParamList,
   RootTabParamList,
@@ -55,13 +50,18 @@ function RootNavigator() {
     <Stack.Navigator>
       <Stack.Screen
         name="AccountHome"
-        component={AccountHome}
+        component={Screens.AccountHome}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="CreateWallet"
-        component={CreateWallet}
+        component={Screens.CreateWallet}
         options={{ title: 'Create New Mnemonic' }}
+      />
+      <Stack.Screen
+        name="ImportWallet"
+        component={Screens.ImportWallet}
+        options={{ title: 'Import Existing Wallet' }}
       />
       <Stack.Screen
         name="Root"
@@ -70,11 +70,11 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="NotFound"
-        component={NotFoundScreen}
+        component={Screens.NotFoundScreen}
         options={{ title: "Oops!" }}
       />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name="Modal" component={Screens.ModalScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );
@@ -98,7 +98,7 @@ function BottomTabNavigator() {
     >
       <BottomTab.Screen
         name="TabOne"
-        component={TabOneScreen}
+        component={Screens.TabOneScreen}
         options={({ navigation }: RootTabScreenProps<"TabOne">) => ({
           title: "Tab One",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
@@ -121,7 +121,7 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name="TabTwo"
-        component={TabTwoScreen}
+        component={Screens.TabTwoScreen}
         options={{
           title: "Tab Two",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,

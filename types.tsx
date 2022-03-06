@@ -19,6 +19,7 @@ export type RootStackParamList = {
   NotFound: undefined;
   AccountHome: undefined;
   CreateWallet: undefined;
+  ImportWallet: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

@@ -1,14 +1,32 @@
-import { Pressable, Text, StyleSheet } from "react-native";
+import { Pressable, Text, StyleSheet, ViewStyle } from "react-native";
 
 interface Props {
   title: string;
-  onPress(): void
+  onPress(): void;
+  bgColor?: string;
+  txtColor?: string;
+  containerStyle?: ViewStyle;
 }
 
-export default function Btn({ title, onPress }: Props) {
+export default function Btn({
+  title,
+  onPress,
+  bgColor,
+  txtColor,
+  containerStyle,
+}: Props) {
   return (
-    <Pressable onPress={onPress} style={styles.container}>
-      <Text style={styles.text}>{title}</Text>
+    <Pressable
+      onPress={onPress}
+      style={[
+        styles.container,
+        bgColor ? { backgroundColor: bgColor } : null,
+        containerStyle ? containerStyle : null,
+      ]}
+    >
+      <Text style={[styles.text, txtColor ? { color: txtColor } : null]}>
+        {title}
+      </Text>
     </Pressable>
   );
 }
