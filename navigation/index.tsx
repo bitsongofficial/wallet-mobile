@@ -16,7 +16,7 @@ import { ColorSchemeName, Pressable } from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import * as  Screens from "../screens"
+import * as Screens from "../screens";
 import {
   RootStackParamList,
   RootTabParamList,
@@ -49,6 +49,11 @@ function RootNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen
+        name="Main"
+        component={Screens.MainScreen}
+        options={{ headerShown: false }}
+      />
+      {/* <Stack.Screen
         name="AccountHome"
         component={Screens.AccountHome}
         options={{ headerShown: false }}
@@ -75,7 +80,7 @@ function RootNavigator() {
       />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
         <Stack.Screen name="Modal" component={Screens.ModalScreen} />
-      </Stack.Group>
+      </Stack.Group> */}
     </Stack.Navigator>
   );
 }
