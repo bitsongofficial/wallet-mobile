@@ -60,6 +60,14 @@ export default function MainScreen() {
           </View>
         </View>
 
+        <View style={styles.toolbar}>
+          <ToolbarAction title="Send" />
+          <ToolbarAction title="Receive" />
+          <ToolbarAction title="Inquire" />
+          <ToolbarAction title="Scan" />
+          <ToolbarAction title="All" />
+        </View>
+
         <View style={styles.coins}>
           <FlatList
             style={styles.coins_list}
@@ -144,6 +152,13 @@ const styles = StyleSheet.create({
   },
 
   reward_row: {},
+
+  toolbar: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 24,
+  },
 
   coins: {
     flex: 1,
