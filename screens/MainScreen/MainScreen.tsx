@@ -8,13 +8,26 @@ import {
   View,
 } from "react-native";
 import { CoinStat, ToolbarAction } from "./components";
+import Mock from "./mock";
+import Coin from "./classes/Coin";
 import { useCallback } from "react";
 import { Button } from "components/atoms";
+
+const wallet = [
+  new Coin(Mock.BitSong),
+  new Coin(Mock.Juno),
+  new Coin(Mock.Osmosis),
+];
 
 export default function MainScreen() {
   const balance = "13,700.98";
   const variation = "+ 7.46";
   const reward = "107.23";
+
+  const renderCoins = useCallback<ListRenderItem<Coin>>(
+    ({ item }) => <CoinStat coin={item} style={{ marginBottom: 9 }} />,
+    []
+  );
 
   const claim = useCallback(() => {}, []);
 
@@ -45,6 +58,14 @@ export default function MainScreen() {
               <Button onPress={claim}>CLAIM</Button>
             </View>
           </View>
+        </View>
+
+        <View style={styles.coins}>
+          <FlatList
+            style={styles.coins_list}
+            data={wallet}
+            renderItem={renderCoins}
+          />
         </View>
       </SafeAreaView>
     </>
@@ -123,4 +144,12 @@ const styles = StyleSheet.create({
   },
 
   reward_row: {},
+
+  coins: {
+    flex: 1,
+  },
+
+  coins_list: {
+    marginHorizontal: 14,
+  },
 });
