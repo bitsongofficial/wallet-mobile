@@ -1,10 +1,10 @@
-import { ICoin } from "./types";
+import { ICoin } from "../classes/types";
 
 export default {
   BitSong: {
     _id: "1",
 
-    logo: "",
+    logo: require("assets/images/mock/logo_bitsong.png"),
     balance: "101,001.34",
     reward: "107.89",
     brand: "BitSong",
@@ -14,7 +14,7 @@ export default {
   Juno: {
     _id: "2",
 
-    logo: "",
+    logo: require("assets/images/mock/logo_osmosis.png"),
     balance: "501.34",
     reward: "107.89",
     brand: "Juno",
@@ -24,7 +24,7 @@ export default {
   Osmosis: {
     _id: "3",
 
-    logo: "",
+    logo: require("assets/images/mock/logo_osmosis.png"),
     balance: "101,001.34",
     reward: "107.89",
     brand: "Osmosis",
