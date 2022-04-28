@@ -16,6 +16,8 @@ module.exports = function (api) {
             hooks: "./hooks",
             navigation: "./navigation",
             screens: "./screens",
+            classes: "./classes",
+            stores: "./stores",
           },
         },
       ],

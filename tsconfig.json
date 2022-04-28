@@ -12,7 +12,9 @@
       "constants": ["./constants"],
       "hooks": ["./hooks"],
       "navigation": ["./navigation"],
-      "screens": ["./screens"]
+      "screens": ["./screens"],
+      "classes": ["./classes"],
+      "stores": ["./stores"]
     }
   }
 }
