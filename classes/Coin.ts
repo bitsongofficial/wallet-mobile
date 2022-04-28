@@ -1,4 +1,4 @@
-import { ICoin } from "screens/MainScreen/types";
+import { ICoin } from "classes/types";
 
 export default class Coin {
   constructor(public info: ICoin) {}

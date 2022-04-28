@@ -1,6 +1,6 @@
 export interface ICoin {
   _id: string;
-  logo: string;
+  logo: any;
   balance: string;
   brand: string;
   coinName: string;

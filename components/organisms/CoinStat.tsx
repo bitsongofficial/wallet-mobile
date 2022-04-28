@@ -7,7 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { hexAlpha } from "utils";
-import Coin from "../classes/Coin";
+import Coin from "../../classes/Coin";
 
 type Props = {
   coin: Coin;
@@ -17,7 +17,7 @@ type Props = {
 export default ({ coin, style }: Props) => (
   <View style={[styles.container, style]}>
     <View style={styles.imageContainer}>
-      <Image source={{ uri: coin.info.logo }} style={styles.image} />
+      <Image source={coin.info.logo} style={styles.image} />
     </View>
 
     <View style={styles.about}>
@@ -54,9 +54,11 @@ const styles = StyleSheet.create({
     marginRight: 14,
     width: 30,
     height: 30,
-    backgroundColor: "orange",
   },
-  image: {},
+  image: {
+    width: 30,
+    height: 30,
+  },
   texts: {
     flex: 1,
     alignItems: "flex-start",
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
   },
   primary: {
     color: "#FFFFFF",
-    fontFamily: "Circular Std",
+    fontFamily: "CircularStd",
     fontStyle: "normal",
     fontWeight: "500",
     fontSize: 14,
@@ -76,7 +78,7 @@ const styles = StyleSheet.create({
   secondary: {
     color: "#FFFFFF",
     opacity: 0.5,
-    fontFamily: "Circular Std",
+    fontFamily: "CircularStd",
     fontStyle: "normal",
     fontWeight: "500",
     fontSize: 12,
