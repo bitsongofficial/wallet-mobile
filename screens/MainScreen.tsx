@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { Coin } from "classes";
 import { Icon } from "components/atoms";
 import { CoinStat, Tabs, ToolbarAction } from "components/organisms";
-import useStore from "hooks/useStore";
+import { useStore } from "hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type ValueTabs = "Coins" | "Fan Tokens";
