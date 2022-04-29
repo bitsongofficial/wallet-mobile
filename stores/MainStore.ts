@@ -1,3 +1,4 @@
+import { makeAutoObservable } from "mobx";
 import SettingsStore from "./SettingsStore";
 import WalletStore from "./WalletStore";
 
@@ -6,5 +7,7 @@ export default class MainStore {
   wallet = new WalletStore();
   settings = new SettingsStore();
 
-  constructor() {}
+  constructor() {
+    makeAutoObservable(this, {}, { autoBind: true });
+  }
 }
