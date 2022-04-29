@@ -1,19 +1,33 @@
 import React from "react";
-import { SvgCss, XmlProps } from "react-native-svg";
-// import {COLOR} from '../../utils';
-import icons from "assets/svg";
+import { SvgXml, XmlProps } from "react-native-svg";
+import Icons from "assets/svg";
 import { StyleSheet, View } from "react-native";
 
 type Props = Omit<XmlProps, "xml" | "fill"> & {
   size?: number;
   fill?: string;
-  name: keyof typeof icons;
+  name: keyof typeof Icons;
 };
+
 export default ({ size = 14, name, fill, ...props }: Props) => {
   const style = {
     width: size,
     height: size,
   };
+
+  const Icon = Icons[name];
+
+  if (Icon) {
+    return (
+      <SvgXml
+        {...props}
+        {...style}
+        fill={fill}
+        xml={Icon}
+        style={[style, props.style]}
+      />
+    );
+  }
   return (
     <View
       style={[
@@ -24,14 +38,6 @@ export default ({ size = 14, name, fill, ...props }: Props) => {
       ]}
     />
   );
-  // return (
-  //   <SvgCss
-  //     {...props}
-  //     {...style}
-  //     xml={icons[name]}
-  //     style={[style, props.style]}
-  //   />
-  // );
 };
 
 const styles = StyleSheet.create({

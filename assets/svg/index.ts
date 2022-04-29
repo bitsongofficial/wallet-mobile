@@ -1,4 +1,3 @@
-// @ts-nocheck
 import arrow_down from "./arrow_down.svg";
 import arrow_up_border from "./arrow_up_border.svg";
 import arrow_up from "./arrow_up.svg";
@@ -11,7 +10,7 @@ import target from "./target.svg";
 import tip from "./tip.svg";
 import unstake from "./unstake.svg";
 
-export default {
+export default <const>{
   arrow_down,
   arrow_up_border,
   arrow_up,
