@@ -20,6 +20,8 @@ type Props = {
   size?: number;
   mode?: Mode;
 
+  nullContent?: boolean;
+
   style?: StyleProp<ViewStyle>;
   buttonStyle?: StyleProp<ViewStyle>;
   iconContainerStyle?: StyleProp<ViewStyle>;
@@ -34,6 +36,8 @@ export default memo(
     size = 52,
     mode = "fill",
 
+    nullContent,
+
     style,
     buttonStyle,
     textStyle,
@@ -46,26 +50,34 @@ export default memo(
     };
     return (
       <View style={[styles.container, style]}>
-        <TouchableOpacity onPress={onPress}>
-          <View style={[styles.button, sizeStyle, buttonStyle]}>
-            <LinearGradient
-              // Button Linear Gradient
-              style={[
-                styles.gradient,
-                themeStyle.gradient_style,
-                mode === "fill" && {
-                  backgroundColor: hexAlpha("#FFFFFF", 10),
-                },
-              ]}
-              colors={mode === "gradient" ? themeStyle.gradient_colors : []}
-            >
-              <View style={[styles.gradient_inner, iconContainerStyle]}>
-                {Icon}
+        {nullContent ? (
+          <>
+            <View style={[styles.button, sizeStyle]} />
+            <View style={{ height: styles.text.lineHeight }} />
+          </>
+        ) : (
+          <>
+            <TouchableOpacity onPress={onPress}>
+              <View style={[styles.button, sizeStyle, buttonStyle]}>
+                <LinearGradient
+                  style={[
+                    styles.gradient,
+                    themeStyle.gradient_style,
+                    mode === "fill" && {
+                      backgroundColor: hexAlpha("#FFFFFF", 10),
+                    },
+                  ]}
+                  colors={mode === "gradient" ? themeStyle.gradient_colors : []}
+                >
+                  <View style={[styles.gradient_inner, iconContainerStyle]}>
+                    {Icon}
+                  </View>
+                </LinearGradient>
               </View>
-            </LinearGradient>
-          </View>
-        </TouchableOpacity>
-        <Text style={[styles.text, textStyle]}>{title}</Text>
+            </TouchableOpacity>
+            <Text style={[styles.text, textStyle]}>{title}</Text>
+          </>
+        )}
       </View>
     );
   }
