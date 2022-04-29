@@ -8,31 +8,39 @@ import {
 } from "react-native";
 import { hexAlpha } from "utils";
 import Coin from "../../classes/Coin";
+import { observer } from "mobx-react-lite";
 
 type Props = {
   coin: Coin;
   style?: StyleProp<ViewStyle>;
 };
 
-export default ({ coin, style }: Props) => (
-  <View style={[styles.container, style]}>
-    <View style={styles.imageContainer}>
-      <Image source={coin.info.logo} style={styles.image} />
-    </View>
+export default observer(({ coin, style }: Props) => {
+  const balance = coin.balance.toLocaleString("en");
+  const balanceUSD = coin.balanceUSD
+    ? coin.balanceUSD.toLocaleString("en")
+    : undefined;
 
-    <View style={styles.about}>
-      <View style={styles.texts}>
-        <Text style={styles.primary}>{coin.info.brand}</Text>
-        <Text style={styles.secondary}>{coin.info.coinName}</Text>
+  return (
+    <View style={[styles.container, style]}>
+      <View style={styles.imageContainer}>
+        <Image source={coin.info.logo} style={styles.image} />
       </View>
 
-      <View style={styles.numbers}>
-        <Text style={styles.primary}>{coin.info.balance}</Text>
-        <Text style={styles.secondary}>{coin.reward} $</Text>
+      <View style={styles.about}>
+        <View style={styles.texts}>
+          <Text style={styles.primary}>{coin.info.brand}</Text>
+          <Text style={styles.secondary}>{coin.info.coinName}</Text>
+        </View>
+
+        <View style={styles.numbers}>
+          <Text style={styles.primary}>{balance}</Text>
+          {balanceUSD && <Text style={styles.secondary}>{balanceUSD} $</Text>}
+        </View>
       </View>
     </View>
-  </View>
-);
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
