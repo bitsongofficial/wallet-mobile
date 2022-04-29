@@ -2,7 +2,7 @@
 
 ## 🚀 Tech Stack
 
-**Client:** Vue.js, Quasar
+**Client:** React Native
 ## ⚙️ Run Locally
 
 Clone the project
@@ -32,6 +32,12 @@ or
 ```bash
   yarn android
 ```
+
+After the first installation, you can run
+```bash
+  yarn start
+```
+and follow the cli instructions.
 
 ## 👤 Authors
 - `Nikita Zheleznov` [@zheleznov163](https://github.com/zheleznov163)
