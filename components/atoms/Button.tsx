@@ -7,10 +7,13 @@ import {
   ViewStyle,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "hooks";
+
+type Mode = "gradient" | "fill";
 
 type ButtonProps = {
   onPress?(): void;
-  mode?: "text" | "outlined" | "contained";
+  mode?: Mode;
   text?: string;
   active?: boolean;
   children?: React.ReactNode;
@@ -20,34 +23,51 @@ type ButtonProps = {
 export default ({
   onPress,
   text,
-  active,
   children,
   style,
-  mode = "text",
-}: ButtonProps) => (
-  <View style={[styles.container, style]}>
-    <TouchableOpacity onPress={onPress}>
-      <View>
-        <LinearGradient
-          // Button Linear Gradient
-          colors={["#4c669f", "#3b5998", "#192f6a"]}
-          style={styles.button}
-        >
-          {text || typeof children === "string" ? (
-            <Text style={styles.text}>{text || children}</Text>
-          ) : (
-            children
-          )}
-        </LinearGradient>
-      </View>
-    </TouchableOpacity>
-  </View>
-);
+  mode = "fill",
+}: ButtonProps) => {
+  const themeStyle = useTheme();
+
+  return (
+    <View style={[styles.container, style]}>
+      <LinearGradient
+        colors={mode === "gradient" ? themeStyle.gradient_colors : []}
+        style={[styles.gradient, themeStyle.gradient_style]}
+      >
+        <TouchableOpacity onPress={onPress}>
+          <View style={styles.inner}>
+            {text || typeof children === "string" ? (
+              <Text style={[styles.text, themeStyle.text.primary]}>
+                {text || children}
+              </Text>
+            ) : (
+              children
+            )}
+          </View>
+        </TouchableOpacity>
+      </LinearGradient>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "orange",
+    borderRadius: 50,
+    overflow: "hidden",
   },
-  button: {},
-  text: {},
+  inner: {},
+  gradient: {
+    paddingVertical: 9,
+    paddingHorizontal: 24,
+    justifyContent: "center",
+    flexGrow: 1,
+  },
+  text: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "500",
+    fontSize: 11,
+    lineHeight: 14,
+  },
 });
