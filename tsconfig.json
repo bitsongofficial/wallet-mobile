@@ -15,6 +15,7 @@
       "screens": ["./screens"],
       "classes": ["./classes"],
       "stores": ["./stores"]
-    }
+    },
+    "useDefineForClassFields": true
   }
 }

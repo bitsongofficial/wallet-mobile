@@ -3,6 +3,7 @@ module.exports = function (api) {
   return {
     presets: ["babel-preset-expo"],
     plugins: [
+      ["@babel/plugin-transform-flow-strip-types"], // https://github.com/react-navigation/react-navigation/issues/6058#issuecomment-583737009
       [
         "module-resolver",
         {
@@ -21,6 +22,7 @@ module.exports = function (api) {
           },
         },
       ],
+      ["react-native-reanimated/plugin"],
     ],
   };
 };
