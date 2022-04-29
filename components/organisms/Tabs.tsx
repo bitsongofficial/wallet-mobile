@@ -21,11 +21,10 @@ export default function Tabs({ active, values, style, onPress }: Props) {
   return (
     <View style={[styles.container, style]}>
       {values.map((value, i) => (
-        <TouchableOpacity onPress={() => onPress(value)}>
+        <TouchableOpacity key={value + i} onPress={() => onPress(value)}>
           <View style={styles.tab}>
             <Text
-              key={value + i}
-              style={[styles.tab_value, value === active && styles.tab_active]}
+              style={[styles.tab_value, value !== active && styles.tab_active]}
             >
               {value}
             </Text>
@@ -63,9 +62,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
 
     color: "#FFFFFF",
-    opacity: 0.3,
   },
   tab_active: {
-    opacity: undefined,
+    opacity: 0.3,
   },
 });
