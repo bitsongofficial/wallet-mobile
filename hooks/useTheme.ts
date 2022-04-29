@@ -1,4 +1,4 @@
-import { TextStyle } from "react-native";
+import { TextStyle, ViewStyle } from "react-native";
 import useStore from "./useStore";
 
 /**
@@ -7,9 +7,7 @@ import useStore from "./useStore";
  */
 export default function useTheme(): ITheme {
   const { settings } = useStore();
-
-  const theme = settings.theme;
-
+  return Theme.dark;
   return settings.theme === "dark" ? Theme.dark : Theme.light;
 }
 
@@ -21,6 +19,13 @@ interface ITheme {
   text: {
     primary: TextStyle;
     secondary: TextStyle;
+  };
+  bottomsheet: {
+    background: Omit<
+      ViewStyle,
+      "left" | "right" | "top" | "bottom" | "position"
+    >;
+    indicator: ViewStyle;
   };
 }
 
@@ -37,6 +42,14 @@ const Theme = {
       secondary: {
         color: "#FFFFFF",
         opacity: 0.5,
+      },
+    },
+    bottomsheet: {
+      background: {
+        backgroundColor: "#2b2b47",
+      },
+      indicator: {
+        backgroundColor: "#404059",
       },
     },
   } as ITheme,
