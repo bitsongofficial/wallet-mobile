@@ -1,41 +1,65 @@
-import { useCallback, useState } from "react";
-import { FlatList, ListRenderItem, StyleSheet, Text, View } from "react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  FlatList,
+  ListRenderItem,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Coin } from "classes";
-import { Icon } from "components/atoms";
+import { Button, Icon } from "components/atoms";
 import { CoinStat, Tabs, ToolbarAction } from "components/organisms";
-import { useStore } from "hooks";
+import { useStore, useTheme } from "hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { observer } from "mobx-react-lite";
+import { BottomSheet } from "components/moleculs";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { BottomSheetMenu } from "./components";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
 const tabs: ValueTabs[] = ["Coins", "Fan Tokens"];
 
-export default function MainScreen() {
+export default observer(function MainScreen() {
   const { wallet } = useStore();
   // need culc by wallet
-  const balance = "13,700.98";
   const variation = "+ 7.46";
   const reward = "107.23";
 
   const [activeTab, setActiveTab] = useState<ValueTabs>("Coins");
 
-  const claim = useCallback(() => {}, []);
-
-  const handlePressSend = useCallback(() => {}, []);
-  const handlePressReceive = useCallback(() => {}, []);
-  const handlePressInquire = useCallback(() => {}, []);
-  const handlePressScan = useCallback(() => {}, []);
-  const handlePressAll = useCallback(() => {}, []);
+  const callback = useCallback(() => {}, []);
 
   const renderCoins = useCallback<ListRenderItem<Coin>>(
-    ({ item }) => <CoinStat coin={item} style={{ marginBottom: 9 }} />,
+    ({ item }) => (
+      <TouchableOpacity onPress={item.increment}>
+        <CoinStat coin={item} style={{ marginBottom: 9 }} />
+      </TouchableOpacity>
+    ),
     []
   );
+
+  // ------------- bottom sheet -----------
+  // ref
+  const bottomSheetRef = useRef<BottomSheetMethods>(null);
+
+  const snapPoints = useMemo(() => ["70%"], []);
+
+  const openAll = useCallback(() => {
+    bottomSheetRef.current?.snapToIndex(0);
+  }, []);
+
+  // callbacks
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+  }, []);
 
   return (
     <>
       <StatusBar style="light" />
+
       <SafeAreaView style={styles.container}>
         {/* <Icon name="arrow_down" size={40} /> */}
         <View style={styles.header} />
@@ -43,7 +67,9 @@ export default function MainScreen() {
         <View style={styles.info}>
           <View style={styles.balance}>
             <Text style={styles.balance_title}>Total Balance</Text>
-            <Text style={styles.balance_value}>{balance} $</Text>
+            <Text style={styles.balance_value}>
+              {wallet.totalBalance.toLocaleString("en")} $
+            </Text>
             <Text style={styles.balance_variation}>
               Variation {variation} %
             </Text>
@@ -53,7 +79,7 @@ export default function MainScreen() {
             <Text style={styles.reward_title}>Reward</Text>
             <View style={styles.reward_row}>
               <Text style={styles.reward_value}>{reward} $</Text>
-              {/* <Button onPress={claim}>CLAIM</Button> */}
+              <Button onPress={callback}>CLAIM</Button>
             </View>
           </View>
         </View>
@@ -61,28 +87,28 @@ export default function MainScreen() {
         <View style={styles.toolbar}>
           <ToolbarAction
             title="Send"
-            onPress={handlePressSend}
+            onPress={callback}
             mode="gradient"
             Icon={<Icon name="arrow_up" />}
           />
           <ToolbarAction
             title="Receive"
-            onPress={handlePressReceive}
+            onPress={callback}
             Icon={<Icon name="arrow_down" />}
           />
           <ToolbarAction
             title="Inquire"
-            onPress={handlePressInquire}
+            onPress={callback}
             Icon={<Icon name="tip" />}
           />
           <ToolbarAction
             title="Scan"
-            onPress={handlePressScan}
+            onPress={callback}
             Icon={<Icon name="qr_code" />}
           />
           <ToolbarAction
             title="All"
-            onPress={handlePressAll}
+            onPress={openAll}
             mode="gradient"
             Icon={<Icon name="meatballs" />}
             iconContainerStyle={{ backgroundColor: "#14142e" }}
@@ -107,9 +133,17 @@ export default function MainScreen() {
           />
         </View>
       </SafeAreaView>
+
+      <BottomSheetMenu
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        enablePanDownToClose
+      />
     </>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -180,7 +214,10 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 
-  reward_row: {},
+  reward_row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
 
   toolbar: {
     flexDirection: "row",

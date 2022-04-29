@@ -15,7 +15,7 @@ export default class Coin {
     return this.rate ? round(this.rate * this.info.balance) : null;
   }
 
-  get reward() {
-    return "107.89"; // culc by this.info.balance
+  increment() {
+    this.info.balance = this.info.balance + 1;
   }
 }

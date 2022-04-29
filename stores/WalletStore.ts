@@ -1,6 +1,8 @@
 import { Coin } from "classes";
 import Mock from "./mock";
 import { makeAutoObservable } from "mobx";
+import { round } from "utils";
+
 const rates = {
   juno: 13.35,
   bitsong: 0.06,
@@ -18,4 +20,12 @@ export default class WalletStore {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
+  get totalBalance() {
+    return round(
+      this.coins.reduce(
+        (total, coin) => (coin.balanceUSD ? coin.balanceUSD + total : total),
+        0
+      )
+    );
+  }
 }
