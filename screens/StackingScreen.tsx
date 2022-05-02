@@ -32,8 +32,6 @@ export default function StakingScreen() {
     <>
       <StatusBar style="light" />
       <SafeAreaView style={styles.container}>
-        <View style={styles.header} />
-
         <View style={styles.info}>
           <Text style={styles.balance_title}>My Staking</Text>
           <Text style={styles.balance_value}>{staking} $</Text>
@@ -93,15 +91,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#14142e",
   },
-  header: {
-    paddingHorizontal: 45,
-    paddingVertical: 16,
-    flexDirection: "row",
-    height: 70,
-    justifyContent: "center",
-  },
-
   info: {
+    marginTop: 100,
     marginRight: 22,
     marginLeft: 32,
     marginBottom: 60,
