@@ -1,21 +1,23 @@
 import React, { forwardRef } from "react";
 import { StyleSheet, View } from "react-native";
-import BottomSheetDefault, { BottomSheetProps } from "@gorhom/bottom-sheet";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import {
+  BottomSheetModal as Default,
+  BottomSheetModalProps,
+} from "@gorhom/bottom-sheet";
+import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useTheme } from "hooks";
 import { observer } from "mobx-react-lite";
 
-type Props = BottomSheetProps;
+type Props = BottomSheetModalProps;
 
 export default observer(
-  forwardRef(function BottomSheet(
+  forwardRef(function BottomSheetModal(
     { ...props }: Props,
-    ref: React.Ref<BottomSheetMethods>
+    ref: React.Ref<BottomSheetModalMethods>
   ) {
     const theme = useTheme();
-    console.log("BottomSheet innerRef ", ref);
     return (
-      <BottomSheetDefault
+      <Default
         handleComponent={() => (
           <View style={styles.handleContainer}>
             <View

@@ -1,11 +1,12 @@
 import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { configure } from "mobx";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
-import { configure } from "mobx";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 configure({ useProxies: "ifavailable" });
 
@@ -17,12 +18,18 @@ export default function App() {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Navigation colorScheme={colorScheme} />
-          <StatusBar />
-        </GestureHandlerRootView>
-      </SafeAreaProvider>
+      <GestureHandlerRootView style={styles.gestureHandler}>
+        <BottomSheetModalProvider>
+          <SafeAreaProvider>
+            <Navigation colorScheme={colorScheme} />
+            <StatusBar />
+          </SafeAreaProvider>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  gestureHandler: { flex: 1 },
+});

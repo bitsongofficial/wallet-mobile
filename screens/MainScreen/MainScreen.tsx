@@ -9,13 +9,14 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Coin } from "classes";
-import { Button, Icon } from "components/atoms";
-import { CoinStat, Tabs, ToolbarAction } from "components/organisms";
+import { Button } from "components/atoms";
+import { CoinStat, Tabs } from "components/organisms";
 import { useStore } from "hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { BottomSheetMenu } from "./components";
+import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { ToolbarFull, ToolbarShort } from "./components";
+import { BottomSheetModal } from "components/moleculs";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -42,12 +43,13 @@ export default observer(function MainScreen() {
 
   // ------------- bottom sheet -----------
   // ref
-  const bottomSheetRef = useRef<BottomSheetMethods>(null);
+  const bottomSheetModalRef = useRef<BottomSheetModalMethods>(null);
 
   const snapPoints = useMemo(() => ["70%"], []);
 
   const openAll = useCallback(() => {
-    bottomSheetRef.current?.snapToIndex(0);
+    console.log("test :>> ");
+    bottomSheetModalRef.current?.present();
   }, []);
 
   // callbacks
@@ -80,36 +82,14 @@ export default observer(function MainScreen() {
           </View>
         </View>
 
-        <View style={styles.toolbar}>
-          <ToolbarAction
-            title="Send"
-            onPress={callback}
-            mode="gradient"
-            Icon={<Icon name="arrow_up" />}
-          />
-          <ToolbarAction
-            title="Receive"
-            onPress={callback}
-            Icon={<Icon name="arrow_down" />}
-          />
-          <ToolbarAction
-            title="Inquire"
-            onPress={callback}
-            Icon={<Icon name="tip" />}
-          />
-          <ToolbarAction
-            title="Scan"
-            onPress={callback}
-            Icon={<Icon name="qr_code" />}
-          />
-          <ToolbarAction
-            title="All"
-            onPress={openAll}
-            mode="gradient"
-            Icon={<Icon name="meatballs" />}
-            iconContainerStyle={{ backgroundColor: "#14142e" }}
-          />
-        </View>
+        <ToolbarShort
+          style={styles.toolbar_short}
+          onPressAll={openAll}
+          onPressInquire={callback}
+          onPressReceive={callback}
+          onPressScan={callback}
+          onPressSend={callback}
+        />
 
         <Tabs
           values={tabs}
@@ -128,15 +108,29 @@ export default observer(function MainScreen() {
             renderItem={renderCoins}
           />
         </View>
-      </SafeAreaView>
 
-      <BottomSheetMenu
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        onChange={handleSheetChanges}
-        enablePanDownToClose
-      />
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={0}
+          snapPoints={snapPoints}
+          onChange={handleSheetChanges}
+        >
+          <ToolbarFull
+            style={styles.toolbar_full}
+            onPressSend={callback}
+            onPressReceive={callback}
+            onPressInquire={callback}
+            onPressScan={callback}
+            onPressClaim={callback}
+            onPressStake={callback}
+            onPressUnstake={callback}
+            onPressRestake={callback}
+            onPressIssue={callback}
+            onPressMint={callback}
+            onPressBurn={callback}
+          />
+        </BottomSheetModal>
+      </SafeAreaView>
     </>
   );
 });
@@ -208,12 +202,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
-  toolbar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  toolbar_short: {
     marginHorizontal: 24,
     marginBottom: 40,
   },
+  toolbar_full: {
+    padding: 24,
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+  },
+
   tabs: {
     paddingHorizontal: 30,
     marginBottom: 18,
