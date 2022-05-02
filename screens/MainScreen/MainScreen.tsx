@@ -11,10 +11,9 @@ import { StatusBar } from "expo-status-bar";
 import { Coin } from "classes";
 import { Button, Icon } from "components/atoms";
 import { CoinStat, Tabs, ToolbarAction } from "components/organisms";
-import { useStore, useTheme } from "hooks";
+import { useStore } from "hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
-import { BottomSheet } from "components/moleculs";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { BottomSheetMenu } from "./components";
 

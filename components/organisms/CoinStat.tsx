@@ -7,7 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { hexAlpha } from "utils";
-import Coin from "../../classes/Coin";
+import Coin from "classes/Coin";
 import { observer } from "mobx-react-lite";
 
 type Props = {

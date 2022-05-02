@@ -2,9 +2,9 @@ import { useCallback, useState } from "react";
 import { FlatList, ListRenderItem, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Coin } from "classes";
+import { useStore } from "hooks";
 import { Icon } from "components/atoms";
 import { CoinStat, Tabs, ToolbarAction } from "components/organisms";
-import { useStore } from "hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type ValueTabs = "Staked" | "Validators";
