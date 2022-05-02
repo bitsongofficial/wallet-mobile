@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -6,9 +7,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { memo } from "react";
-import useTheme from "hooks/useTheme";
+import ThemedGradient from "components/atoms/ThemedGradient";
 import { hexAlpha } from "utils";
 
 type Mode = "gradient" | "fill";
@@ -43,11 +42,12 @@ export default memo(
     textStyle,
     iconContainerStyle,
   }: Props) => {
-    const themeStyle = useTheme();
     const sizeStyle: ViewStyle = {
       width: size,
       height: size,
     };
+
+    const Background = mode === "gradient" ? ThemedGradient : View;
     return (
       <View style={[styles.container, style]}>
         {nullContent ? (
@@ -59,20 +59,16 @@ export default memo(
           <>
             <TouchableOpacity onPress={onPress}>
               <View style={[styles.button, sizeStyle, buttonStyle]}>
-                <LinearGradient
+                <Background
                   style={[
                     styles.gradient,
-                    themeStyle.gradient_style,
-                    mode === "fill" && {
-                      backgroundColor: hexAlpha("#FFFFFF", 10),
-                    },
+                    mode === "fill" && styles.fill_color,
                   ]}
-                  colors={mode === "gradient" ? themeStyle.gradient_colors : []}
                 >
                   <View style={[styles.gradient_inner, iconContainerStyle]}>
                     {Icon}
                   </View>
-                </LinearGradient>
+                </Background>
               </View>
             </TouchableOpacity>
             <Text style={[styles.text, textStyle]}>{title}</Text>
@@ -92,6 +88,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 50,
     overflow: "hidden",
+  },
+
+  fill_color: {
+    backgroundColor: hexAlpha("#FFFFFF", 10),
   },
   gradient: {
     width: "100%",

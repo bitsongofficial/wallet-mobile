@@ -1,12 +1,10 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { LinearGradient } from "expo-linear-gradient";
+import { ThemedGradient } from "components/atoms";
 import { StyleSheet, View } from "react-native";
-import useTheme from "hooks/useTheme";
 import TabButton from "./TabButton";
 
 export default function MyTabBar(props: BottomTabBarProps) {
   const { navigation } = props;
-  const themeStyle = useTheme();
 
   const onPress = (route: any, isFocused: boolean) => {
     const event = navigation.emit({
@@ -28,10 +26,7 @@ export default function MyTabBar(props: BottomTabBarProps) {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        style={[styles.gradient, themeStyle.gradient_style]}
-        colors={themeStyle.gradient_colors}
-      >
+      <ThemedGradient style={styles.gradient}>
         {props.state.routes.map((route, index) => (
           <TabButton
             key={index}
@@ -42,7 +37,7 @@ export default function MyTabBar(props: BottomTabBarProps) {
             onLongPress={onLongPress}
           />
         ))}
-      </LinearGradient>
+      </ThemedGradient>
     </View>
   );
 }

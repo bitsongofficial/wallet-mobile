@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import ThemedGradient from "./ThemedGradient";
 import { useTheme } from "hooks";
 
 type Mode = "gradient" | "fill";
@@ -28,13 +28,11 @@ export default ({
   mode = "fill",
 }: ButtonProps) => {
   const themeStyle = useTheme();
+  const Background = mode === "gradient" ? ThemedGradient : View;
 
   return (
     <View style={[styles.container, style]}>
-      <LinearGradient
-        colors={mode === "gradient" ? themeStyle.gradient_colors : []}
-        style={[styles.gradient, themeStyle.gradient_style]}
-      >
+      <Background style={styles.gradient}>
         <TouchableOpacity onPress={onPress}>
           <View style={styles.inner}>
             {text || typeof children === "string" ? (
@@ -46,7 +44,7 @@ export default ({
             )}
           </View>
         </TouchableOpacity>
-      </LinearGradient>
+      </Background>
     </View>
   );
 };

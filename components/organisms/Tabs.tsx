@@ -6,8 +6,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import useTheme from "hooks/useTheme";
+import ThemedGradient from "components/atoms/ThemedGradient";
 
 type Props = {
   values: string[];
@@ -17,7 +16,6 @@ type Props = {
 };
 
 export default function Tabs({ active, values, style, onPress }: Props) {
-  const theme = useTheme();
   return (
     <View style={[styles.container, style]}>
       {values.map((value, i) => (
@@ -28,12 +26,7 @@ export default function Tabs({ active, values, style, onPress }: Props) {
             >
               {value}
             </Text>
-            {value === active && (
-              <LinearGradient
-                style={[styles.marker, theme.gradient_style]}
-                colors={theme.gradient_colors}
-              />
-            )}
+            {value === active && <ThemedGradient style={styles.marker} />}
           </View>
         </TouchableOpacity>
       ))}
