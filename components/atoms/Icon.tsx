@@ -1,5 +1,5 @@
 import React from "react";
-import { SvgXml, XmlProps } from "react-native-svg";
+import { SvgCss, XmlProps } from "react-native-svg";
 import Icons from "assets/svg";
 import { StyleSheet, View } from "react-native";
 
@@ -19,7 +19,7 @@ export default ({ size = 14, name, fill, ...props }: Props) => {
 
   if (Icon) {
     return (
-      <SvgXml
+      <SvgCss
         {...props}
         {...style}
         fill={fill}

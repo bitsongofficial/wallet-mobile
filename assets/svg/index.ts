@@ -9,6 +9,7 @@ import stake from "./stake.svg";
 import target from "./target.svg";
 import tip from "./tip.svg";
 import unstake from "./unstake.svg";
+import cosmo from "./cosmo.svg";
 
 export default <const>{
   arrow_down,
@@ -22,4 +23,5 @@ export default <const>{
   target,
   tip,
   unstake,
+  cosmo,
 };

@@ -25,22 +25,22 @@ export default observer(
             <ToolbarAction
               title="Send"
               mode="gradient"
-              Icon={<Icon name="unstake" />}
+              Icon={<Icon name="arrow_up" />}
               size={65}
             />
             <ToolbarAction
               title="Receive"
-              Icon={<Icon name="unstake" />}
+              Icon={<Icon name="arrow_down" />}
               size={65}
             />
             <ToolbarAction
               title="Inquire"
-              Icon={<Icon name="unstake" />}
+              Icon={<Icon name="tip" />}
               size={65}
             />
             <ToolbarAction
               title="Scan"
-              Icon={<Icon name="unstake" />}
+              Icon={<Icon name="qr_code" />}
               size={65}
             />
           </View>
@@ -48,12 +48,12 @@ export default observer(
             <ToolbarAction
               title="Claim"
               mode="gradient"
-              Icon={<Icon name="unstake" />}
+              Icon={<Icon name="arrow_up_border" />}
               size={65}
             />
             <ToolbarAction
               title="Stake"
-              Icon={<Icon name="unstake" />}
+              Icon={<Icon name="stake" />}
               size={65}
             />
             <ToolbarAction

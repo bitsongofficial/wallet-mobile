@@ -42,25 +42,25 @@ export default function StakingScreen() {
             title="Claim"
             onPress={handlePressClaim}
             mode="gradient"
-            Icon={<Icon name="arrow_up_border" />}
+            Icon={<Icon name="arrow_up_border" size={23} />}
             size={65}
           />
           <ToolbarAction
             title="Stake"
             onPress={handlePressStake}
-            Icon={<Icon name="stake" />}
+            Icon={<Icon name="stake" size={23} />}
             size={65}
           />
           <ToolbarAction
             title="Unstake"
             onPress={handlePressUnstake}
-            Icon={<Icon name="unstake" />}
+            Icon={<Icon name="unstake" size={23} />}
             size={65}
           />
           <ToolbarAction
             title="Restake"
             onPress={handlePressRestake}
-            Icon={<Icon name="unstake" />}
+            Icon={<Icon name="unstake" size={23} />}
             size={65}
           />
         </View>

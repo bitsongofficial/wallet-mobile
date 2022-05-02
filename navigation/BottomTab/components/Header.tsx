@@ -9,13 +9,13 @@ export default function Header({}: BottomTabHeaderProps) {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <View style={styles.right}>
-          <Icon name="arrow_down" size={35} />
+          <Icon name="cosmo" size={40} />
         </View>
         <View style={styles.center}>
           <Text style={styles.title}>Cosmonautico</Text>
         </View>
         <View style={styles.left}>
-          <Icon name="arrow_down" size={15} />
+          <Icon name="bell" size={15} fill={"#202020"} />
           <Image
             source={require("assets/images/mock/avatar.png")}
             style={styles.avatar}
