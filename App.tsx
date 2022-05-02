@@ -5,6 +5,7 @@ import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
 import { configure } from "mobx";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 configure({ useProxies: "ifavailable" });
 
@@ -17,8 +18,10 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
-        <StatusBar />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Navigation colorScheme={colorScheme} />
+          <StatusBar />
+        </GestureHandlerRootView>
       </SafeAreaProvider>
     );
   }
