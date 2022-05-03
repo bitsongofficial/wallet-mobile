@@ -12,7 +12,7 @@ type Props = {
   style: StyleProp<ViewStyle>;
 };
 
-export default observer(function BottomSheetMenu({
+export default observer(function ToolbarShort({
   onPressSend,
   onPressReceive,
   onPressInquire,

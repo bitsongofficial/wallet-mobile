@@ -12,11 +12,15 @@ import { Coin } from "classes";
 import { Button } from "components/atoms";
 import { CoinStat, Tabs } from "components/organisms";
 import { useStore } from "hooks";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ToolbarFull, ToolbarShort } from "./components";
 import { BottomSheetModal } from "components/moleculs";
+import SendCoinStack from "navigation/SendCoinStack";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -43,19 +47,23 @@ export default observer(function MainScreen() {
 
   // ------------- bottom sheet -----------
   // ref
-  const bottomSheetModalRef = useRef<BottomSheetModalMethods>(null);
+  const bottomSheetToolbar = useRef<BottomSheetModalMethods>(null);
+  const bottomSheetSEND = useRef<BottomSheetModalMethods>(null);
 
   const snapPoints = useMemo(() => ["70%"], []);
 
-  const openAll = useCallback(() => {
-    console.log("test :>> ");
-    bottomSheetModalRef.current?.present();
-  }, []);
+  const openToolbar = useCallback(
+    () => bottomSheetToolbar.current?.present(),
+    []
+  );
+  const openSend = useCallback(() => bottomSheetSEND.current?.present(), []);
+  const closeSend = useCallback(() => bottomSheetSEND.current?.close(), []);
 
-  // callbacks
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
+  const safeAreaInsets = useSafeAreaInsets();
+  const sendCoinContainerStyle = useMemo(
+    () => ({ paddingBottom: safeAreaInsets.bottom }),
+    [safeAreaInsets.bottom]
+  );
 
   return (
     <>
@@ -84,11 +92,11 @@ export default observer(function MainScreen() {
 
         <ToolbarShort
           style={styles.toolbar_short}
-          onPressAll={openAll}
+          onPressAll={openToolbar}
           onPressInquire={callback}
           onPressReceive={callback}
           onPressScan={callback}
-          onPressSend={callback}
+          onPressSend={openSend}
         />
 
         <Tabs
@@ -110,14 +118,13 @@ export default observer(function MainScreen() {
         </View>
 
         <BottomSheetModal
-          ref={bottomSheetModalRef}
+          ref={bottomSheetToolbar}
           index={0}
           snapPoints={snapPoints}
-          onChange={handleSheetChanges}
         >
           <ToolbarFull
             style={styles.toolbar_full}
-            onPressSend={callback}
+            onPressSend={openSend}
             onPressReceive={callback}
             onPressInquire={callback}
             onPressScan={callback}
@@ -129,6 +136,15 @@ export default observer(function MainScreen() {
             onPressMint={callback}
             onPressBurn={callback}
           />
+        </BottomSheetModal>
+
+        <BottomSheetModal
+          ref={bottomSheetSEND}
+          $modal
+          index={0}
+          snapPoints={["85%"]}
+        >
+          <SendCoinStack style={sendCoinContainerStyle} onSend={closeSend} />
         </BottomSheetModal>
       </SafeAreaView>
     </>

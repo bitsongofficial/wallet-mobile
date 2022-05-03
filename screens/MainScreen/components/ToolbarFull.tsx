@@ -3,7 +3,6 @@ import { Icon } from "components/atoms";
 import { ToolbarAction } from "components/organisms";
 import { useTheme } from "hooks";
 import { observer } from "mobx-react-lite";
-import { ViewProps } from "components/Themed";
 
 type Props = {
   onPressSend?(): void;
@@ -20,7 +19,7 @@ type Props = {
   style: StyleProp<ViewStyle>;
 };
 
-export default observer(function BottomSheetMenu({
+export default observer(function ToolbarFull({
   onPressSend,
   onPressReceive,
   onPressInquire,
