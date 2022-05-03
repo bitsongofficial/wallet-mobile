@@ -19,6 +19,8 @@ interface ITheme {
   text: {
     primary: TextStyle;
     secondary: TextStyle;
+    colorText: TextStyle;
+    inputPlaceholder: string;
   };
   bottomsheet: {
     background: Omit<
@@ -43,6 +45,10 @@ const Theme = {
         color: "#FFFFFF",
         opacity: 0.5,
       },
+      colorText: {
+        color: "#4C61E5",
+      },
+      inputPlaceholder: "#5b5b6d", // from colorPiker for remove opacity
     },
     bottomsheet: {
       background: {
