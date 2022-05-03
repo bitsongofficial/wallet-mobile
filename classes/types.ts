@@ -4,4 +4,5 @@ export interface ICoin {
   balance: number;
   brand: string;
   coinName: string;
+  address: string;
 }
