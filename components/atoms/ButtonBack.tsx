@@ -11,7 +11,7 @@ import Icon from "./Icon";
 
 type ButtonProps = {
   onPress(): void;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
 };
 
 export default ({ onPress, style }: ButtonProps) => {

@@ -2,12 +2,13 @@ import {
   StyleProp,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  TextStyle,
   View,
   ViewStyle,
 } from "react-native";
 import ThemedGradient from "./ThemedGradient";
 import { useTheme } from "hooks";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 type Mode = "gradient" | "fill";
 
@@ -15,9 +16,10 @@ type ButtonProps = {
   onPress?(): void;
   mode?: Mode;
   text?: string;
-  active?: boolean;
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 };
 
 export default ({
@@ -25,27 +27,29 @@ export default ({
   text,
   children,
   style,
-  mode = "fill",
+  mode = "gradient",
+  contentContainerStyle,
+  textStyle,
 }: ButtonProps) => {
   const themeStyle = useTheme();
   const Background = mode === "gradient" ? ThemedGradient : View;
 
   return (
-    <View style={[styles.container, style]}>
-      <Background style={styles.gradient}>
-        <TouchableOpacity onPress={onPress}>
-          <View style={styles.inner}>
+    <TouchableOpacity onPress={onPress}>
+      <View style={[styles.container, style]}>
+        <Background style={[styles.gradient, contentContainerStyle]}>
+          <View>
             {text || typeof children === "string" ? (
-              <Text style={[styles.text, themeStyle.text.primary]}>
+              <Text style={[styles.text, themeStyle.text.primary, textStyle]}>
                 {text || children}
               </Text>
             ) : (
               children
             )}
           </View>
-        </TouchableOpacity>
-      </Background>
-    </View>
+        </Background>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -54,12 +58,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     overflow: "hidden",
   },
-  inner: {},
   gradient: {
     paddingVertical: 9,
     paddingHorizontal: 24,
     justifyContent: "center",
-    flexGrow: 1,
+    alignItems: "center",
   },
   text: {
     fontFamily: "CircularStd",
