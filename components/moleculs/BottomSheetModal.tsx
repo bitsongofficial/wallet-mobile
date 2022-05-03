@@ -12,7 +12,7 @@ type Props = BottomSheetModalProps;
 
 export default observer(
   forwardRef(function BottomSheetModal(
-    { ...props }: Props,
+    { backgroundStyle, ...props }: Props,
     ref: React.Ref<BottomSheetModalMethods>
   ) {
     const theme = useTheme();
@@ -25,7 +25,11 @@ export default observer(
             />
           </View>
         )}
-        backgroundStyle={[styles.background, theme.bottomsheet.background]}
+        backgroundStyle={[
+          styles.background,
+          theme.bottomsheet.background,
+          backgroundStyle,
+        ]}
         {...props}
         ref={ref}
       />
