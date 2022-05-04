@@ -1,14 +1,12 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
-import { useMemo, useState } from "react";
-import { useStore } from "hooks";
 import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { SendCoinStackParamList } from "./types";
-import { SendCoinContext } from "./context";
+import { SendCoinContext, useSendCoinContextValue } from "./context";
 import Header from "./Header";
 import * as Screen from "screens/SendModalScreens";
 
@@ -27,16 +25,7 @@ const options: NativeStackNavigationOptions = {
 const Stack = createNativeStackNavigator<SendCoinStackParamList>();
 
 export default observer(function ModalSend({ style, onSend }: Props) {
-  const { wallet } = useStore();
-
-  const [coin, setCoin] = useState(wallet.coins[0]);
-  const [receiver, setReceiver] = useState("");
-
-  const contextValue = useMemo(
-    () => ({ coin, setCoin, receiver, setReceiver, onSend }),
-    [coin, receiver, onSend]
-  );
-
+  const contextValue = useSendCoinContextValue(onSend);
   return (
     <View style={[styles.container, style]}>
       <SendCoinContext.Provider value={contextValue}>
