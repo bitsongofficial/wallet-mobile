@@ -17,11 +17,15 @@ export type ContextValue = {
   setReceiver(receiver: IPerson): void;
 
   onSend(): void;
+  parentNav: any;
 };
 
 export const SendCoinContext = createContext<ContextValue>();
 
-export function useSendCoinContextValue(onSend: ContextValue["onSend"]) {
+export function useSendCoinContextValue(
+  onSend: ContextValue["onSend"],
+  parentNav: ContextValue["parentNav"]
+) {
   const { wallet } = useStore();
 
   const [coin, setCoin] = useState(wallet.coins[0]);
@@ -40,7 +44,8 @@ export function useSendCoinContextValue(onSend: ContextValue["onSend"]) {
       address,
       setAddress,
       onSend,
+      parentNav,
     }),
-    [coin, receiver, onSend]
+    [coin, receiver, amount, address, onSend, parentNav]
   );
 }

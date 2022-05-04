@@ -19,10 +19,14 @@ type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectReceiver">;
 
 export default function SelectReceiver({ navigation }: Props) {
   const theme = useTheme();
-  const { coin, receiver, setReceiver, setAddress, address } =
+  const { coin, receiver, setReceiver, setAddress, address, parentNav } =
     useContext(SendCoinContext);
 
   const navToRecap = useCallback(() => navigation.push("SendRecap"), []);
+  const openScanner = useCallback(
+    () => parentNav.push("ScannerQR", { onBarCodeScanned: setAddress }), // TODO: badcase. nested navigator knows about parent
+    []
+  );
   const goBack = useCallback(() => navigation.goBack(), []);
 
   return (
@@ -35,6 +39,7 @@ export default function SelectReceiver({ navigation }: Props) {
         <CardAdress
           value={address}
           onChange={setAddress}
+          onPressQR={openScanner}
           style={[styles.input, styles.wrapper12]}
         />
 
@@ -50,12 +55,7 @@ export default function SelectReceiver({ navigation }: Props) {
 
         <CardAdressSelf coin={coin} style={[styles.self, styles.wrapper12]} />
       </ScrollView>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "flex-end",
-        }}
-      >
+      <View style={styles.bottomView}>
         <View style={styles.buttonContainer}>
           <ButtonBack onPress={goBack} style={styles.buttonBack} />
           <Button
@@ -95,6 +95,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 16,
     lineHeight: 20,
+  },
+
+  bottomView: {
+    flex: 1,
+    justifyContent: "flex-end",
   },
 
   // ------ button ------

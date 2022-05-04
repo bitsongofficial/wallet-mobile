@@ -13,6 +13,7 @@ import * as Screen from "screens/SendModalScreens";
 type Props = {
   style?: StyleProp<ViewStyle>;
   onSend(): void;
+  nav: any;
 };
 
 const options: NativeStackNavigationOptions = {
@@ -24,8 +25,8 @@ const options: NativeStackNavigationOptions = {
 
 const Stack = createNativeStackNavigator<SendCoinStackParamList>();
 
-export default observer(function ModalSend({ style, onSend }: Props) {
-  const contextValue = useSendCoinContextValue(onSend);
+export default observer(function ModalSend({ style, onSend, nav }: Props) {
+  const contextValue = useSendCoinContextValue(onSend, nav);
   return (
     <View style={[styles.container, style]}>
       <SendCoinContext.Provider value={contextValue}>

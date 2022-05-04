@@ -7,12 +7,14 @@ import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 type Props = {
   value: string;
   onChange(value: string): void;
+  onPressQR(): void;
   style?: StyleProp<ViewStyle>;
 };
 
 export default observer<Props>(function CardWallet({
   value,
   onChange,
+  onPressQR,
   style,
 }: Props) {
   const theme = useTheme();
@@ -25,7 +27,7 @@ export default observer<Props>(function CardWallet({
         placeholderTextColor={theme.text.inputPlaceholder}
         value={value}
       />
-      <TouchableOpacity>
+      <TouchableOpacity onPress={onPressQR}>
         <Icon name="qr_code" />
       </TouchableOpacity>
     </Card>

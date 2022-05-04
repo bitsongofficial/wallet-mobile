@@ -21,12 +21,16 @@ import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/typ
 import { ToolbarFull, ToolbarShort } from "./components";
 import { BottomSheetModal } from "components/moleculs";
 import SendCoinStack from "navigation/SendCoinStack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootTabParamList } from "types";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
 const tabs: ValueTabs[] = ["Coins", "Fan Tokens"];
 
-export default observer(function MainScreen() {
+type Props = NativeStackScreenProps<RootTabParamList, "MainTab">;
+
+export default observer<Props>(function MainScreen({ navigation }) {
   const { wallet } = useStore();
   // need culc by wallet
   const variation = "+ 7.46";
@@ -148,7 +152,11 @@ export default observer(function MainScreen() {
           index={0}
           snapPoints={["85%"]}
         >
-          <SendCoinStack style={sendCoinContainerStyle} onSend={closeSend} />
+          <SendCoinStack
+            style={sendCoinContainerStyle}
+            onSend={closeSend}
+            nav={navigation}
+          />
         </BottomSheetModal>
       </SafeAreaView>
     </>
