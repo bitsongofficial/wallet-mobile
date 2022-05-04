@@ -5,8 +5,9 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
 import { SendCoinContext } from "navigation/SendCoinStack/context";
 import { Tabs } from "components/organisms";
-import { CardAdressSelf } from "./components";
+import { CardAdressSelf, CardDetails } from "./components";
 import { Button, ButtonBack } from "components/atoms";
+import { users } from "./mock";
 
 type ValueTabs = "Details" | "Data";
 const tabs = ["Details", "Data"];
@@ -15,7 +16,9 @@ type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectReceiver">;
 
 export default function SelectReceiver({ navigation }: Props) {
   const theme = useTheme();
-  const { coin, onSend } = useContext(SendCoinContext);
+  const { coin, onSend, address, amount } = useContext(SendCoinContext);
+
+  const receiver = users[0];
 
   const [activeTab, setActiveTab] = useState<ValueTabs>("Details");
 
@@ -35,6 +38,17 @@ export default function SelectReceiver({ navigation }: Props) {
           style={styles.tabs}
         />
       </View>
+
+      {coin && receiver && (
+        <CardDetails
+          coin={coin}
+          amount={amount}
+          address={address}
+          receiver={receiver}
+          onPress={() => {}}
+          style={styles.wrapper12}
+        />
+      )}
 
       <View style={[styles.wrapper33, styles.funds]}>
         <Text style={[styles.caption, theme.text.primary]}>
@@ -65,7 +79,7 @@ const styles = StyleSheet.create({
   container: { flexGrow: 1 },
   wrapper33: { marginHorizontal: 33 },
   wrapper12: { marginHorizontal: 12 },
-  self: { marginTop: 14 },
+  self: { marginTop: 19 },
 
   title: {
     fontFamily: "CircularStd",
@@ -85,12 +99,13 @@ const styles = StyleSheet.create({
     marginTop: 29,
     marginBottom: 36,
   },
+
   funds: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
 
-    marginTop: 14,
+    marginTop: 27,
   },
 
   // ------ button ------
