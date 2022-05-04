@@ -16,6 +16,11 @@ export default () => (
       component={BottomTabNavigator}
       options={{ headerShown: false }}
     />
+    <Stack.Screen
+      name="ScannerQR"
+      component={Screens.ScannerQR}
+      options={{ headerShown: false }}
+    />
     {/* <Stack.Screen
         name="AccountHome"
         component={Screens.AccountHome}

@@ -58,6 +58,10 @@ export default observer(function MainScreen() {
   );
   const openSend = useCallback(() => bottomSheetSEND.current?.present(), []);
   const closeSend = useCallback(() => bottomSheetSEND.current?.close(), []);
+  const openScanner = useCallback(
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: console.log }),
+    []
+  );
 
   const safeAreaInsets = useSafeAreaInsets();
   const sendCoinContainerStyle = useMemo(
@@ -95,7 +99,7 @@ export default observer(function MainScreen() {
           onPressAll={openToolbar}
           onPressInquire={callback}
           onPressReceive={callback}
-          onPressScan={callback}
+          onPressScan={openScanner}
           onPressSend={openSend}
         />
 
