@@ -19,7 +19,8 @@ type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectReceiver">;
 
 export default function SelectReceiver({ navigation }: Props) {
   const theme = useTheme();
-  const { coin, receiver, setReceiver } = useContext(SendCoinContext);
+  const { coin, receiver, setReceiver, setAddress, address } =
+    useContext(SendCoinContext);
 
   const navToRecap = useCallback(() => navigation.push("SendRecap"), []);
   const goBack = useCallback(() => navigation.goBack(), []);
@@ -32,8 +33,8 @@ export default function SelectReceiver({ navigation }: Props) {
     >
       <ScrollView>
         <CardAdress
-          value={receiver}
-          onChange={setReceiver}
+          value={address}
+          onChange={setAddress}
           style={[styles.input, styles.wrapper12]}
         />
 

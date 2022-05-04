@@ -3,7 +3,7 @@ import React from "react";
 import { hexAlpha } from "utils";
 import { useTheme } from "hooks";
 
-export type IUser = {
+export type IPerson = {
   _id: string;
   avatar: any;
   firstName: string;
@@ -11,7 +11,7 @@ export type IUser = {
 };
 
 type Props = {
-  user: IUser;
+  user: IPerson;
 };
 
 export default function User({ user }: Props) {

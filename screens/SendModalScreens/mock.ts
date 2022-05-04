@@ -1,6 +1,6 @@
-import { IUser } from "./components";
+import { IPerson } from "./components";
 
-export const users: IUser[] = [
+export const users: IPerson[] = [
   {
     _id: "1",
     avatar: "",

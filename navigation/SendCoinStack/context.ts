@@ -5,8 +5,8 @@ export type ContextValue = {
   coin?: Coin;
   setCoin(coin: Coin): void;
 
-  receiver: string;
-  setReceiver(receiver: string): void;
+  receiver?: IPerson;
+  setReceiver(receiver: IPerson): void;
 
   onSend(): void;
 };
