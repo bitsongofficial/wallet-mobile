@@ -19,6 +19,7 @@ interface ITheme {
   text: {
     primary: TextStyle;
     secondary: TextStyle;
+    secondary2: TextStyle;
     colorText: TextStyle;
     inputPlaceholder: string;
   };
@@ -45,6 +46,12 @@ const Theme = {
         color: "#FFFFFF",
         opacity: 0.5,
       },
+      secondary2: {
+        // TODO: need alfa color or flat color
+        color: "#FFFFFF",
+        opacity: 0.3,
+      },
+
       colorText: {
         color: "#4C61E5",
       },
