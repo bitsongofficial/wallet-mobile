@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
 
-  // ------ button ------
+  // ------ button ------ TODO: Make common component
   buttonContainer: {
     flex: 1,
     alignItems: "center",

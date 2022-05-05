@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     marginTop: 27,
   },
 
-  // ------ button ------
+  // ------ button ------ TODO: Make common component
   buttonContainer: {
     alignItems: "center",
     justifyContent: "center",
