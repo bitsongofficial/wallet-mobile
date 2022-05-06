@@ -2,13 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { hexAlpha } from "utils";
 import { useTheme } from "hooks";
-
-export type IPerson = {
-  _id: string;
-  avatar: any;
-  firstName: string;
-  lastName: string;
-};
+import { IPerson } from "../type";
 
 type Props = {
   user: IPerson;
