@@ -9,6 +9,8 @@ import { SendCoinStackParamList } from "./types";
 import { SendCoinContext, useSendCoinContextValue } from "./context";
 import Header from "./Header";
 import * as Screen from "screens/SendModalScreens";
+import * as Root from "screens";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
@@ -29,32 +31,42 @@ export default observer(function ModalSend({ style, onSend, nav }: Props) {
   const contextValue = useSendCoinContextValue(onSend, nav);
   return (
     <View style={[styles.container, style]}>
-      <SendCoinContext.Provider value={contextValue}>
-        <NavigationContainer independent>
-          <Stack.Navigator screenOptions={options}>
-            <Stack.Screen
-              name="InsertImport"
-              options={{ title: "Insert Import" }}
-              component={Screen.InsertImport}
-            />
-            <Stack.Screen
-              name="SelectReceiver"
-              options={{ title: "Select Receiver" }}
-              component={Screen.SelectReceiver}
-            />
-            <Stack.Screen
-              name="SelectCoin"
-              options={{ headerShown: false }}
-              component={Screen.SelectCoin}
-            />
-            <Stack.Screen
-              name="SendRecap"
-              options={{ headerShown: false }}
-              component={Screen.SendRecap}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SendCoinContext.Provider>
+      <SafeAreaProvider>
+        <SendCoinContext.Provider value={contextValue}>
+          <NavigationContainer independent>
+            <Stack.Navigator screenOptions={options}>
+              <Stack.Screen
+                name="InsertImport"
+                options={{ title: "Insert Import" }}
+                component={Screen.InsertImport}
+              />
+              <Stack.Screen
+                name="SelectReceiver"
+                options={{ title: "Select Receiver" }}
+                component={Screen.SelectReceiver}
+              />
+              <Stack.Screen
+                name="SelectCoin"
+                options={{ headerShown: false }}
+                component={Screen.SelectCoin}
+              />
+              <Stack.Screen
+                name="SendRecap"
+                options={{ headerShown: false }}
+                component={Screen.SendRecap}
+              />
+              <Stack.Screen
+                name="ScannerQR"
+                component={Root.ScannerQR}
+                options={{
+                  headerShown: false,
+                  presentation: "fullScreenModal",
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SendCoinContext.Provider>
+      </SafeAreaProvider>
     </View>
   );
 });

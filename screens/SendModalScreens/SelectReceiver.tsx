@@ -24,7 +24,7 @@ export default function SelectReceiver({ navigation }: Props) {
 
   const navToRecap = useCallback(() => navigation.push("SendRecap"), []);
   const openScanner = useCallback(
-    () => parentNav.push("ScannerQR", { onBarCodeScanned: setAddress }), // TODO: badcase. nested navigator knows about parent
+    () => navigation.push("ScannerQR", { onBarCodeScanned: setAddress }), // TODO: badcase. nested navigator knows about parent
     []
   );
   const goBack = useCallback(() => navigation.goBack(), []);

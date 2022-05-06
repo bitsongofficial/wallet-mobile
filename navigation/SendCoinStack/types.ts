@@ -3,4 +3,5 @@ export type SendCoinStackParamList = {
   InsertImport: undefined;
   SelectCoin: undefined;
   SendRecap: undefined;
+  ScannerQR: { onBarCodeScanned(data: string): void };
 };
