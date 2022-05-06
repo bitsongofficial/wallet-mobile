@@ -5,13 +5,12 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
 import { SendCoinContext } from "navigation/SendCoinStack/context";
 import { Tabs } from "components/organisms";
+import { CardAdressSelf, CardDetails } from "./components";
 import { Button, ButtonBack } from "components/atoms";
 import { users } from "./mock";
-import { Advanced, CardData, CardMessages } from "./components/organisms";
-import { CardDetails } from "./components";
 
-type ValueTabs = "Recap" | "Details" | "Data";
-const tabs = ["Recap", "Details", "Data"];
+type ValueTabs = "Details" | "Data";
+const tabs = ["Details", "Data"];
 
 type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectReceiver">;
 
@@ -25,9 +24,6 @@ export default function SelectReceiver({ navigation }: Props) {
 
   const done = useCallback(() => onSend(), [onSend]);
   const goBack = useCallback(() => navigation.goBack(), []);
-
-  const [gas, setGas] = useState("");
-  const [memo, setMemo] = useState("");
 
   return (
     <View style={styles.container}>
@@ -43,40 +39,25 @@ export default function SelectReceiver({ navigation }: Props) {
         />
       </View>
 
-      <View style={{ marginHorizontal: 24 }}>
-        {activeTab === "Recap" && (
-          <>
-            {coin && receiver && (
-              <CardDetails
-                coin={coin}
-                amount={amount}
-                address={address}
-                receiver={receiver}
-                onPress={() => {}}
-              />
-            )}
-            <View style={styles.funds}>
-              <Text style={[styles.caption, theme.text.primary]}>
-                Your funds come from
-              </Text>
-            </View>
-          </>
-        )}
-        {activeTab === "Details" && (
-          <>
-            <CardMessages messages={[{}]} style={{ marginBottom: 27 }} />
-            <Advanced
-              gas={gas}
-              memo={memo}
-              onChangeGas={setGas}
-              onChangeMemo={setMemo}
-            />
-          </>
-        )}
-        {activeTab === "Data" && (
-          <CardData json={JSON.stringify(require("../../app.json"), null, 4)} />
-        )}
+      {coin && receiver && (
+        <CardDetails
+          coin={coin}
+          amount={amount}
+          address={address}
+          receiver={receiver}
+          onPress={() => {}}
+          style={styles.wrapper12}
+        />
+      )}
+
+      <View style={[styles.wrapper33, styles.funds]}>
+        <Text style={[styles.caption, theme.text.primary]}>
+          Your funds come from
+        </Text>
+        <Button>Edit</Button>
       </View>
+
+      <CardAdressSelf coin={coin} style={[styles.self, styles.wrapper12]} />
 
       <View style={{ flex: 1, justifyContent: "flex-end" }}>
         <View style={styles.buttonContainer}>
