@@ -11,6 +11,12 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default () => (
   <Stack.Navigator>
+    {/* not auth */}
+    <Stack.Screen
+      name="Start"
+      component={Screens.Start}
+      options={{ headerShown: false }}
+    />
     <Stack.Screen
       name="Root"
       component={BottomTabNavigator}
