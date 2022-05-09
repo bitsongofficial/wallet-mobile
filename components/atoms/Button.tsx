@@ -38,15 +38,13 @@ export default ({
     <TouchableOpacity onPress={onPress}>
       <View style={[styles.container, style]}>
         <Background style={[styles.gradient, contentContainerStyle]}>
-          <View>
-            {text || typeof children === "string" ? (
-              <Text style={[styles.text, themeStyle.text.primary, textStyle]}>
-                {text || children}
-              </Text>
-            ) : (
-              children
-            )}
-          </View>
+          {text || typeof children === "string" ? (
+            <Text style={[styles.text, themeStyle.text.primary, textStyle]}>
+              {text || children}
+            </Text>
+          ) : (
+            children
+          )}
         </Background>
       </View>
     </TouchableOpacity>
@@ -63,6 +61,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
   },
   text: {
     fontFamily: "CircularStd",
