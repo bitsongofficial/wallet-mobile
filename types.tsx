@@ -19,12 +19,6 @@ declare global {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   ScannerQR: { onBarCodeScanned(data: string): void };
-  Main: undefined;
-  Modal: undefined;
-  NotFound: undefined;
-  AccountHome: undefined;
-  CreateWallet: undefined;
-  ImportWallet: undefined;
 
   SendDetailsFull: undefined;
 };
