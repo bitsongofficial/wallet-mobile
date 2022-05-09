@@ -18,6 +18,13 @@ export default () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
+      name="CreateSeed"
+      component={Screens.CreateSeed}
+      options={{ headerShown: false }}
+    />
+
+    {/* auth */}
+    <Stack.Screen
       name="Root"
       component={BottomTabNavigator}
       options={{ headerShown: false }}
