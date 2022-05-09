@@ -19,6 +19,9 @@ declare global {
 export type RootStackParamList = {
   // Before  Auth
   Start: undefined;
+  CreateSeed: undefined;
+
+  // After Auth
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   ScannerQR: { onBarCodeScanned(data: string): void };
 

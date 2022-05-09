@@ -1,4 +1,3 @@
-import React from "react";
 import { SvgCss, XmlProps } from "react-native-svg";
 import Icons from "assets/svg";
 import { StyleSheet, View } from "react-native";

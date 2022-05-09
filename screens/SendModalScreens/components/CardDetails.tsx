@@ -2,7 +2,7 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
 import { Card, Icon } from "components/atoms";
 import { useTheme } from "hooks";
-import { IPerson } from "./User";
+import { IPerson } from "../type";
 import { Coin } from "classes";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
@@ -29,7 +29,7 @@ export default observer<Props>(function CardWallet({
       <View style={styles.title}>
         <Text style={[styles.text, theme.text.colorText]}>You will send</Text>
         <TouchableOpacity onPress={onPress}>
-          <Icon name="test" />
+          <Icon name="arrow_down" />
         </TouchableOpacity>
       </View>
 

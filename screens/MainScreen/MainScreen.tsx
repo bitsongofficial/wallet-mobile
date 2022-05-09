@@ -63,7 +63,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const openSend = useCallback(() => bottomSheetSEND.current?.present(), []);
   const closeSend = useCallback(() => bottomSheetSEND.current?.close(), []);
   const openScanner = useCallback(
-    () => navigation.navigate("ScannerQR", { onBarCodeScanned: console.log }),
+    () => {},
+    // () => navigation.navigate("ScannerQR", { onBarCodeScanned: console.log }),
     []
   );
 
