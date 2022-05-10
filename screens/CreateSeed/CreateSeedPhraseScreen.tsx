@@ -1,25 +1,26 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { observer } from "mobx-react-lite";
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { COLOR, hexAlpha } from "../../utils";
-import { Button, ButtonBack } from "../../components/atoms";
-import { Phrase } from "components/moleculs";
+import { SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { COLOR, hexAlpha } from "utils";
+import { Button, ButtonBack, Icon } from "components/atoms";
 import { useSeedPhrase, useTheme } from "hooks";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
-import { Title, Subtitle } from "./components/atoms";
 import Icon2 from "components/atoms/Icon2";
+import { Header, WalletName, SetPin, CreateSeed } from "./components/organisms";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateSeed">;
 
-export default observer<Props>(({ navigation }) => {
+const defaultPin = new Array(7).fill(null);
+
+const steps = [
+  "Create New Mnemonic",
+  "Name Your Wallet",
+  "Set PIN",
+  "Confirm PIN",
+];
+
+export default observer<Props>(({ navigation, route }) => {
   // const biometric = useBiometric();
   const phrase = useSeedPhrase();
 
@@ -47,6 +48,16 @@ export default observer<Props>(({ navigation }) => {
 
   const goBack = useCallback(() => navigation.goBack(), [navigation]);
 
+  const [pin, setPin] = useState<any[]>(defaultPin);
+  const [confirm, setConfirm] = useState<any[]>(defaultPin);
+
+  const pushPin = useCallback((value: string) => {}, []);
+  const pushConfirm = useCallback((value: string) => {}, []);
+
+  const [activeIndex, setActiveIndex] = useState(1);
+  const increment = useCallback(() => setActiveIndex((value) => value + 1), []);
+  const decrement = useCallback(() => setActiveIndex((value) => value - 1), []);
+
   return (
     <>
       <StatusBar
@@ -55,45 +66,24 @@ export default observer<Props>(({ navigation }) => {
         backgroundColor="transparent"
       />
       <SafeAreaView style={styles.container}>
+        <Header activeIndex={activeIndex} />
         <View style={styles.center}>
-          <Title>Create New Mnemonic</Title>
-          <Subtitle style={styles.subtitle}>
-            This is the only way you will be able to {"\n"}recover your account.
-            Please store it {"\n"}somewhere safe!
-          </Subtitle>
-
-          <View style={{ marginTop: 24, width: 173 }}>
-            <Button
-              mode="gradient"
-              contentContainerStyle={styles.buttonContent}
-              // style={styles.buttonToggleOutline}
-              // IconRight={
-              //   <Icon name="eye" size={16} style={styles.marginRight} />
-              // }
-              onPress={togglePhrase}
-            >
-              <Text style={[styles.buttonText, theme.text.primary]}>
-                Show Phrase
-              </Text>
-              <Icon2 name="eye" size={18} />
-            </Button>
-          </View>
-
-          <ScrollView
-            style={styles.scrollview}
-            contentContainerStyle={styles.scrollviewContainer}
-          >
-            <Phrase hidden={isHidden} value={phrase} />
-          </ScrollView>
-
+          {/* <CreateSeed
+            isHidden={isHidden}
+            phrase={phrase}
+            onPressToggle={togglePhrase}
+          /> */}
+          {/* <WalletName /> */}
+          {/* <SetPin onPress={pushConfirm} pin={pin} /> */}
           <View style={styles.footer}>
             <View style={styles.footerLeft}>
-              <ButtonBack onPress={goBack} />
+              <ButtonBack onPress={decrement} />
             </View>
 
             <View style={styles.footerRight}>
               <Button
                 contentContainerStyle={styles.buttonContinueContent}
+                onPress={increment}
                 // onPress={open}
                 // disable={!biometric.access}
                 // IconRight={<Icon name="arrow_r" size={10} />}
@@ -201,16 +191,7 @@ const styles = StyleSheet.create({
     backgroundColor: hexAlpha(COLOR.Dark2, 60),
   },
   // ------ Text -------
-  title: {
-    color: COLOR.White,
-    fontFamily: "CircularStd",
-    fontStyle: "normal",
-    fontWeight: "500",
-    fontSize: 20,
-    lineHeight: 25,
-    marginTop: 34,
-    marginBottom: 13,
-  },
+
   subtitle: {
     marginTop: 8,
   },
