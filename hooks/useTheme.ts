@@ -1,4 +1,5 @@
 import { TextStyle, ViewStyle } from "react-native";
+import { COLOR } from "utils";
 import useStore from "./useStore";
 
 /**
@@ -21,7 +22,11 @@ interface ITheme {
     secondary: TextStyle;
     secondary2: TextStyle;
     colorText: TextStyle;
-    inputPlaceholder: string;
+  };
+  input: {
+    container: ViewStyle;
+    placeholder: string;
+    component: TextStyle;
   };
   bottomsheet: {
     background: Omit<
@@ -55,7 +60,15 @@ const Theme = {
       colorText: {
         color: "#4C61E5",
       },
-      inputPlaceholder: "#5b5b6d", // from colorPiker for remove opacity
+    },
+    input: {
+      container: {
+        backgroundColor: COLOR.Dark2,
+      },
+      component: {
+        color: COLOR.White,
+      },
+      placeholder: COLOR.Marengo,
     },
     bottomsheet: {
       background: {

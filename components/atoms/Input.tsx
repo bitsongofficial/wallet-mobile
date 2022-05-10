@@ -27,13 +27,14 @@ export default ({
 }: Props) => {
   const theme = useTheme();
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, theme.input.container, style]}>
       <TextInput
-        style={[styles.input, theme.text.primary, inputStyle]}
+        // style={[theme.text.primary, inputStyle]}
+        style={[theme.input.component]}
         onChangeText={onChangeText}
         value={value}
         placeholder={placeholder}
-        placeholderTextColor={theme.text.secondary.color}
+        placeholderTextColor={theme.input.placeholder}
       />
     </View>
   );
@@ -41,10 +42,8 @@ export default ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#14142E",
     paddingVertical: 19,
-    paddingHorizontal: 25,
+    paddingHorizontal: 24,
     borderRadius: 50,
   },
-  input: {},
 });
