@@ -1,11 +1,31 @@
+import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Wallet } from "core/types/storing/Generic";
+import { Derivator } from "core/types/utils/derivator";
 import { BaseDerivator } from "core/utils/Derivator";
-import { MnemonicStore, PinMnemonicStore } from "./MnemonicStore";
+import { MnemonicStore } from "./MnemonicStore";
 
-class MnemonicToKeys extends BaseDerivator {
+class WalletToKeys extends BaseDerivator {
 	protected async InnerDerive(data: any)
 	{
-		return data
+		const wallet = data as DirectSecp256k1HdWallet
+		const accounts = await wallet.getAccounts()
+		return {
+			public: accounts[0].address,
+			private: wallet.privkey,
+		}
+	}
+}
+
+class MnemonicToWallet extends BaseDerivator {
+	protected async InnerDerive(data: any)
+	{
+		return await DirectSecp256k1HdWallet.fromMnemonic(data, undefined, "bitsong")
+	}
+}
+
+class MnemonicToKeys implements Derivator {
+	Derive(data: any) {
+		return (new MnemonicToWallet(new WalletToKeys())).Derive(data)
 	}
 }
 
@@ -16,13 +36,16 @@ export class CosmoWallet implements Wallet {
 	}
 	async Address()
 	{
-		const wallet = await (new MnemonicToKeys()).Derive(this.mnemonicStore.Get())
-		console.log(wallet)
-		return ""
+		return (await this.Keys()).public
 	}
 	async Key()
 	{
-		return ""
+		return (await this.Keys()).private
+	}
+
+	private async Keys()
+	{
+		return await (new MnemonicToKeys()).Derive(await this.mnemonicStore.Get())
 	}
 }
 

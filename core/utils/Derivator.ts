@@ -14,5 +14,8 @@ export abstract class BaseDerivator implements Derivator {
 		return calculatedData
 	}
 
-	protected abstract InnerDerive(data: any) : Promise<any>
+	protected async InnerDerive(data: any)
+	{
+		return data
+	}
 }
