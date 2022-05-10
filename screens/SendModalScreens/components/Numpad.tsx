@@ -36,12 +36,11 @@ export default function Numpad({ onPress, style }: NumpadProps) {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "space-around",
+    // justifyContent: "space-around",
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 4,
+    justifyContent: "space-between",
   },
   num: {
     width: 35,

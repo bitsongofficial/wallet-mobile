@@ -24,7 +24,7 @@ export default observer<Props>(function CardWallet({
         style={[styles.input, theme.text.primary]}
         placeholder="Public Address"
         onChangeText={onChange}
-        placeholderTextColor={theme.text.inputPlaceholder}
+        placeholderTextColor={theme.input.placeholder}
         value={value}
       />
       <TouchableOpacity onPress={onPressQR}>
