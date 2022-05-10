@@ -7,3 +7,4 @@ export { default as Card } from "./Card";
 export { default as Input } from "./Input";
 export { default as Badge } from "./Badge";
 export { default as Word } from "./Word";
+export { default as Dot } from "./Dot";
