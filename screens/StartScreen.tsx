@@ -1,7 +1,13 @@
-import { useCallback } from "react";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  LayoutChangeEvent,
+  LayoutRectangle,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
-
 import { useTheme } from "hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
@@ -9,14 +15,49 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 import { Button } from "components/atoms";
 import Icon2 from "components/atoms/Icon2";
+import { BottomSheetModal } from "components/moleculs";
+import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Start">;
 
+const points = ["30"];
+
 export default observer<Props>(function StartScreen({ navigation }) {
   const theme = useTheme();
-  const { height, width } = useWindowDimensions();
 
-  const createSeedPhrase = useCallback(() => navigation.push("CreateSeed"), []);
+  const [layout, setLayout] = useState<LayoutRectangle>();
+  const getLayoutButtons = useCallback(
+    ({ nativeEvent: { layout } }: LayoutChangeEvent) => setLayout(layout),
+    []
+  );
+
+   useEffect(() => () => , [])
+  
+
+  const { width, height } = useWindowDimensions();
+
+  console.log("height :>> ", height, layout?.height);
+
+  const bottomSheet = useRef<BottomSheetModalMethods>(null);
+  const openBottomSheet = useCallback(() => bottomSheet.current?.present(), []);
+
+  const createCreateWallet = useCallback(
+    () => navigation.push("CreateWallet"),
+    []
+  );
+  const importFromSeed = useCallback(
+    () => navigation.push("ImportFromSeed"),
+    []
+  );
+  const importWithKeplr = useCallback(
+    () =>
+      navigation.push("ScannerQR", {
+        onBarCodeScanned: (data) => {
+          navigation.push("ImportWithKeplr", { data });
+        },
+      }),
+    []
+  );
 
   return (
     <>
@@ -28,9 +69,9 @@ export default observer<Props>(function StartScreen({ navigation }) {
             A nice phrase to {"\n"}welcome our users.
           </Text>
 
-          <View style={styles.buttons}>
+          <View style={styles.buttons} onLayout={getLayoutButtons}>
             <Button
-              onPress={createSeedPhrase}
+              onPress={createCreateWallet}
               contentContainerStyle={styles.buttonContent}
               style={{ marginBottom: 18 }}
             >
@@ -41,6 +82,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
             </Button>
             <Button
               mode="fill"
+              onPress={openBottomSheet}
               contentContainerStyle={styles.buttonContent}
               style={{ marginBottom: 24 }}
             >
@@ -59,6 +101,36 @@ export default observer<Props>(function StartScreen({ navigation }) {
           </View>
         </View>
       </SafeAreaView>
+
+      <BottomSheetModal ref={bottomSheet} index={0} snapPoints={points}>
+        <View style={styles.bottomSheetContainer}>
+          <Text style={[styles.bottomSheetTitle, theme.text.primary]}>
+            Import Existing Wallet
+          </Text>
+
+          <Button
+            onPress={importFromSeed}
+            contentContainerStyle={styles.buttonContent}
+            style={{ marginBottom: 12 }}
+          >
+            <Text style={[styles.buttonText, theme.text.primary]}>
+              Import from Seed Phrase
+            </Text>
+            <Icon2 name="chevron_right" size={18} />
+          </Button>
+
+          <Button
+            onPress={importWithKeplr}
+            contentContainerStyle={styles.buttonContent}
+            style={{ marginBottom: 12 }}
+          >
+            <Text style={[styles.buttonText, theme.text.primary]}>
+              Import with Keplr Extension
+            </Text>
+            <Icon2 name="chevron_right" size={18} />
+          </Button>
+        </View>
+      </BottomSheetModal>
     </>
   );
 });
@@ -85,6 +157,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     justifyContent: "space-between",
   },
+
   buttonText: {
     fontFamily: "CircularStd",
     fontStyle: "normal",
@@ -100,5 +173,19 @@ const styles = StyleSheet.create({
     lineHeight: 30,
 
     marginHorizontal: 32,
+  },
+
+  bottomSheetTitle: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "400",
+    fontSize: 16,
+    lineHeight: 20,
+
+    marginBottom: 32,
+  },
+  bottomSheetContainer: {
+    paddingHorizontal: 30,
+    paddingVertical: 20,
   },
 });
