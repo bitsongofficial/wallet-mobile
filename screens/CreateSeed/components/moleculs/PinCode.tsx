@@ -1,25 +1,32 @@
+import { useMemo } from "react";
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { Pin } from "classes";
 import { COLOR } from "utils";
 import { useTheme } from "hooks";
 
 type Props = {
-  value: string[];
+  value?: Pin["value"];
   style?: StyleProp<ViewStyle>;
 };
 
-export default ({ value = [], style }: Props) => {
+export default ({ value = "", style }: Props) => {
   const theme = useTheme();
+  const nums = useMemo(
+    () => [...value.split(""), ...new Array(Pin.max - value.length).fill(null)],
+    [value]
+  );
+
   return (
     <View style={[styles.container, style]}>
-      {value.map((value, index) =>
-        value ? (
-          <Text key={index} style={[styles.num, theme.text.primary]}>
-            {value}
-          </Text>
-        ) : (
-          <View key={index} style={styles.placeholder} />
-        )
-      )}
+      {nums.map((num, index) => (
+        <View key={index} style={styles.item}>
+          {num ? (
+            <Text style={[styles.num, theme.text.primary]}>{num}</Text>
+          ) : (
+            <View style={styles.placeholder} />
+          )}
+        </View>
+      ))}
     </View>
   );
 };
@@ -29,6 +36,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  item: {
+    width: 30,
+    height: 60,
+    alignItems: "center",
+    justifyContent: "center",
   },
   num: {
     fontFamily: "CircularStd",
