@@ -1,3 +1,1 @@
-import { default as CreateSeedPhraseScreen } from "./CreateSeedPhraseScreen";
-
-export default CreateSeedPhraseScreen;
+export { default as CreateWallet } from "./CreateWalletScreen";
