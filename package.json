@@ -8,14 +8,17 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "test": "jest --watchAll",
-    "clean": "expo start -c"
+    "clean": "expo start -c",
+    "setup": "./scripts/setup.sh"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@cosmjs/crypto": "^0.24.0-alpha.25",
     "@cosmjs/launchpad": "^0.24.0-alpha.25",
     "@cosmjs/proto-signing": "^0.24.0-alpha.25",
+    "@cosmjs/stargate": "^0.24.0-alpha.25",
     "@expo/vector-icons": "^12.0.0",
     "@gorhom/bottom-sheet": "^4.2.1",
     "@react-native-async-storage/async-storage": "~1.15.0",
