@@ -1,4 +1,5 @@
 export { default as COLOR } from "./colors";
+export { default as InputHandler } from "./InputHandler";
 
 export function hexAlpha(hex: string, percent: number): string {
   const str = Math.trunc((percent * 255) / 100).toString(16);
