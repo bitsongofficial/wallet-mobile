@@ -19,12 +19,15 @@ declare global {
 export type RootStackParamList = {
   // Before  Auth
   Start: undefined;
-  CreateSeed: undefined;
+  CreateWallet: undefined;
+  ImportFromSeed: undefined;
+  ImportWithKeplr: { data: string };
+
+  // Common
+  ScannerQR: { onBarCodeScanned(data: string): void };
 
   // After Auth
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
-  ScannerQR: { onBarCodeScanned(data: string): void };
-
   SendDetailsFull: undefined;
 };
 

@@ -31,8 +31,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
     []
   );
 
-   useEffect(() => () => , [])
-  
+  useEffect(() => () => {}, []);
 
   const { width, height } = useWindowDimensions();
 

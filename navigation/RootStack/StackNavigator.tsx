@@ -18,8 +18,18 @@ export default () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
-      name="CreateSeed"
-      component={Screens.CreateSeed}
+      name="CreateWallet"
+      component={Screens.CreateWallet}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ImportFromSeed"
+      component={Screens.ImportFromSeed}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ImportWithKeplr"
+      component={Screens.ImportWithKeplr}
       options={{ headerShown: false }}
     />
 
@@ -34,6 +44,10 @@ export default () => (
       component={Screens.ScannerQR}
       options={{ headerShown: false }}
     />
+
+    {/* <Stack.Group screenOptions={{ presentation: "modal" }}>
+      <Stack.Screen name="Modal" component={Screens.ModalScreen} />
+    </Stack.Group> */}
     {/* <Stack.Screen
         name="AccountHome"
         component={Screens.AccountHome}
