@@ -11,10 +11,11 @@ const numpad = [
 
 type NumpadProps = {
   onPress(num: string): void;
+  onPressRemove(): void;
   style?: StyleProp<ViewStyle>;
 };
 
-export default function Numpad({ onPress, style }: NumpadProps) {
+export default function Numpad({ onPress, style, onPressRemove }: NumpadProps) {
   const theme = useTheme();
 
   return (
@@ -22,7 +23,10 @@ export default function Numpad({ onPress, style }: NumpadProps) {
       {numpad.map((row, index) => (
         <View key={index} style={styles.row}>
           {row.map((num) => (
-            <TouchableOpacity key={num} onPress={() => onPress(num)}>
+            <TouchableOpacity
+              key={num}
+              onPress={() => (num === "C" ? onPressRemove() : onPress(num))}
+            >
               <View style={styles.num}>
                 <Text style={[styles.text, theme.text.primary]}>{num}</Text>
               </View>
