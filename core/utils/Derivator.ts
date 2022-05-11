@@ -9,8 +9,9 @@ export abstract class BaseDerivator implements Derivator {
 	}
 	async Derive(data: any)
 	{
-		const calculatedData = await this.InnerDerive(data)
-		if(this.derivator) return this.derivator.Derive(calculatedData)
+		let calculatedData = data
+		if(this.derivator) calculatedData = await this.derivator.Derive(data)
+		calculatedData = await this.InnerDerive(calculatedData)
 		return calculatedData
 	}
 
