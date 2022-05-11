@@ -1,41 +1,24 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { Numpad } from "screens/SendModalScreens/components"; // todo: make common component
-import { useTheme } from "hooks";
-import { Subtitle, Title } from "../atoms";
+import { Pin } from "classes";
 import { PinCode } from "../moleculs";
+import { observer } from "mobx-react-lite";
 
-type Props = {
-  onPress(value: string): void;
-  pin: string[];
-};
+type Props = { pin: Pin };
 
-export default ({ onPress, pin }: Props) => {
-  const theme = useTheme();
-  return (
-    <>
-      <View style={styles.container}>
-        <Title>Set PIN</Title>
-        <Subtitle style={styles.subtitle}>
-          This is the only way you will be able to {"\n"}recover your account.
-          Please store it {"\n"}somewhere safe!
-        </Subtitle>
-        <PinCode value={pin} style={styles.pin} />
-        <Numpad onPress={onPress} style={styles.numpad} />
-      </View>
-    </>
-  );
-};
+export default observer(({ pin }: Props) => (
+  <>
+    <PinCode value={pin.value} style={styles.pin} />
+    <Numpad
+      onPressRemove={pin.remove}
+      onPress={pin.push}
+      style={styles.numpad}
+    />
+  </>
+));
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-  },
-  subtitle: {
-    marginTop: 8,
-  },
-  pin: {
-    flex: 1,
-  },
+  pin: { flex: 1 },
   numpad: {
     marginHorizontal: 15,
     flex: 1,
