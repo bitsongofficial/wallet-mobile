@@ -1,19 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
-import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
-import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+import {
+  KeyboardAvoidingView,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  View,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
 import { COLOR } from "utils";
-import { Phrase } from "components/moleculs";
-import { Input } from "components/atoms";
+import { Button, Input } from "components/atoms";
 import { useImportFromSeedController } from "./controllers";
 import { Subtitle, Title } from "./components/atoms";
-import { ButtonToggle, PinCode } from "./components/moleculs";
-import { Header, Footer } from "./components/organisms";
-import { Numpad } from "screens/SendModalScreens/components"; // todo: make common component
+import { Header, Footer, SetPin, PhraseInput } from "./components/organisms";
 
-type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
+type Props = NativeStackScreenProps<RootStackParamList, "ImportFromSeed">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useImportFromSeedController();
@@ -33,70 +36,67 @@ export default observer<Props>(({ navigation }) => {
         translucent
         backgroundColor="transparent"
       />
-      <SafeAreaView style={styles.container}>
-        <Header activeIndex={controller.steps.active} />
+      <KeyboardAvoidingView style={styles.container}>
+        <SafeAreaView style={styles.container}>
+          <ScrollView contentContainerStyle={styles.container}>
+            <Header
+              activeIndex={controller.steps.active}
+              paginationCount={controller.steps.titles.length}
+              style={styles.header}
+            />
 
-        <View style={styles.center}>
-          <View style={styles.fullSize}>
-            <Title>{controller.steps.title}</Title>
-            <Subtitle style={styles.subtitle}>
-              This is the only way you will be able to {"\n"}recover your
-              account. Please store it {"\n"}somewhere safe!
-            </Subtitle>
+            <View style={styles.mh30}>
+              <Title>{controller.steps.title}</Title>
+              <Subtitle style={styles.subtitle}>
+                This is the only way you will be able to {"\n"}recover your
+                account. Please store it {"\n"}somewhere safe!
+              </Subtitle>
+            </View>
 
             {controller.steps.active === 0 && controller.phrase.words && (
               <>
-                {/* <View style={styles.toggle}>
-                  <ButtonToggle isHidden={isHidden} onPress={toggleHidden} />
+                <View style={[styles.paste]}>
+                  <Button
+                    contentContainerStyle={styles.buttonContent}
+                    textStyle={styles.buttonText}
+                    onPress={controller.steps.next}
+                  >
+                    Paste
+                  </Button>
                 </View>
-                <ScrollView
-                  style={styles.scrollview}
-                  contentContainerStyle={styles.scrollviewContainer}
-                >
-                  <Phrase hidden={isHidden} value={controller.phrase.words} />
-                </ScrollView> */}
+                <PhraseInput phrase={controller.phrase} />
               </>
             )}
 
-            {controller.steps.active === 1 && (
-              <Input
-                placeholder="Wallet Name"
-                value={controller.walletName.value}
-                onChangeText={controller.walletName.set}
-                style={styles.input}
-              />
-            )}
-
-            {controller.steps.active === 2 && (
-              <>
-                <PinCode value={controller.pin.value} style={styles.pin} />
-                <Numpad
-                  onPressRemove={controller.pin.remove}
-                  onPress={controller.pin.push}
-                  style={styles.numpad}
-                />
-              </>
-            )}
-
-            {controller.steps.active === 3 && (
-              <>
-                <PinCode value={controller.confirm.value} style={styles.pin} />
-                <Numpad
-                  onPressRemove={controller.confirm.remove}
-                  onPress={controller.confirm.push}
-                  style={styles.numpad}
-                />
-              </>
-            )}
-          </View>
-
-          <Footer
-            onPressBack={goBack}
-            onPressNext={controller.nextStep}
-            nextButtonText="Continue"
-          />
-        </View>
-      </SafeAreaView>
+            <View style={styles.fullSize}>
+              <View style={styles.center}>
+                {controller.steps.active === 1 && (
+                  <Input
+                    placeholder="Wallet Name"
+                    value={controller.walletName.value}
+                    onChangeText={controller.walletName.set}
+                    style={styles.input}
+                  />
+                )}
+                {controller.steps.active === 2 && (
+                  <SetPin pin={controller.pin} />
+                )}
+                {controller.steps.active === 3 && (
+                  <SetPin pin={controller.confirm} />
+                )}
+              </View>
+            </View>
+          </ScrollView>
+          {controller.steps.active !== 0 && (
+            <Footer
+              onPressBack={goBack}
+              onPressNext={controller.nextStep}
+              nextButtonText="Continue"
+              style={styles.mh30}
+            />
+          )}
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </>
   );
 });
@@ -106,19 +106,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLOR.Dark3,
     flexGrow: 1,
-    paddingVertical: 16,
+    // paddingVertical: 16,
   },
   // -------- Main --------
   header: {
-    paddingHorizontal: 45,
-    paddingVertical: 16,
-    flexDirection: "row",
-    justifyContent: "center",
+    marginBottom: 50,
   },
+  mh30: { marginHorizontal: 30 },
   center: {
-    flexGrow: 1,
     paddingHorizontal: 30,
-    paddingTop: 50,
+    flexGrow: 1,
+    // paddingTop: 50,
   },
   fullSize: { flexGrow: 1 },
   // ------ Text -------
@@ -132,24 +130,33 @@ const styles = StyleSheet.create({
   input: {
     marginTop: 24,
   },
-  pin: {
-    flex: 1,
+  buttonContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
-  numpad: {
-    marginHorizontal: 15,
-    flex: 1,
-    justifyContent: "space-between",
-    marginBottom: 30,
+  buttonText: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "500",
+    fontSize: 12,
+    lineHeight: 15,
   },
 
-  // ----- ScrollView -------
-  scrollview: {
-    flex: 1,
-    marginTop: 16,
-    marginBottom: 16,
+  paste: {
+    width: 65,
+    marginHorizontal: 30,
+    marginTop: 24,
+    marginBottom: 40,
   },
-  scrollviewContainer: {
-    paddingTop: 15,
-    paddingBottom: 6,
-  },
+
+  // // ----- ScrollView -------
+  // scrollview: {
+  //   flex: 1,
+  //   marginTop: 16,
+  //   marginBottom: 16,
+  // },
+  // scrollviewContainer: {
+  //   paddingTop: 15,
+  //   paddingBottom: 6,
+  // },
 });
