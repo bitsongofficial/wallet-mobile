@@ -1,40 +1,41 @@
 import {
   StyleProp,
   StyleSheet,
+  Text,
+  TextInputProps,
   TextStyle,
   View,
   ViewStyle,
 } from "react-native";
-import React from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { useTheme } from "hooks";
 
-type Props = {
-  value?: string;
-  onChangeText?(value: string): void;
-  placeholder?: string;
-
+type Props = TextInputProps & {
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
+  autocomplite?: string | null;
 };
 
-export default ({
-  onChangeText,
-  value,
-  placeholder,
-  inputStyle,
-  style,
-}: Props) => {
+export default ({ inputStyle, style, autocomplite, ...props }: Props) => {
   const theme = useTheme();
+
+  console.log("hint :>> ", autocomplite);
+
   return (
     <View style={[styles.container, theme.input.container, style]}>
+      {autocomplite && (
+        <Text style={[theme.input.autocomplite, styles.autocomplite]}>
+          {autocomplite}
+        </Text>
+      )}
       <TextInput
-        // style={[theme.text.primary, inputStyle]}
-        style={[theme.input.component]}
-        onChangeText={onChangeText}
-        value={value}
-        placeholder={placeholder}
+        style={[
+          theme.input.component,
+          inputStyle,
+          // { backgroundColor: "orange" },
+        ]}
         placeholderTextColor={theme.input.placeholder}
+        {...props}
       />
     </View>
   );
@@ -45,5 +46,11 @@ const styles = StyleSheet.create({
     paddingVertical: 19,
     paddingHorizontal: 24,
     borderRadius: 50,
+  },
+  autocomplite: {
+    // backgroundColor: "red",
+    position: "absolute",
+    top: 19,
+    left: 25,
   },
 });

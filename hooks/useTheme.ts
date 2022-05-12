@@ -1,5 +1,5 @@
 import { TextStyle, ViewStyle } from "react-native";
-import { COLOR } from "utils";
+import { COLOR, hexAlpha } from "utils";
 import useStore from "./useStore";
 
 /**
@@ -27,6 +27,7 @@ interface ITheme {
     container: ViewStyle;
     placeholder: string;
     component: TextStyle;
+    autocomplite: TextStyle;
   };
   bottomsheet: {
     background: Omit<
@@ -69,6 +70,9 @@ const Theme = {
         color: COLOR.White,
       },
       placeholder: COLOR.Marengo,
+      autocomplite: {
+        color: hexAlpha(COLOR.White, 20),
+      },
     },
     bottomsheet: {
       background: {
