@@ -11,4 +11,4 @@ export {
 export {
   default as ImportWithKeplr,
   useImportWithKeplrController,
-} from "./ImportWithKeplr";
+} from "./ImportWithKeplrController";

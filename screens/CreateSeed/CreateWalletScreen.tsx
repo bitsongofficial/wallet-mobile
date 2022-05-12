@@ -14,7 +14,9 @@ type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 export default observer<Props>(({ navigation }) => {
   const controller = useCreateSeedController();
 
-  useEffect(controller.phrase.create, []);
+  useEffect(() => {
+    controller.phrase.create();
+  }, []);
 
   const [isHidden, setHidden] = useState(true);
 
@@ -39,7 +41,10 @@ export default observer<Props>(({ navigation }) => {
         backgroundColor="transparent"
       />
       <SafeAreaView style={styles.container}>
-        <Header activeIndex={controller.steps.active} />
+        <Header
+          activeIndex={controller.steps.active}
+          paginationCount={controller.steps.titles.length}
+        />
 
         <View style={styles.center}>
           <View style={styles.fullSize}>

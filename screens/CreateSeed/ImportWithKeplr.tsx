@@ -1,18 +1,20 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 import { COLOR } from "utils";
-import { Input } from "components/atoms";
 import { useImportFromSeedController } from "./controllers";
 import { Subtitle, Title } from "./components/atoms";
 import { Header, Footer, SetPin } from "./components/organisms";
 
-type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
+type Props = NativeStackScreenProps<RootStackParamList, "ImportWithKeplr">;
 
-export default observer<Props>(({ navigation }) => {
+export default observer<Props>(({ navigation, route }) => {
   const controller = useImportFromSeedController();
+  useEffect(() => {
+    // controller.setWallet(route.params.data);
+  }, [route.params.data]);
 
   const goBack = useCallback(
     () =>
@@ -30,7 +32,11 @@ export default observer<Props>(({ navigation }) => {
         backgroundColor="transparent"
       />
       <SafeAreaView style={styles.container}>
-        <Header activeIndex={controller.steps.active} />
+        <Header
+          activeIndex={controller.steps.active}
+          paginationCount={controller.steps.titles.length}
+          // style={styles.header}
+        />
 
         <View style={styles.center}>
           <View style={styles.fullSize}>
@@ -40,26 +46,8 @@ export default observer<Props>(({ navigation }) => {
               account. Please store it {"\n"}somewhere safe!
             </Subtitle>
 
-            {controller.steps.active === 0 && controller.phrase.words && (
-              <></>
-              // <CreateSeed
-              //   isHidden={isHidden}
-              //   onPressToggle={toggleHidden}
-              //   phrase={controller.phrase}
-              // />
-            )}
-
+            {controller.steps.active === 0 && <SetPin pin={controller.pin} />}
             {controller.steps.active === 1 && (
-              <Input
-                placeholder="Wallet Name"
-                value={controller.walletName.value}
-                onChangeText={controller.walletName.set}
-                style={styles.input}
-              />
-            )}
-
-            {controller.steps.active === 2 && <SetPin pin={controller.pin} />}
-            {controller.steps.active === 3 && (
               <SetPin pin={controller.confirm} />
             )}
           </View>

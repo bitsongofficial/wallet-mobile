@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   LayoutChangeEvent,
   LayoutRectangle,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -17,6 +16,7 @@ import { Button } from "components/atoms";
 import Icon2 from "components/atoms/Icon2";
 import { BottomSheetModal } from "components/moleculs";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { useFocusEffect } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Start">;
 
@@ -31,13 +31,9 @@ export default observer<Props>(function StartScreen({ navigation }) {
     []
   );
 
-  useEffect(() => () => {}, []);
-
-  const { width, height } = useWindowDimensions();
-
-  console.log("height :>> ", height, layout?.height);
-
   const bottomSheet = useRef<BottomSheetModalMethods>(null);
+  useFocusEffect(useCallback(() => () => bottomSheet.current?.close(), []));
+
   const openBottomSheet = useCallback(() => bottomSheet.current?.present(), []);
 
   const createCreateWallet = useCallback(
