@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { Button, ButtonBack, Icon2 } from "components/atoms";
 import { useTheme } from "hooks";
 
@@ -6,12 +6,13 @@ type Props = {
   onPressBack(): void;
   onPressNext(): void;
   nextButtonText: string;
+  style?: StyleProp<ViewStyle>;
 };
 
-export default ({ onPressBack, onPressNext, nextButtonText }: Props) => {
+export default ({ onPressBack, onPressNext, nextButtonText, style }: Props) => {
   const theme = useTheme();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <View style={styles.left}>
         <ButtonBack onPress={onPressBack} />
       </View>
@@ -24,7 +25,9 @@ export default ({ onPressBack, onPressNext, nextButtonText }: Props) => {
           // disable={!biometric.access}
           // IconRight={<Icon name="arrow_r" size={10} />}
         >
-          <Text style={[styles.buttonText, theme.text.primary]}>Continue</Text>
+          <Text style={[styles.buttonText, theme.text.primary]}>
+            {nextButtonText}
+          </Text>
           <Icon2 name="chevron_right" size={18} />
         </Button>
       </View>

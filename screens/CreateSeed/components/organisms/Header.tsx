@@ -1,16 +1,18 @@
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Icon2 } from "components/atoms";
 import { Pagination } from "components/moleculs";
 
 type Props = {
   activeIndex: number;
+  paginationCount: number;
+  style?: StyleProp<ViewStyle>;
 };
 
-export default ({ activeIndex }: Props) => {
+export default ({ activeIndex, style, paginationCount }: Props) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <View style={styles.left}>
-        <Pagination count={5} acitveIndex={activeIndex} />
+        <Pagination count={paginationCount} acitveIndex={activeIndex} />
       </View>
       <View style={styles.center}>
         <Icon2 name="logo" size={56} />
