@@ -6,4 +6,5 @@ export interface FromToAmount {
 	from: CosmoWallet,
 	to: PublicWallet,
 	amount: Amount,
+	description?: string,
 }

@@ -42,6 +42,15 @@ class HDWalletDataToWallet extends BaseDerivator {
 	}
 }
 
+function chainToDerivationPath(chain: string)
+{
+	switch(chain)
+	{
+		default:
+			return `m/44'/639'/0'/`
+	}
+}
+
 const MnemonicToWalletGenerator:any = {}
 MnemonicToWalletGenerator.fromCosmoChain = function(chain: string)
 {
@@ -51,7 +60,7 @@ MnemonicToWalletGenerator.fromCosmoChain = function(chain: string)
 	const trailing = accountIndex + "/" + walletIndex
 	switch(chain) {
 		default:
-			chainSpecificDeriver = new MnemonicToHdWalletData('bitsong', `m/44'/639'/0'/` + trailing)
+			chainSpecificDeriver = new MnemonicToHdWalletData('bitsong', chainToDerivationPath(chain) + trailing)
 	}
 
 	return new HDWalletDataToWallet(chainSpecificDeriver)
@@ -83,7 +92,12 @@ export class CosmoWallet implements Wallet {
 	}
 }
 
-const CosmoWalletGenerator: any = {}
+const CosmoWalletGenerator: any = {
+	MnemonicFromChain: async function(chain: string, length: 12 | 15 | 18 | 21 | 24 = 15, accountIndex:number = 0, walletIndex:number = 0)
+	{
+		return (await DirectSecp256k1HdWallet.generate(length, stringToPath(chainToDerivationPath(chain) + accountIndex + "/" + walletIndex), chain)).mnemonic
+	}
+}
 CosmoWalletGenerator.CosmoWalletFromChain = function(chain: string): [CosmoWallet, MnemonicStore]
 {
 	const s = new PinMnemonicStore('user_wallet_' + chain, 123456)

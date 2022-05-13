@@ -1,6 +1,6 @@
 import { CoinOperation } from "./OperationTypes";
 
-export interface Coin 
+export interface Coin
 {
 	Do(operation: CoinOperation, params:any): any
 }
@@ -11,12 +11,12 @@ export interface Operation
 }
 
 export enum Denom {
-	"ucosm",
-	"btsg",
-	"ubtsg"
+	UCOSM = "ucosm",
+	BTSGN = "btsg",
+	UBTSG = "ubtsg"
 }
 
 export interface Amount {
 	denom: Denom,
-	amount: number,
+	amount: string,
 }
