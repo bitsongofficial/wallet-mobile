@@ -4,9 +4,11 @@ import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 import { COLOR } from "utils";
+import { Header, Icon2 } from "components/atoms";
+import { Pagination } from "components/moleculs";
 import { useImportFromSeedController } from "./controllers";
 import { Subtitle, Title } from "./components/atoms";
-import { Header, Footer, SetPin } from "./components/organisms";
+import { Footer, SetPin } from "./components/organisms";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ImportWithKeplr">;
 
@@ -33,9 +35,14 @@ export default observer<Props>(({ navigation, route }) => {
       />
       <SafeAreaView style={styles.container}>
         <Header
-          activeIndex={controller.steps.active}
-          paginationCount={controller.steps.titles.length}
-          // style={styles.header}
+          Left={
+            <Pagination
+              count={controller.steps.titles.length}
+              acitveIndex={controller.steps.active}
+            />
+          }
+          Center={<Icon2 name="logo" size={56} />}
+          style={styles.header}
         />
 
         <View style={styles.center}>

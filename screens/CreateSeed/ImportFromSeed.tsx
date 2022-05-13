@@ -11,10 +11,11 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
 import { COLOR } from "utils";
-import { Button, Input } from "components/atoms";
+import { Button, Header, Icon2, Input } from "components/atoms";
+import { Pagination } from "components/moleculs";
 import { useImportFromSeedController } from "./controllers";
 import { Subtitle, Title } from "./components/atoms";
-import { Header, Footer, SetPin, PhraseInput } from "./components/organisms";
+import { Footer, SetPin, PhraseInput } from "./components/organisms";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ImportFromSeed">;
 
@@ -40,8 +41,13 @@ export default observer<Props>(({ navigation }) => {
         <SafeAreaView style={styles.container}>
           <ScrollView contentContainerStyle={styles.container}>
             <Header
-              activeIndex={controller.steps.active}
-              paginationCount={controller.steps.titles.length}
+              Left={
+                <Pagination
+                  count={controller.steps.titles.length}
+                  acitveIndex={controller.steps.active}
+                />
+              }
+              Center={<Icon2 name="logo" size={56} />}
               style={styles.header}
             />
 
