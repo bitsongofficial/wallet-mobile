@@ -77,32 +77,31 @@ export default observer<Props>(function StartScreen({ navigation }) {
 
           <View style={styles.buttons} onLayout={getLayoutButtons}>
             <Button
+              text="Create Wallet"
+              Right={<Icon2 name="chevron_right" size={18} />}
               onPress={createCreateWallet}
+              style={styles.mb18}
+              textStyle={[styles.buttonText, theme.text.primary]}
               contentContainerStyle={styles.buttonContent}
-              style={{ marginBottom: 18 }}
-            >
-              <Text style={[styles.buttonText, theme.text.primary]}>
-                Create Wallet
-              </Text>
-              <Icon2 name="chevron_right" size={18} />
-            </Button>
+            />
             <Button
+              text="Import Existing Wallet"
               mode="fill"
+              Right={<Icon2 name="chevron_right" size={18} />}
               onPress={openBottomSheet}
+              style={styles.mb24}
+              textStyle={[styles.buttonText, theme.text.primary]}
               contentContainerStyle={styles.buttonContent}
-              style={{ marginBottom: 24 }}
+            />
+            <Button
+              contentContainerStyle={styles.buttonContent}
+              mode="fill"
+              Right={<Icon2 name="chevron_right" size={18} />}
             >
-              <Text style={[styles.buttonText, theme.text.primary]}>
-                Import Existing Wallet
-              </Text>
-              <Icon2 name="chevron_right" size={18} />
-            </Button>
-            <Button contentContainerStyle={styles.buttonContent} mode="fill">
               <Text style={[styles.buttonText, theme.text.colorText]}>
                 Import with{" "}
                 <Text style={[theme.text.primary]}>Ledger Nano X</Text>
               </Text>
-              <Icon2 name="chevron_right" size={18} />
             </Button>
           </View>
         </View>
@@ -113,28 +112,20 @@ export default observer<Props>(function StartScreen({ navigation }) {
           <Text style={[styles.bottomSheetTitle, theme.text.primary]}>
             Import Existing Wallet
           </Text>
-
           <Button
+            text="Import from Seed Phrase"
+            Right={<Icon2 name="chevron_right" size={18} />}
             onPress={importFromSeed}
             contentContainerStyle={styles.buttonContent}
-            style={{ marginBottom: 12 }}
-          >
-            <Text style={[styles.buttonText, theme.text.primary]}>
-              Import from Seed Phrase
-            </Text>
-            <Icon2 name="chevron_right" size={18} />
-          </Button>
-
+            style={styles.mb12}
+          />
           <Button
+            text="Import with Keplr Extension"
             onPress={importWithKeplr}
+            Right={<Icon2 name="chevron_right" size={18} />}
             contentContainerStyle={styles.buttonContent}
-            style={{ marginBottom: 12 }}
-          >
-            <Text style={[styles.buttonText, theme.text.primary]}>
-              Import with Keplr Extension
-            </Text>
-            <Icon2 name="chevron_right" size={18} />
-          </Button>
+            style={styles.mb12}
+          />
         </View>
       </BottomSheetModal>
     </>
@@ -157,6 +148,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     flex: 1,
   },
+  mb12: { marginBottom: 12 },
+  mb18: { marginBottom: 18 },
+  mb24: { marginBottom: 24 },
 
   buttonContent: {
     paddingVertical: 18,

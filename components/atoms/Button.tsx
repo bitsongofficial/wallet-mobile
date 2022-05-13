@@ -20,6 +20,8 @@ type ButtonProps = {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  Left?: JSX.Element;
+  Right?: JSX.Element;
 };
 
 export default ({
@@ -30,6 +32,8 @@ export default ({
   mode = "gradient",
   contentContainerStyle,
   textStyle,
+  Left,
+  Right,
 }: ButtonProps) => {
   const themeStyle = useTheme();
   const Background = mode === "gradient" ? ThemedGradient : View;
@@ -38,6 +42,7 @@ export default ({
     <TouchableOpacity onPress={onPress}>
       <View style={[styles.container, style]}>
         <Background style={[styles.gradient, contentContainerStyle]}>
+          {!!Left && Left}
           {text || typeof children === "string" ? (
             <Text style={[styles.text, themeStyle.text.primary, textStyle]}>
               {text || children}
@@ -45,6 +50,7 @@ export default ({
           ) : (
             children
           )}
+          {!!Right && Right}
         </Background>
       </View>
     </TouchableOpacity>
