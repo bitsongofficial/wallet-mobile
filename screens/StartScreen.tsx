@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import {
+  Image,
   LayoutChangeEvent,
   LayoutRectangle,
   StyleSheet,
@@ -12,11 +13,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
-import { Button } from "components/atoms";
+import { Button, Header } from "components/atoms";
 import Icon2 from "components/atoms/Icon2";
 import { BottomSheetModal } from "components/moleculs";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useFocusEffect } from "@react-navigation/native";
+// @ts-ignore
+import waves_light from "assets/images/waves_light.png";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Start">;
 
@@ -59,6 +62,14 @@ export default observer<Props>(function StartScreen({ navigation }) {
       <StatusBar style="light" />
 
       <SafeAreaView style={styles.container}>
+        <Header
+          Center={
+            <>
+              <Image source={waves_light} style={styles.waves} />
+              <Icon2 name="logo" size={56} />
+            </>
+          }
+        />
         <View style={styles.bottom}>
           <Text style={[styles.text, theme.text.primary]}>
             A nice phrase to {"\n"}welcome our users.
@@ -182,5 +193,12 @@ const styles = StyleSheet.create({
   bottomSheetContainer: {
     paddingHorizontal: 30,
     paddingVertical: 20,
+  },
+
+  waves: {
+    width: 1100,
+    height: 1100,
+    position: "absolute",
+    top: -550,
   },
 });
