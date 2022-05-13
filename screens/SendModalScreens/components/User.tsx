@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { hexAlpha } from "utils";
+import { COLOR, hexAlpha } from "utils";
 import { useTheme } from "hooks";
 import { IPerson } from "../type";
 
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     borderRadius: 73,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: hexAlpha("#FFFFFF", 5),
+    backgroundColor: hexAlpha(COLOR.White, 5),
   },
   placeholder: {
     width: 57,

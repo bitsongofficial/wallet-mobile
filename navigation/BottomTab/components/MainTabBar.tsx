@@ -62,6 +62,8 @@ const styles = StyleSheet.create({
   gradient: {
     flexDirection: "row",
     justifyContent: "space-evenly",
+    paddingHorizontal: 36,
+    paddingVertical: 18,
     flex: 1,
   },
   button: {

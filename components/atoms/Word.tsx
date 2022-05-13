@@ -11,7 +11,7 @@ type Props = {
 
 export default ({ index, text, style, hidden }: Props) => {
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, hidden && styles.containerHidden, style]}>
       <Text style={[styles.index, hidden && styles.hidden]}>{index}.</Text>
       <Text style={[styles.text, hidden && styles.hidden]}>{text}</Text>
     </View>
@@ -20,14 +20,17 @@ export default ({ index, text, style, hidden }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: hexAlpha(COLOR.White, 10),
+    backgroundColor: COLOR.Dark3,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20, // 22 -
     paddingVertical: 11,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: hexAlpha(COLOR.White, 10),
+    borderColor: COLOR.Dark2,
+  },
+  containerHidden: {
+    backgroundColor: COLOR.Dark2,
   },
   hidden: {
     color: "transparent",

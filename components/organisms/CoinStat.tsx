@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { hexAlpha } from "utils";
+import { COLOR, hexAlpha } from "utils";
 import Coin from "classes/Coin";
 import { observer } from "mobx-react-lite";
 
@@ -44,7 +44,7 @@ export default observer(({ coin, style }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: hexAlpha("#FFFFFF", 10),
+    backgroundColor: hexAlpha(COLOR.White, 10),
     height: 70,
     paddingHorizontal: 20,
     paddingVertical: 18,
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   primary: {
-    color: "#FFFFFF",
+    color: COLOR.White,
     fontFamily: "CircularStd",
     fontStyle: "normal",
     fontWeight: "500",
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   secondary: {
-    color: "#FFFFFF",
+    color: COLOR.White,
     opacity: 0.5,
     fontFamily: "CircularStd",
     fontStyle: "normal",

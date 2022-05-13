@@ -1,15 +1,19 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "types";
 import * as Screens from "screens";
-import { Icon } from "components/atoms";
+import { Icon2 } from "components/atoms";
 import { Header, MainTabBar } from "./components";
-import { hexAlpha } from "utils";
+import { COLOR, hexAlpha } from "utils";
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
+
+function getStroke(focused: boolean) {
+  return focused ? COLOR.White : hexAlpha(COLOR.White, 50);
+}
 
 export default () => (
   <BottomTab.Navigator
@@ -28,10 +32,7 @@ export default () => (
       component={Screens.Main}
       options={() => ({
         tabBarIcon: ({ focused }) => (
-          <Icon
-            name="home"
-            fill={focused ? hexAlpha("#FFFFFF", 10) : undefined}
-          />
+          <Icon2 name="home" size={20} stroke={getStroke(focused)} />
         ),
       })}
     />
@@ -40,10 +41,7 @@ export default () => (
       component={Screens.Stacking}
       options={{
         tabBarIcon: ({ focused }) => (
-          <Icon
-            name="target"
-            fill={focused ? hexAlpha("#FFFFFF", 10) : undefined}
-          />
+          <Icon2 name="stake" size={20} stroke={getStroke(focused)} />
         ),
       }}
     />
@@ -53,10 +51,7 @@ export default () => (
       options={() => ({
         headerShown: false,
         tabBarIcon: ({ focused }) => (
-          <Icon
-            name="target"
-            fill={focused ? hexAlpha("#FFFFFF", 10) : undefined}
-          />
+          <Icon2 name="like" size={20} stroke={getStroke(focused)} />
         ),
       })}
     />
@@ -66,10 +61,7 @@ export default () => (
       options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
-          <Icon
-            name="stake"
-            fill={focused ? hexAlpha("#FFFFFF", 10) : undefined}
-          />
+          <Icon2 name="circle" size={20} stroke={getStroke(focused)} />
         ),
       }}
     />

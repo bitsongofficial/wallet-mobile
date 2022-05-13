@@ -20,6 +20,7 @@ type ButtonProps = {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  disable?: boolean;
   Left?: JSX.Element;
   Right?: JSX.Element;
 };
@@ -32,6 +33,7 @@ export default ({
   mode = "gradient",
   contentContainerStyle,
   textStyle,
+  disable,
   Left,
   Right,
 }: ButtonProps) => {
@@ -39,8 +41,8 @@ export default ({
   const Background = mode === "gradient" ? ThemedGradient : View;
 
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={[styles.container, style]}>
+    <TouchableOpacity onPress={!disable ? onPress : undefined}>
+      <View style={[styles.container, style, disable && styles.disable]}>
         <Background style={[styles.gradient, contentContainerStyle]}>
           {!!Left && Left}
           {text || typeof children === "string" ? (
@@ -75,5 +77,8 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 11,
     lineHeight: 14,
+  },
+  disable: {
+    opacity: 0.5,
   },
 });

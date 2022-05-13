@@ -23,6 +23,7 @@ import { BottomSheetModal } from "components/moleculs";
 import SendCoinStack from "navigation/SendCoinStack";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootTabParamList } from "types";
+import { COLOR } from "utils";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 42,
     lineHeight: 53,
-    color: "#FFFFFF",
+    color: COLOR.White,
 
     marginBottom: 6,
   },
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 14,
     lineHeight: 18,
-    color: "#FFFFFF",
+    color: COLOR.White,
     opacity: 0.5,
   },
 
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: "500",
     fontSize: 30,
-    color: "#FFFFFF",
+    color: COLOR.White,
   },
 
   reward_row: {

@@ -1,11 +1,11 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { useTheme } from "hooks";
-import { hexAlpha } from "utils";
+import { COLOR, hexAlpha } from "utils";
 import { Coin } from "classes";
 import { Button, Card } from "components/atoms";
-import { useCallback } from "react";
 
 type Props = {
   coin: Coin;
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 16,
     paddingHorizontal: 20,
-    backgroundColor: hexAlpha("#FFFFFF", 10),
+    backgroundColor: hexAlpha(COLOR.White, 10),
 
     marginTop: 22,
     marginBottom: 8,

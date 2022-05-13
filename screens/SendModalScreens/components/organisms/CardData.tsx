@@ -1,4 +1,3 @@
-import { useTheme } from "hooks";
 import { useCallback, useMemo, useState } from "react";
 import {
   LayoutChangeEvent,
@@ -13,6 +12,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
+import { useTheme } from "hooks";
+import { COLOR } from "utils";
 
 type Props = {
   json: string;
@@ -115,15 +116,13 @@ const styles = StyleSheet.create({
   indicatorY: {
     width: 5,
     borderRadius: 5,
-    // TODO: use pallet, theme
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLOR.White,
     opacity: 0.2,
   },
   indicatorX: {
     height: 5,
     borderRadius: 5,
-    // TODO: use pallet, theme
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLOR.White,
     opacity: 0.2,
   },
 

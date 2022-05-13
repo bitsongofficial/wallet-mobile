@@ -19,8 +19,6 @@ type Props = TextInputProps & {
 export default ({ inputStyle, style, autocomplite, ...props }: Props) => {
   const theme = useTheme();
 
-  console.log("hint :>> ", autocomplite);
-
   return (
     <View style={[styles.container, theme.input.container, style]}>
       {autocomplite && (

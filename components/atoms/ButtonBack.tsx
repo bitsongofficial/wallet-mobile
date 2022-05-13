@@ -24,7 +24,7 @@ export default ({ onPress, style, text }: ButtonProps) => {
         <View style={styles.inner}>
           <Icon2 name="chevron_left" size={18} />
           <Text style={[styles.text, theme.text.primary]}>
-            {text || "back"}
+            {text || "Back"}
           </Text>
         </View>
       </TouchableOpacity>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: "CircularStd",
     fontStyle: "normal",
-    fontWeight: "400",
+    fontWeight: "500",
     fontSize: 16,
     lineHeight: 20,
     marginLeft: 4,

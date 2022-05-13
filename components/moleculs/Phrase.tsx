@@ -12,7 +12,7 @@ type Props = {
 export default memo(({ value, style, hidden = true }: Props) => (
   <View style={style}>
     {sliceIntoChunks(value, 2).map(([first, second], index) => (
-      <View key={first + second + index} style={styles.container}>
+      <View key={index} style={styles.container}>
         <Word
           hidden={hidden}
           index={index * 2 + 1}

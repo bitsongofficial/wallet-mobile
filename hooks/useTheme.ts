@@ -42,19 +42,19 @@ const Theme = {
   dark: {
     gradient_colors: ["#EF015A33", "#EF015A00"],
     gradient_style: {
-      backgroundColor: "#4863E8",
+      backgroundColor: COLOR.RoyalBlue,
     },
     text: {
       primary: {
-        color: "#FFFFFF",
+        color: COLOR.White,
       },
       secondary: {
-        color: "#FFFFFF",
+        color: COLOR.White,
         opacity: 0.5,
       },
       secondary2: {
         // TODO: need alfa color or flat color
-        color: "#FFFFFF",
+        color: COLOR.White,
         opacity: 0.3,
       },
 

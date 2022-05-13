@@ -1,8 +1,9 @@
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
-import { Card, Icon } from "components/atoms";
+import { Card, Icon2 } from "components/atoms";
 import { useTheme } from "hooks";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
+import { COLOR } from "utils";
 
 type Props = {
   value: string;
@@ -21,14 +22,16 @@ export default observer<Props>(function CardWallet({
   return (
     <Card style={[styles.container, style]}>
       <TextInput
-        style={[styles.input, theme.text.primary]}
+        style={theme.text.primary}
         placeholder="Public Address"
         onChangeText={onChange}
         placeholderTextColor={theme.input.placeholder}
         value={value}
       />
       <TouchableOpacity onPress={onPressQR}>
-        <Icon name="qr_code" />
+        <View style={styles.iconContainer}>
+          <Icon2 name="scan" stroke={COLOR.RoyalBlue} size={18} />
+        </View>
       </TouchableOpacity>
     </Card>
   );
@@ -43,5 +46,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 26,
   },
-  input: {},
+  iconContainer: {
+    padding: 8,
+    borderRadius: 16,
+  },
 });

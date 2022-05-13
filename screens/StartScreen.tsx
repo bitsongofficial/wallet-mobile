@@ -56,6 +56,10 @@ export default observer<Props>(function StartScreen({ navigation }) {
       }),
     []
   );
+  const test = useCallback(
+    () => navigation.reset({ index: 0, routes: [{ name: "Root" }] }),
+    []
+  );
 
   return (
     <>
@@ -94,8 +98,9 @@ export default observer<Props>(function StartScreen({ navigation }) {
               contentContainerStyle={styles.buttonContent}
             />
             <Button
-              contentContainerStyle={styles.buttonContent}
               mode="fill"
+              onPress={test}
+              contentContainerStyle={styles.buttonContent}
               Right={<Icon2 name="chevron_right" size={18} />}
             >
               <Text style={[styles.buttonText, theme.text.colorText]}>
@@ -116,6 +121,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
             text="Import from Seed Phrase"
             Right={<Icon2 name="chevron_right" size={18} />}
             onPress={importFromSeed}
+            textStyle={[styles.buttonText, theme.text.primary]}
             contentContainerStyle={styles.buttonContent}
             style={styles.mb12}
           />
@@ -123,6 +129,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
             text="Import with Keplr Extension"
             onPress={importWithKeplr}
             Right={<Icon2 name="chevron_right" size={18} />}
+            textStyle={[styles.buttonText, theme.text.primary]}
             contentContainerStyle={styles.buttonContent}
             style={styles.mb12}
           />

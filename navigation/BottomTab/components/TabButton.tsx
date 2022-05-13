@@ -39,7 +39,7 @@ export default ({
       onLongPress={handleLongPress}
       style={styles.touchable}
     >
-      {renderIcon !== undefined && renderIcon({})}
+      {renderIcon !== undefined && renderIcon({ focused: isFocused })}
     </TouchableOpacity>
   );
 };

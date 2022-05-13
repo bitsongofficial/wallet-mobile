@@ -61,14 +61,13 @@ export default observer<Props>(({ navigation }) => {
 
             {controller.steps.active === 0 && controller.phrase.words && (
               <>
-                <View style={[styles.paste]}>
+                <View style={styles.paste}>
                   <Button
+                    text="Paste"
                     contentContainerStyle={styles.buttonContent}
                     textStyle={styles.buttonText}
                     onPress={controller.steps.next}
-                  >
-                    Paste
-                  </Button>
+                  />
                 </View>
                 <PhraseInput phrase={controller.phrase} />
               </>
@@ -93,14 +92,14 @@ export default observer<Props>(({ navigation }) => {
               </View>
             </View>
           </ScrollView>
-          {controller.steps.active !== 0 && (
-            <Footer
-              onPressBack={goBack}
-              onPressNext={controller.nextStep}
-              nextButtonText="Continue"
-              style={styles.mh30}
-            />
-          )}
+          <Footer
+            onPressBack={goBack}
+            onPressNext={controller.nextStep}
+            nextButtonText="Continue"
+            isHideNext={controller.steps.active === 0}
+            isDisableNext={!controller.isCanNext}
+            style={styles.mh30}
+          />
         </SafeAreaView>
       </KeyboardAvoidingView>
     </>
