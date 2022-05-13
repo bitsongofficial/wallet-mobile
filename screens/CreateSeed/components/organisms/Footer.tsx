@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Button, ButtonBack, Icon2 } from "components/atoms";
 import { useTheme } from "hooks";
 
@@ -6,10 +6,19 @@ type Props = {
   onPressBack(): void;
   onPressNext(): void;
   nextButtonText: string;
+  isHideNext?: boolean;
+  isDisableNext?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
-export default ({ onPressBack, onPressNext, nextButtonText, style }: Props) => {
+export default ({
+  onPressBack,
+  onPressNext,
+  nextButtonText,
+  style,
+  isDisableNext,
+  isHideNext,
+}: Props) => {
   const theme = useTheme();
   return (
     <View style={[styles.container, style]}>
@@ -18,18 +27,16 @@ export default ({ onPressBack, onPressNext, nextButtonText, style }: Props) => {
       </View>
 
       <View style={styles.right}>
-        <Button
-          contentContainerStyle={styles.buttonContent}
-          onPress={onPressNext}
-          // onPress={open}
-          // disable={!biometric.access}
-          // IconRight={<Icon name="arrow_r" size={10} />}
-        >
-          <Text style={[styles.buttonText, theme.text.primary]}>
-            {nextButtonText}
-          </Text>
-          <Icon2 name="chevron_right" size={18} />
-        </Button>
+        {!isHideNext && (
+          <Button
+            text={nextButtonText}
+            Right={<Icon2 name="chevron_right" size={18} />}
+            onPress={onPressNext}
+            textStyle={[styles.buttonText, theme.text.primary]}
+            contentContainerStyle={styles.buttonContent}
+            disable={isDisableNext}
+          />
+        )}
       </View>
     </View>
   );
@@ -41,9 +48,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    height: 56,
   },
-  left: { flex: 2, marginRight: 16 },
-  right: { flex: 2 },
+  left: { flex: 1, marginRight: 16 },
+  right: { flex: 1 },
 
   buttonContent: {
     paddingVertical: 18,

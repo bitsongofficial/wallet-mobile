@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
+import { Modal, SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
-import { COLOR } from "utils";
+import { COLOR, hexAlpha } from "utils";
 import { Header, Icon2, Input } from "components/atoms";
 import { Pagination } from "components/moleculs";
 import { useCreateSeedController } from "./controllers";
 import { Subtitle, Title } from "./components/atoms";
 import { Footer, SetPin, CreateSeed } from "./components/organisms";
+import { Fingerprint } from "./components/moleculs";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
@@ -20,9 +21,13 @@ export default observer<Props>(({ navigation }) => {
   }, []);
 
   const [isHidden, setHidden] = useState(true);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleHidden = useCallback(async () => {
-    controller.biometric.setAccess(true);
+    if (!controller.biometric.access) {
+      setModalVisible((value) => !value);
+      controller.biometric.setAccess(true); // TODO: fix for device
+    }
     setHidden((value) => !value);
   }, []);
 
@@ -31,6 +36,14 @@ export default observer<Props>(({ navigation }) => {
       controller.steps.active > 0
         ? controller.steps.prev()
         : navigation.goBack(),
+    [navigation, controller.steps.active]
+  );
+
+  const goNext = useCallback(
+    () =>
+      controller.steps.active < controller.steps.titles.length - 1
+        ? controller.steps.next()
+        : navigation.reset({ index: 0, routes: [{ name: "Root" }] }),
     [navigation, controller.steps.active]
   );
 
@@ -86,11 +99,22 @@ export default observer<Props>(({ navigation }) => {
 
           <Footer
             onPressBack={goBack}
-            onPressNext={controller.nextStep}
+            onPressNext={goNext}
             nextButtonText="Continue"
+            isDisableNext={!controller.isCanNext}
           />
         </View>
       </SafeAreaView>
+
+      <Modal
+        transparent
+        visible={isModalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.overlay}>
+          <Fingerprint onCancel={() => setModalVisible(false)} />
+        </View>
+      </Modal>
     </>
   );
 });
@@ -101,6 +125,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.Dark3,
     flexGrow: 1,
     paddingVertical: 16,
+  },
+  overlay: {
+    paddingHorizontal: 27,
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: hexAlpha(COLOR.Dark2, 60),
   },
   // -------- Main --------
   header: {
