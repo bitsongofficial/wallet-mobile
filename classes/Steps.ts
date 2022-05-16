@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
-export default class Steps<T extends string> {
+export default class Steps<T extends string = any> {
   active = 0;
 
   constructor(public titles: T[]) {

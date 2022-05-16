@@ -66,7 +66,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
     <>
       <StatusBar style="light" />
 
-      <SafeAreaView style={[styles.container]}>
+      <SafeAreaView style={styles.container}>
         <Header
           Center={
             <>
