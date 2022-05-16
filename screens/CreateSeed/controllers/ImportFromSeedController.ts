@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { makeAutoObservable } from "mobx";
 import { InputHandler } from "utils";
 import { Pin, Steps, Phrase, Biometric } from "classes";
@@ -45,8 +44,4 @@ export default class ImportFromSeedController {
   nextStep() {
     if (this.isCanNext) this.steps.next();
   }
-}
-
-export function useImportFromSeedController() {
-  return useMemo(() => new ImportFromSeedController(), []);
 }

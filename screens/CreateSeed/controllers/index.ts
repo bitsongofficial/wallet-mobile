@@ -1,14 +1,3 @@
-export {
-  default as CreateSeedController,
-  useCreateSeedController,
-} from "./CreateSeedController";
-
-export {
-  default as ImportFromSeedController,
-  useImportFromSeedController,
-} from "./ImportFromSeedController";
-
-export {
-  default as ImportWithKeplr,
-  useImportWithKeplrController,
-} from "./ImportWithKeplrController";
+export { default as CreateWalletController } from "./CreateWalletController";
+export { default as ImportFromSeedController } from "./ImportFromSeedController";
+export { default as ImportWithKeplrController } from "./ImportWithKeplrController";

@@ -1,9 +1,8 @@
-import { useMemo } from "react";
 import { makeAutoObservable } from "mobx";
 import { InputHandler } from "utils";
 import { Pin, Steps, Phrase, Biometric } from "classes";
 
-export default class CreateSeedController {
+export default class CreateWalletController {
   steps = new Steps([
     "Create New Mnemonic",
     "Name Your Wallet",
@@ -43,8 +42,4 @@ export default class CreateSeedController {
   nextStep() {
     if (this.isCanNext) this.steps.next();
   }
-}
-
-export function useCreateSeedController() {
-  return useMemo(() => new CreateSeedController(), []);
 }

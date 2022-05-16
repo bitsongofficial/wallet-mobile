@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { makeAutoObservable } from "mobx";
 import { Pin, Steps } from "classes";
 
@@ -30,8 +29,4 @@ export default class ImportWithKeplrController {
   nextStep() {
     if (this.isCanNext) this.steps.next();
   }
-}
-
-export function useImportWithKeplrController() {
-  return useMemo(() => new ImportWithKeplrController(), []);
 }
