@@ -1,38 +1,29 @@
 import { useCallback, useEffect } from "react";
-import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 import { RootStackParamList } from "types";
 import { COLOR } from "utils";
 import { Header, Icon2 } from "components/atoms";
 import { Pagination } from "components/moleculs";
-import { useImportFromSeedController } from "./controllers";
 import { Subtitle, Title } from "./components/atoms";
 import { Footer, SetPin } from "./components/organisms";
+import { useFooter, useImportWithKeplr } from "./hooks";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ImportWithKeplr">;
 
 export default observer<Props>(({ navigation, route }) => {
-  const controller = useImportFromSeedController();
+  const controller = useImportWithKeplr();
+  const [goBack, goNext] = useFooter(controller.steps);
   useEffect(() => {
     // controller.setWallet(route.params.data);
   }, [route.params.data]);
 
-  const goBack = useCallback(
-    () =>
-      controller.steps.active > 0
-        ? controller.steps.prev()
-        : navigation.goBack(),
-    [navigation, controller.steps.active]
-  );
-
   return (
     <>
-      <StatusBar
-        barStyle="light-content"
-        translucent
-        backgroundColor="transparent"
-      />
+      <StatusBar style="light" />
       <SafeAreaView style={styles.container}>
         <Header
           Left={
@@ -61,8 +52,9 @@ export default observer<Props>(({ navigation, route }) => {
 
           <Footer
             onPressBack={goBack}
-            onPressNext={controller.nextStep}
+            onPressNext={goNext}
             nextButtonText="Continue"
+            isHideNext={controller.isCanNext}
           />
         </View>
       </SafeAreaView>

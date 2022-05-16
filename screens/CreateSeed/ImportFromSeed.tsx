@@ -1,11 +1,5 @@
-import { useCallback } from "react";
-import {
-  KeyboardAvoidingView,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  View,
-} from "react-native";
+import { useCallback, useRef } from "react";
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -13,115 +7,116 @@ import { RootStackParamList } from "types";
 import { COLOR } from "utils";
 import { Button, Header, Icon2, Input } from "components/atoms";
 import { Pagination } from "components/moleculs";
-import { useImportFromSeedController } from "./controllers";
 import { Subtitle, Title } from "./components/atoms";
 import { Footer, SetPin, PhraseInput } from "./components/organisms";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useFooter, useImportFromSeed } from "./hooks";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ImportFromSeed">;
 
 export default observer<Props>(({ navigation }) => {
-  const controller = useImportFromSeedController();
+  const controller = useImportFromSeed();
+  const [goBack, goNext] = useFooter(controller.steps);
 
-  const goBack = useCallback(
-    () =>
-      controller.steps.active > 0
-        ? controller.steps.prev()
-        : navigation.goBack(),
-    [navigation, controller.steps.active]
-  );
+  const scrollview = useRef<ScrollView>(null);
+  const scrollingEnd = useCallback(() => {
+    scrollview.current?.scrollToEnd();
+  }, []);
 
   return (
     <>
-      <StatusBar
-        barStyle="light-content"
-        translucent
-        backgroundColor="transparent"
-      />
-      <KeyboardAvoidingView style={styles.container}>
-        <SafeAreaView style={styles.container}>
-          <ScrollView contentContainerStyle={styles.container}>
-            <Header
-              Left={
-                <Pagination
-                  count={controller.steps.titles.length}
-                  acitveIndex={controller.steps.active}
-                />
-              }
-              Center={<Icon2 name="logo" size={56} />}
-              style={styles.header}
+      <StatusBar style="light" />
+
+      <SafeAreaView style={styles.container}>
+        <Header
+          Left={
+            <Pagination
+              count={controller.steps.titles.length}
+              acitveIndex={controller.steps.active}
             />
+          }
+          Center={<Icon2 name="logo" size={56} />}
+        />
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoiding}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={[styles.mh30, { paddingTop: 50 }]}>
+            <Title text={controller.steps.title} />
+            <Subtitle style={styles.subtitle}>
+              This is the only way you will be able to {"\n"}recover your
+              account. Please store it {"\n"}somewhere safe!
+            </Subtitle>
+          </View>
 
-            <View style={styles.mh30}>
-              <Title>{controller.steps.title}</Title>
-              <Subtitle style={styles.subtitle}>
-                This is the only way you will be able to {"\n"}recover your
-                account. Please store it {"\n"}somewhere safe!
-              </Subtitle>
-            </View>
-
-            {controller.steps.active === 0 && controller.phrase.words && (
-              <>
-                <View style={styles.paste}>
+          {controller.steps.active === 0 && (
+            <>
+              <ScrollView
+                ref={scrollview}
+                style={styles.scrollview}
+                onContentSizeChange={scrollingEnd}
+                contentContainerStyle={styles.scrollviewContent}
+              >
+                {/* <View style={styles.paste}>
                   <Button
                     text="Paste"
                     contentContainerStyle={styles.buttonContent}
                     textStyle={styles.buttonText}
                     onPress={controller.steps.next}
                   />
-                </View>
+                </View> */}
                 <PhraseInput phrase={controller.phrase} />
-              </>
-            )}
+              </ScrollView>
+            </>
+          )}
 
-            <View style={styles.fullSize}>
-              <View style={styles.center}>
-                {controller.steps.active === 1 && (
-                  <Input
-                    placeholder="Wallet Name"
-                    value={controller.walletName.value}
-                    onChangeText={controller.walletName.set}
-                    style={styles.input}
-                  />
-                )}
-                {controller.steps.active === 2 && (
-                  <SetPin pin={controller.pin} />
-                )}
-                {controller.steps.active === 3 && (
-                  <SetPin pin={controller.confirm} />
-                )}
-              </View>
+          <View style={styles.fullSize}>
+            <View style={styles.center}>
+              {controller.steps.active === 1 && (
+                <Input
+                  placeholder="Wallet Name"
+                  value={controller.walletName.value}
+                  onChangeText={controller.walletName.set}
+                  style={styles.input}
+                  autoFocus
+                />
+              )}
+              {controller.steps.active === 2 && <SetPin pin={controller.pin} />}
+              {controller.steps.active === 3 && (
+                <SetPin pin={controller.confirm} />
+              )}
             </View>
-          </ScrollView>
+          </View>
           <Footer
             onPressBack={goBack}
-            onPressNext={controller.nextStep}
-            nextButtonText="Continue"
-            isHideNext={controller.steps.active === 0}
-            isDisableNext={!controller.isCanNext}
+            onPressNext={goNext}
+            nextButtonText={
+              controller.steps.active === 0 ? "Paste" : "Continue"
+            }
+            isHideNext={!controller.isCanNext}
             style={styles.mh30}
           />
-        </SafeAreaView>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: COLOR.Dark3,
-    flexGrow: 1,
-    // paddingVertical: 16,
+    flex: 1,
+    borderStartColor: "green",
   },
   // -------- Main --------
-  header: {
-    marginBottom: 50,
+  keyboardAvoiding: {
+    flex: 1,
   },
   mh30: { marginHorizontal: 30 },
   center: {
     paddingHorizontal: 30,
     flexGrow: 1,
-    // paddingTop: 50,
   },
   fullSize: { flexGrow: 1 },
   // ------ Text -------
@@ -135,6 +130,13 @@ const styles = StyleSheet.create({
   input: {
     marginTop: 24,
   },
+  scrollview: { flexGrow: 1 },
+  scrollviewContent: {
+    flexGrow: 1,
+    paddingBottom: 16,
+    paddingTop: 40,
+  },
+
   buttonContent: {
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -150,8 +152,7 @@ const styles = StyleSheet.create({
   paste: {
     width: 65,
     marginHorizontal: 30,
-    marginTop: 24,
-    marginBottom: 40,
+    marginBottom: 24,
   },
 
   // // ----- ScrollView -------

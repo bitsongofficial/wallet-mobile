@@ -1,20 +1,30 @@
 import { useCallback, useEffect, useState } from "react";
-import { Modal, SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 import { COLOR, hexAlpha } from "utils";
 import { Header, Icon2, Input } from "components/atoms";
 import { Pagination } from "components/moleculs";
-import { useCreateSeedController } from "./controllers";
 import { Subtitle, Title } from "./components/atoms";
 import { Footer, SetPin, CreateSeed } from "./components/organisms";
 import { Fingerprint } from "./components/moleculs";
+import { useCreateWallet, useFooter } from "./hooks";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import { ScrollView } from "react-native-gesture-handler";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
 export default observer<Props>(({ navigation }) => {
-  const controller = useCreateSeedController();
+  const controller = useCreateWallet();
+  const [goBack, goNext] = useFooter(controller.steps);
 
   useEffect(() => {
     controller.phrase.create();
@@ -31,29 +41,9 @@ export default observer<Props>(({ navigation }) => {
     setHidden((value) => !value);
   }, []);
 
-  const goBack = useCallback(
-    () =>
-      controller.steps.active > 0
-        ? controller.steps.prev()
-        : navigation.goBack(),
-    [navigation, controller.steps.active]
-  );
-
-  const goNext = useCallback(
-    () =>
-      controller.steps.active < controller.steps.titles.length - 1
-        ? controller.steps.next()
-        : navigation.reset({ index: 0, routes: [{ name: "Root" }] }),
-    [navigation, controller.steps.active]
-  );
-
   return (
     <>
-      <StatusBar
-        barStyle="light-content"
-        translucent
-        backgroundColor="transparent"
-      />
+      <StatusBar style="light" />
       <SafeAreaView style={styles.container}>
         <Header
           Left={
@@ -64,14 +54,21 @@ export default observer<Props>(({ navigation }) => {
           }
           Center={<Icon2 name="logo" size={56} />}
         />
-
-        <View style={styles.center}>
-          <View style={styles.fullSize}>
-            <Title>{controller.steps.title}</Title>
-            <Subtitle style={styles.subtitle}>
-              This is the only way you will be able to {"\n"}recover your
-              account. Please store it {"\n"}somewhere safe!
-            </Subtitle>
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoiding}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={styles.scrollviewContent}
+          >
+            <View>
+              <Title text={controller.steps.title} />
+              <Subtitle style={styles.subtitle}>
+                This is the only way you will be able to {"\n"}recover your
+                account. Please store it {"\n"}somewhere safe!
+              </Subtitle>
+            </View>
 
             {controller.steps.active === 0 && controller.phrase.words && (
               <CreateSeed
@@ -95,15 +92,14 @@ export default observer<Props>(({ navigation }) => {
             {controller.steps.active === 3 && (
               <SetPin pin={controller.confirm} />
             )}
-          </View>
-
+          </ScrollView>
           <Footer
             onPressBack={goBack}
             onPressNext={goNext}
             nextButtonText="Continue"
-            isDisableNext={!controller.isCanNext}
+            isHideNext={!controller.isCanNext}
           />
-        </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
 
       <Modal
@@ -121,16 +117,23 @@ export default observer<Props>(({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: COLOR.Dark3,
     flexGrow: 1,
-    paddingVertical: 16,
   },
   overlay: {
     paddingHorizontal: 27,
     flex: 1,
     justifyContent: "center",
     backgroundColor: hexAlpha(COLOR.Dark2, 60),
+  },
+  keyboardAvoiding: {
+    flexGrow: 1,
+    marginHorizontal: 30,
+  },
+  scrollviewContent: {
+    flexGrow: 1,
+    paddingTop: 50,
+    paddingBottom: 16,
   },
   // -------- Main --------
   header: {
@@ -144,7 +147,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingTop: 50,
   },
-  fullSize: { flexGrow: 1 },
   // ------ Text -------
   subtitle: {
     marginTop: 8,
