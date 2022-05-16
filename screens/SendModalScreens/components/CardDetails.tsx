@@ -5,6 +5,7 @@ import { useTheme } from "hooks";
 import { IPerson } from "../type";
 import { Coin } from "classes";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { COLOR } from "utils";
 
 type Props = {
   address: string;
@@ -65,7 +66,7 @@ export default observer<Props>(function CardWallet({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#14142E",
+    backgroundColor: COLOR.Dark3,
     padding: 27,
     paddingTop: 33,
   },

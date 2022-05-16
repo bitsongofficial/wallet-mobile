@@ -105,7 +105,7 @@ export default function CardData({ json, style }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#14142E",
+    backgroundColor: COLOR.Dark3,
     paddingVertical: 22,
     paddingHorizontal: 26,
     borderRadius: 20,

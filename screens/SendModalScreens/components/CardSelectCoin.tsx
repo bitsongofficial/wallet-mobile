@@ -48,7 +48,7 @@ export default observer<Props>(function CardWallet({ coin, style }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#14142E",
+    backgroundColor: COLOR.Dark3,
     height: 70,
     alignItems: "center",
     padding: 23,

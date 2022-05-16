@@ -20,6 +20,7 @@ import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/typ
 import { useFocusEffect } from "@react-navigation/native";
 // @ts-ignore
 import waves_light from "assets/images/waves_light.png";
+import { COLOR } from "utils";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Start">;
 
@@ -65,7 +66,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
     <>
       <StatusBar style="light" />
 
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container]}>
         <Header
           Center={
             <>
@@ -142,7 +143,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#14142e",
+    backgroundColor: COLOR.Dark3,
     justifyContent: "flex-end",
   },
   buttons: {

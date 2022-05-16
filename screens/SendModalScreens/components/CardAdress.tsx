@@ -39,7 +39,7 @@ export default observer<Props>(function CardWallet({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#14142E",
+    backgroundColor: COLOR.Dark3,
     height: 70,
     alignItems: "center",
     justifyContent: "space-between",

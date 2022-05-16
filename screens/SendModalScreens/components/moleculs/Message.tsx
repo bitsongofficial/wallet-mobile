@@ -3,6 +3,7 @@ import React from "react";
 import { useTheme } from "hooks";
 import { Card } from "components/atoms";
 import { IMessage } from "../../type";
+import { COLOR } from "utils";
 
 type Props = {
   item: IMessage;
@@ -24,7 +25,7 @@ export default ({ item }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#14142E",
+    backgroundColor: COLOR.Dark3,
     paddingVertical: 22,
     paddingHorizontal: 26,
   },

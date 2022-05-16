@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Card, Icon } from "components/atoms";
 import { useTheme } from "hooks";
 import { Coin } from "classes";
+import { COLOR } from "utils";
 
 type Props = {
   coin?: Coin;
@@ -28,7 +29,7 @@ export default observer<Props>(function CardWallet({ coin, style }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#14142E",
+    backgroundColor: COLOR.Dark3,
     height: 70,
     flexDirection: "row",
     alignItems: "center",

@@ -1,11 +1,9 @@
 import { observer } from "mobx-react-lite";
 import { StyleSheet, Text, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useStore, useTheme } from "hooks";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { COLOR } from "utils";
 import { RootStackParamList } from "types";
 import { users } from "./mock";
 import { ChooseCoinValues } from "./components";
@@ -76,7 +74,7 @@ export default observer<Props>(function SendDetails({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#14142E",
+    backgroundColor: COLOR.Dark3,
     flexGrow: 1,
   },
   wrapper33: { marginHorizontal: 33 },

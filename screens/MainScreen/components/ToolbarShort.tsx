@@ -62,6 +62,6 @@ const styles = StyleSheet.create({
   },
 
   dark: {
-    backgroundColor: "#14142e",
+    backgroundColor: COLOR.Dark3,
   },
 });

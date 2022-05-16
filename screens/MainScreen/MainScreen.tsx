@@ -168,7 +168,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#14142e",
+    backgroundColor: COLOR.Dark3,
   },
   info: {
     marginTop: 80,
