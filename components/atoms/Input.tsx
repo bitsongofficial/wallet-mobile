@@ -27,11 +27,7 @@ export default ({ inputStyle, style, autocomplite, ...props }: Props) => {
         </Text>
       )}
       <TextInput
-        style={[
-          theme.input.component,
-          inputStyle,
-          // { backgroundColor: "orange" },
-        ]}
+        style={[theme.input.component, styles.component, inputStyle]}
         placeholderTextColor={theme.input.placeholder}
         {...props}
       />
@@ -45,9 +41,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 50,
   },
+  component: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "400",
+    fontSize: 14,
+    // lineHeight: 25,
+    // https://stackoverflow.com/a/68458803
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    height: 18,
+  },
   autocomplite: {
-    // backgroundColor: "red",
     position: "absolute",
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "400",
+    fontSize: 14,
+    lineHeight: 18,
     top: 19,
     left: 25,
   },
