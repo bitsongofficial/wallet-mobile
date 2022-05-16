@@ -41,17 +41,21 @@ export default observer(({ phrase }: Props) => {
             ))}
           </ScrollView>
         )}
-        <View style={styles.inputContainer}>
-          <Text style={styles.text}>Word #{phrase.words.length + 1}</Text>
-          <Input
-            blurOnSubmit={false}
-            value={phrase.inputValue}
-            onChangeText={phrase.inputSet}
-            onSubmitEditing={phrase.inputSubmit}
-            keyboardAppearance="dark" // TODO: theme me
-            autocomplite={phrase.hint}
-          />
-        </View>
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.text}>Word #{phrase.words.length + 1}</Text>
+        <Input
+          blurOnSubmit={false}
+          value={phrase.inputValue}
+          onChangeText={phrase.inputSet}
+          onSubmitEditing={phrase.inputSubmit}
+          keyboardAppearance="dark" // TODO: theme me
+          autocomplite={phrase.hint}
+          autoCorrect={false}
+          autoCapitalize="none"
+          autoCompleteType="off"
+          autoFocus
+        />
       </View>
     </>
   );
@@ -60,7 +64,6 @@ export default observer(({ phrase }: Props) => {
 const styles = StyleSheet.create({
   paste: {
     width: 65,
-    marginHorizontal: 30,
     marginTop: 24,
     marginBottom: 40,
   },
