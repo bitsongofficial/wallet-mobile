@@ -12,10 +12,18 @@ export default class Coin {
   }
 
   get balanceUSD() {
-    return this.rate ? round(this.rate * this.info.balance) : null;
+    return Coin.culcFiatBalance(this.info.balance, this.rate);
   }
 
   increment() {
     this.info.balance = this.info.balance + 1;
+  }
+
+  static culcFiatBalance(tokenBalance: number, rate?: number | null) {
+    return rate ? round(rate * tokenBalance) : null;
+  }
+
+  static culcTokenBalance(fiatBalance: number, rate?: number) {
+    return rate ? round(fiatBalance / rate) : null;
   }
 }
