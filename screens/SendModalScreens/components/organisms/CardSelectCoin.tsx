@@ -41,7 +41,7 @@ export default observer<Props>(function CardWallet({ coin, style }) {
           />
         </View>
       </View>
-      <Icon2 name="chevron_right" size={18} />
+      <Icon2 name="chevron_right" size={18} stroke={COLOR.RoyalBlue} />
     </Card>
   );
 });

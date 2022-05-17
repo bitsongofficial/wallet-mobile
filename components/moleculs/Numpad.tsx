@@ -1,6 +1,6 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { useTheme } from "hooks";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useTheme } from "hooks";
 
 const numpad = [
   ["1", "2", "3"],
