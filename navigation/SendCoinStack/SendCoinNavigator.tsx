@@ -7,7 +7,7 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import { SendCoinStackParamList } from "./types";
 import { SendCoinContext, useSendCoinContextValue } from "./context";
-import Header from "./Header";
+import Header from "../../screens/SendModalScreens/components/moleculs/Header";
 import * as Screen from "screens/SendModalScreens";
 import * as Root from "screens";
 import { SafeAreaProvider } from "react-native-safe-area-context";

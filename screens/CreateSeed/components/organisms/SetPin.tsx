@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Numpad } from "screens/SendModalScreens/components"; // todo: make common component
+import { Numpad } from "components/moleculs";
 import { Pin } from "classes";
 import { PinCode } from "../moleculs";
 import { observer } from "mobx-react-lite";

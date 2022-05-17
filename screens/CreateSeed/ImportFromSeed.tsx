@@ -58,14 +58,14 @@ export default observer<Props>(({ navigation }) => {
                 onContentSizeChange={scrollingEnd}
                 contentContainerStyle={styles.scrollviewContent}
               >
-                {/* <View style={styles.paste}>
+                <View style={styles.paste}>
                   <Button
                     text="Paste"
                     contentContainerStyle={styles.buttonContent}
                     textStyle={styles.buttonText}
                     onPress={controller.steps.next}
                   />
-                </View> */}
+                </View>
                 <PhraseInput phrase={controller.phrase} />
               </ScrollView>
             </>
@@ -88,16 +88,14 @@ export default observer<Props>(({ navigation }) => {
               )}
             </View>
           </View>
-          <Footer
-            onPressBack={goBack}
-            onPressNext={goNext}
-            nextButtonText={
-              controller.steps.active === 0 ? "Paste" : "Continue"
-            }
-            isHideNext={!controller.isCanNext}
-            style={styles.mh30}
-          />
         </KeyboardAvoidingView>
+        <Footer
+          onPressBack={goBack}
+          onPressNext={goNext}
+          nextButtonText={controller.steps.active === 0 ? "Paste" : "Continue"}
+          isHideNext={!controller.isCanNext}
+          style={styles.mh30}
+        />
       </SafeAreaView>
     </>
   );

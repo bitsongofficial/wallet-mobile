@@ -20,10 +20,10 @@ import { observer } from "mobx-react-lite";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ToolbarFull, ToolbarShort } from "./components";
 import { BottomSheetModal } from "components/moleculs";
+import SendModal from "screens/SendModalScreens/SendModal";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootTabParamList } from "types";
 import { COLOR } from "utils";
-import SendModal from "screens/SendModalScreens/SendModal";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -155,11 +155,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
           snapPoints={["85%"]}
         >
           <SendModal />
-          {/* <SendCoinStack
-            style={sendCoinContainerStyle}
-            onSend={closeSend}
-            nav={navigation}
-          /> */}
         </BottomSheetModal>
       </SafeAreaView>
     </>
