@@ -6,7 +6,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { COLOR } from "utils";
 import { RootStackParamList } from "types";
 import { users } from "./mock";
-import { ChooseCoinValues } from "./components";
+// import { ChooseCoinValues } from "./components";
 import { useCallback, useState } from "react";
 import { Button, ButtonBack } from "components/atoms";
 

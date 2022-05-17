@@ -6,7 +6,7 @@ import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
 import { SendCoinContext } from "navigation/SendCoinStack/context";
 import { useTheme } from "hooks";
 import { Button, Icon2 } from "components/atoms";
-import { CardSelectCoin, Numpad } from "./components";
+// import { CardSelectCoin, Numpad } from "./components";
 import { COLOR } from "utils";
 
 type Props = NativeStackScreenProps<SendCoinStackParamList, "InsertImport">;

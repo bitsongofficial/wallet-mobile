@@ -10,7 +10,7 @@ import { useTheme } from "hooks";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
 import { SendCoinContext } from "navigation/SendCoinStack/context";
-import { CardAdress, CardAdressSelf, User } from "./components";
+// import { CardAdress, CardAdressSelf, User } from "./components";
 import { Button, ButtonBack } from "components/atoms";
 import { users } from "./mock";
 import { ScrollView } from "react-native-gesture-handler";

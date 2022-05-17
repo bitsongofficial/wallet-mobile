@@ -5,7 +5,7 @@ import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
 import { SendCoinContext } from "navigation/SendCoinStack/context";
 import { useStore, useTheme } from "hooks";
 import { ButtonBack } from "components/atoms";
-import { ButtonCoinSelect } from "./components";
+// import { ButtonCoinSelect } from "./components";
 
 type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectCoin">;
 

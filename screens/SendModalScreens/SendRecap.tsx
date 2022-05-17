@@ -8,7 +8,7 @@ import { Tabs } from "components/organisms";
 import { Button, ButtonBack } from "components/atoms";
 import { users } from "./mock";
 import { Advanced, CardData, CardMessages } from "./components/organisms";
-import { CardDetails } from "./components";
+// import { CardDetails } from "./components";
 
 type ValueTabs = "Recap" | "Details" | "Data";
 const tabs = ["Recap", "Details", "Data"];
