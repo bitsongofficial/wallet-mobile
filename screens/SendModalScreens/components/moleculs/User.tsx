@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { COLOR, hexAlpha } from "utils";
 import { useTheme } from "hooks";
-import { IPerson } from "../../type";
+import { IPerson } from "classes/types";
 
 type Props = {
   user: IPerson;

@@ -2,7 +2,7 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
 import { Card, Icon } from "components/atoms";
 import { useTheme } from "hooks";
-import { IPerson } from "../type";
+import { IPerson } from "classes/types";
 import { Coin } from "classes";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { COLOR } from "utils";

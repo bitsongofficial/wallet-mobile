@@ -1,6 +1,6 @@
 import { createContext, useMemo, useState } from "react";
 import { Coin } from "classes";
-import { IPerson } from "screens/SendModalScreens/components";
+import { IPerson } from "classes/types";
 import { useStore } from "hooks";
 
 export type ContextValue = {

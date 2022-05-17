@@ -6,3 +6,18 @@ export interface ICoin {
   coinName: string;
   address: string;
 }
+
+export type IPerson = {
+  _id: string;
+  avatar: any;
+  firstName: string;
+  lastName: string;
+};
+
+// WIP
+export type ITransaction = {
+  coin: ICoin;
+  amount: number;
+  address: string;
+  receiver: IPerson;
+};
