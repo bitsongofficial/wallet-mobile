@@ -1,85 +1,72 @@
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { useCallback, useContext } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { observer } from "mobx-react-lite";
+import { animated, useSpring } from "@react-spring/native";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "hooks";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
-import { SendCoinContext } from "navigation/SendCoinStack/context";
-// import { CardAdress, CardAdressSelf, User } from "./components";
-import { Button, ButtonBack } from "components/atoms";
 import { users } from "./mock";
-import { ScrollView } from "react-native-gesture-handler";
+import { SendController } from "./classes";
+import { CardAddress, CardAdressSelf } from "./components/organisms";
+import { Footer, User } from "./components/moleculs";
 
-type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectReceiver">;
+type Props = {
+  controller: SendController;
+  onPressRecap(): void;
+  onPressScanner(): void;
+  onPressBack(): void;
+};
 
-export default function SelectReceiver({ navigation }: Props) {
+export default observer(function SelectReceiver({
+  controller,
+  onPressBack,
+  onPressRecap,
+  onPressScanner,
+}: Props) {
   const theme = useTheme();
-  const { coin, receiver, setReceiver, setAddress, address, parentNav } =
-    useContext(SendCoinContext);
+  const { creater } = controller;
+  const { addressInput } = creater;
 
-  const navToRecap = useCallback(() => navigation.push("SendRecap"), []);
-  const openScanner = useCallback(
-    () => navigation.push("ScannerQR", { onBarCodeScanned: setAddress }), // TODO: badcase. nested navigator knows about parent
-    []
-  );
-  const goBack = useCallback(() => navigation.goBack(), []);
+  const hidden = useSpring({
+    opacity: addressInput.isFocused ? 0.1 : 1,
+  });
 
   return (
-    <KeyboardAvoidingView
-      style={{ flexGrow: 1 }}
-      keyboardVerticalOffset={210}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView>
-        <CardAdress
-          value={address}
-          onChange={setAddress}
-          onPressQR={openScanner}
-          style={[styles.input, styles.wrapper12]}
+    <>
+      <BottomSheetScrollView style={{ flexGrow: 1 }}>
+        <CardAddress
+          input={addressInput}
+          onPressQR={onPressScanner}
+          style={[styles.input]}
         />
 
-        <View style={styles.wrapper33}>
+        <animated.View style={hidden}>
           <Text style={[styles.subtitle, theme.text.primary]}>Prefered</Text>
+
           <View style={styles.users}>
             {users.map((user) => (
               <User user={user} key={user._id} />
             ))}
           </View>
           <Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
-        </View>
 
-        <CardAdressSelf coin={coin} style={[styles.self, styles.wrapper12]} />
-      </ScrollView>
-      <View style={styles.bottomView}>
-        <View style={styles.buttonContainer}>
-          <ButtonBack onPress={goBack} style={styles.buttonBack} />
-          <Button
-            contentContainerStyle={styles.buttonContent}
-            textStyle={styles.buttonText}
-            onPress={navToRecap}
-          >
-            Preview Send
-          </Button>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+          <CardAdressSelf coin={creater.coin} style={styles.self} />
+        </animated.View>
+      </BottomSheetScrollView>
+      <Footer
+        onPressBack={onPressBack}
+        onPressCenter={onPressRecap}
+        centerTitle="Preview Send"
+      />
+    </>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1 },
-  wrapper33: { marginHorizontal: 33 },
-  wrapper12: { marginHorizontal: 12 },
   input: {
     marginTop: 31,
     marginBottom: 26,
-    marginHorizontal: 12,
   },
+  hidden: { opacity: 0.1 },
 
   self: { marginTop: 21 },
 
@@ -95,34 +82,5 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 16,
     lineHeight: 20,
-  },
-
-  bottomView: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-
-  // ------ button ------ TODO: Make common component
-  buttonContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginVertical: 8,
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-  },
-  buttonContent: {
-    paddingVertical: 18,
-    paddingHorizontal: 36,
-  },
-  buttonText: {
-    fontSize: 15,
-    lineHeight: 19,
-  },
-  buttonBack: {
-    position: "absolute",
-    bottom: 18,
-    left: 33,
   },
 });
