@@ -1,68 +1,74 @@
-import { useCallback, useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
-import { SendCoinContext } from "navigation/SendCoinStack/context";
-import { useTheme } from "hooks";
-import { Button, Icon2 } from "components/atoms";
-// import { CardSelectCoin, Numpad } from "./components";
+import { observer } from "mobx-react-lite";
+import { Coin } from "classes";
 import { COLOR } from "utils";
+import { useTheme } from "hooks";
+import { SendController } from "./classes";
+import { Button, Icon2 } from "components/atoms";
+import { Numpad } from "components/moleculs";
+import { CardSelectCoin } from "./components/organisms";
+import { Footer } from "./components/moleculs";
 
-type Props = NativeStackScreenProps<SendCoinStackParamList, "InsertImport">;
+type Props = {
+  controller: SendController;
+  onPressSelectCoin(): void;
+  onPressNext(): void;
+};
 
-export default function InsertImport({ navigation }: Props) {
-  const { coin } = useContext(SendCoinContext);
+export default observer<Props>(function InsertImport({
+  controller,
+  onPressSelectCoin,
+  onPressNext,
+}) {
   const theme = useTheme();
-
-  const select = useCallback(() => navigation.push("SelectCoin"), []);
-  const navToSelectReceiver = useCallback(
-    () => navigation.push("SelectReceiver"),
-    []
-  );
+  const { creater } = controller;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.wrapper30}>
-        <View style={styles.row}>
-          <Text style={[styles.usd, theme.text.primary]}>934.45$</Text>
-          <View>
-            <Button contentContainerStyle={styles.maxButtonContent}>MAX</Button>
-          </View>
-        </View>
-
-        <View style={styles.coin}>
-          <Text style={styles.coinBalance}>28,345 {coin?.info.coinName}</Text>
-          <Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} />
+    <>
+      <View style={styles.row}>
+        <Text style={[styles.usd, theme.text.primary]}>
+          {creater.amount || 0} $
+        </Text>
+        <View>
+          <Button contentContainerStyle={styles.maxButtonContent}>MAX</Button>
         </View>
       </View>
 
-      <TouchableOpacity onPress={select}>
-        <CardSelectCoin coin={coin} style={styles.select} />
+      {creater.coin && (
+        <View style={styles.coin}>
+          <Text style={styles.coinBalance}>
+            {!!creater.coin.rate &&
+              Coin.culcTokenBalance(
+                parseFloat(creater.amount),
+                creater.coin.rate
+              )}{" "}
+            {creater.coin?.info.coinName}
+          </Text>
+          <Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} />
+        </View>
+      )}
+
+      <TouchableOpacity onPress={onPressSelectCoin}>
+        <CardSelectCoin coin={creater.coin} style={styles.select} />
       </TouchableOpacity>
 
       <Numpad
-        onPress={console.log}
-        onPressRemove={() => console.log("remove")}
+        onPress={controller.addAmountNumber}
+        onPressRemove={controller.removeAmountNumber}
         style={styles.numpad}
       />
 
-      <View style={styles.buttonContainer}>
-        <Button
-          contentContainerStyle={styles.buttonContent}
-          textStyle={styles.buttonText}
-          onPress={navToSelectReceiver}
-        >
-          Continue
-        </Button>
-      </View>
-    </View>
+      <Footer
+        isShowBack={false}
+        onPressCenter={onPressNext}
+        centerTitle="Continue"
+      />
+    </>
   );
-}
+});
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1 },
-  wrapper30: { marginHorizontal: 30 },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -92,7 +98,6 @@ const styles = StyleSheet.create({
     color: COLOR.RoyalBlue,
   },
   select: {
-    marginHorizontal: 30,
     marginTop: 39,
   },
 
@@ -103,23 +108,7 @@ const styles = StyleSheet.create({
 
   numpad: {
     flexGrow: 1,
-    marginVertical: 10,
     justifyContent: "space-around",
-    marginHorizontal: 45,
-  },
-
-  // ------ button ------ TODO: Make common component
-  buttonContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 8,
-  },
-  buttonContent: {
-    paddingVertical: 18,
-    paddingHorizontal: 56,
-  },
-  buttonText: {
-    fontSize: 15,
-    lineHeight: 19,
+    padding: 15,
   },
 });
