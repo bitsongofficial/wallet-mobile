@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 
 export default class Steps<T extends string = any> {
   active = 0;
+  history: number[] = [this.active];
 
   constructor(public titles: T[]) {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -11,19 +12,33 @@ export default class Steps<T extends string = any> {
     return this.titles[this.active];
   }
 
-  private setActive(index: number) {
-    this.active = index;
+  private setActive(index?: number) {
+    if (index !== undefined) this.active = index;
+  }
+
+  private add(index: number) {
+    if (index >= 0 && index <= this.titles.length - 1) {
+      this.history.push(index);
+      this.setActive(index);
+    }
+  }
+
+  goBack() {
+    this.history.pop();
+    this.setActive(this.history[this.history.length - 1]);
+  }
+
+  goTo(title: T) {
+    this.add(this.titles.findIndex(Steps.equal(title)));
   }
 
   next() {
-    if (this.active < this.titles.length - 1) {
-      this.setActive(this.active + 1);
-    }
+    this.add(this.active + 1);
   }
 
   prev() {
-    if (this.active > 0) {
-      this.setActive(this.active - 1);
-    }
+    this.add(this.active - 1);
   }
+
+  static equal = (title: string) => (t: string) => t === title;
 }
