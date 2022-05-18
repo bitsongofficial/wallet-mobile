@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -9,15 +10,27 @@ import {
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { useTheme } from "hooks";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 
 type Props = TextInputProps & {
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   autocomplite?: string | null;
+  bottomsheet?: boolean;
 };
 
-export default ({ inputStyle, style, autocomplite, ...props }: Props) => {
+export default ({
+  inputStyle,
+  style,
+  autocomplite,
+  bottomsheet,
+  ...props
+}: Props) => {
   const theme = useTheme();
+  const Component = useMemo(
+    () => (bottomsheet ? BottomSheetTextInput : TextInput),
+    [bottomsheet]
+  );
 
   return (
     <View style={[styles.container, theme.input.container, style]}>
@@ -26,7 +39,7 @@ export default ({ inputStyle, style, autocomplite, ...props }: Props) => {
           {autocomplite}
         </Text>
       )}
-      <TextInput
+      <Component
         style={[theme.input.component, styles.component, inputStyle]}
         placeholderTextColor={theme.input.placeholder}
         {...props}
@@ -37,7 +50,7 @@ export default ({ inputStyle, style, autocomplite, ...props }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 19,
+    // paddingVertical: 19,
     paddingHorizontal: 24,
     borderRadius: 50,
   },
@@ -49,7 +62,7 @@ const styles = StyleSheet.create({
     // lineHeight: 25,
     // https://stackoverflow.com/a/68458803
     paddingHorizontal: 0,
-    paddingVertical: 0,
+    marginVertical: 19,
     height: 18,
   },
   autocomplite: {
