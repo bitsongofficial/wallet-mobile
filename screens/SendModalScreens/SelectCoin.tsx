@@ -5,11 +5,11 @@ import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
 import { SendCoinContext } from "navigation/SendCoinStack/context";
 import { useStore, useTheme } from "hooks";
 import { ButtonBack } from "components/atoms";
-// import { ButtonCoinSelect } from "./components";
+import { ButtonCoinSelect } from "./components/organisms";
 
 type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectCoin">;
 
-export default function InsertImport({ navigation }: Props) {
+export default function SelectCoin({ navigation }: Props) {
   const theme = useTheme();
   const { wallet } = useStore();
   const context = useContext(SendCoinContext);

@@ -6,8 +6,8 @@ export default class SendController {
   steps = new Steps([
     "Insert Import",
     "Select Receiver",
-    "Select coin",
     "Send Recap",
+    "Select coin",
   ]);
 
   creater = new Transaction.Creater();

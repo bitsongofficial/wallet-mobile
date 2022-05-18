@@ -49,9 +49,11 @@ export default observer<Props>(function CardWallet({
         <Text style={[styles.text, styles.mr17, theme.text.colorText]}>to</Text>
         <View style={styles.avatar} />
         {/* <Image  /> */}
-        <Text style={[styles.text, theme.text.primary]}>
-          {receiver.firstName}. {receiver.lastName}
-        </Text>
+        {receiver && (
+          <Text style={[styles.text, theme.text.primary]}>
+            {receiver.firstName}. {receiver.lastName}
+          </Text>
+        )}
       </View>
 
       <View style={styles.row}>

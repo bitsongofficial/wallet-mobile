@@ -3,9 +3,9 @@ import { Button, ButtonBack } from "components/atoms";
 
 type Props = {
   isShowBack?: boolean;
-  onPressBack(): void;
+  onPressBack?(): void;
   centerTitle?: string;
-  onPressCenter(): void;
+  onPressCenter?(): void;
   style?: StyleProp<ViewStyle>;
 };
 
