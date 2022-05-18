@@ -1,57 +1,103 @@
-import { StyleSheet, Text, View } from "react-native";
-import { useCallback, useContext, useState } from "react";
+import { Keyboard, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { observer } from "mobx-react-lite";
+import {
+  BottomSheetScrollView,
+  BottomSheetScrollViewMethods,
+} from "@gorhom/bottom-sheet";
 import { useTheme } from "hooks";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
-import { SendCoinContext } from "navigation/SendCoinStack/context";
+import { InputHandler } from "utils";
 import { Tabs } from "components/organisms";
-import { Button, ButtonBack } from "components/atoms";
 import { users } from "./mock";
-import { Advanced, CardData, CardMessages } from "./components/organisms";
-// import { CardDetails } from "./components";
+import { SendController } from "./classes";
+import {
+  Advanced,
+  CardData,
+  CardDetails,
+  CardMessages,
+} from "./components/organisms";
+import { Footer } from "./components/moleculs";
 
 type ValueTabs = "Recap" | "Details" | "Data";
 const tabs = ["Recap", "Details", "Data"];
 
-type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectReceiver">;
+type Props = {
+  controller: SendController;
+  onPressBack(): void;
+  onPressSend(): void;
+};
 
-export default function SelectReceiver({ navigation }: Props) {
+export default observer(function SelectReceiver({
+  controller,
+  onPressBack,
+  onPressSend,
+}: Props) {
   const theme = useTheme();
-  const { coin, onSend, address, amount } = useContext(SendCoinContext);
-
   const receiver = users[0];
+  const { creater } = controller;
 
   const [activeTab, setActiveTab] = useState<ValueTabs>("Details");
 
-  const done = useCallback(() => onSend(), [onSend]);
-  const goBack = useCallback(() => navigation.goBack(), []);
+  const gas = useMemo(() => new InputHandler(), []);
+  const memo = useMemo(() => new InputHandler(), []);
+  const speed = useMemo(() => new InputHandler(), []);
 
-  const [gas, setGas] = useState("");
-  const [memo, setMemo] = useState("");
+  const scrollview = useRef<BottomSheetScrollViewMethods>(null);
+  // useEffect(
+  //   () =>
+  //     reaction(
+  //       () => gas.isFocused,
+  //       () => scrollview.current?.scrollTo(gas)
+  //     ),
+  //   []
+  // );
+  // useEffect(
+  //   () =>
+  //     reaction(
+  //       () => memo.isFocused,
+  //       () => scrollview.current?.scrollTo(memo)
+  //     ),
+  //   []
+  // );
+  // useEffect(
+  //   () =>
+  //     reaction(
+  //       () => speed.isFocused,
+  //       () => scrollview.current?.scrollTo(speed)
+  //     ),
+  //   []
+  // );
+
+  const [isKeyboardOpen, setKeyboardOpen] = useState<boolean>(false);
+  const setOpen = () => setKeyboardOpen(true);
+  const setHide = () => setKeyboardOpen(false);
+  useEffect(() => {
+    Keyboard.addListener("keyboardWillShow", setOpen);
+    Keyboard.addListener("keyboardWillHide", setHide);
+    return () => {
+      Keyboard.removeAllListeners("keyboardWillShow");
+      Keyboard.removeAllListeners("keyboardWillHide");
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
-      <View style={styles.wrapper33}>
-        <Text style={[styles.title, theme.text.primary]}>Send Recap</Text>
-
-        <Tabs
-          values={tabs}
-          active={activeTab}
-          // @ts-ignore TODO: create cool types
-          onPress={setActiveTab}
-          style={styles.tabs}
-        />
-      </View>
-
-      <View style={{ marginHorizontal: 24 }}>
+      <Tabs
+        values={tabs}
+        active={activeTab}
+        // @ts-ignore TODO: create cool types
+        onPress={setActiveTab}
+        style={styles.tabs}
+      />
+      <BottomSheetScrollView ref={scrollview} style={{ flexGrow: 1 }}>
         {activeTab === "Recap" && (
           <>
-            {coin && receiver && (
+            {creater.coin && receiver && (
               <CardDetails
-                coin={coin}
-                amount={amount}
-                address={address}
-                receiver={receiver}
+                coin={creater.coin}
+                amount={creater.amount}
+                address={creater.addressInput.value}
+                receiver={creater.receiver}
                 onPress={() => {}}
               />
             )}
@@ -65,39 +111,26 @@ export default function SelectReceiver({ navigation }: Props) {
         {activeTab === "Details" && (
           <>
             <CardMessages messages={[{}]} style={{ marginBottom: 27 }} />
-            <Advanced
-              gas={gas}
-              memo={memo}
-              onChangeGas={setGas}
-              onChangeMemo={setMemo}
-            />
+            <Advanced gas={gas} memo={memo} speed={speed} />
           </>
         )}
         {activeTab === "Data" && (
           <CardData json={JSON.stringify(require("../../app.json"), null, 4)} />
         )}
-      </View>
-
-      <View style={{ flex: 1, justifyContent: "flex-end" }}>
-        <View style={styles.buttonContainer}>
-          <ButtonBack onPress={goBack} style={styles.buttonBack} />
-          <Button
-            contentContainerStyle={styles.buttonContent}
-            textStyle={styles.buttonText}
-            onPress={done}
-          >
-            Send
-          </Button>
-        </View>
-      </View>
+      </BottomSheetScrollView>
+      {!isKeyboardOpen && (
+        <Footer
+          onPressBack={onPressBack}
+          onPressCenter={onPressSend}
+          centerTitle="Send"
+        />
+      )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1 },
-  wrapper33: { marginHorizontal: 33 },
-  wrapper12: { marginHorizontal: 12 },
   self: { marginTop: 19 },
 
   title: {
@@ -125,27 +158,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
 
     marginTop: 27,
-  },
-
-  // ------ button ------ TODO: Make common component
-  buttonContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 8,
-  },
-  buttonContent: {
-    paddingVertical: 18,
-    paddingHorizontal: 56,
-  },
-  buttonText: {
-    fontSize: 15,
-    lineHeight: 19,
-  },
-
-  // -----
-  buttonBack: {
-    position: "absolute",
-    bottom: 18,
-    left: 33,
   },
 });
