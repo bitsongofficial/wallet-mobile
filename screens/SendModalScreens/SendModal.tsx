@@ -1,17 +1,33 @@
-import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useCallback, useMemo } from "react";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
-import { COLOR } from "utils";
+import { BottomSheetView } from "@gorhom/bottom-sheet";
+import { CompositeNavigationProp } from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useStore, useTheme } from "hooks";
-import { Numpad, Pagination } from "components/moleculs";
+import { Pagination } from "components/moleculs";
 import { SendController } from "./classes";
 import { Header } from "./components/moleculs";
-import { Button, Icon2 } from "components/atoms";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { CardSelectCoin } from "./components/organisms";
-import { Coin } from "classes";
+import InsertImport from "./InsertImport";
+import SelectReceiver from "./SelectReceiver";
+import { SendRecap } from ".";
+import { RootStackParamList, RootTabParamList } from "types";
 
-export default observer(function SendModal() {
+type Props = {
+  style?: StyleProp<ViewStyle>;
+  close(): void;
+  navigation: CompositeNavigationProp<
+    BottomTabNavigationProp<RootTabParamList, "MainTab">,
+    NativeStackNavigationProp<RootStackParamList>
+  >;
+};
+
+export default observer<Props>(function SendModal({
+  style,
+  close,
+  navigation,
+}) {
   const theme = useTheme();
   const store = useStore();
 
@@ -19,10 +35,22 @@ export default observer(function SendModal() {
     () => new SendController(store.wallet.coins[0]),
     [store]
   );
-  const { steps, creater } = controller;
 
+  const { steps, creater } = controller;
+  console.log("steps.title", steps.title);
+
+  const title = useMemo(() => {}, []);
+  const subtitle = useMemo(() => {}, []);
+
+  const onPressScanner = useCallback(
+    () =>
+      navigation.push("ScannerQR", {
+        onBarCodeScanned: creater.addressInput.set,
+      }),
+    [navigation, creater]
+  );
   return (
-    <View style={styles.container}>
+    <BottomSheetView style={[styles.container, style]}>
       <View style={styles.wrapper}>
         <Header
           title="Send"
@@ -31,50 +59,32 @@ export default observer(function SendModal() {
           style={styles.header}
         />
 
-        <View style={styles.row}>
-          <Text style={[styles.usd, theme.text.primary]}>
-            {creater.amount || 0} $
-          </Text>
-          <View>
-            <Button contentContainerStyle={styles.maxButtonContent}>MAX</Button>
-          </View>
-        </View>
-
-        {creater.coin && (
-          <View style={styles.coin}>
-            <Text style={styles.coinBalance}>
-              {!!creater.coin.rate &&
-                Coin.culcTokenBalance(
-                  parseFloat(creater.amount),
-                  creater.coin.rate
-                )}{" "}
-              {creater.coin?.info.coinName}
-            </Text>
-            <Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} />
-          </View>
+        {steps.title === "Insert Import" && (
+          <InsertImport
+            controller={controller}
+            onPressNext={() => steps.goTo("Select Receiver")}
+            onPressSelectCoin={() => steps.goTo("Select coin")}
+          />
         )}
 
-        <TouchableOpacity>
-          <CardSelectCoin coin={creater.coin} style={styles.select} />
-        </TouchableOpacity>
+        {steps.title === "Select Receiver" && (
+          <SelectReceiver
+            controller={controller}
+            onPressBack={steps.goBack}
+            onPressRecap={() => steps.goTo("Send Recap")}
+            onPressScanner={onPressScanner}
+          />
+        )}
 
-        <Numpad
-          onPress={controller.addAmountNumber}
-          onPressRemove={controller.removeAmountNumber}
-          style={styles.numpad}
-        />
-
-        <View style={styles.buttonContainer}>
-          <Button
-            contentContainerStyle={styles.buttonContent}
-            textStyle={styles.buttonText}
-            // onPress={navToSelectReceiver}
-          >
-            Continue
-          </Button>
-        </View>
+        {steps.title === "Send Recap" && (
+          <SendRecap
+            controller={controller}
+            onPressBack={steps.goBack}
+            onPressSend={close}
+          />
+        )}
       </View>
-    </View>
+    </BottomSheetView>
   );
 });
 
@@ -85,64 +95,4 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: { marginTop: 10 },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 24,
-  },
-  usd: {
-    fontFamily: "CircularStd",
-    fontStyle: "normal",
-    fontWeight: "500",
-    fontSize: 42,
-    lineHeight: 53,
-  },
-  coin: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 8,
-  },
-
-  coinBalance: {
-    fontFamily: "CircularStd",
-    fontStyle: "normal",
-    fontWeight: "500",
-    fontSize: 21,
-    lineHeight: 27,
-    color: COLOR.RoyalBlue,
-  },
-  select: {
-    marginTop: 39,
-  },
-
-  maxButtonContent: {
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-  },
-
-  numpad: {
-    flexGrow: 1,
-    justifyContent: "space-around",
-    padding: 15,
-  },
-
-  // ------ button ------ TODO: Make common component
-  buttonContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 8,
-
-    // flexGrow: 1,
-    backgroundColor: "orange",
-  },
-  buttonContent: {
-    paddingVertical: 18,
-    paddingHorizontal: 56,
-  },
-  buttonText: {
-    fontSize: 15,
-    lineHeight: 19,
-  },
 });
