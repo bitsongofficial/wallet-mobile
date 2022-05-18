@@ -3,19 +3,17 @@ import { observer } from "mobx-react-lite";
 import { Card, Icon2 } from "components/atoms";
 import { useTheme } from "hooks";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
-import { COLOR } from "utils";
+import { COLOR, InputHandler } from "utils";
 
 type Props = {
-  value: string;
-  onChange(value: string): void;
+  input: InputHandler;
   onPressQR(): void;
   style?: StyleProp<ViewStyle>;
 };
 
 export default observer<Props>(function CardWallet({
-  value,
-  onChange,
   onPressQR,
+  input,
   style,
 }: Props) {
   const theme = useTheme();
@@ -24,9 +22,11 @@ export default observer<Props>(function CardWallet({
       <TextInput
         style={theme.text.primary}
         placeholder="Public Address"
-        onChangeText={onChange}
+        onChangeText={input.set}
+        onFocus={input.focusON}
+        onBlur={input.focusOFF}
         placeholderTextColor={theme.input.placeholder}
-        value={value}
+        value={input.value || ""}
       />
       <TouchableOpacity onPress={onPressQR}>
         <View style={styles.iconContainer}>
