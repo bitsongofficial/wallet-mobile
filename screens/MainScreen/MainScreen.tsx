@@ -21,15 +21,20 @@ import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/typ
 import { ToolbarFull, ToolbarShort } from "./components";
 import { BottomSheetModal } from "components/moleculs";
 import SendModal from "screens/SendModalScreens/SendModal";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootTabParamList } from "types";
+import { RootStackParamList, RootTabParamList } from "types";
 import { COLOR } from "utils";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
 const tabs: ValueTabs[] = ["Coins", "Fan Tokens"];
 
-type Props = NativeStackScreenProps<RootTabParamList, "MainTab">;
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<RootStackParamList>,
+  BottomTabScreenProps<RootTabParamList, "MainTab">
+>;
 
 export default observer<Props>(function MainScreen({ navigation }) {
   const { wallet } = useStore();
@@ -61,11 +66,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
     () => bottomSheetToolbar.current?.present(),
     []
   );
+
   const openSend = useCallback(() => bottomSheetSEND.current?.present(), []);
   const closeSend = useCallback(() => bottomSheetSEND.current?.close(), []);
   const openScanner = useCallback(
-    () => {},
-    // () => navigation.navigate("ScannerQR", { onBarCodeScanned: console.log }),
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: console.log }),
     []
   );
 
@@ -150,11 +155,17 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
         <BottomSheetModal
           ref={bottomSheetSEND}
-          $modal
           index={0}
           snapPoints={["85%"]}
+          style={{ zIndex: 0 }}
+          keyboardBlurBehavior="restore"
+          android_keyboardInputMode="adjustResize"
         >
-          <SendModal />
+          <SendModal
+            style={sendCoinContainerStyle}
+            close={closeSend}
+            navigation={navigation}
+          />
         </BottomSheetModal>
       </SafeAreaView>
     </>
