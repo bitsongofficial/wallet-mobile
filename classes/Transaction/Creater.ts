@@ -1,6 +1,7 @@
 import Coin from "classes/Coin";
 import { IPerson, ITransaction } from "classes/types";
 import { makeAutoObservable } from "mobx";
+import { InputHandler } from "utils";
 // import { ITransaction } from "";
 
 export default class TransactionCreater {
@@ -8,6 +9,8 @@ export default class TransactionCreater {
   amount: string = ""; // usd
   address: string | null = null;
   receiver?: IPerson | null = null; //
+
+  addressInput = new InputHandler();
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
