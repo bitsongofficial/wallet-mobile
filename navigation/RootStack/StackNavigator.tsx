@@ -39,11 +39,13 @@ export default () => (
       component={BottomTabNavigator}
       options={{ headerShown: false }}
     />
-    <Stack.Screen
-      name="ScannerQR"
-      component={Screens.ScannerQR}
-      options={{ headerShown: false }}
-    />
+    <Stack.Group screenOptions={{ presentation: "modal" }}>
+      <Stack.Screen
+        name="ScannerQR"
+        component={Screens.ScannerQR}
+        options={{ headerShown: false }}
+      />
+    </Stack.Group>
 
     {/* <Stack.Group screenOptions={{ presentation: "modal" }}>
       <Stack.Screen name="Modal" component={Screens.ModalScreen} />
