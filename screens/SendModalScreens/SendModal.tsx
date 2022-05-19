@@ -14,6 +14,7 @@ import {
   InsertImport,
   SendRecap,
   SelectReceiver,
+  SelectCoin,
 } from "./components/templates";
 
 type Props = {
@@ -84,6 +85,8 @@ export default observer<Props>(function SendModal({
             onPressSend={close}
           />
         )}
+
+        {/* {steps.title === "Select coin" && <SelectCoin />} */}
       </View>
     </BottomSheetView>
   );

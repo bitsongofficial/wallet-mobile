@@ -10,7 +10,7 @@ import { useTheme } from "hooks";
 import Icon2 from "./Icon2";
 
 type ButtonProps = {
-  onPress(): void;
+  onPress?(): void;
   style?: StyleProp<ViewStyle>;
   text?: string;
 };

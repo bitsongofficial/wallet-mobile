@@ -1,5 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  NativeSyntheticEvent,
+  StyleSheet,
+  TextInputFocusEventData,
+  View,
+} from "react-native";
 import { observer } from "mobx-react-lite";
 import { useKeyboard } from "@react-native-community/hooks";
 import {
@@ -39,9 +44,16 @@ export default observer(function SelectReceiver({
   const speed = useMemo(() => new InputHandler(), []);
 
   const scrollview = useRef<BottomSheetScrollViewMethods>(null);
-
+  const scrollToNode = useCallback(
+    (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+      // scrollview.current?.scroll(findNodeHandle(event.target)),
+      scrollview.current?.scrollToEnd();
+      // console.log("event :>> ", event);
+    },
+    []
+  );
   const keyboard = useKeyboard();
-  console.log("keyboard", keyboard);
+  // console.log("keyboard", keyboard);
 
   return (
     <View style={styles.container}>
@@ -52,36 +64,32 @@ export default observer(function SelectReceiver({
         onPress={setActiveTab}
         style={styles.tabs}
       />
-      <BottomSheetScrollView
-        ref={scrollview}
-        style={{ backgroundColor: "red" }}
-        contentContainerStyle={{ backgroundColor: "orange" }}
-      >
-        {activeTab === "Recap" && (
-          <Recap creater={creater} onPress={() => {}} />
-        )}
-        {activeTab === "Details" && (
-          <Details gas={gas} memo={memo} speed={speed} />
-        )}
-        {activeTab === "Data" && (
-          <Data
-            json={JSON.stringify(require("../../../../app.json"), null, 4)}
-          />
-        )}
-      </BottomSheetScrollView>
-      {/* {!isKeyboardOpen && (
+      {activeTab === "Recap" && <Recap creater={creater} onPress={() => {}} />}
+      {activeTab === "Details" && (
+        <BottomSheetScrollView
+          ref={scrollview}
+          style={{ marginTop: 6 }}
+          contentContainerStyle={{ paddingTop: 30 }}
+        >
+          <Details gas={gas} memo={memo} speed={speed} onFocus={scrollToNode} />
+        </BottomSheetScrollView>
+      )}
+      {activeTab === "Data" && (
+        <Data json={JSON.stringify(require("../../../../app.json"), null, 4)} />
+      )}
+      {!keyboard.keyboardShown && (
         <Footer
           onPressBack={onPressBack}
           onPressCenter={onPressSend}
           centerTitle="Send"
         />
-      )} */}
+      )}
     </View>
   );
 });
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, paddingBottom: 30, backgroundColor: "green" },
+  container: { flexGrow: 1 },
   self: { marginTop: 19 },
 
   title: {
@@ -100,7 +108,6 @@ const styles = StyleSheet.create({
   },
   tabs: {
     marginTop: 29,
-    marginBottom: 36,
   },
 
   funds: {

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TextInputProps, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
 import { useTheme } from "hooks";
@@ -11,9 +11,10 @@ type Props = {
   gas: InputHandler;
   memo: InputHandler;
   speed: InputHandler;
+  onFocus?: TextInputProps["onFocus"];
 };
 
-export default observer(({ gas, memo, speed }: Props) => {
+export default observer(({ gas, memo, speed, onFocus }: Props) => {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(true);
   const toggle = useCallback(() => setIsOpen((value) => !value), []);
@@ -45,6 +46,7 @@ export default observer(({ gas, memo, speed }: Props) => {
             value={gas.value}
             onChangeText={gas.set}
             style={styles.input}
+            onFocus={onFocus}
           />
           <Input
             bottomsheet
@@ -52,6 +54,7 @@ export default observer(({ gas, memo, speed }: Props) => {
             value={speed.value}
             onChangeText={speed.set}
             style={styles.input}
+            onFocus={onFocus}
           />
           <Input
             bottomsheet
@@ -59,6 +62,7 @@ export default observer(({ gas, memo, speed }: Props) => {
             value={memo.value}
             onChangeText={memo.set}
             style={styles.input}
+            onFocus={onFocus}
           />
         </>
       )}
