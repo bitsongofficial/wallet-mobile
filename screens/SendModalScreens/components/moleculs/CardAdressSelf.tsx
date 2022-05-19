@@ -6,7 +6,7 @@ import { Coin } from "classes";
 import { COLOR } from "utils";
 
 type Props = {
-  coin?: Coin;
+  coin?: Coin | null;
   style?: StyleProp<ViewStyle>;
 };
 

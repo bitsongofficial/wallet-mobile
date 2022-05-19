@@ -5,14 +5,16 @@ import { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useStore, useTheme } from "hooks";
+import { useStore } from "hooks";
+import { RootStackParamList, RootTabParamList } from "types";
 import { Pagination } from "components/moleculs";
 import { SendController } from "./classes";
-import { Header } from "./components/moleculs";
-import InsertImport from "./InsertImport";
-import SelectReceiver from "./SelectReceiver";
-import { SendRecap } from ".";
-import { RootStackParamList, RootTabParamList } from "types";
+import { Header } from "./components/atoms";
+import {
+  InsertImport,
+  SendRecap,
+  SelectReceiver,
+} from "./components/templates";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
@@ -28,7 +30,6 @@ export default observer<Props>(function SendModal({
   close,
   navigation,
 }) {
-  const theme = useTheme();
   const store = useStore();
 
   const controller = useMemo(

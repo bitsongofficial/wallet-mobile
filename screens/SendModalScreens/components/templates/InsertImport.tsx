@@ -4,11 +4,11 @@ import { observer } from "mobx-react-lite";
 import { Coin } from "classes";
 import { COLOR } from "utils";
 import { useTheme } from "hooks";
-import { SendController } from "./classes";
 import { Button, Icon2 } from "components/atoms";
 import { Numpad } from "components/moleculs";
-import { CardSelectCoin } from "./components/organisms";
-import { Footer } from "./components/moleculs";
+import { SendController } from "../../classes";
+import { CardSelectCoin } from "../moleculs";
+import { Footer } from "../atoms";
 
 type Props = {
   controller: SendController;

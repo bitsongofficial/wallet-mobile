@@ -13,7 +13,7 @@ import { COLOR, hexAlpha } from "utils";
 import { Card, Icon2 } from "components/atoms";
 
 type Props = {
-  coin?: Coin;
+  coin?: Coin | null;
   style?: StyleProp<ViewStyle>;
 };
 

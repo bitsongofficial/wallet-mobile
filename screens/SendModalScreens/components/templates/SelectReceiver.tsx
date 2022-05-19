@@ -3,10 +3,10 @@ import { observer } from "mobx-react-lite";
 import { animated, useSpring } from "@react-spring/native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTheme } from "hooks";
-import { users } from "./mock";
-import { SendController } from "./classes";
-import { CardAddress, CardAdressSelf } from "./components/organisms";
-import { Footer, User } from "./components/moleculs";
+import { SendController } from "../../classes";
+import { users } from "../../mock";
+import { CardAddress, CardAdressSelf } from "../moleculs";
+import { Footer, User } from "../atoms";
 
 type Props = {
   controller: SendController;

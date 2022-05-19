@@ -1,35 +1,44 @@
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { useTheme } from "hooks";
-import { Input } from "components/atoms";
 import { useCallback, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { COLOR, InputHandler } from "utils";
 import { observer } from "mobx-react-lite";
+import { useTheme } from "hooks";
+import { COLOR, InputHandler } from "utils";
+import { Badge, Input } from "components/atoms";
+import { Message } from "../atoms";
 
 type Props = {
   gas: InputHandler;
   memo: InputHandler;
   speed: InputHandler;
-
-  style?: StyleProp<ViewStyle>;
 };
 
-export default observer(({ gas, memo, speed, style }: Props) => {
+export default observer(({ gas, memo, speed }: Props) => {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(true);
   const toggle = useCallback(() => setIsOpen((value) => !value), []);
-
+  const messages = [{}];
   return (
-    <View style={style}>
-      <View>
+    <>
+      <View style={{ flexDirection: "row", marginBottom: 16, marginLeft: 11 }}>
+        <Text style={[theme.text.primary, styles.title]}>Messages</Text>
+        <Badge count={1} />
+      </View>
+
+      {messages.map((message) => (
+        <Message item={message} />
+      ))}
+
+      <View style={styles.toggleHide}>
         <TouchableOpacity onPress={toggle}>
           <Text style={[theme.text.primary, styles.text]}>
             {isOpen ? "Hide Advanced" : "Show Advanced"}
           </Text>
         </TouchableOpacity>
       </View>
+
       {isOpen && (
-        <View>
+        <>
           <Input
             bottomsheet
             placeholder="Set Gas"
@@ -51,21 +60,38 @@ export default observer(({ gas, memo, speed, style }: Props) => {
             onChangeText={memo.set}
             style={styles.input}
           />
-        </View>
+        </>
       )}
-    </View>
+    </>
   );
 });
 
 const styles = StyleSheet.create({
+  title: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "400",
+    fontSize: 13,
+    lineHeight: 16,
+
+    marginRight: 7,
+  },
+
+  badge: {
+    backgroundColor: "#4D60E4",
+    borderRadius: 10,
+    paddingHorizontal: 6,
+  },
+  toggleHide: {
+    marginBottom: 14,
+    width: 100,
+  },
   text: {
     fontFamily: "CircularStd",
     fontStyle: "normal",
     fontWeight: "500",
     fontSize: 12,
     lineHeight: 15,
-
-    marginBottom: 14,
   },
   input: { marginBottom: 16, backgroundColor: COLOR.Dark3 },
 });
