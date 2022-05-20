@@ -11,6 +11,7 @@ enum COLOR {
 
   Marengo = "#5A5A6D",
   RoyalBlue = "#4863E8",
+  RoyalBlue2 = "#575BDB",
 }
 
 export default COLOR;

@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 18,
     lineHeight: 23,
-    color: "#575BDB",
+    color: COLOR.RoyalBlue2,
 
     marginBottom: 10,
   },
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 16,
     lineHeight: 20,
-    color: "#575BDB",
+    color: COLOR.RoyalBlue2,
     marginBottom: 10,
   },
   reward_value: {
