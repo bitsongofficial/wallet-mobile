@@ -25,7 +25,10 @@ export default class Phrase {
   }
 
   setWords(words: string[]) {
-    this.words = words;
+    const lowerCaseWords = words.map((word) => word.toLowerCase());
+    if (lowerCaseWords.every(Phrase.checkWord)) {
+      this.words = lowerCaseWords;
+    }
   }
 
   // -------------
@@ -41,9 +44,7 @@ export default class Phrase {
 
     if (!value) return null;
 
-    return Phrase.wordlist.find((word: string) =>
-      word.toLowerCase().startsWith(value)
-    );
+    return Phrase.wordlist.find((word) => word.startsWith(value));
   }
 
   inputSubmit() {
@@ -62,6 +63,7 @@ export default class Phrase {
   static mock = new Array<string>(24).fill("test");
 
   static wordlist: string[] = bip39.wordlists.EN;
+  static checkWord = (word: string) => Phrase.wordlist.includes(word); // TODO: check any params
 
   static async generate(strength: number = 256) {
     if (strength % 32 !== 0) {
