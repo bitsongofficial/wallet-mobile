@@ -4,6 +4,7 @@ import * as Screens from "screens";
 import { Icon2 } from "components/atoms";
 import { Header, MainTabBar } from "./components";
 import { COLOR, hexAlpha } from "utils";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
@@ -16,54 +17,56 @@ function getStroke(focused: boolean) {
 }
 
 export default () => (
-  <BottomTab.Navigator
-    initialRouteName="MainTab"
-    tabBar={(props) => <MainTabBar {...props} />}
-    screenOptions={{
-      header: (props) => <Header {...props} />,
-      headerTransparent: true,
-      tabBarStyle: { position: "absolute" },
-      tabBarShowLabel: false,
-      tabBarActiveTintColor: "red",
-    }}
-  >
-    <BottomTab.Screen
-      name="MainTab"
-      component={Screens.Main}
-      options={() => ({
-        tabBarIcon: ({ focused }) => (
-          <Icon2 name="home" size={20} stroke={getStroke(focused)} />
-        ),
-      })}
-    />
-    <BottomTab.Screen
-      name="StackingTab"
-      component={Screens.Stacking}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <Icon2 name="stake" size={20} stroke={getStroke(focused)} />
-        ),
+  <BottomSheetModalProvider>
+    <BottomTab.Navigator
+      initialRouteName="MainTab"
+      tabBar={(props) => <MainTabBar {...props} />}
+      screenOptions={{
+        header: (props) => <Header {...props} />,
+        headerTransparent: true,
+        tabBarStyle: { position: "absolute" },
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: "red",
       }}
-    />
-    <BottomTab.Screen
-      name="Tab1"
-      component={Screens.TabOneScreen}
-      options={() => ({
-        headerShown: false,
-        tabBarIcon: ({ focused }) => (
-          <Icon2 name="like" size={20} stroke={getStroke(focused)} />
-        ),
-      })}
-    />
-    <BottomTab.Screen
-      name="Tab2"
-      component={Screens.TabTwoScreen}
-      options={{
-        headerShown: false,
-        tabBarIcon: ({ focused }) => (
-          <Icon2 name="circle" size={20} stroke={getStroke(focused)} />
-        ),
-      }}
-    />
-  </BottomTab.Navigator>
+    >
+      <BottomTab.Screen
+        name="MainTab"
+        component={Screens.Main}
+        options={() => ({
+          tabBarIcon: ({ focused }) => (
+            <Icon2 name="home" size={20} stroke={getStroke(focused)} />
+          ),
+        })}
+      />
+      <BottomTab.Screen
+        name="StackingTab"
+        component={Screens.Stacking}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Icon2 name="stake" size={20} stroke={getStroke(focused)} />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="Tab1"
+        component={Screens.TabOneScreen}
+        options={() => ({
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Icon2 name="like" size={20} stroke={getStroke(focused)} />
+          ),
+        })}
+      />
+      <BottomTab.Screen
+        name="Tab2"
+        component={Screens.TabTwoScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Icon2 name="circle" size={20} stroke={getStroke(focused)} />
+          ),
+        }}
+      />
+    </BottomTab.Navigator>
+  </BottomSheetModalProvider>
 );
