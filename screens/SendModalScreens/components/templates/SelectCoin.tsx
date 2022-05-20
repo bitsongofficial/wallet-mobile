@@ -1,31 +1,30 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
-import { SendCoinContext } from "navigation/SendCoinStack/context";
 import { useStore, useTheme } from "hooks";
 import { ButtonBack } from "components/atoms";
 import { ButtonCoinSelect } from "../moleculs";
+import { SendController } from "screens/SendModalScreens/classes";
 
-type Props = NativeStackScreenProps<SendCoinStackParamList, "SelectCoin">;
+type Props = {
+  controller: SendController;
+  onBack(): void;
+};
 
-export default function SelectCoin({ navigation }: Props) {
+export default function SelectCoin({ controller, onBack }: Props) {
   const theme = useTheme();
   const { wallet } = useStore();
-  const context = useContext(SendCoinContext);
 
-  const goBack = useCallback(() => navigation.goBack(), []);
   const selectCoin = useCallback(
     (coin) => {
-      context.setCoin(coin);
-      goBack();
+      controller.creater.setCoin(coin);
+      onBack();
     },
-    [context.setCoin]
+    [controller, onBack]
   );
 
   return (
     <View style={styles.container}>
-      <ButtonBack onPress={goBack} />
+      <ButtonBack onPress={onBack} />
       <Text style={[styles.title, theme.text.primary]}>Select Coin</Text>
       <Text style={[styles.subtitle, theme.text.secondary]}>
         Select also the chain where your coin come from
@@ -44,7 +43,7 @@ export default function SelectCoin({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 36,
+    marginTop: 15,
   },
   title: {
     fontSize: 18,

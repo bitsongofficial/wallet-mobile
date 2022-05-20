@@ -41,8 +41,16 @@ export default observer<Props>(function SendModal({
   const { steps, creater } = controller;
   console.log("steps.title", steps.title);
 
-  const title = useMemo(() => {}, []);
-  const subtitle = useMemo(() => {}, []);
+  const isShowHeader = steps.title !== "Select coin";
+
+  const title = useMemo(
+    () => (steps.title === "Send Recap" ? steps.title : "Send"),
+    [steps.title]
+  );
+  const subtitle = useMemo(
+    () => (steps.title !== "Send Recap" ? steps.title : undefined),
+    [steps.title]
+  );
 
   const onPressScanner = useCallback(
     () =>
@@ -51,24 +59,27 @@ export default observer<Props>(function SendModal({
       }),
     [navigation, creater]
   );
+
   return (
-    <BottomSheetView style={[styles.container, style]}>
+    <BottomSheetView style={[styles.container]}>
       <View style={styles.wrapper}>
-        <Header
-          title="Send"
-          subtitle={steps.title}
-          Pagination={<Pagination acitveIndex={steps.active} count={3} />}
-          style={styles.header}
-        />
+        {isShowHeader && (
+          <Header
+            title={title}
+            subtitle={subtitle}
+            Pagination={<Pagination acitveIndex={steps.active} count={3} />}
+            style={styles.header}
+          />
+        )}
 
         {steps.title === "Insert Import" && (
           <InsertImport
             controller={controller}
             onPressNext={() => steps.goTo("Select Receiver")}
+            onPressBack={close}
             onPressSelectCoin={() => steps.goTo("Select coin")}
           />
         )}
-
         {steps.title === "Select Receiver" && (
           <SelectReceiver
             controller={controller}
@@ -77,7 +88,6 @@ export default observer<Props>(function SendModal({
             onPressScanner={onPressScanner}
           />
         )}
-
         {steps.title === "Send Recap" && (
           <SendRecap
             controller={controller}
@@ -85,8 +95,9 @@ export default observer<Props>(function SendModal({
             onPressSend={close}
           />
         )}
-
-        {/* {steps.title === "Select coin" && <SelectCoin />} */}
+        {steps.title === "Select coin" && (
+          <SelectCoin controller={controller} onBack={steps.goBack} />
+        )}
       </View>
     </BottomSheetView>
   );

@@ -69,6 +69,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const openSend = useCallback(() => bottomSheetSEND.current?.present(), []);
   const closeSend = useCallback(() => bottomSheetSEND.current?.close(), []);
+
   const openScanner = useCallback(
     () => navigation.navigate("ScannerQR", { onBarCodeScanned: console.log }),
     []
@@ -155,11 +156,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
         <BottomSheetModal
           ref={bottomSheetSEND}
-          index={0}
           snapPoints={["85%"]}
-          style={{ zIndex: 0 }}
-          keyboardBlurBehavior="restore"
+          keyboardBehavior="extend"
+          keyboardBlurBehavior="restore" // for android inner scroll
           android_keyboardInputMode="adjustResize"
+          enableOverDrag={false}
         >
           <SendModal
             style={sendCoinContainerStyle}

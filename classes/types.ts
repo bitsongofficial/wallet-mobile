@@ -17,7 +17,7 @@ export type IPerson = {
 // WIP
 export type ITransaction = {
   coin: ICoin;
-  amount: number;
+  amount: string;
   address: string;
   receiver: IPerson;
 };

@@ -35,7 +35,7 @@ export default observer(function SelectReceiver({
         <CardAddress
           input={addressInput}
           onPressQR={onPressScanner}
-          style={[styles.input]}
+          style={styles.input}
         />
 
         <animated.View style={hidden}>

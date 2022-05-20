@@ -19,6 +19,7 @@ export default observer(({ gas, memo, speed, onFocus }: Props) => {
   const [isOpen, setIsOpen] = useState(true);
   const toggle = useCallback(() => setIsOpen((value) => !value), []);
   const messages = [{}];
+
   return (
     <>
       <View style={{ flexDirection: "row", marginBottom: 16, marginLeft: 11 }}>
@@ -26,8 +27,8 @@ export default observer(({ gas, memo, speed, onFocus }: Props) => {
         <Badge count={1} />
       </View>
 
-      {messages.map((message) => (
-        <Message item={message} />
+      {messages.map((message, index) => (
+        <Message item={message} key={index} />
       ))}
 
       <View style={styles.toggleHide}>

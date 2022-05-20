@@ -18,8 +18,9 @@ export default class SendController {
   }
 
   addAmountNumber(num: string) {
-    const amount = this.creater.amount + num;
-    if (amount) this.creater.setAmount(amount);
+    if ((num === "." && !this.creater.amount.includes(num)) || num !== ".") {
+      this.creater.setAmount(this.creater.amount + num);
+    }
   }
 
   removeAmountNumber() {

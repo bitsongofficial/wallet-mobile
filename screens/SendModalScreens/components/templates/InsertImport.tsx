@@ -1,8 +1,9 @@
+import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
 import { Coin } from "classes";
-import { COLOR } from "utils";
+import { COLOR, round } from "utils";
 import { useTheme } from "hooks";
 import { Button, Icon2 } from "components/atoms";
 import { Numpad } from "components/moleculs";
@@ -14,15 +15,29 @@ type Props = {
   controller: SendController;
   onPressSelectCoin(): void;
   onPressNext(): void;
+  onPressBack(): void;
 };
 
 export default observer<Props>(function InsertImport({
   controller,
   onPressSelectCoin,
   onPressNext,
+  onPressBack,
 }) {
   const theme = useTheme();
-  const { creater } = controller;
+  const creater = controller.creater;
+
+  const tokenBalance = useMemo(() => {
+    if (creater.coin?.rate) {
+      const value = Coin.culcTokenBalance(
+        parseFloat(creater.amount),
+        creater.coin.rate
+      );
+      if (value) {
+        return round(value);
+      }
+    }
+  }, [creater.amount, creater.coin?.rate]);
 
   return (
     <>
@@ -31,19 +46,18 @@ export default observer<Props>(function InsertImport({
           {creater.amount || 0} $
         </Text>
         <View>
-          <Button contentContainerStyle={styles.maxButtonContent}>MAX</Button>
+          <Button
+            text="MAX"
+            onPress={creater.setMax}
+            contentContainerStyle={styles.maxButtonContent}
+          />
         </View>
       </View>
 
       {creater.coin && (
         <View style={styles.coin}>
           <Text style={styles.coinBalance}>
-            {!!creater.coin.rate &&
-              Coin.culcTokenBalance(
-                parseFloat(creater.amount),
-                creater.coin.rate
-              )}{" "}
-            {creater.coin?.info.coinName}
+            {tokenBalance || 0} {creater.coin?.info.coinName}
           </Text>
           <Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} />
         </View>
@@ -60,8 +74,8 @@ export default observer<Props>(function InsertImport({
       />
 
       <Footer
-        isShowBack={false}
         onPressCenter={onPressNext}
+        onPressBack={onPressBack}
         centerTitle="Continue"
       />
     </>
