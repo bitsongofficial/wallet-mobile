@@ -38,15 +38,13 @@ export default function CardData({ json, style }: Props) {
       translationY.value = contentOffset.y * 0.8;
       translationX.value = contentOffset.x * 0.8;
     },
-    onBeginDrag: (e) => {
+    onBeginDrag: () => {
       isScrolling.value = true;
     },
-    onEndDrag: (e) => {
+    onEndDrag: () => {
       isScrolling.value = false;
     },
   });
-
-  const [wholeHeight, setWholeHeight] = useState(1);
 
   const [layoutVisible, setLayoutVisible] = useState<Layout>();
   const [layoutWhole, setLayoutWhole] = useState<Layout>();
@@ -61,6 +59,7 @@ export default function CardData({ json, style }: Props) {
   );
 
   const visibleHeight = layoutVisible?.height || 1;
+  const wholeHeight = layoutWhole?.height || 1;
 
   const indicatorSize = useMemo(
     () =>
@@ -70,16 +69,9 @@ export default function CardData({ json, style }: Props) {
     [visibleHeight]
   );
 
-  const difference =
-    visibleHeight > indicatorSize ? visibleHeight - indicatorSize : 1;
-
   const animStyleY = useAnimatedStyle(() => ({
     height: indicatorSize,
     transform: [{ translateY: translationY.value }],
-  }));
-  const animStyleX = useAnimatedStyle(() => ({
-    // height: indicatorSize,
-    transform: [{ translateY: translationX.value }],
   }));
 
   return (
@@ -91,14 +83,11 @@ export default function CardData({ json, style }: Props) {
           onLayout={getLayoutVisible}
           onScroll={scrollHandler}
           scrollEventThrottle={16}
-          contentContainerStyle={styles.content}
-          indicatorStyle="white"
         >
           <Text style={[styles.text, theme.text.primary]}>{json}</Text>
         </Animated.ScrollView>
         <Animated.View style={[styles.indicatorY, animStyleY]} />
       </View>
-      <Animated.View style={[styles.indicatorX, animStyleX]} />
     </View>
   );
 }
@@ -109,8 +98,8 @@ const styles = StyleSheet.create({
     paddingVertical: 22,
     paddingHorizontal: 26,
     borderRadius: 20,
-    height: 410,
     overflow: "hidden",
+    flex: 1,
   },
   row: { flexDirection: "row" },
   indicatorY: {
@@ -124,11 +113,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: COLOR.White,
     opacity: 0.2,
-  },
-
-  content: {
-    // paddingTop: 14,
-    // paddingLeft: 28,
   },
   text: {
     fontFamily: "Courier Prime",

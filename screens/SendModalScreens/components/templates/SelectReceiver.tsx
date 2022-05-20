@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { animated, useSpring } from "@react-spring/native";
@@ -25,9 +26,8 @@ export default observer(function SelectReceiver({
   const { creater } = controller;
   const { addressInput } = creater;
 
-  const hidden = useSpring({
-    opacity: addressInput.isFocused ? 0.1 : 1,
-  });
+  const hidden = useSpring({ opacity: addressInput.isFocused ? 0.1 : 1 });
+  useEffect(() => addressInput.focusOFF, []);
 
   return (
     <>

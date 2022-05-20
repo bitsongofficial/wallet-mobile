@@ -50,18 +50,16 @@ export default ({
 
 const styles = StyleSheet.create({
   container: {
-    // paddingVertical: 19,
-    paddingHorizontal: 24,
     borderRadius: 50,
+    overflow: "hidden",
   },
   component: {
     fontFamily: "CircularStd",
     fontStyle: "normal",
     fontWeight: "400",
     fontSize: 14,
-    // lineHeight: 25,
     // https://stackoverflow.com/a/68458803
-    paddingHorizontal: 0,
+    paddingHorizontal: 24,
     marginVertical: 19,
     height: 18,
   },

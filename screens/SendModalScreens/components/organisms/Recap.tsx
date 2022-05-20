@@ -1,27 +1,31 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
-import { Card, Icon } from "components/atoms";
+import { Card, Icon, Input } from "components/atoms";
 import { useTheme } from "hooks";
 import { IPerson } from "classes/types";
 import { Coin, Transaction } from "classes";
-import { COLOR } from "utils";
+import { COLOR, InputHandler } from "utils";
 import { SendController } from "screens/SendModalScreens/classes";
 
 type Props = {
   creater: SendController["creater"];
   onPress(): void;
+  style?: StyleProp<ViewStyle>;
+  memoInput: InputHandler;
 };
 
 export default observer<Props>(function CardWallet({
   creater,
   onPress,
+  style,
+  memoInput,
 }: Props) {
   const theme = useTheme();
   const { addressInput, amount, coin, receiver } = creater;
   return (
-    <>
-      <Card style={styles.container}>
+    <View style={[styles.container, style]}>
+      <Card style={styles.card}>
         <View style={styles.title}>
           <Text style={[styles.text, theme.text.colorText]}>You will send</Text>
           <TouchableOpacity onPress={onPress}>
@@ -65,17 +69,24 @@ export default observer<Props>(function CardWallet({
         </View>
       </Card>
 
-      <View style={styles.funds}>
-        <Text style={[styles.caption, theme.text.primary]}>
-          Your funds come from
-        </Text>
-      </View>
-    </>
+      <Input
+        bottomsheet
+        placeholder="Add memo"
+        value={memoInput.value}
+        onChangeText={memoInput.set}
+        onFocus={memoInput.focusON}
+        onBlur={memoInput.focusOFF}
+        style={styles.input}
+      />
+    </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  card: {
     backgroundColor: COLOR.Dark3,
     padding: 27,
     paddingTop: 33,
@@ -117,19 +128,9 @@ const styles = StyleSheet.create({
     backgroundColor: "grey",
   },
   // --------
-  funds: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-
-    marginTop: 27,
-  },
-  caption: {
-    fontFamily: "CircularStd",
-    fontStyle: "normal",
-    fontWeight: "500",
-    fontSize: 13,
-    lineHeight: 16,
+  input: {
+    backgroundColor: COLOR.Dark3,
+    marginTop: 24,
   },
   // --------
 });

@@ -39,6 +39,7 @@ export default function Footer({
 const styles = StyleSheet.create({
   container: {
     justifyContent: "flex-end",
+    paddingBottom: 16,
   },
 
   flex1: { flex: 1, justifyContent: "center" },

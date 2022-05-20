@@ -58,41 +58,43 @@ export default observer<Props>(({ navigation }) => {
           style={styles.keyboardAvoiding}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={styles.scrollviewContent}
-          >
-            <View>
-              <Title text={controller.steps.title} />
-              <Subtitle style={styles.subtitle}>
-                This is the only way you will be able to {"\n"}recover your
-                account. Please store it {"\n"}somewhere safe!
-              </Subtitle>
-            </View>
-
-            {controller.steps.active === 0 && controller.phrase.words && (
+          <View>
+            <Title text={controller.steps.title} />
+            <Subtitle style={styles.subtitle}>
+              This is the only way you will be able to {"\n"}recover your
+              account. Please store it {"\n"}somewhere safe!
+            </Subtitle>
+          </View>
+          {controller.steps.active === 0 ? (
+            controller.phrase.words && (
               <CreateSeed
                 isHidden={isHidden}
                 onPressToggle={toggleHidden}
                 phrase={controller.phrase}
               />
-            )}
+            )
+          ) : (
+            <ScrollView
+              style={{ flex: 1 }}
+              contentContainerStyle={styles.scrollviewContent}
+            >
+              {controller.steps.active === 1 && (
+                <Input
+                  placeholder="Wallet Name"
+                  value={controller.walletName.value}
+                  onChangeText={controller.walletName.set}
+                  style={styles.input}
+                />
+              )}
 
-            {controller.steps.active === 1 && (
-              <Input
-                placeholder="Wallet Name"
-                value={controller.walletName.value}
-                onChangeText={controller.walletName.set}
-                style={styles.input}
-              />
-            )}
+              {controller.steps.active === 2 && <SetPin pin={controller.pin} />}
 
-            {controller.steps.active === 2 && <SetPin pin={controller.pin} />}
+              {controller.steps.active === 3 && (
+                <SetPin pin={controller.confirm} />
+              )}
+            </ScrollView>
+          )}
 
-            {controller.steps.active === 3 && (
-              <SetPin pin={controller.confirm} />
-            )}
-          </ScrollView>
           <Footer
             onPressBack={goBack}
             onPressNext={goNext}

@@ -57,24 +57,22 @@ export default observer<Props>(({ navigation }) => {
           </View>
 
           {controller.steps.active === 0 && (
-            <>
-              <ScrollView
-                ref={scrollview}
-                style={styles.scrollview}
-                onContentSizeChange={scrollingEnd}
-                contentContainerStyle={styles.scrollviewContent}
-              >
-                <View style={styles.paste}>
-                  <Button
-                    text="Paste"
-                    contentContainerStyle={styles.buttonContent}
-                    textStyle={styles.buttonText}
-                    onPress={controller.steps.next}
-                  />
-                </View>
-                <PhraseInput phrase={controller.phrase} />
-              </ScrollView>
-            </>
+            <ScrollView
+              ref={scrollview}
+              style={styles.scrollview}
+              onContentSizeChange={scrollingEnd}
+              contentContainerStyle={styles.scrollviewContent}
+            >
+              <View style={styles.paste}>
+                <Button
+                  text="Paste"
+                  contentContainerStyle={styles.buttonContent}
+                  textStyle={styles.buttonText}
+                  onPress={pasteFromClipboard}
+                />
+              </View>
+              <PhraseInput phrase={controller.phrase} />
+            </ScrollView>
           )}
 
           <View style={styles.fullSize}>
@@ -98,7 +96,7 @@ export default observer<Props>(({ navigation }) => {
         <Footer
           onPressBack={goBack}
           onPressNext={goNext}
-          nextButtonText={controller.steps.active === 0 ? "Paste" : "Continue"}
+          nextButtonText="Continue"
           isHideNext={!controller.isCanNext}
           style={styles.mh30}
         />

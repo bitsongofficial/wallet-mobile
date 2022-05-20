@@ -58,6 +58,14 @@ export default observer<Props>(function SendModal({
     return () => handler.remove();
   }, [goBack]);
 
+  const onPressScanner = useCallback(
+    () =>
+      navigation.push("ScannerQR", {
+        onBarCodeScanned: creater.addressInput.set,
+      }),
+    [navigation, creater]
+  );
+  // --------- Header --------------
   const isShowHeader = steps.title !== "Select coin";
 
   const title = useMemo(
@@ -68,14 +76,7 @@ export default observer<Props>(function SendModal({
     () => (steps.title !== "Send Recap" ? steps.title : undefined),
     [steps.title]
   );
-
-  const onPressScanner = useCallback(
-    () =>
-      navigation.push("ScannerQR", {
-        onBarCodeScanned: creater.addressInput.set,
-      }),
-    [navigation, creater]
-  );
+  // =======================
 
   return (
     <BottomSheetView style={[styles.container]}>
