@@ -4,6 +4,7 @@ import { Card, Icon2 } from "components/atoms";
 import { useTheme } from "hooks";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { COLOR, InputHandler } from "utils";
+import { useMemo } from "react";
 
 type Props = {
   input: InputHandler;
@@ -17,22 +18,28 @@ export default observer<Props>(function CardWallet({
   style,
 }: Props) {
   const theme = useTheme();
+  const value = useMemo(() => {
+    const text = input.value;
+    if (input.isFocused || text.length < 25) return text;
+    return `${text.substring(0, 16)}..${text.slice(-7)}`;
+  }, [input.isFocused, input.value]);
+
   return (
     <Card style={[styles.container, style]}>
       <TextInput
-        style={theme.text.primary}
+        style={[theme.text.primary, styles.input]}
         placeholder="Public Address"
         onChangeText={input.set}
         onFocus={input.focusON}
         onBlur={input.focusOFF}
         placeholderTextColor={theme.input.placeholder}
-        value={input.value || ""}
+        value={value}
       />
-      <TouchableOpacity onPress={onPressQR}>
-        <View style={styles.iconContainer}>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={onPressQR} style={styles.touchable}>
           <Icon2 name="scan" stroke={COLOR.RoyalBlue} size={18} />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
     </Card>
   );
 });
@@ -41,13 +48,21 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLOR.Dark3,
     height: 70,
-    alignItems: "center",
     justifyContent: "space-between",
     flexDirection: "row",
+    overflow: "hidden",
+  },
+  input: {
+    paddingLeft: 26,
+    flex: 1,
+  },
+  touchable: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 40,
     padding: 26,
   },
-  iconContainer: {
-    padding: 8,
-    borderRadius: 16,
+  buttonContainer: {
+    justifyContent: "center",
   },
 });
