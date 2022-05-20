@@ -14,6 +14,9 @@ export function round(v: number, num = 2) {
   return +v.toFixed(num);
 }
 
+export const wait = (duration: number) =>
+  new Promise((resolve) => setTimeout(resolve, duration));
+
 export function sliceIntoChunks<T>(arr: T[], size: number) {
   const res = [];
   for (let i = 0; i < arr.length; i += size) {
