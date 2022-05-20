@@ -1,5 +1,11 @@
-import { useCallback, useMemo } from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { useCallback, useEffect, useMemo } from "react";
+import {
+  BackHandler,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import { observer } from "mobx-react-lite";
 import { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CompositeNavigationProp } from "@react-navigation/native";
@@ -37,9 +43,20 @@ export default observer<Props>(function SendModal({
     () => new SendController(store.wallet.coins[0]),
     [store]
   );
-
   const { steps, creater } = controller;
-  console.log("steps.title", steps.title);
+
+  const goBack = useCallback(
+    () => (steps.title === "Insert Import" ? close() : steps.goBack()),
+    [steps, close]
+  );
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+      goBack();
+      return true;
+    });
+    return () => handler.remove();
+  }, [goBack]);
 
   const isShowHeader = steps.title !== "Select coin";
 
@@ -83,7 +100,7 @@ export default observer<Props>(function SendModal({
         {steps.title === "Select Receiver" && (
           <SelectReceiver
             controller={controller}
-            onPressBack={steps.goBack}
+            onPressBack={goBack}
             onPressRecap={() => steps.goTo("Send Recap")}
             onPressScanner={onPressScanner}
           />
@@ -91,12 +108,12 @@ export default observer<Props>(function SendModal({
         {steps.title === "Send Recap" && (
           <SendRecap
             controller={controller}
-            onPressBack={steps.goBack}
+            onPressBack={goBack}
             onPressSend={close}
           />
         )}
         {steps.title === "Select coin" && (
-          <SelectCoin controller={controller} onBack={steps.goBack} />
+          <SelectCoin controller={controller} onBack={goBack} />
         )}
       </View>
     </BottomSheetView>
