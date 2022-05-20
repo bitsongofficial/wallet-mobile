@@ -12,6 +12,7 @@ import { Footer, SetPin, PhraseInput } from "./components/organisms";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFooter, useImportFromSeed } from "./hooks";
+import * as Clipboard from "expo-clipboard";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ImportFromSeed">;
 
@@ -23,6 +24,11 @@ export default observer<Props>(({ navigation }) => {
   const scrollingEnd = useCallback(() => {
     scrollview.current?.scrollToEnd();
   }, []);
+
+  const pasteFromClipboard = useCallback(async () => {
+    const clipboard = await Clipboard.getStringAsync(); // TODO: Check, why not working
+    controller.phrase.setWords(clipboard.split(/^.+\w+\d+(\s+[\sa-zA-Z]+)$/));
+  }, [controller.phrase]);
 
   return (
     <>
