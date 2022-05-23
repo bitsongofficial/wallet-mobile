@@ -29,6 +29,7 @@ export type RootStackParamList = {
   // After Auth
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   SendDetailsFull: undefined;
+  Profile: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

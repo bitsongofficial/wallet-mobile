@@ -34,6 +34,11 @@ export default () => (
         component={Screens.ImportWithKeplr}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="Profile"
+        component={Screens.Profile}
+        options={{ headerShown: false }}
+      />
 
       {/* auth */}
       <Stack.Screen
