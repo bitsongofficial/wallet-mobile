@@ -2,10 +2,12 @@ import { StyleSheet, View } from "react-native";
 import { SvgCss, XmlProps } from "react-native-svg";
 import Icons from "assets/svg2/icons";
 
+export type IconName = keyof typeof Icons;
+
 type Props = Omit<XmlProps, "xml" | "fill"> & {
   size?: number;
   fill?: string;
-  name: keyof typeof Icons;
+  name: IconName;
 };
 
 export default ({ size = 14, name, fill, ...props }: Props) => {
