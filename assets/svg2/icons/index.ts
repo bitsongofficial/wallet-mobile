@@ -4,6 +4,7 @@ import eye_closed_gradient from "./eye-closed_gradient.svg";
 import fingerprint_gradient from "./fingerprint_gradient.svg";
 import eye from "./eye.svg";
 import logo from "./logo.svg";
+import logo_black from "./logo_black.svg";
 import stake from "./stake.svg";
 import like from "./like.svg";
 import home from "./home.svg";
@@ -18,6 +19,17 @@ import restake from "./restake.svg";
 import unstake from "./unstake.svg";
 import upNdown from "./upNdown.svg";
 
+import address_book from "./address_book.svg";
+import chat_dots from "./chat_dots.svg";
+import file_text from "./file_text.svg";
+import moon from "./moon.svg";
+import star_shield from "./star_shield.svg";
+import star from "./star.svg";
+import translate from "./translate.svg";
+import wallet from "./wallet.svg";
+import circle_dollar from "./circle_dollar.svg";
+import bell from "./bell.svg";
+
 export default <const>{
   eye_closed_gradient,
   fingerprint_gradient,
@@ -25,6 +37,7 @@ export default <const>{
   chevron_left,
   eye,
   logo,
+  logo_black,
   stake,
   like,
   home,
@@ -38,4 +51,15 @@ export default <const>{
   restake,
   unstake,
   upNdown,
+
+  address_book,
+  chat_dots,
+  file_text,
+  moon,
+  star_shield,
+  star,
+  translate,
+  wallet,
+  circle_dollar,
+  bell,
 };
