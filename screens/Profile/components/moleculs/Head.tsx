@@ -1,25 +1,37 @@
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
 import { Button } from "components/atoms";
-import { useTheme } from "hooks";
-import { COLOR, hexAlpha } from "utils";
-import { Avatar } from "../atoms";
-import Title from "../atoms/Title";
+import { COLOR, hexAlpha, InputHandler } from "utils";
+import { Avatar, Title } from "../atoms";
+import { TextInput } from "react-native-gesture-handler";
 
 type Props = {
   style: StyleProp<ViewStyle>;
+  input: InputHandler;
+  isOpenInput: boolean;
+  onPressSetNick(): void;
 };
 
-export default observer<Props>(({ style }) => {
-  const theme = useTheme();
+export default observer<Props>(({ style, input, isOpenInput }) => {
   return (
     <View style={[styles.container, style]}>
       <View style={styles.user}>
         <Avatar style={styles.avatar} />
-        <Title>Profile</Title>
+        {isOpenInput ? (
+          <TextInput
+            style={styles.input}
+            value={input.value}
+            onChangeText={input.set}
+            onFocus={input.focusON}
+            onBlur={input.focusOFF}
+          />
+        ) : (
+          <Title>Profile</Title>
+        )}
       </View>
       <Button
         text="Set nick"
+        onPress={open}
         style={styles.button}
         contentContainerStyle={styles.buttonContent}
         textStyle={styles.buttonText}
@@ -36,13 +48,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  avatar: {
-    marginRight: 18,
-  },
-
   user: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  avatar: {
+    marginRight: 18,
+  },
+  input: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "500",
+    fontSize: 28,
+    lineHeight: 35,
   },
 
   button: {
