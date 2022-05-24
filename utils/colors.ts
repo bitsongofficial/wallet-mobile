@@ -14,6 +14,7 @@ enum COLOR {
   RoyalBlue2 = "#575BDB",
 
   Lavender = "#D2D7F7",
+  Purple = "#9493DF",
 }
 
 export default COLOR;
