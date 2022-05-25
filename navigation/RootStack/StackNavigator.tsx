@@ -39,6 +39,16 @@ export default () => (
         component={Screens.Profile}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="SettingsSecurity"
+        component={Screens.SettingsSecurity}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SettingsNotifications"
+        component={Screens.SettingsNotifications}
+        options={{ headerShown: false }}
+      />
 
       {/* auth */}
       <Stack.Screen
