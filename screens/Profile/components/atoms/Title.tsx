@@ -1,5 +1,6 @@
 import { StyleProp, StyleSheet, Text, TextStyle } from "react-native";
 import { useTheme } from "hooks";
+import { animated } from "@react-spring/native";
 
 type Props = {
   text?: string;
@@ -10,9 +11,9 @@ type Props = {
 export default ({ children, text, style }: Props) => {
   const theme = useTheme();
   return (
-    <Text style={[styles.text, theme.text.primary, style]}>
+    <animated.Text style={[styles.text, theme.text.primary, style]}>
       {text || children}
-    </Text>
+    </animated.Text>
   );
 };
 
