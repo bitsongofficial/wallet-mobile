@@ -21,16 +21,10 @@ type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 export default observer<Props>(function MainScreen({ navigation }) {
   const { settings, user, dapp } = useStore();
 
-  const [isOpenInput, setOpenInput] = useState(false);
-  const openInput = useCallback(() => setOpenInput(true), []);
-  const inputNick = useMemo(() => new InputHandler(), []);
+  const inputNick = useMemo(() => new InputHandler(user?.nick), [user]);
+  const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 });
 
-  const [isNickValid, setIsNickValid] = useState(false);
-  // TODO: need debouncer
-  const checkNick = async (nick: string) =>
-    setIsNickValid(await dapp.checkNick(nick));
-
-  useEffect(() => reaction(() => inputNick.value, checkNick), []);
+  const goBack = useCallback(() => navigation.goBack(), []);
 
   const navToPrivacy = useCallback(() => {}, []);
   const navToTerms = useCallback(() => {}, []);
@@ -57,13 +51,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
       <ThemedGradient style={styles.container}>
         <SafeAreaView style={styles.container}>
           <ScrollView>
-            <Head
-              style={styles.head}
-              input={inputNick}
-              isOpenInput={isOpenInput}
-              onPressSetNick={openInput}
-            />
-            <View style={[styles.wrapper]}>
+            <Head style={styles.head} input={inputNick} />
+            <animated.View style={[styles.wrapper, hidden]}>
               <Subtitle style={styles.subtitle}>Connected with</Subtitle>
               {/* <Wallet /> */}
               <ListButton

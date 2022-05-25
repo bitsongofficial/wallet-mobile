@@ -4,39 +4,67 @@ import { Button } from "components/atoms";
 import { COLOR, hexAlpha, InputHandler } from "utils";
 import { Avatar, Title } from "../atoms";
 import { TextInput } from "react-native-gesture-handler";
+import { useStore } from "hooks";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { reaction } from "mobx";
+import { useSpring } from "@react-spring/native";
 
 type Props = {
   style: StyleProp<ViewStyle>;
   input: InputHandler;
-  isOpenInput: boolean;
-  onPressSetNick(): void;
 };
 
-export default observer<Props>(({ style, input, isOpenInput }) => {
+export default observer<Props>(({ style, input }) => {
+  const inputRef = useRef<TextInput>(null);
+  const { dapp, user } = useStore();
+
+  const openInput = useCallback(() => inputRef.current?.focus(), []);
+
+  const [isNickValid, setIsNickValid] = useState(false);
+  // TODO: need debouncer
+  const checkNick = async (value: string) =>
+    setIsNickValid(await dapp.checkNick(value));
+
+  useEffect(() => reaction(() => input.value, checkNick), [input]);
+  useEffect(() => {
+    if (!input.isFocused && isNickValid) {
+      user?.setNick(input.value);
+    }
+  }, [input.isFocused, isNickValid, user, input]);
+
+  const hidden = useSpring({ opacity: input.isFocused ? 0.3 : 1 });
+
   return (
     <View style={[styles.container, style]}>
       <View style={styles.user}>
         <Avatar style={styles.avatar} />
-        {isOpenInput ? (
+        <View style={{ flexDirection: "row" }}>
+          <Title style={hidden}>
+            {input.value || input.isFocused ? `@` : "Profile"}
+          </Title>
           <TextInput
+            ref={inputRef}
             style={styles.input}
             value={input.value}
             onChangeText={input.set}
+            onPressIn={(e) => e.preventDefault()}
+            enabled={false}
             onFocus={input.focusON}
             onBlur={input.focusOFF}
+            focusable={false}
           />
-        ) : (
-          <Title>Profile</Title>
-        )}
+        </View>
       </View>
-      <Button
-        text="Set nick"
-        onPress={open}
-        style={styles.button}
-        contentContainerStyle={styles.buttonContent}
-        textStyle={styles.buttonText}
-        mode="fill"
-      />
+      {!input.isFocused && (
+        <Button
+          text={!input.value ? "Set nick" : "Edit"}
+          onPress={openInput}
+          style={styles.button}
+          contentContainerStyle={styles.buttonContent}
+          textStyle={styles.buttonText}
+          mode="fill"
+        />
+      )}
     </View>
   );
 });
@@ -61,6 +89,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 28,
     lineHeight: 35,
+    color: COLOR.White,
   },
 
   button: {
