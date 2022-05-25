@@ -6,13 +6,19 @@ import { RootStackParamList } from "types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useStore } from "hooks";
 import { Button, ThemedGradient } from "components/atoms";
-import { Agreement, ListButton, Subtitle, Title } from "./components/atoms";
+import {
+  Agreement,
+  Header,
+  ListButton,
+  Subtitle,
+  Title,
+} from "./components/atoms";
 import { Head } from "./components/moleculs";
-import { useSpring } from "@react-spring/native";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { reaction } from "mobx";
 import { ScrollView } from "react-native-gesture-handler";
 import { COLOR, InputHandler } from "utils";
+import { animated, useSpring } from "@react-spring/native";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -32,10 +38,19 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const openAddNewaccount = useCallback(() => {}, []);
   const openAddWatchaccount = useCallback(() => {}, []);
-  const openSecurity = useCallback(() => {}, []);
+  const openSecurity = useCallback(
+    () => navigation.push("SettingsSecurity"),
+    []
+  );
   const openAddressBook = useCallback(() => {}, []);
-  const openNotifications = useCallback(() => {}, []);
-  const openWalletConnect = useCallback(() => {}, []);
+  const openNotifications = useCallback(
+    () => navigation.push("SettingsNotifications"),
+    []
+  );
+  const openWalletConnect = useCallback(
+    () => navigation.push("WalletConnect"),
+    []
+  );
   const openLanguages = useCallback(() => {}, []);
   const openCurrency = useCallback(() => {}, []);
   const toggleNightMode = useCallback(() => {}, []);
@@ -50,6 +65,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
       <ThemedGradient style={styles.container}>
         <SafeAreaView style={styles.container}>
+          <Header onPressClose={goBack} style={styles.header} />
           <ScrollView>
             <Head style={styles.head} input={inputNick} />
             <animated.View style={[styles.wrapper, hidden]}>
@@ -80,11 +96,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
                 <ListButton
                   onPress={openSecurity}
                   icon="star_shield"
+                  text="Security"
                   arrow
                   style={styles.listButton}
-                >
-                  Security
-                </ListButton>
+                />
                 <ListButton
                   onPress={openAddressBook}
                   icon="address_book"
@@ -94,12 +109,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   Address Book
                 </ListButton>
                 <ListButton
+                  text="Notifications"
                   onPress={openNotifications}
                   icon="bell"
                   style={styles.listButton}
-                >
-                  Notifications
-                </ListButton>
+                />
                 <ListButton
                   onPress={openWalletConnect}
                   arrow
@@ -178,7 +192,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                 textStyle={styles.buttonText}
                 contentContainerStyle={styles.buttonContent}
               />
-            </View>
+            </animated.View>
           </ScrollView>
         </SafeAreaView>
       </ThemedGradient>
@@ -207,13 +221,19 @@ const Switch = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  header: {
+    marginLeft: 26,
+    marginRight: 17,
+    marginBottom: 25,
+  },
+
   head: {
     marginHorizontal: 25, // <- wrapper
     marginBottom: 30,
   },
 
   wrapper: { marginHorizontal: 34 },
-  wrapper_opecity: { opacity: 0.1 },
+  wrapper_opacity: { opacity: 0.1 },
   agreement: { marginBottom: 54, marginTop: 25 },
   title: { marginBottom: 38 },
   section: { marginBottom: 35 },
