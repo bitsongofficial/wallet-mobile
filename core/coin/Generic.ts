@@ -6,7 +6,7 @@ export class Coin {
 	public static async Do(operation: CoinOperation, params: any) {
 		if(operation in this.operations)
 		{
-			return await this.operations[operation](params)
+			return await this.operations[operation].Run(params)
 		}
 		else
 		{

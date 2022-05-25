@@ -1,5 +1,5 @@
-import { PublicWallet } from "core/storing/Generic";
+import { Wallet } from "core/types/storing/Generic";
 
 export interface BalanceData {
-	wallet: PublicWallet
+	wallet: Wallet
 }
