@@ -11,6 +11,7 @@ import home from "./home.svg";
 import circle from "./circle.svg";
 import arrow_down from "./arrow-down.svg";
 import arrow_up from "./arrow-up.svg";
+import arrow_left from "./arrow-left.svg";
 import inquire from "./inquire.svg";
 import scan from "./scan.svg";
 import settings from "./settings.svg";
@@ -29,6 +30,7 @@ import translate from "./translate.svg";
 import wallet from "./wallet.svg";
 import circle_dollar from "./circle_dollar.svg";
 import bell from "./bell.svg";
+import close from "./close.svg";
 
 export default <const>{
   eye_closed_gradient,
@@ -44,6 +46,7 @@ export default <const>{
   circle,
   arrow_down,
   arrow_up,
+  arrow_left,
   inquire,
   scan,
   settings,
@@ -51,6 +54,7 @@ export default <const>{
   restake,
   unstake,
   upNdown,
+  close,
 
   address_book,
   chat_dots,
