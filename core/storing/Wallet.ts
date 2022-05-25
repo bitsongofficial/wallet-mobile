@@ -33,7 +33,10 @@ class HDWalletDataToWallet extends BaseDerivator {
 	protected async InnerDerive(data: any)
 	{
 		try {
-			return await DirectSecp256k1HdWallet.fromMnemonic(data.mnemonic, stringToPath(data.hdPath), data.prefix)
+			return await DirectSecp256k1HdWallet.fromMnemonic(data.mnemonic, {
+				hdPaths: [stringToPath(data.hdPath)],
+				prefix: data.prefix
+			})
 		}
 		catch(e)
 		{
@@ -95,7 +98,10 @@ export class CosmoWallet implements Wallet {
 const CosmoWalletGenerator: any = {
 	MnemonicFromChain: async function(chain: string, length: 12 | 15 | 18 | 21 | 24 = 15, accountIndex:number = 0, walletIndex:number = 0)
 	{
-		return (await DirectSecp256k1HdWallet.generate(length, stringToPath(chainToDerivationPath(chain) + accountIndex + "/" + walletIndex), chain)).mnemonic
+		return (await DirectSecp256k1HdWallet.generate(length, {
+			hdPaths:[stringToPath(chainToDerivationPath(chain) + accountIndex + "/" + walletIndex)],
+			prefix: chain
+		})).mnemonic
 	}
 }
 CosmoWalletGenerator.CosmoWalletFromChain = function(chain: string): [CosmoWallet, MnemonicStore]
