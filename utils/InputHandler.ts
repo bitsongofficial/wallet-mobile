@@ -11,12 +11,6 @@ export default class InputHandler {
     this.value = value;
   }
 
-  /** React FormEvent handler */
-  setValue({ target }: FormEvent) {
-    // @ts-ignore
-    this.value = target.value;
-  }
-
   focusON() {
     this.isFocused = true;
   }
