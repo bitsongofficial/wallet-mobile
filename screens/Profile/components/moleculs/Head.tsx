@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Button } from "components/atoms";
 import { COLOR, hexAlpha, InputHandler } from "utils";
 import { Avatar, Title } from "../atoms";
-import { TextInput } from "react-native-gesture-handler";
+import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { useStore } from "hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { reaction } from "mobx";
@@ -12,9 +12,10 @@ import { useSpring } from "@react-spring/native";
 type Props = {
   style: StyleProp<ViewStyle>;
   input: InputHandler;
+  onPressAvatar?(): void;
 };
 
-export default observer<Props>(({ style, input }) => {
+export default observer<Props>(({ style, input, onPressAvatar }) => {
   const inputRef = useRef<TextInput>(null);
   const { dapp, user } = useStore();
 
@@ -37,7 +38,9 @@ export default observer<Props>(({ style, input }) => {
   return (
     <View style={[styles.container, style]}>
       <View style={styles.user}>
-        <Avatar style={styles.avatar} />
+        <TouchableOpacity onPress={onPressAvatar}>
+          <Avatar style={styles.avatar} />
+        </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
           <Title style={hidden}>
             {input.value || input.isFocused ? `@` : "Profile"}
