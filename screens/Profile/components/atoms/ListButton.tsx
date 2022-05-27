@@ -1,9 +1,7 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { observer } from "mobx-react-lite";
-import { Button, Icon2, IconName } from "components/atoms";
+import { Icon2, IconName } from "components/atoms";
 import { useTheme } from "hooks";
 import { COLOR, hexAlpha } from "utils";
-import { Avatar } from "../atoms";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 type Props = {
@@ -16,34 +14,40 @@ type Props = {
   Right?: JSX.Element;
 };
 
-export default observer<Props>(
-  ({ style, icon, children, text, arrow, Right, onPress }) => {
-    const theme = useTheme();
-    return (
-      <TouchableOpacity onPress={onPress} style={style}>
-        <View style={styles.container}>
-          <View style={styles.left}>
-            <Icon2
-              name={icon}
-              size={24}
-              style={styles.icon}
-              stroke={hexAlpha(COLOR.White, 50)}
-            />
-            <Text style={[styles.text, theme.text.primary]}>
-              {children || text}
-            </Text>
-          </View>
-          <View style={styles.right}>
-            {Right}
-            {arrow && (
-              <Icon2 name="chevron_right" size={16} stroke={COLOR.White} />
-            )}
-          </View>
+export default ({
+  style,
+  icon,
+  children,
+  text,
+  arrow,
+  Right,
+  onPress,
+}: Props) => {
+  const theme = useTheme();
+  return (
+    <TouchableOpacity onPress={onPress} style={style}>
+      <View style={styles.container}>
+        <View style={styles.left}>
+          <Icon2
+            name={icon}
+            size={24}
+            style={styles.icon}
+            stroke={hexAlpha(COLOR.White, 50)}
+          />
+          <Text style={[styles.text, theme.text.primary]}>
+            {children || text}
+          </Text>
         </View>
-      </TouchableOpacity>
-    );
-  }
-);
+        <View style={styles.right}>
+          {Right}
+          {arrow && (
+            <Icon2 name="chevron_right" size={16} stroke={COLOR.White} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
