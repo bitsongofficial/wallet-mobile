@@ -4,3 +4,4 @@ export { default as Subtitle } from "./Subtitle";
 export { default as ListButton } from "./ListButton";
 export { default as Agreement } from "./Agreement";
 export { default as Header } from "./Header";
+export { default as RadioButton } from "./RadioButton";
