@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useStore, useTheme } from "hooks";
+import { useStore } from "hooks";
 import { InputHandler } from "utils";
 import { Search, Title } from "../atoms";
 import { LanguageItem } from "../moleculs";
@@ -36,8 +36,7 @@ const languages = [
   { name: "123", value: "en", id: 22 },
 ];
 
-export default observer<Props>(({ close }) => {
-  const theme = useTheme();
+export default observer<Props>(({}) => {
   const { settings } = useStore();
 
   const input = useMemo(() => new InputHandler(), []);
@@ -52,16 +51,21 @@ export default observer<Props>(({ close }) => {
 
   return (
     <View style={styles.container}>
-      <Title style={styles.title}>Create new Mnemonics</Title>
-      <Search style={styles.search} />
+      <Title style={styles.title}>Seleziona Lingua</Title>
+      <Search
+        placeholder="Cerca Lingua"
+        style={styles.search}
+        value={input.value}
+        onChangeText={input.set}
+      />
       <BottomSheetScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
       >
         {filtred.map((language, index) => (
           <LanguageItem
-            value={language.name}
             key={index}
+            value={language.name}
             isActive={language.value === settings.language}
             onPress={settings.setLenguage}
           />
@@ -81,6 +85,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
 
     marginBottom: 30,
+    textAlign: "center",
   },
   search: {
     marginBottom: 9,
