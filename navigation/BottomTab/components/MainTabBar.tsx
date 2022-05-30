@@ -43,12 +43,6 @@ export default function MyTabBar(props: BottomTabBarProps) {
 }
 
 const styles = StyleSheet.create({
-  absolute: {
-    position: "absolute",
-    top: 0,
-    bottom: 160,
-    // zIndex: 1,
-  },
   container: {
     position: "absolute",
     height: 56,
@@ -62,6 +56,8 @@ const styles = StyleSheet.create({
   gradient: {
     flexDirection: "row",
     justifyContent: "space-evenly",
+    paddingHorizontal: 36,
+    paddingVertical: 18,
     flex: 1,
   },
   button: {

@@ -1,4 +1,4 @@
-import { IPerson } from "./components";
+import { IPerson } from "classes/types";
 
 export const users: IPerson[] = [
   {

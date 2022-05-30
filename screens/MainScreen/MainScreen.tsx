@@ -20,15 +20,21 @@ import { observer } from "mobx-react-lite";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ToolbarFull, ToolbarShort } from "./components";
 import { BottomSheetModal } from "components/moleculs";
-import SendCoinStack from "navigation/SendCoinStack";
+import SendModal from "screens/SendModalScreens/SendModal";
+import { RootStackParamList, RootTabParamList } from "types";
+import { COLOR } from "utils";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootTabParamList } from "types";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
 const tabs: ValueTabs[] = ["Coins", "Fan Tokens"];
 
-type Props = NativeStackScreenProps<RootTabParamList, "MainTab">;
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<RootStackParamList>,
+  BottomTabScreenProps<RootTabParamList, "MainTab">
+>;
 
 export default observer<Props>(function MainScreen({ navigation }) {
   const { wallet } = useStore();
@@ -60,8 +66,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
     () => bottomSheetToolbar.current?.present(),
     []
   );
+
   const openSend = useCallback(() => bottomSheetSEND.current?.present(), []);
   const closeSend = useCallback(() => bottomSheetSEND.current?.close(), []);
+
   const openScanner = useCallback(
     () => navigation.navigate("ScannerQR", { onBarCodeScanned: console.log }),
     []
@@ -148,14 +156,16 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
         <BottomSheetModal
           ref={bottomSheetSEND}
-          $modal
-          index={0}
           snapPoints={["85%"]}
+          keyboardBehavior="extend"
+          keyboardBlurBehavior="restore" // for android inner scroll
+          android_keyboardInputMode="adjustResize"
+          enableOverDrag={false}
         >
-          <SendCoinStack
+          <SendModal
             style={sendCoinContainerStyle}
-            onSend={closeSend}
-            nav={navigation}
+            close={closeSend}
+            navigation={navigation}
           />
         </BottomSheetModal>
       </SafeAreaView>
@@ -166,7 +176,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#14142e",
+    backgroundColor: COLOR.Dark3,
   },
   info: {
     marginTop: 80,
@@ -183,7 +193,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 18,
     lineHeight: 23,
-    color: "#575BDB",
+    color: COLOR.RoyalBlue2,
 
     marginBottom: 10,
   },
@@ -193,7 +203,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 42,
     lineHeight: 53,
-    color: "#FFFFFF",
+    color: COLOR.White,
 
     marginBottom: 6,
   },
@@ -203,7 +213,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 14,
     lineHeight: 18,
-    color: "#FFFFFF",
+    color: COLOR.White,
     opacity: 0.5,
   },
 
@@ -214,7 +224,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 16,
     lineHeight: 20,
-    color: "#575BDB",
+    color: COLOR.RoyalBlue2,
     marginBottom: 10,
   },
   reward_value: {
@@ -222,7 +232,7 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: "500",
     fontSize: 30,
-    color: "#FFFFFF",
+    color: COLOR.White,
   },
 
   reward_row: {

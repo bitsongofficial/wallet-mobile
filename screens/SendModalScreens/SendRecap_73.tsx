@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SendCoinStackParamList } from "navigation/SendCoinStack/types";
 import { SendCoinContext } from "navigation/SendCoinStack/context";
 import { Tabs } from "components/organisms";
-import { CardAdressSelf, CardDetails } from "./components";
+// import { CardAdressSelf, CardDetails } from "./components";
 import { Button, ButtonBack } from "components/atoms";
 import { users } from "./mock";
 

@@ -3,6 +3,7 @@ import { FlatList, ListRenderItem, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Coin } from "classes";
 import { useStore } from "hooks";
+import { COLOR } from "utils";
 import { Icon } from "components/atoms";
 import { CoinStat, Tabs, ToolbarAction } from "components/organisms";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -89,7 +90,7 @@ export default function StakingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#14142e",
+    backgroundColor: COLOR.Dark3,
   },
   info: {
     marginTop: 80,
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 42,
     lineHeight: 53,
-    color: "#FFFFFF",
+    color: COLOR.White,
 
     marginBottom: 6,
   },
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 14,
     lineHeight: 18,
-    color: "#FFFFFF",
+    color: COLOR.White,
     opacity: 0.5,
   },
 

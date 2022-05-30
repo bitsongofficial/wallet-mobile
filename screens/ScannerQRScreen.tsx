@@ -18,7 +18,7 @@ export default observer<Props>(({ navigation, route }) => {
     console.log("event :>> ", event);
   };
 
-  const [hasPermission, setHasPermission] = useState<boolean>(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {

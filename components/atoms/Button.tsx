@@ -20,6 +20,9 @@ type ButtonProps = {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  disable?: boolean;
+  Left?: JSX.Element;
+  Right?: JSX.Element;
 };
 
 export default ({
@@ -30,23 +33,26 @@ export default ({
   mode = "gradient",
   contentContainerStyle,
   textStyle,
+  disable,
+  Left,
+  Right,
 }: ButtonProps) => {
   const themeStyle = useTheme();
   const Background = mode === "gradient" ? ThemedGradient : View;
 
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={[styles.container, style]}>
+    <TouchableOpacity onPress={!disable ? onPress : undefined}>
+      <View style={[styles.container, style, disable && styles.disable]}>
         <Background style={[styles.gradient, contentContainerStyle]}>
-          <View>
-            {text || typeof children === "string" ? (
-              <Text style={[styles.text, themeStyle.text.primary, textStyle]}>
-                {text || children}
-              </Text>
-            ) : (
-              children
-            )}
-          </View>
+          {!!Left && Left}
+          {text || typeof children === "string" ? (
+            <Text style={[styles.text, themeStyle.text.primary, textStyle]}>
+              {text || children}
+            </Text>
+          ) : (
+            children
+          )}
+          {!!Right && Right}
         </Background>
       </View>
     </TouchableOpacity>
@@ -63,6 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
   },
   text: {
     fontFamily: "CircularStd",
@@ -70,5 +77,8 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 11,
     lineHeight: 14,
+  },
+  disable: {
+    opacity: 0.5,
   },
 });

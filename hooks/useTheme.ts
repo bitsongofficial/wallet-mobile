@@ -1,4 +1,5 @@
 import { TextStyle, ViewStyle } from "react-native";
+import { COLOR, hexAlpha } from "utils";
 import useStore from "./useStore";
 
 /**
@@ -21,7 +22,12 @@ interface ITheme {
     secondary: TextStyle;
     secondary2: TextStyle;
     colorText: TextStyle;
-    inputPlaceholder: string;
+  };
+  input: {
+    container: ViewStyle;
+    placeholder: string;
+    component: TextStyle;
+    autocomplite: TextStyle;
   };
   bottomsheet: {
     background: Omit<
@@ -36,26 +42,37 @@ const Theme = {
   dark: {
     gradient_colors: ["#EF015A33", "#EF015A00"],
     gradient_style: {
-      backgroundColor: "#4863E8",
+      backgroundColor: COLOR.RoyalBlue,
     },
     text: {
       primary: {
-        color: "#FFFFFF",
+        color: COLOR.White,
       },
       secondary: {
-        color: "#FFFFFF",
+        color: COLOR.White,
         opacity: 0.5,
       },
       secondary2: {
         // TODO: need alfa color or flat color
-        color: "#FFFFFF",
+        color: COLOR.White,
         opacity: 0.3,
       },
 
       colorText: {
         color: "#4C61E5",
       },
-      inputPlaceholder: "#5b5b6d", // from colorPiker for remove opacity
+    },
+    input: {
+      container: {
+        backgroundColor: COLOR.Dark2,
+      },
+      component: {
+        color: COLOR.White,
+      },
+      placeholder: COLOR.Marengo,
+      autocomplite: {
+        color: hexAlpha(COLOR.White, 20),
+      },
     },
     bottomsheet: {
       background: {

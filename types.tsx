@@ -17,15 +17,17 @@ declare global {
 }
 
 export type RootStackParamList = {
-  Root: NavigatorScreenParams<RootTabParamList> | undefined;
-  ScannerQR: { onBarCodeScanned(data: string): void };
-  Main: undefined;
-  Modal: undefined;
-  NotFound: undefined;
-  AccountHome: undefined;
+  // Before  Auth
+  Start: undefined;
   CreateWallet: undefined;
-  ImportWallet: undefined;
+  ImportFromSeed: undefined;
+  ImportWithKeplr: { data: string };
 
+  // Common
+  ScannerQR: { onBarCodeScanned(data: string): void };
+
+  // After Auth
+  Root: NavigatorScreenParams<RootTabParamList> | undefined;
   SendDetailsFull: undefined;
 };
 

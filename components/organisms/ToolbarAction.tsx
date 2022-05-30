@@ -8,7 +8,7 @@ import {
   ViewStyle,
 } from "react-native";
 import ThemedGradient from "components/atoms/ThemedGradient";
-import { hexAlpha } from "utils";
+import { COLOR, hexAlpha } from "utils";
 
 type Mode = "gradient" | "fill";
 
@@ -25,6 +25,7 @@ type Props = {
   buttonStyle?: StyleProp<ViewStyle>;
   iconContainerStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<ViewStyle>;
+  backgroundStyle?: StyleProp<ViewStyle>;
 };
 
 export default memo(
@@ -41,6 +42,7 @@ export default memo(
     buttonStyle,
     textStyle,
     iconContainerStyle,
+    backgroundStyle,
   }: Props) => {
     const sizeStyle: ViewStyle = {
       width: size,
@@ -63,6 +65,7 @@ export default memo(
                   style={[
                     styles.gradient,
                     mode === "fill" && styles.fill_color,
+                    backgroundStyle,
                   ]}
                 >
                   <View style={[styles.gradient_inner, iconContainerStyle]}>
@@ -91,7 +94,7 @@ const styles = StyleSheet.create({
   },
 
   fill_color: {
-    backgroundColor: hexAlpha("#FFFFFF", 10),
+    backgroundColor: hexAlpha(COLOR.White, 10),
   },
   gradient: {
     width: "100%",
@@ -110,6 +113,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 13,
     lineHeight: 16,
-    color: "#FFFFFF",
+    color: COLOR.White,
   },
 });

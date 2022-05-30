@@ -2,6 +2,7 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "components/atoms";
+import { COLOR } from "utils";
 
 export default function Header({}: BottomTabHeaderProps) {
   const insets = useSafeAreaInsets();
@@ -57,6 +58,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 14,
     lineHeight: 18,
-    color: "#FFFFFF",
+    color: COLOR.White,
   },
 });

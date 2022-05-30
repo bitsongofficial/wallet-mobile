@@ -1,8 +1,9 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { Icon } from "components/atoms";
+import { Icon, Icon2 } from "components/atoms";
 import { ToolbarAction } from "components/organisms";
 import { useTheme } from "hooks";
 import { observer } from "mobx-react-lite";
+import { COLOR } from "utils";
 
 type Props = {
   onPressSend?(): void;
@@ -42,59 +43,81 @@ export default observer(function ToolbarFull({
           onPress={onPressSend}
           title="Send"
           mode="gradient"
-          Icon={<Icon name="arrow_up" />}
+          Icon={<Icon2 size={18} stroke={COLOR.White} name="arrow_up" />}
           size={65}
         />
         <ToolbarAction
           onPress={onPressReceive}
+          backgroundStyle={styles.actionBackground}
           title="Receive"
-          Icon={<Icon name="arrow_down" />}
+          Icon={<Icon2 size={18} stroke={COLOR.White} name="arrow_down" />}
           size={65}
         />
         <ToolbarAction
           onPress={onPressInquire}
+          backgroundStyle={styles.actionBackground}
           title="Inquire"
-          Icon={<Icon name="tip" />}
+          Icon={<Icon2 size={18} stroke={COLOR.White} name="inquire" />}
           size={65}
         />
         <ToolbarAction
           onPress={onPressScan}
+          backgroundStyle={styles.actionBackground}
           title="Scan"
-          Icon={<Icon name="qr_code" />}
+          Icon={<Icon2 size={18} stroke={COLOR.White} name="scan" />}
           size={65}
         />
       </View>
       <View style={styles.row}>
         <ToolbarAction
           onPress={onPressClaim}
+          backgroundStyle={styles.actionBackground}
           title="Claim"
-          mode="gradient"
-          Icon={<Icon name="arrow_up_border" />}
+          Icon={<Icon2 size={18} stroke={COLOR.White} name="claim" />}
           size={65}
         />
         <ToolbarAction
           onPress={onPressStake}
+          backgroundStyle={styles.actionBackground}
           title="Stake"
-          Icon={<Icon name="stake" />}
+          Icon={<Icon2 size={18} stroke={COLOR.White} name="stake" />}
           size={65}
         />
         <ToolbarAction
           onPress={onPressUnstake}
+          backgroundStyle={styles.actionBackground}
           title="Unstake"
-          Icon={<Icon name="unstake" />}
+          Icon={<Icon2 size={18} stroke={COLOR.White} name="unstake" />}
           size={65}
         />
         <ToolbarAction
           onPress={onPressRestake}
+          backgroundStyle={styles.actionBackground}
           title="Restake"
-          Icon={<Icon name="unstake" />}
+          Icon={<Icon2 size={18} stroke={COLOR.White} name="restake" />}
           size={65}
         />
       </View>
       <View style={styles.row}>
-        <ToolbarAction onPress={onPressIssue} title="Issue" size={65} />
-        <ToolbarAction onPress={onPressMint} title="Mint" size={65} />
-        <ToolbarAction onPress={onPressBurn} title="Burn" size={65} />
+        <ToolbarAction
+          backgroundStyle={styles.actionBackground}
+          onPress={onPressIssue}
+          title="Issue"
+          size={65}
+        />
+        <ToolbarAction
+          backgroundStyle={styles.actionBackground}
+          onPress={onPressMint}
+          title="Mint"
+          size={65}
+        />
+        <ToolbarAction
+          backgroundStyle={styles.actionBackground}
+          onPress={onPressBurn}
+          title="Burn"
+          size={65}
+        />
+
         <ToolbarAction nullContent size={65} />
       </View>
     </View>
@@ -117,5 +140,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 38,
+  },
+  actionBackground: {
+    backgroundColor: COLOR.Dark3,
   },
 });

@@ -7,6 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import ThemedGradient from "components/atoms/ThemedGradient";
+import { COLOR } from "utils";
 
 type Props = {
   values: string[];
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 20,
 
-    color: "#FFFFFF",
+    color: COLOR.White,
   },
   tab_active: {
     opacity: 0.3,
