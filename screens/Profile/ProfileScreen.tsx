@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,8 +6,12 @@ import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useStore, useTheme } from "hooks";
-import { Button, ThemedGradient } from "components/atoms";
-import { ScrollView } from "react-native-gesture-handler";
+import { Button, Switch, ThemedGradient } from "components/atoms";
+import {
+  ScrollView,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
 import { COLOR, InputHandler } from "utils";
 import { animated, useSpring } from "@react-spring/native";
 import { BottomSheet } from "components/moleculs";
@@ -27,6 +31,11 @@ import {
 } from "./components/atoms";
 import { Head } from "./components/moleculs";
 import GenerateMnenonic from "./components/moleculs/GenerateMnenonic";
+import {
+  ChangeCurrency,
+  ChangeLanguage,
+  ChangeWallet,
+} from "./components/organisms";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -46,18 +55,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const snapPoints = useMemo(() => [350, "95%"], []);
 
-  const { height } = useDimensions().screen;
-
   const currentPosition = useSharedValue(0);
-  const animStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(currentPosition.value, [0, 350], [0, 0.5]);
-    console.log("opacity", opacity, height);
-    return {
-      flex: 1,
-      opacity,
-      // transform: [{ scale }],
-    };
-  });
+  const animStyle = useAnimatedStyle(() => ({
+    flex: 1,
+    opacity: interpolate(currentPosition.value, [0, 350], [0, 0.5]),
+  }));
 
   const inputNick = useMemo(() => new InputHandler(user?.nick), [user]);
   const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 });
@@ -84,10 +86,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
   const openAddressBook = useCallback(() => {}, []);
-  const openNotifications = useCallback(
-    () => navigation.push("SettingsNotifications"),
-    []
-  );
+  const openNotifications = useCallback(() => {
+    console.log("openNotifications :>> ");
+    navigation.push("SettingsNotifications");
+  }, []);
   const openWalletConnect = useCallback(
     () => navigation.push("WalletConnect"),
     []
@@ -100,6 +102,16 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const openTermsAndConditions = useCallback(() => {}, []);
   const openPrivacyPolicy = useCallback(() => {}, []);
 
+  const [first, setfirst] = useState(false);
+  const toggleNotification = useCallback(() => {
+    // console.log("press Button :>> ");
+    setfirst((value) => {
+      // console.log("toggle :>> ", !value);
+      return !value;
+    });
+  }, []);
+  // console.log("first", first);
+
   return (
     <>
       <StatusBar style="light" />
@@ -108,7 +120,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
         <SafeAreaView style={styles.container}>
           <Animated.View style={animStyle}>
             <Header onPressClose={goBack} style={styles.header} />
-            <ScrollView>
+            <ScrollView contentContainerStyle={{ paddingTop: 25 }}>
               <Head
                 style={styles.head}
                 input={inputNick}
@@ -160,6 +172,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
                     onPress={openNotifications}
                     icon="bell"
                     style={styles.listButton}
+                    Right={
+                      <Switch active={first} onPress={toggleNotification} />
+                    }
                   />
                   <ListButton
                     text="Wallet Connect"
@@ -225,7 +240,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
                 <Button
                   mode="fill"
-                  text="Disconnect and Remove Wallet"
+                  text="Disconnect and Remove W allet"
                   onPress={disconnectAndRemove}
                   style={styles.button}
                   textStyle={styles.buttonText}
@@ -245,14 +260,19 @@ export default observer<Props>(function MainScreen({ navigation }) {
         animatedPosition={currentPosition}
         index={-1}
       >
-        <View style={{ marginTop: 15, marginHorizontal: 26 }}>
-          <GenerateMnenonic />
-          {/* <AddAccount
+        <View style={{ marginTop: 15 }}>
+          <ChangeWallet />
+          <View style={{ marginHorizontal: 26 }}>
+            {/* <ChangeCurrency /> */}
+            {/* <ChangeLanguage /> */}
+            {/* <GenerateMnenonic /> */}
+            {/* <AddAccount
             onPressCreate={() => {}}
             onPressImport={() => {}}
             close={closeBSAvatar}
           /> */}
-          {/* <ChangeAvatar close={closeBSAvatar} /> */}
+            {/* <ChangeAvatar close={closeBSAvatar} /> */}
+          </View>
         </View>
       </BottomSheet>
     </>
@@ -260,30 +280,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
 });
 
 const Wallet = () => {};
-const Switch = () => {
-  const isActive = useSpring({
-    width: active ? 19 : 8,
-    backgroundColor: active ? COLOR.White : "#5A5A6D",
-  });
-  const {} = useSpring();
-  return (
-    <View
-      style={{
-        width: 55,
-        height: 28,
-        backgroundColor: COLOR.Dark3,
-        borderRadius: 20,
-      }}
-    />
-  );
-};
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     marginLeft: 26,
     marginRight: 17,
-    marginBottom: 25,
   },
 
   head: {
