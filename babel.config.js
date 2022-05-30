@@ -1,11 +1,14 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ["babel-preset-expo"],
+    presets: ["module:metro-react-native-babel-preset", "babel-preset-expo"],
     plugins: [
+      ["babel-plugin-inline-import", { extensions: [".svg"] }],
+      ["@babel/plugin-transform-flow-strip-types"], // https://github.com/react-navigation/react-navigation/issues/6058#issuecomment-583737009
       [
         "module-resolver",
         {
+          root: "./",
           alias: {
             assets: "./assets",
             components: "./components",
@@ -16,9 +19,13 @@ module.exports = function (api) {
             hooks: "./hooks",
             navigation: "./navigation",
             screens: "./screens",
+            classes: "./classes",
+            stores: "./stores",
+            core: "./core",
           },
         },
       ],
+      ["react-native-reanimated/plugin"],
     ],
   };
 };

@@ -2,7 +2,7 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "assets": ["./assets"],
       "components": ["./components"],
@@ -12,7 +12,11 @@
       "constants": ["./constants"],
       "hooks": ["./hooks"],
       "navigation": ["./navigation"],
-      "screens": ["./screens"]
-    }
+      "screens": ["./screens"],
+      "classes": ["./classes"],
+      "stores": ["./stores"],
+      "core": ["./core"],
+    },
+    "useDefineForClassFields": true,
   }
 }
