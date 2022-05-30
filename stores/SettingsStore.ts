@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 export default class SettingsStore {
   theme: "light" | "dark" = "dark";
   language: string = "en";
+  currency: Currency | null = null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -14,5 +15,9 @@ export default class SettingsStore {
 
   setLenguage(language: string) {
     this.language = language;
+  }
+
+  setCurrency(currency: Currency) {
+    this.currency = currency;
   }
 }
