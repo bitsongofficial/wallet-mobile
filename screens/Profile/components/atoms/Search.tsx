@@ -11,11 +11,14 @@ export default ({ style, ...props }: SearchProps) => (
     <BottomSheetTextInput
       style={styles.input}
       placeholderTextColor={hexAlpha(COLOR.White, 50)}
-      placeholder="Cerca Valuta"
       {...props}
     />
     <View style={styles.iconContainer}>
-      <Icon2 name="" size={21} />
+      <Icon2
+        name="magnifying_glass"
+        stroke={hexAlpha(COLOR.White, 20)}
+        size={21}
+      />
     </View>
   </View>
 );
