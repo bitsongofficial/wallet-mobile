@@ -1,5 +1,6 @@
 import chevron_right from "./chevron-right.svg";
 import chevron_left from "./chevron-left.svg";
+import chevron_down from "./chevron-down.svg";
 import eye_closed_gradient from "./eye-closed_gradient.svg";
 import fingerprint_gradient from "./fingerprint_gradient.svg";
 import eye from "./eye.svg";
@@ -31,12 +32,15 @@ import wallet from "./wallet.svg";
 import circle_dollar from "./circle_dollar.svg";
 import bell from "./bell.svg";
 import close from "./close.svg";
+import magnifying_glass from "./magnifying_glass.svg";
+import trash from "./trash.svg";
 
 export default <const>{
   eye_closed_gradient,
   fingerprint_gradient,
   chevron_right,
   chevron_left,
+  chevron_down,
   eye,
   logo,
   logo_black,
@@ -55,6 +59,7 @@ export default <const>{
   unstake,
   upNdown,
   close,
+  magnifying_glass,
 
   address_book,
   chat_dots,
@@ -66,4 +71,5 @@ export default <const>{
   wallet,
   circle_dollar,
   bell,
+  trash,
 };
