@@ -27,7 +27,6 @@
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
     "@react-spring/native": "^9.4.5",
-    "buffer": "^6.0.3",
     "@tradle/react-native-http": "^2.0.1",
     "@types/react-native-crypto-js": "^1.0.0",
     "@walletconnect/client": "^1.7.8",
