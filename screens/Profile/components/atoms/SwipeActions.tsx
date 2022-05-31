@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { Button, Icon2 } from "components/atoms";
 import { COLOR, hexAlpha } from "utils";
-import { Wallet } from "../../type";
+import { Wallet } from "classes";
 
 type Props = {
   wallet: Wallet;

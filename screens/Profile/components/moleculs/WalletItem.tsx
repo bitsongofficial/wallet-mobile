@@ -1,22 +1,32 @@
 import { useCallback, useEffect, useRef } from "react";
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import { RectButton, Swipeable } from "react-native-gesture-handler";
 import { COLOR, hexAlpha } from "utils";
 import { Icon2, IconName, ThemedGradient } from "components/atoms";
-import { Wallet } from "../../type";
+import { Wallet } from "classes";
 import { SwipeActions } from "../atoms";
 
 type Props = {
   value: Wallet;
   onPress(value: Wallet): void;
+  onPressEdit(value: Wallet): void;
+  onPressDelete(value: Wallet): void;
   isActive: boolean;
   mapItemsRef: Map<Wallet, React.RefObject<Swipeable>>;
   style?: StyleProp<ViewStyle>;
 };
 
-export default ({ value, isActive, onPress, mapItemsRef, style }: Props) => {
+export default ({
+  value,
+  isActive,
+  onPress,
+  onPressDelete,
+  onPressEdit,
+  mapItemsRef,
+  style,
+}: Props) => {
   const handlePress = useCallback(() => onPress(value), [onPress, value]);
-  const { name, type } = value;
+  const { name, type } = value.info;
 
   const iconName: IconName = type === "one" ? "wallet" : "eye";
 
@@ -29,7 +39,8 @@ export default ({ value, isActive, onPress, mapItemsRef, style }: Props) => {
   const closeOther = useCallback(
     () =>
       mapItemsRef.forEach(
-        (ref, key) => key.address !== value.address && ref.current?.close()
+        (ref, key) =>
+          key.info.address !== value.info.address && ref.current?.close()
       ),
     [value, mapItemsRef]
   );
@@ -37,8 +48,8 @@ export default ({ value, isActive, onPress, mapItemsRef, style }: Props) => {
   const renderRightActions = () => (
     <SwipeActions
       wallet={value}
-      onPressEdit={() => {}}
-      onPressTrash={() => {}}
+      onPressEdit={onPressEdit}
+      onPressTrash={onPressDelete}
       style={styles.actions}
     />
   );
@@ -56,19 +67,21 @@ export default ({ value, isActive, onPress, mapItemsRef, style }: Props) => {
       onSwipeableRightWillOpen={closeOther}
       renderRightActions={renderRightActions}
     >
-      <View style={styles.wrapper}>
-        <View style={[styles.container, style]}>
-          {isActive ? (
-            <ThemedGradient style={styles.active}>
-              <Inner />
-            </ThemedGradient>
-          ) : (
-            <View style={styles.not_active}>
-              <Inner />
-            </View>
-          )}
+      <RectButton onPress={handlePress}>
+        <View style={styles.wrapper}>
+          <View style={[styles.container, style]}>
+            {isActive ? (
+              <ThemedGradient style={styles.active}>
+                <Inner />
+              </ThemedGradient>
+            ) : (
+              <View style={styles.not_active}>
+                <Inner />
+              </View>
+            )}
+          </View>
         </View>
-      </View>
+      </RectButton>
     </Swipeable>
   );
 };
