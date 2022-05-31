@@ -20,7 +20,7 @@ Go to the project directory
 Install dependencies
 
 ```bash
-  yarn
+  yarn setup
 ```
 
 Start the server
@@ -45,6 +45,8 @@ and follow the cli instructions.
 - `Giorgio Nocera` [@Giorgionocera](https://github.com/Giorgionocera)
 
 - `Davide Segullo` [@DavideSegullo](https://github.com/DavideSegullo)
+
+- `EnricoBarbieri` [@EnricoBarbieri1997](https://github.com/EnricoBarbieri1997)
 
 ## 🔏 License
 Copyright © 2022 [BitSong](https://github.com/bitsongofficial).
