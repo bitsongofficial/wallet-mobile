@@ -13,6 +13,7 @@ enum COLOR {
   RoyalBlue = "#4863E8",
   RoyalBlue2 = "#575BDB",
   RoyalBlue3 = "#4C62E5",
+  RoyalBlue4 = "#535DDF",
 
   Lavender = "#D2D7F7",
   Purple = "#9493DF",
