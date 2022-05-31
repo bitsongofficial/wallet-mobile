@@ -5,7 +5,7 @@ import WalletStore from "./WalletStore";
 
 export default class MainStore {
   auth = null;
-  wallet = new WalletStore();
+  walletStore = new WalletStore();
   settings = new SettingsStore();
 
   user: null | User = new User(); //  null;
@@ -13,5 +13,9 @@ export default class MainStore {
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  get wallet() {
+    return this.walletStore.active;
   }
 }

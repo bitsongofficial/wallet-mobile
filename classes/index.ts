@@ -6,3 +6,4 @@ export { default as Steps } from "./Steps";
 export { default as Transaction } from "./Transaction";
 export { default as User } from "./User";
 export { default as DApp } from "./DApp";
+export { default as Wallet } from "./Wallet";
