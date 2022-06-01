@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
@@ -14,7 +9,10 @@ import { Pagination } from "components/moleculs";
 import { Subtitle, Title } from "./components/atoms";
 import { Footer, SetPin, CreateSeed } from "./components/organisms";
 import { useCreateWallet, useFooter } from "./hooks";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
 import {
@@ -49,23 +47,26 @@ export default observer<Props>(({ navigation }) => {
     []
   );
 
+  const insets = useSafeAreaInsets();
+
   return (
     <>
       <StatusBar style="light" />
-      <SafeAreaView style={styles.container}>
-        <Header
-          Left={
-            <Pagination
-              count={controller.steps.titles.length}
-              acitveIndex={controller.steps.active}
-            />
-          }
-          Center={<Icon2 name="logo" size={56} />}
-        />
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoiding}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoiding}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={-insets.bottom}
+      >
+        <SafeAreaView style={styles.container}>
+          <Header
+            Left={
+              <Pagination
+                count={controller.steps.titles.length}
+                acitveIndex={controller.steps.active}
+              />
+            }
+            Center={<Icon2 name="logo" size={56} />}
+          />
           <View>
             <Title text={controller.steps.title} style={styles.title} />
             <Subtitle style={styles.subtitle}>
@@ -108,8 +109,8 @@ export default observer<Props>(({ navigation }) => {
             nextButtonText="Continue"
             isHideNext={!controller.isCanNext}
           />
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </>
   );
 });
@@ -131,6 +132,7 @@ const biometricsAuth = async () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLOR.Dark3,
+    paddingHorizontal: 30,
     flexGrow: 1,
   },
   overlay: {
@@ -141,7 +143,6 @@ const styles = StyleSheet.create({
   },
   keyboardAvoiding: {
     flexGrow: 1,
-    marginHorizontal: 30,
   },
   scrollviewContent: {
     flexGrow: 1,
