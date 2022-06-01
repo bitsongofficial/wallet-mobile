@@ -4,7 +4,18 @@ import { MnemonicToWallet } from "core/types/storing/Cosmo";
 import { Wallet } from "core/types/storing/Generic";
 import { Derivator } from "core/types/utils/derivator";
 import { BaseDerivator } from "core/utils/Derivator";
-import { AskPinMnemonicStore, MnemonicStore, PinMnemonicStore } from "./MnemonicStore";
+import { AskPinMnemonicStore, MnemonicStore } from "./MnemonicStore";
+
+function standardWalletName(name: string)
+{
+	return 'user_wallet_' + name
+}
+
+export interface WalletData {
+	name?: string,
+	chain: string,
+	metadata?: any,
+}
 
 class WalletToKeys extends BaseDerivator {
 	protected async InnerDerive(data: any)
@@ -45,6 +56,12 @@ class HDWalletDataToWallet extends BaseDerivator {
 	}
 }
 
+export async function mnemonicToAddress(mnemonic: string, chain: string) {
+	const deriver = MnemonicToWalletGenerator.fromCosmoChain(chain)
+
+	return (await (await deriver.Derive(mnemonic)).getAccounts())[0].address
+}
+
 function chainToDerivationPath(chain: string)
 {
 	switch(chain)
@@ -54,8 +71,7 @@ function chainToDerivationPath(chain: string)
 	}
 }
 
-const MnemonicToWalletGenerator:any = {}
-MnemonicToWalletGenerator.fromCosmoChain = function(chain: string)
+const fromCosmoChain = function(chain: string) : HDWalletDataToWallet
 {
 	let chainSpecificDeriver = null
 	const accountIndex = 0
@@ -63,15 +79,19 @@ MnemonicToWalletGenerator.fromCosmoChain = function(chain: string)
 	const trailing = accountIndex + "/" + walletIndex
 	switch(chain) {
 		default:
-			chainSpecificDeriver = new MnemonicToHdWalletData('bitsong', chainToDerivationPath(chain) + trailing)
+			chainSpecificDeriver = new MnemonicToHdWalletData(chain, chainToDerivationPath(chain) + trailing)
 	}
 
 	return new HDWalletDataToWallet(chainSpecificDeriver)
 }
-MnemonicToWalletGenerator.BitsongMnemonicToWallet = MnemonicToWalletGenerator.fromCosmoChain('bitsong')
+
+const MnemonicToWalletGenerator = {
+	fromCosmoChain,
+	BitsongMnemonicToWallet: fromCosmoChain('bitsong'),
+}
 
 export class CosmoWallet implements Wallet {
-	constructor(private mnemonicStore: MnemonicStore, private accountDeriver: MnemonicToWallet)
+	constructor(private mnemonicStore: MnemonicStore, private accountDeriver: MnemonicToWallet, public metadata?: any)
 	{
 
 	}
@@ -95,23 +115,26 @@ export class CosmoWallet implements Wallet {
 	}
 }
 
-const CosmoWalletGenerator: any = {
+const CosmoWalletFromChain = function(options: WalletData): [CosmoWallet, MnemonicStore]
+{
+	const name = options.name ?? options.chain
+	const s = new AskPinMnemonicStore(standardWalletName(name), async () => {return "123456"})
+
+	let deriver = MnemonicToWalletGenerator.fromCosmoChain(options.chain)
+	const w = new CosmoWallet(s, deriver, options.metadata)
+	return [w, s]
+}
+
+const CosmoWalletGenerator = {
 	MnemonicFromChain: async function(chain: string, length: 12 | 15 | 18 | 21 | 24 = 15, accountIndex:number = 0, walletIndex:number = 0)
 	{
 		return (await DirectSecp256k1HdWallet.generate(length, {
 			hdPaths:[stringToPath(chainToDerivationPath(chain) + accountIndex + "/" + walletIndex)],
 			prefix: chain
 		})).mnemonic
-	}
+	},
+	CosmoWalletFromChain,
+	BitsongWallet: CosmoWalletFromChain({chain: 'bitsong'})
 }
-CosmoWalletGenerator.CosmoWalletFromChain = function(chain: string): [CosmoWallet, MnemonicStore]
-{
-	const s = new PinMnemonicStore('user_wallet_' + chain, 123456)
-
-	let deriver = MnemonicToWalletGenerator.fromCosmoChain(chain)
-	const w = new CosmoWallet(s, deriver)
-	return [w, s]
-}
-CosmoWalletGenerator.BitsongWallet = CosmoWalletGenerator.CosmoWalletFromChain('bitsong')
 
 export {MnemonicToWalletGenerator, CosmoWalletGenerator}

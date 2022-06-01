@@ -26,14 +26,10 @@ export class PinMnemonicStore implements SecureStore, MnemonicStore {
 export class AskPinMnemonicStore implements SecureStore, MnemonicStore {
 	store: AESStore;
 	cipher: Cipher;
-	pinRequester;
-	field: string;
-	constructor(field: string, pinRequester:any)
+	constructor(private field: string, private pinRequester: () => Promise<any>)
 	{
-		this.field = field
 		this.store = new AESStore(field, "")
 		this.cipher = new FakeCipher()
-		this.pinRequester = pinRequester
 	}
 
 	async Get() {
@@ -49,7 +45,7 @@ export class AskPinMnemonicStore implements SecureStore, MnemonicStore {
 	async AskPin()
 	{
 		// Ask Pin here
-		const pin = ""
+		const pin = await this.pinRequester()
 		this.store = new AESStore(this.field, pin)
 	}
 }
