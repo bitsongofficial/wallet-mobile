@@ -3,6 +3,7 @@ module.exports = function (api) {
   return {
     presets: ["module:metro-react-native-babel-preset", "babel-preset-expo"],
     plugins: [
+      ["@babel/plugin-proposal-class-properties", { "loose": false }],
       ["babel-plugin-inline-import", { extensions: [".svg"] }],
       ["@babel/plugin-transform-flow-strip-types"], // https://github.com/react-navigation/react-navigation/issues/6058#issuecomment-583737009
       [
