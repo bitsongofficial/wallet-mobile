@@ -1,6 +1,7 @@
-import { StyleSheet, Text } from "react-native";
-import { Button, Icon2 } from "components/atoms";
+import { StyleSheet } from "react-native";
+import { Button, GradientText, Icon2 } from "components/atoms";
 import { useTheme } from "hooks";
+import { COLOR } from "utils";
 
 type Props = {
   isHidden: boolean;
@@ -9,18 +10,25 @@ type Props = {
 
 export default ({ isHidden, onPress }: Props) => {
   const theme = useTheme();
-  return (
+  return isHidden ? (
     <Button
       mode="gradient"
+      text="Show Phrase"
       contentContainerStyle={styles.content}
-      // style={styles.buttonToggleOutline}
-      // IconRight={
-      //   <Icon name="eye" size={16} style={styles.marginRight} />
-      // }
+      textStyle={[styles.text, theme.text.primary]}
+      Right={<Icon2 name="eye" size={18} stroke={theme.text.primary.color} />}
+      onPress={onPress}
+    />
+  ) : (
+    <Button
+      mode="gradient_border"
+      contentContainerStyle={styles.content_gradient}
+      Right={<Icon2 name="eye_closed_gradient" size={18} />}
       onPress={onPress}
     >
-      <Text style={[styles.text, theme.text.primary]}>Show Phrase</Text>
-      <Icon2 name="eye" size={18} />
+      <GradientText style={[styles.text, theme.text.primary]}>
+        Hide Phrase
+      </GradientText>
     </Button>
   );
 };
@@ -30,6 +38,12 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     paddingHorizontal: 24,
     justifyContent: "space-between",
+  },
+  content_gradient: {
+    paddingVertical: 11,
+    paddingHorizontal: 22,
+    justifyContent: "space-between",
+    backgroundColor: COLOR.Dark3,
   },
   text: {
     fontFamily: "CircularStd",
