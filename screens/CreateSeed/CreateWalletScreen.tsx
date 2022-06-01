@@ -67,7 +67,7 @@ export default observer<Props>(({ navigation }) => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <View>
-            <Title text={controller.steps.title} />
+            <Title text={controller.steps.title} style={styles.title} />
             <Subtitle style={styles.subtitle}>
               This is the only way you will be able to {"\n"}recover your
               account. Please store it {"\n"}somewhere safe!
@@ -91,7 +91,6 @@ export default observer<Props>(({ navigation }) => {
                   placeholder="Wallet Name"
                   value={controller.walletName.value}
                   onChangeText={controller.walletName.set}
-                  style={styles.input}
                 />
               )}
 
@@ -162,14 +161,12 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   // ------ Text -------
+  title: { marginTop: 50 },
   subtitle: {
     marginTop: 8,
   },
   toggle: {
     marginTop: 24,
     width: 173,
-  },
-  input: {
-    marginTop: 24,
   },
 });
