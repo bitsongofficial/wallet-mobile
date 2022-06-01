@@ -2,7 +2,7 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useTheme } from "hooks";
 
-const numpad = [
+const defaultNumpad = [
   ["1", "2", "3"],
   ["4", "5", "6"],
   ["7", "8", "9"],
@@ -13,9 +13,15 @@ type NumpadProps = {
   onPress(num: string): void;
   onPressRemove(): void;
   style?: StyleProp<ViewStyle>;
+  numpad?: string[][];
 };
 
-export default function Numpad({ onPress, style, onPressRemove }: NumpadProps) {
+export default function Numpad({
+  onPress,
+  style,
+  onPressRemove,
+  numpad = defaultNumpad,
+}: NumpadProps) {
   const theme = useTheme();
 
   return (
