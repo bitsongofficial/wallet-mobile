@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
-  Modal,
   Platform,
   StyleSheet,
   View,
@@ -14,11 +13,15 @@ import { Header, Icon2, Input } from "components/atoms";
 import { Pagination } from "components/moleculs";
 import { Subtitle, Title } from "./components/atoms";
 import { Footer, SetPin, CreateSeed } from "./components/organisms";
-import { Fingerprint } from "./components/moleculs";
 import { useCreateWallet, useFooter } from "./hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
+import {
+  hasHardwareAsync,
+  isEnrolledAsync,
+  authenticateAsync,
+} from "expo-local-authentication";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
@@ -31,15 +34,20 @@ export default observer<Props>(({ navigation }) => {
   }, []);
 
   const [isHidden, setHidden] = useState(true);
-  const [isModalVisible, setModalVisible] = useState(false);
 
-  const toggleHidden = useCallback(async () => {
+  const checkBio = async () => {
     if (!controller.biometric.access) {
-      setModalVisible((value) => !value);
-      controller.biometric.setAccess(true); // TODO: fix for device
+      await biometricsAuth().catch((e) => console.error("NO", e)); // TODO: need handlers
+
+      // result && controller.biometric.setAccess(result.success);
+      controller.biometric.setAccess(true);
     }
-    setHidden((value) => !value);
-  }, []);
+  };
+
+  const toggleHidden = useCallback(
+    () => checkBio().then(() => setHidden((value) => !value)),
+    []
+  );
 
   return (
     <>
@@ -103,19 +111,23 @@ export default observer<Props>(({ navigation }) => {
           />
         </KeyboardAvoidingView>
       </SafeAreaView>
-
-      <Modal
-        transparent
-        visible={isModalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.overlay}>
-          <Fingerprint onCancel={() => setModalVisible(false)} />
-        </View>
-      </Modal>
     </>
   );
 });
+
+const biometricsAuth = async () => {
+  const compatible = await hasHardwareAsync();
+  if (!compatible)
+    throw "This device is not compatible for biometric authentication";
+
+  const enrolled = await isEnrolledAsync();
+  if (!enrolled)
+    throw `This device doesn't have biometric authentication enabled`;
+
+  const result = await authenticateAsync();
+  if (!result.success) throw `${result.error} - Authentication unsuccessful`;
+  return result;
+};
 
 const styles = StyleSheet.create({
   container: {
