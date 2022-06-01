@@ -107,7 +107,7 @@ export default observer<Props>(({ navigation }) => {
             onPressBack={goBack}
             onPressNext={goNext}
             nextButtonText="Continue"
-            isHideNext={!controller.isCanNext}
+            isDisableNext={!controller.isCanNext}
           />
         </SafeAreaView>
       </KeyboardAvoidingView>
