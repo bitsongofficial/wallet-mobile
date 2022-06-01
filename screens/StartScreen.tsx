@@ -83,7 +83,9 @@ export default observer<Props>(function StartScreen({ navigation }) {
           <View style={styles.buttons} onLayout={getLayoutButtons}>
             <Button
               text="Create Wallet"
-              Right={<Icon2 name="chevron_right" size={18} />}
+              Right={
+                <Icon2 name="chevron_right" stroke={COLOR.White} size={18} />
+              }
               onPress={createCreateWallet}
               style={styles.mb18}
               textStyle={[styles.buttonText, theme.text.primary]}
@@ -92,7 +94,9 @@ export default observer<Props>(function StartScreen({ navigation }) {
             <Button
               text="Import Existing Wallet"
               mode="fill"
-              Right={<Icon2 name="chevron_right" size={18} />}
+              Right={
+                <Icon2 name="chevron_right" stroke={COLOR.White} size={18} />
+              }
               onPress={openBottomSheet}
               style={styles.mb24}
               textStyle={[styles.buttonText, theme.text.primary]}
@@ -102,11 +106,13 @@ export default observer<Props>(function StartScreen({ navigation }) {
               mode="fill"
               onPress={test}
               contentContainerStyle={styles.buttonContent}
-              Right={<Icon2 name="chevron_right" size={18} />}
+              Right={
+                <Icon2 name="chevron_right" stroke={COLOR.White} size={18} />
+              }
             >
               <Text style={[styles.buttonText, theme.text.colorText]}>
                 Import with{" "}
-                <Text style={[theme.text.primary]}>Ledger Nano X</Text>
+                <Text style={theme.text.primary}>Ledger Nano X</Text>
               </Text>
             </Button>
           </View>
@@ -120,7 +126,9 @@ export default observer<Props>(function StartScreen({ navigation }) {
           </Text>
           <Button
             text="Import from Seed Phrase"
-            Right={<Icon2 name="chevron_right" size={18} />}
+            Right={
+              <Icon2 name="chevron_right" size={18} stroke={COLOR.White} />
+            }
             onPress={importFromSeed}
             textStyle={[styles.buttonText, theme.text.primary]}
             contentContainerStyle={styles.buttonContent}
@@ -129,7 +137,9 @@ export default observer<Props>(function StartScreen({ navigation }) {
           <Button
             text="Import with Keplr Extension"
             onPress={importWithKeplr}
-            Right={<Icon2 name="chevron_right" size={18} />}
+            Right={
+              <Icon2 name="chevron_right" size={18} stroke={COLOR.White} />
+            }
             textStyle={[styles.buttonText, theme.text.primary]}
             contentContainerStyle={styles.buttonContent}
             style={styles.mb12}

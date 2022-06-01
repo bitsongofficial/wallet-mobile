@@ -1,6 +1,7 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Button, ButtonBack, Icon2 } from "components/atoms";
 import { useTheme } from "hooks";
+import { COLOR } from "utils";
 
 type Props = {
   onPressBack(): void;
@@ -30,7 +31,9 @@ export default ({
         {!isHideNext && (
           <Button
             text={nextButtonText}
-            Right={<Icon2 name="chevron_right" size={18} />}
+            Right={
+              <Icon2 name="chevron_right" size={18} stroke={COLOR.White} />
+            }
             onPress={onPressNext}
             textStyle={[styles.buttonText, theme.text.primary]}
             contentContainerStyle={styles.buttonContent}
