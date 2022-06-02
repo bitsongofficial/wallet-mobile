@@ -1,4 +1,6 @@
+import { SupportedCoins } from "constants/Coins";
 import { Coin } from "core/coin/Generic";
+import { Denom } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { CosmoCoin } from "../cosmo/CosmoCoin";
 import { Balance } from "../cosmo/operations/Balance";
@@ -10,6 +12,12 @@ import { Undelegate } from "../cosmo/operations/Undelegate";
 import { Vote } from "../cosmo/operations/Vote";
 
 export class Bitsong extends CosmoCoin {
+	public denom(): Denom {
+		return Denom.UBTSG
+	}
+	public chain(): SupportedCoins {
+		return SupportedCoins.BITSONG
+	}
 	public RPCEndpoint(): string {
 		return "https://rpc.testnet.bitsong.network:443/"
 	}

@@ -1,9 +1,7 @@
 import { FakeCipher } from "core/cryptography/FakeCipher";
 import { Cipher } from "core/types/cryptography/Generic";
-import { SecureStore, Store } from "core/types/storing/Generic";
+import { MnemonicStore, SecureStore, Store } from "core/types/storing/Generic";
 import { AESStore } from "./CipherStores";
-
-export interface MnemonicStore extends SecureStore {}
 
 export class PinMnemonicStore implements SecureStore, MnemonicStore {
 	store: Store;

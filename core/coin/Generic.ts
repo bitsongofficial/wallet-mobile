@@ -14,5 +14,4 @@ export class Coin {
 		}
 		return false
 	}
-	
 }
