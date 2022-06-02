@@ -40,7 +40,7 @@ export default observer<Props>(function SendModal({
   const store = useStore();
 
   const controller = useMemo(
-    () => new SendController(store.wallet.coins[0]),
+    () => new SendController(store.coin.coins[0]),
     [store]
   );
   const { steps, creater } = controller;
@@ -49,6 +49,12 @@ export default observer<Props>(function SendModal({
     () => (steps.title === "Insert Import" ? close() : steps.goBack()),
     [steps, close]
   );
+  const send = () =>
+  {
+    if(controller.creater.coin)
+      store.coin.send(controller.creater.coin.info.coin, controller.creater.addressInput.value, controller.creater.amount)
+    close()
+  }
 
   useEffect(() => {
     const handler = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -110,7 +116,7 @@ export default observer<Props>(function SendModal({
           <SendRecap
             controller={controller}
             onPressBack={goBack}
-            onPressSend={close}
+            onPressSend={send}
           />
         )}
         {steps.title === "Select coin" && (

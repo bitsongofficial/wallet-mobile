@@ -12,7 +12,7 @@ type Props = {
 
 export default function SelectCoin({ controller, onBack }: Props) {
   const theme = useTheme();
-  const { wallet } = useStore();
+  const { coin } = useStore();
 
   const selectCoin = useCallback(
     (coin) => {
@@ -30,10 +30,10 @@ export default function SelectCoin({ controller, onBack }: Props) {
         Select also the chain where your coin come from
       </Text>
 
-      {wallet.coins.map((coin) => (
+      {coin.coins.map((c) => (
         <ButtonCoinSelect
-          key={coin.info._id}
-          coin={coin}
+          key={c.info._id}
+          coin={c}
           onPress={selectCoin}
         />
       ))}

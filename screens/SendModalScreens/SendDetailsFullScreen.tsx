@@ -14,7 +14,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "ScannerQR">;
 
 export default observer<Props>(function SendDetails({ navigation }: Props) {
   const theme = useTheme();
-  const { wallet } = useStore();
+  const { coin } = useStore();
 
   const [value1, setValue1] = useState("0");
   const [value2, setValue2] = useState("0");
@@ -22,9 +22,9 @@ export default observer<Props>(function SendDetails({ navigation }: Props) {
   const goBack = useCallback(() => navigation.goBack(), [navigation]);
 
   // ---- MOCK -------
-  const coin = wallet.coins[0];
+  const firstCoin = coin.coins[0];
   const receiver = users[0];
-  const address = coin.info.address;
+  const address = firstCoin.info.address;
   const amount = 123;
 
   return (
@@ -37,7 +37,7 @@ export default observer<Props>(function SendDetails({ navigation }: Props) {
         </Text>
 
         <Text style={[styles.text, theme.text.secondary2, styles.mt6]}>
-          28,345 {coin.info.coinName.toUpperCase()}
+          28,345 {firstCoin.info.coinName.toUpperCase()}
         </Text>
 
         <Text style={[styles.text, theme.text.primary, styles.mt28]}>
@@ -49,13 +49,13 @@ export default observer<Props>(function SendDetails({ navigation }: Props) {
           value={value1}
           onChangeText={setValue1}
           style={styles.first}
-          coin={wallet.coins[0]}
+          coin={coin.coins[0]}
         />
         <ChooseCoinValues
           value={value2}
           onChangeText={setValue2}
           style={styles.second}
-          coin={wallet.coins[1]}
+          coin={coin.coins[1]}
         />
       </View>
       <View style={styles.buttonContainer}>
