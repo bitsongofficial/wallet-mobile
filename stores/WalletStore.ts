@@ -1,10 +1,10 @@
 import { Coin } from "classes";
 import Mock from "./mock";
-import { autorun, IObservableArray, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS, values } from "mobx";
-import { round } from "utils";
+import {IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CosmoWalletGenerator, mnemonicToAddress, WalletData } from "core/storing/Wallet";
-import { Store, Wallet } from "core/types/storing/Generic";
+import { CosmoWalletGenerator } from "core/storing/Wallet";
+import { Wallet, WalletData } from "core/types/storing/Generic";
+import { CoinClasses, SupportedCoins } from "constants/Coins";
 
 const rates = {
   juno: 13.35,
@@ -12,12 +12,15 @@ const rates = {
   osmosis: 4.39,
 };
 
-interface StoreWallet {
+export interface StoreWallet {
   data: WalletData,
-  wallet: Wallet,
+  wallets: {
+    [K in SupportedCoins]: Wallet
+  },
 }
 export default class WalletStore {
-  walletsHanlder:IReactionDisposer | null = null
+  walletsHanlder: IReactionDisposer | null = null
+  activeWallet: StoreWallet | null = null
 
   coins = [
     new Coin(Mock.BitSong, rates.bitsong),
@@ -37,16 +40,25 @@ export default class WalletStore {
     )
   }
 
-  get totalBalance() {
-    return round(
-      this.coins.reduce(
-        (total, coin) => (coin.balanceUSD ? coin.balanceUSD + total : total),
-        0
-      )
-    );
+  private addSupportedWallets(walletData: WalletData, mnemonic?: string)
+  {
+    let wallets:any = {}
+    for(const chain of Object.values(SupportedCoins))
+    {
+      const [wallet, store] = CosmoWalletGenerator.CosmoWalletFromChain(
+      {
+        chain: CoinClasses[<SupportedCoins>chain].coin.chain(),
+        metadata: walletData.metadata,
+        name: walletData.name,
+      })
+      wallets[chain] = wallet
+      if(mnemonic) store.Set(mnemonic)
+    }
+    return wallets
   }
 
-  async loadWallets () {
+  async loadWallets()
+  {
     const walletsMetaDataSerialized = await AsyncStorage.getItem('walletNames')
     if(walletsMetaDataSerialized == null) return
     const walletsMetaData = JSON.parse(walletsMetaDataSerialized) as Array<WalletData>
@@ -54,37 +66,52 @@ export default class WalletStore {
     runInAction(() =>
     {
       this.wallets = walletsMetaData.map(walletData => {
-        let wallet
-        switch(walletData.chain)
-        {
-          default:
-            wallet = CosmoWalletGenerator.CosmoWalletFromChain(walletData)[0]
-        }
-  
         return {
           data: walletData,
-          wallet,
+          wallets: this.addSupportedWallets(walletData),
         }
       })
+      if(this.wallets.length > 0) this.activeWallet = this.wallets[0]
     })
   }
 
-  async newCosmoWallet (name: string, chain: string, mnemonic: string[]) {
+  async newCosmoWallet(name: string, mnemonic: string[])
+  {
     if(!this.wallets.find(el => (el.data.name == name)))
     {
       const mnemonicString = mnemonic.join(" ")
-      const [wallet, store] = CosmoWalletGenerator.CosmoWalletFromChain({name, chain})
-      await store.Set(mnemonicString)
-      const address = await wallet.Address()
+      const wallets:any = {}
+      const storeWaitings = []
+      for(const chain of Object.values(SupportedCoins))
+      {
+        const [wallet, store] = CosmoWalletGenerator.CosmoWalletFromChain({name, chain})
+        storeWaitings.push(store.Set(mnemonicString))
+        wallets[chain] = wallet
+      }
+      await Promise.all(storeWaitings)
+      const addresses:any = {}
+      const chainAddressPairWaitings:any = []
+      for(const chain of Object.values(SupportedCoins))
+      {
+        chainAddressPairWaitings.push(new Promise(async (resolve, reject) =>
+        {
+          resolve([chain, await wallets[chain].Address()])
+        }))
+      }
+      const chainAddressPairs = await Promise.all(chainAddressPairWaitings)
+      chainAddressPairs.forEach(cap =>
+      {
+        addresses[cap[0]] = cap[1]
+      })
+      let data = {
+        name,
+        metadata: {
+          addresses
+        }
+      }
       runInAction(() => this.wallets.push({
-        data: {
-          name,
-          chain,
-          metadata: {
-            address
-          }
-        },
-        wallet
+        data,
+        wallets: this.addSupportedWallets(data, mnemonic.join(" ")),
       }))
     }
   }
