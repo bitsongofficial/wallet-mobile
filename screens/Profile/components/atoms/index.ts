@@ -8,3 +8,4 @@ export { default as Search } from "./Search";
 export { default as RadioButton } from "./RadioButton";
 export { default as SwipeActions } from "./SwipeActions";
 export { default as Value } from "./Value";
+export { default as WalletButton } from "./WalletButton";
