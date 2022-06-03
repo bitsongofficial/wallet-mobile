@@ -1,13 +1,14 @@
 import { useCallback } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { ILang } from "screens/Profile/type";
 import { COLOR, hexAlpha } from "utils";
 import { RadioButton } from "../atoms";
 
 type Props = {
-  value: string;
+  value: ILang;
   isActive: boolean;
-  onPress(value: string): void;
+  onPress(value: ILang): void;
 };
 
 export default ({ value, isActive, onPress }: Props) => {
@@ -16,7 +17,7 @@ export default ({ value, isActive, onPress }: Props) => {
     <TouchableWithoutFeedback onPress={handlePress}>
       <View style={styles.container}>
         <Text style={[styles.text, isActive && styles.text_active]}>
-          {value}
+          {value.name}
         </Text>
         <RadioButton isActive={isActive} />
       </View>
