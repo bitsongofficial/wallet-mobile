@@ -34,6 +34,8 @@ import bell from "./bell.svg";
 import close from "./close.svg";
 import magnifying_glass from "./magnifying_glass.svg";
 import trash from "./trash.svg";
+import key from "./key.svg";
+import power from "./power.svg";
 
 export default <const>{
   eye_closed_gradient,
@@ -72,4 +74,7 @@ export default <const>{
   circle_dollar,
   bell,
   trash,
+
+  key,
+  power,
 };
