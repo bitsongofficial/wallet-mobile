@@ -1,18 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useStore, useTheme } from "hooks";
-import { Button, Switch, ThemedGradient } from "components/atoms";
-import {
-  ScrollView,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
-import { COLOR, InputHandler } from "utils";
+import { Button, Icon2, Switch, ThemedGradient } from "components/atoms";
+import { RectButton, ScrollView } from "react-native-gesture-handler";
+import { COLOR, hexAlpha, InputHandler } from "utils";
 import { animated, useSpring } from "@react-spring/native";
 import { BottomSheet } from "components/moleculs";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
@@ -21,28 +17,23 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import { useDimensions } from "@react-native-community/hooks";
 import {
   Agreement,
   Header,
   ListButton,
   Subtitle,
   Title,
+  WalletButton,
 } from "./components/atoms";
 import { Head } from "./components/moleculs";
-import GenerateMnenonic from "./components/moleculs/GenerateMnenonic";
-import {
-  ChangeCurrency,
-  ChangeLanguage,
-  ChangeWallet,
-} from "./components/organisms";
-
-type ValueTabs = "Coins" | "Fan Tokens";
+import { ChangeLanguage, ChangeWallet } from "./components/organisms";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
+type ModalType = "ChangeWallet" | "ChangeLanguage";
+
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { settings, user, dapp } = useStore();
+  const { settings, user, dapp, wallet } = useStore();
 
   // ------- BottomSheet ----------
   const bottomSheet = useRef<BottomSheetMethods>(null);
@@ -51,6 +42,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
     () => bottomSheet.current?.snapToIndex(0),
     []
   );
+
   const closeBSAvatar = useCallback(() => bottomSheet.current?.close(), []);
 
   const snapPoints = useMemo(() => [350, "95%"], []);
@@ -110,6 +102,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
       return !value;
     });
   }, []);
+
+  const [modal, setModal] = useState<ModalType>();
+  const closeModal = useCallback(() => setModal(undefined), []);
+  const openChangeWallet = useCallback(() => setModal("ChangeWallet"), []);
+  const openChangeLanguage = useCallback(() => setModal("ChangeLanguage"), []);
+
   // console.log("first", first);
 
   return (
@@ -128,7 +126,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
               />
               <animated.View style={[styles.wrapper, hidden]}>
                 <Subtitle style={styles.subtitle}>Connected with</Subtitle>
-                {/* <Wallet /> */}
+                <WalletButton onPress={openChangeWallet} wallet={wallet} />
+
                 <ListButton
                   text="Add a new account"
                   onPress={openAddNewaccount}
@@ -188,7 +187,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   <Subtitle style={styles.subtitle}>App Preferences</Subtitle>
                   <ListButton
                     text="Language"
-                    onPress={openLanguages}
+                    onPress={openChangeLanguage}
                     icon="translate"
                     style={styles.listButton}
                   />
@@ -252,6 +251,20 @@ export default observer<Props>(function MainScreen({ navigation }) {
         </SafeAreaView>
       </ThemedGradient>
 
+      <ChangeWallet
+        isOpen={modal === "ChangeWallet"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={closeModal}
+      />
+
+      <ChangeLanguage
+        isOpen={modal === "ChangeLanguage"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={closeModal}
+      />
+
       <BottomSheet
         enablePanDownToClose
         snapPoints={snapPoints}
@@ -261,10 +274,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
         index={-1}
       >
         <View style={{ marginTop: 15 }}>
-          <ChangeWallet />
           <View style={{ marginHorizontal: 26 }}>
             {/* <ChangeCurrency /> */}
-            {/* <ChangeLanguage /> */}
             {/* <GenerateMnenonic /> */}
             {/* <AddAccount
             onPressCreate={() => {}}
