@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import { RectButton, Swipeable } from "react-native-gesture-handler";
 import { SharedValue } from "react-native-reanimated";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
@@ -15,11 +15,12 @@ import { observable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useStore } from "hooks";
 import { COLOR, hexAlpha, InputHandler } from "utils";
-import { Switch } from "components/atoms";
+import { Button, Icon2, Switch } from "components/atoms";
 import { BottomSheet } from "components/moleculs";
-import { Search, Title } from "../atoms";
+import { ListButton, Search, Title } from "../atoms";
 import { WalletItem } from "../moleculs";
 import { Wallet } from "classes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Props = {
   isOpen?: boolean;
@@ -30,143 +31,285 @@ type Props = {
   onClose?(): void;
 };
 
-export default observer<Props>(({ animatedPosition, isOpen, onClose }) => {
-  const { settings, walletStore } = useStore();
+export default observer<Props>(
+  ({ animatedPosition, isOpen, onClose, backgroundStyle }) => {
+    const { settings, walletStore } = useStore();
 
-  // ------ BottomSheet -------
-  const snapPoints = useMemo(() => ["95%"], []);
+    // ------ BottomSheet -------
 
-  const bottomSheet = useRef<BottomSheetMethods>(null);
+    const snapPoints = useMemo(() => ["95%"], []);
+    const bottomSheet = useRef<BottomSheetMethods>(null);
 
-  const close = () => bottomSheet.current?.close();
-  const open = () => bottomSheet.current?.snapToIndex(0);
+    const close = () => bottomSheet.current?.close();
+    const open = () => bottomSheet.current?.snapToIndex(0);
 
-  useEffect(() => (isOpen ? open() : close()), [isOpen]);
+    useEffect(() => (isOpen ? open() : close()), [isOpen]);
 
-  // ------- Search -----------
-  const input = useMemo(() => new InputHandler(), []);
+    // ------- Search -----------
+    const inputSearch = useMemo(() => new InputHandler(), []);
 
-  const filtred = useMemo(() => {
-    if (input.value) {
-      const lowerCase = input.value.toLowerCase();
-      return walletStore.wallets.filter(({ info }) =>
-        info.name.toLowerCase().includes(lowerCase)
-      );
-    } else {
-      return walletStore.wallets;
-    }
-  }, [input.value, walletStore.wallets]);
+    const filtred = useMemo(() => {
+      if (inputSearch.value) {
+        const lowerCase = inputSearch.value.toLowerCase();
+        return walletStore.wallets.filter(({ info }) =>
+          info.name.toLowerCase().includes(lowerCase)
+        );
+      } else {
+        return walletStore.wallets;
+      }
+    }, [inputSearch.value, walletStore.wallets]);
 
-  // ------- FlatList ----------
+    // ---------- Edit -----------
+    const [edited, setEdited] = useState<Wallet>(); // need store
 
-  const [edited, setEdited] = useState<Wallet>(); // need store
+    const inputWalletName = useMemo(
+      () => new InputHandler(edited?.info.name),
+      [edited]
+    );
 
-  const keyExtractor = ({ info }: Wallet) => info.address;
-  const renderWallets = useCallback(
-    ({ item }) => (
-      <View style={{ marginBottom: 13 }}>
-        <WalletItem
-          value={item}
-          isActive={walletStore.active === item}
-          onPress={walletStore.setActive}
-          onPressDelete={walletStore.deleteWallet}
-          onPressEdit={setEdited}
-          mapItemsRef={mapItemsRef}
-        />
-      </View>
-    ),
-    [walletStore.active]
-  );
+    const removeEdited = useCallback(() => setEdited(undefined), []);
 
-  useEffect(() => () => setEdited(undefined), []);
+    const saveEdited = useCallback(
+      () => edited?.setInfo({ name: inputWalletName.value }),
+      [edited, inputWalletName]
+    );
 
-  // ------- Swipe -------------
-  const mapItemsRef = useMemo(
-    () => observable.map<Wallet, React.RefObject<Swipeable>>(),
-    []
-  );
+    // ------- FlatList ----------
 
-  // ---------------------------
+    const mapItemsRef = useMemo(
+      () => observable.map<Wallet, React.RefObject<Swipeable>>(),
+      []
+    );
 
-  return (
-    <>
-      <BottomSheet
-        enablePanDownToClose
-        snapPoints={snapPoints}
-        ref={bottomSheet}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={animatedPosition}
-        onClose={onClose}
-        index={-1}
-      >
-        <View style={styles.container}>
-          <View style={styles.wrapper}>
-            <View style={styles.header}>
-              <Title style={styles.title}>Seleziona Wallet</Title>
-            </View>
-            <Search
-              placeholder="Cerca Wallet"
-              style={styles.search}
-              value={input.value}
-              onChangeText={input.set}
-            />
+    const [selectedWallet, setSelectedWallet] = useState(walletStore.active);
 
-            <View style={styles.switchContainer}>
-              <Text style={styles.switchTitle}>Tutti</Text>
-              <Switch gradient />
-            </View>
-          </View>
-
-          <BottomSheetFlatList
-            style={styles.scroll}
-            keyExtractor={keyExtractor}
-            contentContainerStyle={styles.scrollContent}
-            data={filtred}
-            renderItem={renderWallets}
+    const keyExtractor = ({ info }: Wallet) => info.address;
+    const renderWallets = useCallback(
+      ({ item }) => (
+        <View style={{ marginBottom: 13 }}>
+          <WalletItem
+            value={item}
+            isActive={selectedWallet === item}
+            onPress={setSelectedWallet}
+            onPressDelete={walletStore.deleteWallet}
+            onPressEdit={setEdited}
+            mapItemsRef={mapItemsRef}
           />
-
-          <Text>
-            Access VIP experiences, exclusive previews, finance your own and
-            have your say.
-          </Text>
         </View>
-      </BottomSheet>
-      {/* <Button></Button> */}
-    </>
-  );
-});
+      ),
+      [selectedWallet]
+    );
+
+    // --------- Buttons ----------
+
+    const insent = useSafeAreaInsets();
+
+    const [isShowButton, setIsShowButton] = useState(false);
+    const handleAnimate = useCallback(
+      (from) => setIsShowButton(from === -1),
+      []
+    );
+
+    // -------- Done ---------
+
+    const setWallet = useCallback(() => {
+      walletStore.setActive(selectedWallet);
+      close();
+    }, [selectedWallet]);
+
+    // --------- Close -----------
+
+    const handleClose = useCallback(() => {
+      onClose && onClose();
+      removeEdited();
+      mapItemsRef.forEach((ref) => ref.current?.close());
+      setSelectedWallet(walletStore.active);
+    }, [onClose]);
+
+    return (
+      <>
+        <BottomSheet
+          enablePanDownToClose
+          snapPoints={snapPoints}
+          ref={bottomSheet}
+          backgroundStyle={backgroundStyle}
+          animatedPosition={animatedPosition}
+          onClose={handleClose}
+          onAnimate={handleAnimate}
+          index={-1}
+        >
+          <View style={styles.container}>
+            {!edited ? (
+              <>
+                <View style={styles.wrapper}>
+                  <View style={styles.header}>
+                    <View style={styles.headerCenter}>
+                      <Title style={styles.title}>Seleziona Wallet</Title>
+                    </View>
+                  </View>
+                  <Search
+                    placeholder="Cerca Wallet"
+                    style={styles.search}
+                    value={inputSearch.value}
+                    onChangeText={inputSearch.set}
+                  />
+                </View>
+
+                <View style={[styles.switchContainer, styles.wrapper]}>
+                  <Text style={styles.switchTitle}>Tutti</Text>
+                  <Switch gradient />
+                </View>
+
+                <BottomSheetFlatList
+                  data={filtred}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderWallets}
+                  style={styles.scroll}
+                  contentContainerStyle={styles.scrollContent}
+                />
+              </>
+            ) : (
+              <View style={styles.wrapper}>
+                <View style={styles.header}>
+                  <View style={styles.headerLeft}>
+                    <RectButton
+                      style={styles.buttonBack}
+                      onPress={removeEdited}
+                    >
+                      <Icon2 size={24} name="arrow_left" stroke={COLOR.White} />
+                    </RectButton>
+                  </View>
+
+                  <View style={styles.headerCenter}>
+                    <Title style={styles.title}>Edit Wallet</Title>
+                  </View>
+                  <View style={styles.headerRight} />
+                </View>
+                <Search
+                  placeholder="Cerca Wallet"
+                  style={styles.search}
+                  value={inputWalletName.value}
+                  onChangeText={inputWalletName.set}
+                  loupe={false}
+                />
+                <View style={styles.editMenu}>
+                  <Text style={styles.editTitle}>Safety</Text>
+                  <View style={styles.buttons_list}>
+                    <ListButton
+                      style={styles.listButton}
+                      icon="eye"
+                      text="View Mnemonics"
+                      arrow
+                    />
+                    <ListButton
+                      style={styles.listButton}
+                      icon="key"
+                      text="Eliminate Mnemonics"
+                      arrow
+                    />
+                    <ListButton
+                      style={styles.listButton}
+                      icon="power"
+                      text="Disconnect Wallet"
+                      arrow
+                    />
+                  </View>
+
+                  <Text style={styles.caption}>
+                    Access VIP experiences, exclusive previews,{"\n"}
+                    finance your own and have your say.
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+        </BottomSheet>
+
+        {isShowButton && (
+          <View style={[styles.buttons, { bottom: insent.bottom }]}>
+            {!edited ? (
+              <Button
+                text="Select"
+                onPress={setWallet}
+                textStyle={styles.buttonText}
+                contentContainerStyle={styles.buttonContent}
+              />
+            ) : (
+              <Button
+                text="Save"
+                onPress={saveEdited}
+                textStyle={styles.buttonText}
+                contentContainerStyle={styles.buttonContent}
+              />
+            )}
+          </View>
+        )}
+      </>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
-  bottomSheetBackground: {
-    backgroundColor: COLOR.Dark3,
-    paddingTop: 30,
-  },
   container: {
     flexGrow: 1,
     height: Dimensions.get("screen").height * 0.9,
+    marginTop: 15,
   },
-
   wrapper: { marginHorizontal: 26 },
 
-  fakeSearch: {
-    backgroundColor: hexAlpha(COLOR.Lavender, 10),
-    borderRadius: 20,
-    height: 62,
+  // ------ Header ---------
+  header: {
     flexDirection: "row",
-    paddingLeft: 25,
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  headerRight: { flex: 1 },
+  headerCenter: {
+    flex: 2,
+    alignItems: "center",
+  },
+  headerLeft: {
+    flex: 1,
+    flexDirection: "row",
   },
 
-  header: {},
-  title: {
+  buttonBack: { padding: 5 },
+  title: { fontSize: 16 },
+  search: { marginBottom: 9 },
+
+  // ------  Edit --------
+
+  editMenu: { marginTop: 40 },
+  editTitle: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "500",
     fontSize: 16,
     lineHeight: 20,
 
-    marginBottom: 30,
-  },
-  search: {
-    marginBottom: 9,
+    color: hexAlpha(COLOR.White, 50),
   },
 
+  buttons_list: {
+    marginRight: 15,
+    paddingTop: 15,
+  },
+  listButton: { marginBottom: 5 },
+
+  caption: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "500",
+    fontSize: 14,
+    lineHeight: 18,
+
+    color: hexAlpha(COLOR.White, 30),
+    textAlign: "center",
+
+    marginTop: 40,
+  },
+
+  // ----- Wallets -------
   switchContainer: {
     flexDirection: "row",
     justifyContent: "flex-end",
@@ -187,11 +330,28 @@ const styles = StyleSheet.create({
   },
 
   scroll: {
-    height: 100,
     flexGrow: 1,
   },
   scrollContent: {
     paddingTop: 9,
     paddingBottom: 50,
+  },
+
+  // ------- Buttons ------
+
+  buttons: {
+    padding: 15,
+    flexDirection: "row",
+    justifyContent: "center",
+    position: "absolute",
+    width: "100%",
+  },
+  buttonText: {
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  buttonContent: {
+    paddingVertical: 18,
+    paddingHorizontal: 40,
   },
 });
