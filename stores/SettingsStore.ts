@@ -1,8 +1,10 @@
 import { makeAutoObservable } from "mobx";
+import { ILang } from "screens/Profile/type";
+import languages from "constants/languages";
 
 export default class SettingsStore {
   theme: "light" | "dark" = "dark";
-  language: string = "en";
+  language: ILang = languages[0];
   currency: Currency | null = null;
 
   constructor() {
@@ -13,7 +15,7 @@ export default class SettingsStore {
     this.theme = theme;
   }
 
-  setLenguage(language: string) {
+  setLanguage(language: ILang) {
     this.language = language;
   }
 

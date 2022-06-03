@@ -1,4 +1,4 @@
-import { Coin } from "classes";
+import Coin from "./Coin";
 import Mock from "./mock";
 import { makeAutoObservable } from "mobx";
 import { round } from "utils";
@@ -28,5 +28,9 @@ export default class Wallet {
         0
       )
     );
+  }
+
+  setInfo(info: Partial<IWallet>) {
+    this.info = { ...this.info, ...info };
   }
 }
