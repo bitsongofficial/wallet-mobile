@@ -36,6 +36,14 @@ import magnifying_glass from "./magnifying_glass.svg";
 import trash from "./trash.svg";
 import key from "./key.svg";
 import power from "./power.svg";
+import clock_counter from "./clock_counter.svg";
+
+import lock_key_open from "./lock_key_open.svg";
+import password from "./password.svg";
+import fingerprint_simple from "./fingerprint_simple.svg";
+import scan_1 from "./scan_1.svg";
+import qr_code from "./qr_code.svg";
+import link_simple_horizontal from "./link_simple_horizontal.svg";
 
 export default <const>{
   eye_closed_gradient,
@@ -55,6 +63,7 @@ export default <const>{
   arrow_left,
   inquire,
   scan,
+  scan_1,
   settings,
   claim,
   restake,
@@ -62,6 +71,9 @@ export default <const>{
   upNdown,
   close,
   magnifying_glass,
+  clock_counter,
+  qr_code,
+  link_simple_horizontal,
 
   address_book,
   chat_dots,
@@ -77,4 +89,7 @@ export default <const>{
 
   key,
   power,
+  lock_key_open,
+  password,
+  fingerprint_simple,
 };
