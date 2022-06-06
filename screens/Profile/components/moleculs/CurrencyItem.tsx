@@ -1,18 +1,13 @@
 import { useCallback } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { ICurrency } from "screens/Profile/type";
 import { COLOR, hexAlpha } from "utils";
 import { RadioButton } from "../atoms";
 
-type Currency = {
-  _id: number;
-  name: string;
-  title: string;
-};
-
 type Props = {
-  value: Currency;
-  onPress(value: Currency): void;
+  value: ICurrency;
+  onPress(value: ICurrency): void;
   isActive: boolean;
 };
 

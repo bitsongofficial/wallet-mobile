@@ -62,7 +62,7 @@ export default observer<Props>(
 
     const [selectedLang, setSelected] = useState(settings.language);
 
-    const keyExtractor = ({ id }: Lang) => id;
+    const keyExtractor = ({ id }: ILang) => id;
     const renderLanguage = useCallback<ListRenderItem<ILang>>(
       ({ item }) => (
         <LanguageItem
@@ -119,9 +119,9 @@ export default observer<Props>(
               onChangeText={input.set}
             />
             <BottomSheetFlatList
+              data={filtred}
               style={styles.scroll}
               contentContainerStyle={styles.scrollContent}
-              data={filtred}
               keyExtractor={keyExtractor}
               renderItem={renderLanguage}
             />
@@ -188,9 +188,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 53,
   },
 });
-
-interface Lang {
-  name: string;
-  value: string;
-  id: string;
-}
