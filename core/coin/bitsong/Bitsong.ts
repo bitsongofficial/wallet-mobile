@@ -2,16 +2,16 @@ import { SupportedCoins } from "constants/Coins";
 import { Coin } from "core/coin/Generic";
 import { Denom } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
-import { CosmoCoin } from "../cosmo/CosmoCoin";
-import { Balance } from "../cosmo/operations/Balance";
-import { Claim } from "../cosmo/operations/Claim";
-import { Delegate } from "../cosmo/operations/Delegate";
-import { Redelegate } from "../cosmo/operations/Redelegate";
-import { Send } from "../cosmo/operations/Send";
-import { Undelegate } from "../cosmo/operations/Undelegate";
-import { Vote } from "../cosmo/operations/Vote";
+import { CosmosCoin } from "../cosmos/CosmosCoin";
+import { Balance } from "../cosmos/operations/Balance";
+import { Claim } from "../cosmos/operations/Claim";
+import { Delegate } from "../cosmos/operations/Delegate";
+import { Redelegate } from "../cosmos/operations/Redelegate";
+import { Send } from "../cosmos/operations/Send";
+import { Undelegate } from "../cosmos/operations/Undelegate";
+import { Vote } from "../cosmos/operations/Vote";
 
-export class Bitsong extends CosmoCoin {
+export class Bitsong extends CosmosCoin {
 	public denom(): Denom {
 		return Denom.UBTSG
 	}

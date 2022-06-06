@@ -35,7 +35,7 @@ export default observer<Props>(({ navigation }) => {
 
   const saveWallet = () =>
   {
-    wallet.newCosmoWallet(controller.walletName.value, controller.phrase.words)
+    wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
     goNext()
   }
 

@@ -1,9 +1,9 @@
 import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs/stargate";
-import { FromToAmount } from "core/types/coin/cosmo/FromToAmount";
+import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
 import { Denom, Operation } from "core/types/coin/Generic";
-import { CosmoOperation } from "./CosmoOperation";
+import { CosmosOperation } from "./CosmosOperation";
 
-export class Send extends CosmoOperation {
+export class Send extends CosmosOperation {
 	async Run(data: FromToAmount) {
 		const wallet = await data.from.Signer()
 		const [firstAccount] = await wallet.getAccounts();

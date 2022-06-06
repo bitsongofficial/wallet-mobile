@@ -13,7 +13,7 @@ export default function Header({}: BottomTabHeaderProps) {
           <Icon name="cosmo" size={40} />
         </View>
         <View style={styles.center}>
-          <Text style={styles.title}>Cosmonautico</Text>
+          <Text style={styles.title}>Cosmosnautico</Text>
         </View>
         <View style={styles.left}>
           <Icon name="bell" size={15} fill={"#202020"} />

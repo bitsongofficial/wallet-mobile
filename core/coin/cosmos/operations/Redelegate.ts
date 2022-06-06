@@ -1,9 +1,9 @@
 import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs/stargate";
-import { RedelegateData } from "core/types/coin/cosmo/RedelegateData";
+import { RedelegateData } from "core/types/coin/cosmos/RedelegateData";
 import { MsgBeginRedelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
-import { CosmoOperation } from "./CosmoOperation";
+import { CosmosOperation } from "./CosmosOperation";
 
-export class Redelegate extends CosmoOperation {
+export class Redelegate extends CosmosOperation {
 	async Run(data: RedelegateData) {
 		const walletInfos = await Promise.all(
 			[

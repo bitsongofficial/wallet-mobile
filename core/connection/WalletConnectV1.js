@@ -1,6 +1,6 @@
 import WalletConnect from "@walletconnect/client"
 
-export class WalletConnectCosmoClientV1 {
+export class WalletConnectCosmosClientV1 {
 	connector = null
 	wallets
 	constructor(uri, wallets)

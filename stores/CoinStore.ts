@@ -2,8 +2,8 @@ import { Coin } from "classes";
 import { ICoin } from "classes/types";
 import { CoinClasses, SupportedCoins } from "constants/Coins";
 import { PublicWallet } from "core/storing/Generic";
-import { CosmoWallet } from "core/storing/Wallet";
-import { FromToAmount } from "core/types/coin/cosmo/FromToAmount";
+import { CosmosWallet } from "core/storing/Wallet";
+import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
 import { Amount, Denom } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { WalletData } from "core/types/storing/Generic";
@@ -74,7 +74,7 @@ export default class CoinStore {
 	  if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
 	  const coinClass = CoinClasses[coin]
 	  const data: FromToAmount = {
-		from: this.walletStore.activeWallet.wallets[coin] as CosmoWallet,
+		from: this.walletStore.activeWallet.wallets[coin] as CosmosWallet,
 		to: new PublicWallet(address),
 		amount: {
 		  amount,

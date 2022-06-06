@@ -5,7 +5,7 @@ import { SessionTypes, ClientTypes, AppMetadata } from "@walletconnect/types";
 import { WalletConnectAsyncStorage } from "core/storing/WalletConnectAsyncStorage";
 import { Wallet } from "core/types/storing/Generic";
 
-export class WalletConnectCosmoClient {
+export class WalletConnectCosmosClient {
 	private wcClient?: WalletConnectClient
 	constructor(private wallets: Wallet[])
 	{
@@ -70,7 +70,7 @@ export class WalletConnectCosmoClient {
 
 	public static async init(wallets: Wallet[])
 	{
-		const wccc = new WalletConnectCosmoClient(wallets)
+		const wccc = new WalletConnectCosmosClient(wallets)
 		const client = await WalletConnectClient.init({
 			controller: true,
 			projectId: "0e46a2e7548a26fef2ee41e9adc61251",

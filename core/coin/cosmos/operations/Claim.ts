@@ -1,9 +1,9 @@
 import { assertIsDeliverTxSuccess, GasPrice, MsgWithdrawDelegatorRewardEncodeObject, SigningStargateClient } from "@cosmjs/stargate";
-import { ClaimData } from "core/types/coin/cosmo/ClaimData";
+import { ClaimData } from "core/types/coin/cosmos/ClaimData";
 import { MsgWithdrawDelegatorReward } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
-import { CosmoOperation } from "./CosmoOperation";
+import { CosmosOperation } from "./CosmosOperation";
 
-export class Claim extends CosmoOperation {
+export class Claim extends CosmosOperation {
 	async Run(data: ClaimData) {
 		const walletInfos = Promise.all(
 			[

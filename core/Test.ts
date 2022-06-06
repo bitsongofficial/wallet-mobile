@@ -1,15 +1,15 @@
 import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 import Long from "long"
 import { Bitsong } from "./coin/bitsong/Bitsong"
-import { WalletConnectCosmoClient } from "./connection/WalletConnect"
-import { WalletConnectCosmoClientV1 } from "./connection/WalletConnectV1"
+import { WalletConnectCosmosClient } from "./connection/WalletConnect"
+import { WalletConnectCosmosClientV1 } from "./connection/WalletConnectV1"
 import { PublicWallet } from "./storing/Generic"
 import { PinMnemonicStore } from "./storing/MnemonicStore"
-import { CosmoWallet, CosmoWalletGenerator } from "./storing/Wallet"
-import { ClaimData } from "./types/coin/cosmo/ClaimData"
-import { DelegateData } from "./types/coin/cosmo/DelegateData"
-import { ProposalVote } from "./types/coin/cosmo/ProposalVote"
-import { RedelegateData } from "./types/coin/cosmo/RedelegateData"
+import { CosmosWallet, CosmosWalletGenerator } from "./storing/Wallet"
+import { ClaimData } from "./types/coin/cosmos/ClaimData"
+import { DelegateData } from "./types/coin/cosmos/DelegateData"
+import { ProposalVote } from "./types/coin/cosmos/ProposalVote"
+import { RedelegateData } from "./types/coin/cosmos/RedelegateData"
 import { Denom } from "./types/coin/Generic"
 import { CoinOperationEnum } from "./types/coin/OperationTypes"
 import { Wallet } from "./types/storing/Generic"
@@ -33,7 +33,7 @@ async function trySend(wallet: any, pubWallet: any, transaction: any)
 		console.log("S:", senderBalance)
 		console.log("R:", receiverBalance)
 		// const pairString = 'wc:8caefe47-7adf-4bbc-a819-38441d1309ed@1?bridge=https%3A%2F%2Fy.bridge.walletconnect.org&key=6d8c314ab81d5f70c4365c3781e8c190d0844853dc5508210f6cf6a3ba78e144'
-		// const wc = new WalletConnectCosmoClientV1(pairString, [pubWallet])
+		// const wc = new WalletConnectCosmosClientV1(pairString, [pubWallet])
 	}
 	catch(e)
 	{
@@ -42,7 +42,7 @@ async function trySend(wallet: any, pubWallet: any, transaction: any)
 
 }
 
-async function tryDelegate(delegator: CosmoWallet, validator: Wallet) {
+async function tryDelegate(delegator: CosmosWallet, validator: Wallet) {
 	const data: DelegateData = {
 		delegator: delegator,
 		validator: validator,
@@ -51,7 +51,7 @@ async function tryDelegate(delegator: CosmoWallet, validator: Wallet) {
 	Bitsong.Do(CoinOperationEnum.Delegate, data)
 }
 
-async function tryUndelegate(delegator: CosmoWallet, validator: Wallet) {
+async function tryUndelegate(delegator: CosmosWallet, validator: Wallet) {
 	const data: DelegateData = {
 		delegator: delegator,
 		validator: validator,
@@ -60,7 +60,7 @@ async function tryUndelegate(delegator: CosmoWallet, validator: Wallet) {
 	Bitsong.Do(CoinOperationEnum.Undelegate, data)
 }
 
-async function tryRedelegate(delegator: CosmoWallet, validator1: Wallet, validator2: Wallet) {
+async function tryRedelegate(delegator: CosmosWallet, validator1: Wallet, validator2: Wallet) {
 	const data: RedelegateData = {
 		delegator: delegator,
 		validator: validator1,
@@ -70,7 +70,7 @@ async function tryRedelegate(delegator: CosmoWallet, validator1: Wallet, validat
 	Bitsong.Do(CoinOperationEnum.Redelegate, data)
 }
 
-async function tryVote(voter: CosmoWallet, proposalId: Long, choice: VoteOption) {
+async function tryVote(voter: CosmosWallet, proposalId: Long, choice: VoteOption) {
 	const data: ProposalVote = {
 		voter,
 		proposal: {
@@ -81,7 +81,7 @@ async function tryVote(voter: CosmoWallet, proposalId: Long, choice: VoteOption)
 	Bitsong.Do(CoinOperationEnum.Vote, data)
 }
 
-async function tryClaim(owner: CosmoWallet, validators: Wallet[]) {
+async function tryClaim(owner: CosmosWallet, validators: Wallet[]) {
 	const data: ClaimData = {
 		owner,
 		validators
@@ -93,7 +93,7 @@ export async function test()
 {
 	console.log("Start")
 	const savePhase = false
-	const [wallet, store] = CosmoWalletGenerator.BitsongWallet
+	const [wallet, store] = CosmosWalletGenerator.BitsongWallet
 	if(savePhase)
 	{
 		const a = 'man hungry enjoy price timber girl omit type absent target enrich butter'

@@ -1,8 +1,8 @@
 import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs/stargate";
-import { DelegateData } from "core/types/coin/cosmo/DelegateData";
-import { CosmoOperation } from "./CosmoOperation";
+import { DelegateData } from "core/types/coin/cosmos/DelegateData";
+import { CosmosOperation } from "./CosmosOperation";
 
-export class Delegate extends CosmoOperation {
+export class Delegate extends CosmosOperation {
 	async Run(data: DelegateData) {
 		const walletInfos = await Promise.all(
 			[

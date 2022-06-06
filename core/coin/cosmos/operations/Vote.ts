@@ -1,9 +1,9 @@
 import { assertIsDeliverTxSuccess, GasPrice, MsgVoteEncodeObject, SigningStargateClient } from "@cosmjs/stargate";
-import { ProposalVote } from "core/types/coin/cosmo/ProposalVote";
+import { ProposalVote } from "core/types/coin/cosmos/ProposalVote";
 import { MsgVote } from "cosmjs-types/cosmos/gov/v1beta1/tx";
-import { CosmoOperation } from "./CosmoOperation";
+import { CosmosOperation } from "./CosmosOperation";
 
-export class Vote extends CosmoOperation {
+export class Vote extends CosmosOperation {
 	async Run(data: ProposalVote) {
 		const walletInfos = await Promise.all(
 		[

@@ -2,7 +2,7 @@ import { Coin } from "classes";
 import Mock from "./mock";
 import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CosmoWalletGenerator } from "core/storing/Wallet";
+import { CosmosWalletGenerator } from "core/storing/Wallet";
 import { Wallet, WalletData } from "core/types/storing/Generic";
 import { CoinClasses, SupportedCoins } from "constants/Coins";
 import RemoteConfigsStore from "./RemoteConfigsStore";
@@ -44,7 +44,7 @@ export default class WalletStore {
     let wallets:any = {}
     for(const chain of this.remoteConfigs.enabledCoins)
     {
-      const [wallet, store] = CosmoWalletGenerator.CosmoWalletFromChain(
+      const [wallet, store] = CosmosWalletGenerator.CosmosWalletFromChain(
       {
         chain: CoinClasses[<SupportedCoins>chain].coin.chain(),
         metadata: walletData.metadata,
@@ -74,7 +74,7 @@ export default class WalletStore {
     })
   }
 
-  async newCosmoWallet(name: string, mnemonic: string[])
+  async newCosmosWallet(name: string, mnemonic: string[])
   {
     if(!this.wallets.find(el => (el.data.name == name)))
     {
@@ -83,7 +83,7 @@ export default class WalletStore {
       const storeWaitings = []
       for(const chain of this.remoteConfigs.enabledCoins)
       {
-        const [wallet, store] = CosmoWalletGenerator.CosmoWalletFromChain({name, chain})
+        const [wallet, store] = CosmosWalletGenerator.CosmosWalletFromChain({name, chain})
         storeWaitings.push(store.Set(mnemonicString))
         wallets[chain] = wallet
       }

@@ -15,7 +15,7 @@ export interface WalletData {
 	metadata?: any,
 }
 
-export interface CosmoWalletData extends WalletData {
+export interface CosmosWalletData extends WalletData {
 	chain: SupportedCoins,
 }
 
