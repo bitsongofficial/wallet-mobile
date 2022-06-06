@@ -33,6 +33,7 @@ export type RootStackParamList = {
   Profile: undefined;
   SettingsSecurity: undefined;
   SettingsNotifications: undefined;
+  WalletConnect: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
