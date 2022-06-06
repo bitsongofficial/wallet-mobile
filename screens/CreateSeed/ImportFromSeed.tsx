@@ -29,7 +29,6 @@ export default observer<Props>(({ navigation }) => {
 
   const pasteFromClipboard = useCallback(async () => {
     const clipboard = await Clipboard.getStringAsync(); // TODO: Check, why not working
-    console.log(clipboard)
     // controller.phrase.setWords(clipboard.split(/^.+\w+\d+(\s+[\sa-zA-Z]+)$/));
     controller.phrase.setWords(clipboard.split(" "))
   }, [controller.phrase]);
@@ -37,7 +36,7 @@ export default observer<Props>(({ navigation }) => {
   const saveWallet = () =>
   {
     wallet.newCosmoWallet(controller.walletName.value, controller.phrase.words)
-    // goNext()
+    goNext()
   }
 
   return (
