@@ -1,16 +1,11 @@
 import { Coin } from "classes";
 import Mock from "./mock";
-import {IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
+import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CosmoWalletGenerator } from "core/storing/Wallet";
 import { Wallet, WalletData } from "core/types/storing/Generic";
 import { CoinClasses, SupportedCoins } from "constants/Coins";
-
-const rates = {
-  juno: 13.35,
-  bitsong: 0.06,
-  osmosis: 4.39,
-};
+import RemoteConfigsStore from "./RemoteConfigsStore";
 
 export interface StoreWallet {
   data: WalletData,
@@ -18,22 +13,26 @@ export interface StoreWallet {
     [K in SupportedCoins]: Wallet
   },
 }
-export default class WalletStore {
-  walletsHanlder: IReactionDisposer | null = null
-  activeWallet: StoreWallet | null = null
 
-  coins = [
-    new Coin(Mock.BitSong, rates.bitsong),
-    new Coin(Mock.Juno, rates.juno),
-    new Coin(Mock.Osmosis, rates.osmosis),
-  ];
+export default class WalletStore {
+  walletsHanlder: IReactionDisposer
+  firstLoadHandler: IReactionDisposer
+  activeWallet: StoreWallet | null = null
 
   wallets: StoreWallet[] = []
 
-  constructor() {
-    makeAutoObservable(this, {}, { autoBind: true });
+  remoteConfigs
 
-    this.loadWallets()
+  constructor(remoteConfigs: RemoteConfigsStore) {
+    makeAutoObservable(this, {}, { autoBind: true });
+    this.remoteConfigs = remoteConfigs
+    this.firstLoadHandler = autorun(() =>
+    {
+      if(this.remoteConfigs.firstLoad) {
+        this.loadWallets()
+        this.firstLoadHandler()
+      }
+    })
     this.walletsHanlder = reaction(
       () => JSON.stringify(this.wallets.map(w => toJS(w.data))),
       json => AsyncStorage.setItem('walletNames', json)
@@ -43,7 +42,7 @@ export default class WalletStore {
   private addSupportedWallets(walletData: WalletData, mnemonic?: string)
   {
     let wallets:any = {}
-    for(const chain of Object.values(SupportedCoins))
+    for(const chain of this.remoteConfigs.enabledCoins)
     {
       const [wallet, store] = CosmoWalletGenerator.CosmoWalletFromChain(
       {
@@ -82,7 +81,7 @@ export default class WalletStore {
       const mnemonicString = mnemonic.join(" ")
       const wallets:any = {}
       const storeWaitings = []
-      for(const chain of Object.values(SupportedCoins))
+      for(const chain of this.remoteConfigs.enabledCoins)
       {
         const [wallet, store] = CosmoWalletGenerator.CosmoWalletFromChain({name, chain})
         storeWaitings.push(store.Set(mnemonicString))
@@ -91,7 +90,7 @@ export default class WalletStore {
       await Promise.all(storeWaitings)
       const addresses:any = {}
       const chainAddressPairWaitings:any = []
-      for(const chain of Object.values(SupportedCoins))
+      for(const chain of this.remoteConfigs.enabledCoins)
       {
         chainAddressPairWaitings.push(new Promise(async (resolve, reject) =>
         {
