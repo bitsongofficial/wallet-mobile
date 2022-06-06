@@ -7,25 +7,30 @@ import { Wallet } from "classes";
 
 type Props = {
   wallet: Wallet;
-  onPressEdit(wallet: Wallet): void;
+  onPressEdit?(wallet: Wallet): void;
   onPressTrash(wallet: Wallet): void;
   style?: StyleProp<ViewStyle>;
+  edited?: boolean;
 };
 
-export default memo(({ onPressEdit, onPressTrash, wallet, style }: Props) => (
-  <View style={[styles.container, style]}>
-    <Button
-      text="Edit"
-      mode="fill"
-      style={styles.button}
-      onPress={() => onPressEdit(wallet)}
-      contentContainerStyle={styles.buttonContent}
-    />
-    <RectButton onPress={() => onPressTrash(wallet)}>
-      <Icon2 size={24} name="trash" stroke={hexAlpha(COLOR.White, 30)} />
-    </RectButton>
-  </View>
-));
+export default memo(
+  ({ onPressEdit, onPressTrash, wallet, style, edited = true }: Props) => (
+    <View style={[styles.container, style]}>
+      {edited && (
+        <Button
+          text="Edit"
+          mode="fill"
+          style={styles.button}
+          onPress={() => onPressEdit && onPressEdit(wallet)}
+          contentContainerStyle={styles.buttonContent}
+        />
+      )}
+      <RectButton onPress={() => onPressTrash(wallet)}>
+        <Icon2 size={24} name="trash" stroke={hexAlpha(COLOR.White, 30)} />
+      </RectButton>
+    </View>
+  )
+);
 
 const styles = StyleSheet.create({
   container: {
