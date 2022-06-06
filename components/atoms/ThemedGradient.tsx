@@ -6,18 +6,22 @@ import { observer } from "mobx-react-lite";
 type ButtonProps = {
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  invert?: boolean;
 };
 
 export default observer(function ThemedGradient({
   children,
   style,
+  invert,
 }: ButtonProps) {
   const themeStyle = useTheme();
+
+  const colors = invert
+    ? [...themeStyle.gradient_colors].reverse()
+    : themeStyle.gradient_colors;
+
   return (
-    <LinearGradient
-      colors={themeStyle.gradient_colors}
-      style={[themeStyle.gradient_style, style]}
-    >
+    <LinearGradient colors={colors} style={[themeStyle.gradient_style, style]}>
       {children}
     </LinearGradient>
   );
