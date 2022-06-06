@@ -26,11 +26,15 @@ import {
   WalletButton,
 } from "./components/atoms";
 import { Head } from "./components/moleculs";
-import { ChangeLanguage, ChangeWallet } from "./components/organisms";
+import {
+  ChangeCurrency,
+  ChangeLanguage,
+  ChangeWallet,
+} from "./components/organisms";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
-type ModalType = "ChangeWallet" | "ChangeLanguage";
+type ModalType = "ChangeWallet" | "ChangeLanguage" | "ChangeCurrency";
 
 export default observer<Props>(function MainScreen({ navigation }) {
   const { settings, user, dapp, wallet } = useStore();
@@ -78,14 +82,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
   const openAddressBook = useCallback(() => {}, []);
-  const openNotifications = useCallback(() => {
-    console.log("openNotifications :>> ");
-    navigation.push("SettingsNotifications");
-  }, []);
+  const openNotifications = useCallback(
+    () => navigation.push("SettingsNotifications"),
+    []
+  );
   const openWalletConnect = useCallback(
     () => navigation.push("WalletConnect"),
     []
   );
+
   const openLanguages = useCallback(() => {}, []);
   const openCurrency = useCallback(() => {}, []);
   const toggleNightMode = useCallback(() => {}, []);
@@ -107,6 +112,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const closeModal = useCallback(() => setModal(undefined), []);
   const openChangeWallet = useCallback(() => setModal("ChangeWallet"), []);
   const openChangeLanguage = useCallback(() => setModal("ChangeLanguage"), []);
+  const openChangeCurrency = useCallback(() => setModal("ChangeCurrency"), []);
 
   // console.log("first", first);
 
@@ -178,8 +184,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   <ListButton
                     text="Wallet Connect"
                     onPress={openWalletConnect}
-                    arrow
                     style={styles.listButton}
+                    arrow
                   />
                 </View>
 
@@ -193,7 +199,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   />
                   <ListButton
                     text="Currency"
-                    onPress={openCurrency}
+                    onPress={openChangeCurrency}
                     icon="circle_dollar"
                     style={styles.listButton}
                   />
@@ -232,8 +238,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
                     text="Privacy Policy"
                     onPress={openPrivacyPolicy}
                     icon="file_text"
-                    arrow
                     style={styles.listButton}
+                    arrow
                   />
                 </View>
 
@@ -260,6 +266,13 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
       <ChangeLanguage
         isOpen={modal === "ChangeLanguage"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={closeModal}
+      />
+
+      <ChangeCurrency
+        isOpen={modal === "ChangeCurrency"}
         backgroundStyle={styles.bottomSheetBackground}
         animatedPosition={currentPosition}
         onClose={closeModal}
