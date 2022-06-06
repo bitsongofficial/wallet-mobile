@@ -16,7 +16,7 @@ export default ({ onPress, active = false, gradient }: SwitchProps) => {
 
   const Background = gradient ? ThemedGradient : View;
 
-  // console.log("isActive", isActive);
+  console.log("isActive", active);
   // isActive;
 
   // TODO:Check on phisic IOS
