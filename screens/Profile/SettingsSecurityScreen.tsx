@@ -7,7 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
 import { useStore } from "hooks";
-import { Icon2, ThemedGradient } from "components/atoms";
+import { Icon2, Switch, ThemedGradient } from "components/atoms";
 // import { Header } from "./components/atoms";
 import { COLOR, InputHandler } from "utils";
 import { ListButton, Subtitle } from "./components/atoms";
@@ -19,7 +19,15 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
 
   const goBack = useCallback(() => navigation.goBack(), []);
 
-  const toggleEnablePIN = useCallback(() => {}, []);
+  const toggleEnablePIN = useCallback(
+    () => settings.setPin({ enable: !settings.pin.enable }),
+    []
+  );
+
+  const toggleEnableBiometric = useCallback(
+    () => settings.setPin({ biometric_enable: !settings.pin.biometric_enable }),
+    []
+  );
   const goToChangePin = useCallback(() => {}, []);
 
   return (
@@ -34,12 +42,19 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
               <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>PIN settings</Subtitle>
                 <ListButton
-                  icon="wallet"
+                  icon="lock_key_open"
                   text="Enable PIN code"
                   onPress={toggleEnablePIN}
+                  Right={
+                    <Switch
+                      active={settings.pin.enable}
+                      onPress={toggleEnablePIN}
+                    />
+                  }
+                  // Right={}
                 />
                 <ListButton
-                  icon="wallet"
+                  icon="password"
                   text="Change PIN"
                   onPress={toggleEnablePIN}
                   arrow
@@ -49,7 +64,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
               <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>Account</Subtitle>
                 <ListButton
-                  icon="wallet"
+                  icon="key"
                   text="View Mnemonics"
                   onPress={toggleEnablePIN}
                   arrow
@@ -59,9 +74,15 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
               <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>Account</Subtitle>
                 <ListButton
-                  icon="wallet"
+                  icon="fingerprint_simple"
                   text="Enable Biometrics"
-                  onPress={toggleEnablePIN}
+                  onPress={toggleEnableBiometric}
+                  Right={
+                    <Switch
+                      active={settings.pin.biometric_enable}
+                      onPress={toggleEnableBiometric}
+                    />
+                  }
                 />
               </View>
             </ScrollView>
