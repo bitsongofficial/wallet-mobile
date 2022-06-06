@@ -9,3 +9,4 @@ export { default as RadioButton } from "./RadioButton";
 export { default as SwipeActions } from "./SwipeActions";
 export { default as Value } from "./Value";
 export { default as WalletButton } from "./WalletButton";
+export { default as Circles } from "./Circles";
