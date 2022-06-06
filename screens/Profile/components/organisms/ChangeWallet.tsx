@@ -18,7 +18,7 @@ import { COLOR, hexAlpha, InputHandler } from "utils";
 import { Button, Icon2, Switch } from "components/atoms";
 import { BottomSheet } from "components/moleculs";
 import { ListButton, Search, Title } from "../atoms";
-import { WalletItem } from "../moleculs";
+import { WalletItemEdited } from "../moleculs";
 import { Wallet } from "classes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -87,7 +87,7 @@ export default observer<Props>(
     const renderWallets = useCallback(
       ({ item }) => (
         <View style={{ marginBottom: 13 }}>
-          <WalletItem
+          <WalletItemEdited
             value={item}
             isActive={selectedWallet === item}
             onPress={setSelectedWallet}
