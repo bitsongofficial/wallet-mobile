@@ -8,8 +8,8 @@ import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
 import { useStore } from "hooks";
 import { COLOR } from "utils";
-import { Icon2, ThemedGradient } from "components/atoms";
-import { ListButton } from "./components/atoms";
+import { Icon2, Switch, ThemedGradient } from "components/atoms";
+import { ListButton, Value } from "./components/atoms";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -18,8 +18,13 @@ type Props = NativeStackScreenProps<
 
 export default observer<Props>(function SettingsNotifications({ navigation }) {
   const { settings } = useStore();
+
   const goBack = useCallback(() => navigation.goBack(), []);
-  const toggleEnablePIN = useCallback(() => {}, []);
+
+  const toggleEnable = useCallback(
+    () => settings.setNotifications({ enable: !settings.notifications.enable }),
+    []
+  );
 
   return (
     <>
@@ -32,15 +37,20 @@ export default observer<Props>(function SettingsNotifications({ navigation }) {
             <ScrollView>
               <View style={styles.section}>
                 <ListButton
-                  icon="wallet"
+                  icon="bell"
                   text="Enable Notifications"
-                  onPress={toggleEnablePIN}
+                  onPress={toggleEnable}
+                  Right={
+                    <Switch
+                      active={settings.notifications.enable}
+                      onPress={toggleEnable}
+                    />
+                  }
                 />
                 <ListButton
-                  icon="wallet"
+                  icon="clock_counter"
                   text="View History"
-                  onPress={toggleEnablePIN}
-                  arrow
+                  Right={<Value text={settings.notifications.history} />}
                 />
               </View>
             </ScrollView>
