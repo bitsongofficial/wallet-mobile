@@ -15,6 +15,11 @@ export default () => (
     <Stack.Navigator>
       {/* not auth */}
       <Stack.Screen
+        name="Profile"
+        component={Screens.Profile}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="Start"
         component={Screens.Start}
         options={{ headerShown: false }}
@@ -22,6 +27,11 @@ export default () => (
       <Stack.Screen
         name="CreateWallet"
         component={Screens.CreateWallet}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="WalletConnect"
+        component={Screens.WalletConnect}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -34,11 +44,7 @@ export default () => (
         component={Screens.ImportWithKeplr}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Profile"
-        component={Screens.Profile}
-        options={{ headerShown: false }}
-      />
+
       <Stack.Screen
         name="SettingsSecurity"
         component={Screens.SettingsSecurity}
