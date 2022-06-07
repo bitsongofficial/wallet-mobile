@@ -1,14 +1,18 @@
 import { useEffect, useRef } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
 import { COLOR } from "utils";
 import { Phrase } from "classes";
 import { Input, Word } from "components/atoms";
 
-type Props = { phrase: Phrase };
+type Props = {
+  phrase: Phrase;
+  inputStyle?: StyleProp<ViewStyle>;
+  bottomsheet?: boolean;
+};
 
-export default observer(({ phrase }: Props) => {
+export default observer(({ phrase, inputStyle, bottomsheet }: Props) => {
   const scrollview = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -42,10 +46,11 @@ export default observer(({ phrase }: Props) => {
           </ScrollView>
         )}
       </View>
-      <View style={styles.inputContainer}>
+      <View style={inputStyle}>
         <Text style={styles.text}>Word #{phrase.words.length + 1}</Text>
         <Input
           blurOnSubmit={false}
+          bottomsheet={bottomsheet}
           value={phrase.inputValue}
           onChangeText={phrase.inputSet}
           onSubmitEditing={phrase.inputSubmit}
@@ -78,7 +83,6 @@ const styles = StyleSheet.create({
   },
 
   word: { marginRight: 10 },
-  inputContainer: { marginHorizontal: 30 },
 
   text: {
     fontFamily: "CircularStd",

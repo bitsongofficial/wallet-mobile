@@ -51,8 +51,9 @@ export default observer<Props>(({ navigation }) => {
           <View style={[styles.mh30, { paddingTop: 50 }]}>
             <Title text={controller.steps.title} />
             <Subtitle style={styles.subtitle}>
-              This is the only way you will be able to {"\n"}recover your
-              account. Please store it {"\n"}somewhere safe!
+              This is the only way you will be able to {"\n"}
+              recover your account. Please store it {"\n"}
+              somewhere safe!
             </Subtitle>
           </View>
 
@@ -71,7 +72,10 @@ export default observer<Props>(({ navigation }) => {
                   onPress={pasteFromClipboard}
                 />
               </View>
-              <PhraseInput phrase={controller.phrase} />
+              <PhraseInput
+                phrase={controller.phrase}
+                inputStyle={{ marginHorizontal: 30 }}
+              />
             </ScrollView>
           )}
 
