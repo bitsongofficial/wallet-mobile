@@ -26,7 +26,7 @@ import { Wallet } from "classes";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
 
-type Props = NativeStackScreenProps<RootStackParamList, "SettingsSecurity">;
+type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">;
 
 export default observer<Props>(function WalletConnect({ navigation }) {
   const { walletStore } = useStore();
@@ -67,27 +67,31 @@ export default observer<Props>(function WalletConnect({ navigation }) {
             title="Wallet Connect"
             onPressScan={() => {}}
           />
-          <View>
-            <Subtitle style={[{ marginBottom: 23 }, styles.wrapper]}>
-              Connessioni attive
-            </Subtitle>
-            <FlatList data={wallets} renderItem={renderWallet} />
-          </View>
-          <View style={[styles.wrapper, { flex: 1 }]}>
-            {/* <View style={{ alignItems: "center" }}>
-              <View style={{ marginVertical: 40 }}>
-                <Circles>
-                  <Icon2 name="qr_code" size={70} stroke={COLOR.White} />
-                </Circles>
-              </View>
-              <Title style={styles.title}>
-                Non hai ancora aggiunto alcun contatto
-              </Title>
-              <Subtitle style={styles.subtitle}>
-                Access VIP experiences, exclusive previews, finance your own
-                music projects and have your say.
+          {wallets.length > 0 && (
+            <>
+              <Subtitle style={[{ marginBottom: 23 }, styles.wrapper]}>
+                Connessioni attive
               </Subtitle>
-            </View>
+              <FlatList data={wallets} renderItem={renderWallet} />
+            </>
+          )}
+          <View style={[styles.wrapper, { flex: 1 }]}>
+            {wallets.length === 0 && (
+              <View style={{ alignItems: "center" }}>
+                <View style={{ marginVertical: 40 }}>
+                  <Circles>
+                    <Icon2 name="qr_code" size={70} stroke={COLOR.White} />
+                  </Circles>
+                </View>
+                <Title style={styles.title}>
+                  Non hai ancora aggiunto alcun contatto
+                </Title>
+                <Subtitle style={styles.subtitle}>
+                  Access VIP experiences, exclusive previews, finance your own
+                  music projects and have your say.
+                </Subtitle>
+              </View>
+            )}
             <View style={styles.buttonContainer}>
               <Button
                 textStyle={styles.buttonText}
@@ -95,7 +99,7 @@ export default observer<Props>(function WalletConnect({ navigation }) {
                 mode="fill"
                 text={"Scan QR Code"}
               />
-            </View> */}
+            </View>
           </View>
         </SafeAreaView>
       </ThemedGradient>
