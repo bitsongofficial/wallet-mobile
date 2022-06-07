@@ -54,9 +54,12 @@ export default ({
       onSwipeableRightWillOpen={closeOther}
       renderRightActions={renderRightActions}
     >
-      <RectButton onPress={handlePress}>
-        <View style={styles.wrapper}>
-          <View style={[styles.container, style]}>
+      <View style={styles.wrapper}>
+        <View style={[styles.container, style]}>
+          <RectButton
+            style={{ backgroundColor: "orange" }}
+            onPress={handlePress}
+          >
             <View style={styles.inner}>
               <Icon2
                 name="link_simple_horizontal"
@@ -68,9 +71,9 @@ export default ({
                 <Text style={styles.date}>Apr 12, 10:34 AM</Text>
               </View>
             </View>
-          </View>
+          </RectButton>
         </View>
-      </RectButton>
+      </View>
     </Swipeable>
   );
 };

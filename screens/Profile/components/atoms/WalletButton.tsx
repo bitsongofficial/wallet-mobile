@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { Wallet } from "classes";
 import { COLOR, hexAlpha } from "utils";
@@ -8,12 +8,13 @@ import { Icon2 } from "components/atoms";
 type Props = {
   wallet: Wallet;
   onPress(wallet: Wallet): void;
+  style?: StyleProp<ViewStyle>;
 };
 
-export default ({ onPress, wallet }: Props) => {
+export default ({ onPress, wallet, style }: Props) => {
   const handlePress = useCallback(() => onPress(wallet), [onPress, wallet]);
   return (
-    <RectButton onPress={handlePress}>
+    <RectButton onPress={handlePress} style={style}>
       <View style={styles.container}>
         <Icon2
           size={18}
