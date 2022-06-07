@@ -9,4 +9,5 @@ export { default as Profile } from "./Profile";
 export { default as SettingsSecurity } from "./Profile/SettingsSecurityScreen";
 export { default as SettingsNotifications } from "./Profile/SettingsNotificationsScreen";
 export { default as WalletConnect } from "./Profile/WalletConnectScreen";
+export { default as AddressBook } from "./Profile/AddressBookScreen";
 export { CreateWallet, ImportFromSeed, ImportWithKeplr } from "./CreateSeed";

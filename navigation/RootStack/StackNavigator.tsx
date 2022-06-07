@@ -35,6 +35,11 @@ export default () => (
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="AddressBook"
+        component={Screens.AddressBook}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="ImportFromSeed"
         component={Screens.ImportFromSeed}
         options={{ headerShown: false }}
