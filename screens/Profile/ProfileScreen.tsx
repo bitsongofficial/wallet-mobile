@@ -27,14 +27,21 @@ import {
 } from "./components/atoms";
 import { Head } from "./components/moleculs";
 import {
+  AddAccount,
   ChangeCurrency,
   ChangeLanguage,
   ChangeWallet,
+  GenerateMnenonic,
 } from "./components/organisms";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
-type ModalType = "ChangeWallet" | "ChangeLanguage" | "ChangeCurrency";
+type ModalType =
+  | "ChangeWallet"
+  | "ChangeLanguage"
+  | "ChangeCurrency"
+  | "GenerateMnenonic"
+  | "AddAccount";
 
 export default observer<Props>(function MainScreen({ navigation }) {
   const { settings, user, dapp, wallet } = useStore();
@@ -75,13 +82,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const navToTerms = useCallback(() => {}, []);
   const disconnectAndRemove = useCallback(() => {}, []);
 
-  const openAddNewaccount = useCallback(() => {}, []);
   const openAddWatchaccount = useCallback(() => {}, []);
   const openSecurity = useCallback(
     () => navigation.push("SettingsSecurity"),
     []
   );
-  const openAddressBook = useCallback(() => {}, []);
+  const openAddressBook = useCallback(() => navigation.push("AddressBook"), []);
   const openNotifications = useCallback(
     () => navigation.push("SettingsNotifications"),
     []
@@ -91,36 +97,38 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
 
-  const openLanguages = useCallback(() => {}, []);
-  const openCurrency = useCallback(() => {}, []);
   const toggleNightMode = useCallback(() => {}, []);
   const openCurrencyApp = useCallback(() => {}, []);
   const openFAQ = useCallback(() => {}, []);
   const openTermsAndConditions = useCallback(() => {}, []);
   const openPrivacyPolicy = useCallback(() => {}, []);
 
-  const [first, setfirst] = useState(false);
-  const toggleNotification = useCallback(() => {
-    // console.log("press Button :>> ");
-    setfirst((value) => {
-      // console.log("toggle :>> ", !value);
-      return !value;
-    });
-  }, []);
+  const toggleNotification = useCallback(
+    () => settings.setNotifications({ enable: !settings.notifications.enable }),
+    []
+  );
 
-  const [modal, setModal] = useState<ModalType>();
-  const closeModal = useCallback(() => setModal(undefined), []);
+  // --------- Bottom Sheets ------------
+
+  const [modal, setModal] = useState<ModalType | null>(null);
+  const closeModal = useCallback(
+    (type: ModalType) => setModal((value) => (value !== type ? value : null)),
+    []
+  );
   const openChangeWallet = useCallback(() => setModal("ChangeWallet"), []);
   const openChangeLanguage = useCallback(() => setModal("ChangeLanguage"), []);
   const openChangeCurrency = useCallback(() => setModal("ChangeCurrency"), []);
-
-  // console.log("first", first);
+  const openAddAccount = useCallback(() => setModal("AddAccount"), []);
+  const openGenerateMnenonic = useCallback(
+    () => setModal("GenerateMnenonic"),
+    []
+  );
 
   return (
     <>
       <StatusBar style="light" />
 
-      <ThemedGradient style={styles.container}>
+      <ThemedGradient style={styles.container} invert>
         <SafeAreaView style={styles.container}>
           <Animated.View style={animStyle}>
             <Header onPressClose={goBack} style={styles.header} />
@@ -132,11 +140,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
               />
               <animated.View style={[styles.wrapper, hidden]}>
                 <Subtitle style={styles.subtitle}>Connected with</Subtitle>
-                <WalletButton onPress={openChangeWallet} wallet={wallet} />
+                <WalletButton
+                  onPress={openChangeWallet}
+                  wallet={wallet}
+                  style={{ marginBottom: 16 }}
+                />
 
                 <ListButton
                   text="Add a new account"
-                  onPress={openAddNewaccount}
+                  onPress={openAddAccount}
                   icon="wallet"
                   arrow
                   style={styles.listButton}
@@ -148,6 +160,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   icon="eye"
                   arrow
                 />
+
                 <Agreement
                   onPressPrivacy={navToPrivacy}
                   onPressTerms={navToTerms}
@@ -178,7 +191,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
                     icon="bell"
                     style={styles.listButton}
                     Right={
-                      <Switch active={first} onPress={toggleNotification} />
+                      <Switch
+                        active={settings.notifications.enable}
+                        onPress={toggleNotification}
+                      />
                     }
                   />
                   <ListButton
@@ -257,25 +273,31 @@ export default observer<Props>(function MainScreen({ navigation }) {
         </SafeAreaView>
       </ThemedGradient>
 
+      {/* --------- Bottom Sheets -----------  */}
+
       <ChangeWallet
         isOpen={modal === "ChangeWallet"}
         backgroundStyle={styles.bottomSheetBackground}
         animatedPosition={currentPosition}
-        onClose={closeModal}
+        onClose={() => closeModal("ChangeWallet")}
       />
-
       <ChangeLanguage
         isOpen={modal === "ChangeLanguage"}
         backgroundStyle={styles.bottomSheetBackground}
         animatedPosition={currentPosition}
-        onClose={closeModal}
+        onClose={() => closeModal("ChangeLanguage")}
       />
-
       <ChangeCurrency
         isOpen={modal === "ChangeCurrency"}
         backgroundStyle={styles.bottomSheetBackground}
         animatedPosition={currentPosition}
-        onClose={closeModal}
+        onClose={() => closeModal("ChangeCurrency")}
+      />
+      <AddAccount
+        isOpen={modal === "AddAccount"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={() => closeModal("AddAccount")}
       />
 
       <BottomSheet
@@ -288,13 +310,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
       >
         <View style={{ marginTop: 15 }}>
           <View style={{ marginHorizontal: 26 }}>
-            {/* <ChangeCurrency /> */}
-            {/* <GenerateMnenonic /> */}
-            {/* <AddAccount
-            onPressCreate={() => {}}
-            onPressImport={() => {}}
-            close={closeBSAvatar}
-          /> */}
             {/* <ChangeAvatar close={closeBSAvatar} /> */}
           </View>
         </View>
@@ -302,8 +317,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
     </>
   );
 });
-
-const Wallet = () => {};
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
