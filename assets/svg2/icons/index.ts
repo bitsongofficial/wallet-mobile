@@ -44,6 +44,7 @@ import fingerprint_simple from "./fingerprint_simple.svg";
 import scan_1 from "./scan_1.svg";
 import qr_code from "./qr_code.svg";
 import link_simple_horizontal from "./link_simple_horizontal.svg";
+import address_book_big from "./address_book_big.svg";
 
 export default <const>{
   eye_closed_gradient,
@@ -76,6 +77,7 @@ export default <const>{
   link_simple_horizontal,
 
   address_book,
+  address_book_big,
   chat_dots,
   file_text,
   moon,
