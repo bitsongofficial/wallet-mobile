@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
   StyleProp,
   StyleSheet,
   Text,
@@ -21,6 +23,7 @@ import { ListButton, Search, Title } from "../atoms";
 import { WalletItemEdited } from "../moleculs";
 import { Wallet } from "classes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
 
 type Props = {
   isOpen?: boolean;
@@ -105,10 +108,9 @@ export default observer<Props>(
     const insent = useSafeAreaInsets();
 
     const [isShowButton, setIsShowButton] = useState(false);
-    const handleAnimate = useCallback(
-      (from) => setIsShowButton(from === -1),
-      []
-    );
+    const toggleButtonShow = useCallback((index: number) => {
+      setIsShowButton(index >= 0);
+    }, []);
 
     // -------- Done ---------
 
@@ -126,6 +128,9 @@ export default observer<Props>(
       setSelectedWallet(walletStore.active);
     }, [onClose]);
 
+    useBottomSheetBackButton(isOpen, handleClose);
+
+    // console.log("isShowButton :>> ", isShowButton);
     return (
       <>
         <BottomSheet
@@ -134,8 +139,8 @@ export default observer<Props>(
           ref={bottomSheet}
           backgroundStyle={backgroundStyle}
           animatedPosition={animatedPosition}
+          onChange={toggleButtonShow}
           onClose={handleClose}
-          onAnimate={handleAnimate}
           index={-1}
         >
           <View style={styles.container}>
@@ -224,7 +229,6 @@ export default observer<Props>(
             )}
           </View>
         </BottomSheet>
-
         {isShowButton && (
           <View style={[styles.buttons, { bottom: insent.bottom }]}>
             {!edited ? (

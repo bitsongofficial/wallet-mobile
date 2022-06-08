@@ -1,5 +1,7 @@
 import {
+  BackHandler,
   KeyboardAvoidingView,
+  Platform,
   StyleProp,
   StyleSheet,
   Text,
@@ -21,6 +23,7 @@ import { Button } from "components/atoms";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PhraseInput } from "screens/CreateSeed/components/organisms";
+import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
 
 type Props = {
   isOpen?: boolean;
@@ -29,20 +32,10 @@ type Props = {
     Omit<ViewStyle, "bottom" | "left" | "position" | "right" | "top">
   >;
   onClose?(): void;
-
-  onPressCreate?(): void;
-  onPressImport?(): void;
 };
 
 export default observer<Props>(
-  ({
-    backgroundStyle,
-    animatedPosition,
-    isOpen,
-    onClose,
-    onPressCreate,
-    onPressImport,
-  }) => {
+  ({ backgroundStyle, animatedPosition, isOpen, onClose }) => {
     // ------ BottomSheet -------
     const snapPoints = useMemo(() => [350, "95%"], []);
     const bottomSheet = useRef<BottomSheetMethods>(null);
@@ -107,6 +100,8 @@ export default observer<Props>(
       phrase.clear();
     }, [onClose]);
 
+    useBottomSheetBackButton(isOpen, handleClose);
+
     return (
       <>
         <BottomSheet
@@ -117,9 +112,13 @@ export default observer<Props>(
           animatedPosition={animatedPosition}
           onClose={handleClose}
           onAnimate={handleAnimate}
+          android_keyboardInputMode="adjustResize"
           index={-1}
         >
-          <KeyboardAvoidingView style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "height" : "padding"}
+            style={styles.container}
+          >
             {steps.title === "Choose" && (
               <>
                 <Title style={styles.title}>Add a new account</Title>
@@ -183,13 +182,25 @@ export default observer<Props>(
                   value={input.value}
                   onChangeText={input.set}
                   placeholder="Write a name"
+                  autoFocus
                   style={{ marginBottom: 24 }}
                 />
                 <Subtitle style={styles.subtitle}>
                   Access VIP experiences, exclusive previews,{"\n"}
                   finance your own music projects and have your say.
                 </Subtitle>
-                <View style={[styles.footer, { bottom: insent.bottom }]}>
+                <View
+                  style={[
+                    // styles.footer,
+                    {
+                      flexGrow: 1,
+                      justifyContent: "flex-end",
+                      paddingVertical: 8,
+                      alignItems: "center",
+                    },
+                    { backgroundColor: "orange" },
+                  ]}
+                >
                   <Button
                     text="Add Account"
                     contentContainerStyle={styles.buttonContinueContent}
@@ -199,29 +210,40 @@ export default observer<Props>(
               </>
             )}
             {steps.title === "Import" && (
-              <>
+              <View style={{ flexGrow: 1 }}>
                 <Title style={styles.title}>Import Mnemonics</Title>
                 <Text style={styles.caption}>
                   This is the only way you will be able to{"\n"}
                   recover your account.Please store it {"\n"}
                   somewhere safe!
                 </Text>
-                <View style={{ flexGrow: 1 }}>
-                  <PhraseInput
-                    phrase={phrase}
-                    bottomsheet
-                    inputStyle={{
-                      position: "absolute",
-                      bottom: insent.bottom,
-                      width: "100%",
-                    }}
-                  />
-                </View>
-              </>
+                {/* <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "flex-end",
+                    // backgroundColor: "green",
+                  }}
+                > */}
+                <PhraseInput
+                  phrase={phrase}
+                  bottomsheet
+                  scrollStyle={{
+                    flexGrow: 1,
+                  }}
+                  inputStyle={{
+                    flexGrow: 1,
+                    justifyContent: "flex-end",
+                    paddingVertical: 8,
+                    paddingBottom: insent.bottom || 8,
+                    // width: "100%",
+                    // backgroundColor: "red",
+                  }}
+                />
+              </View>
             )}
           </KeyboardAvoidingView>
         </BottomSheet>
-        {isShowButton && steps.title === "Create" && (
+        {steps.title === "Create" && (
           <View style={[styles.footer, { bottom: insent.bottom }]}>
             <Button
               text="Continue"
@@ -350,6 +372,7 @@ const styles = StyleSheet.create({
   footer: {
     position: "absolute",
     width: "100%",
+    zIndex: 10,
 
     padding: 16,
     alignItems: "center",

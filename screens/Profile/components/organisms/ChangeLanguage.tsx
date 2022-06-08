@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "components/atoms";
 import languages from "constants/languages";
 import { ILang } from "screens/Profile/type";
+import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
 
 type Props = {
   isOpen?: boolean;
@@ -81,6 +82,8 @@ export default observer<Props>(
       setSelected(settings.language);
     }, [onClose]);
 
+    useBottomSheetBackButton(isOpen, handleClose);
+
     // --------- Buttons ----------
 
     const insent = useSafeAreaInsets();
@@ -90,6 +93,8 @@ export default observer<Props>(
       (from) => setIsShowButton(from === -1),
       []
     );
+
+    console.log("change languatge isOpen", isOpen);
 
     // -------- Done ---------
 

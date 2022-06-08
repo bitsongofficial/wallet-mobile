@@ -20,6 +20,7 @@ import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ICurrency } from "screens/Profile/type";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "components/atoms";
+import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
 
 type Props = {
   isOpen?: boolean;
@@ -42,7 +43,10 @@ export default observer<Props>(
     const close = () => bottomSheet.current?.close();
     const open = () => bottomSheet.current?.snapToIndex(0);
 
-    useEffect(() => (isOpen ? open() : close()), [isOpen]);
+    useEffect(() => {
+      isOpen ? open() : close();
+      console.log("isOpen :>> ", isOpen);
+    }, [isOpen]);
 
     // --------- Search ---------
 
@@ -82,6 +86,8 @@ export default observer<Props>(
       onClose && onClose();
       setSelected(settings.currency);
     }, [onClose]);
+
+    useBottomSheetBackButton(isOpen, handleClose);
 
     // --------- Buttons ----------
 
