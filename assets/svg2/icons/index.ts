@@ -45,6 +45,7 @@ import scan_1 from "./scan_1.svg";
 import qr_code from "./qr_code.svg";
 import link_simple_horizontal from "./link_simple_horizontal.svg";
 import address_book_big from "./address_book_big.svg";
+import wallet_connect from "./wallet_connect.svg";
 
 export default <const>{
   eye_closed_gradient,
@@ -94,4 +95,5 @@ export default <const>{
   lock_key_open,
   password,
   fingerprint_simple,
+  wallet_connect,
 };
