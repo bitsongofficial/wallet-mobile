@@ -2,7 +2,7 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { Icon2, IconName } from "components/atoms";
 import { useTheme } from "hooks";
 import { COLOR, hexAlpha } from "utils";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { RectButton, TouchableOpacity } from "react-native-gesture-handler";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
@@ -25,7 +25,7 @@ export default ({
 }: Props) => {
   const theme = useTheme();
   return (
-    <TouchableOpacity onPress={onPress} style={style}>
+    <RectButton onPress={onPress} style={style}>
       <View style={styles.container}>
         <View style={styles.left}>
           <Icon2
@@ -45,7 +45,7 @@ export default ({
           )}
         </View>
       </View>
-    </TouchableOpacity>
+    </RectButton>
   );
 };
 
