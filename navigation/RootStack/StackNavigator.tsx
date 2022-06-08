@@ -14,11 +14,7 @@ export default () => (
   <BottomSheetModalProvider>
     <Stack.Navigator>
       {/* not auth */}
-      <Stack.Screen
-        name="Profile"
-        component={Screens.Profile}
-        options={{ headerShown: false }}
-      />
+
       <Stack.Screen
         name="Start"
         component={Screens.Start}
@@ -34,6 +30,9 @@ export default () => (
         component={Screens.WalletConnect}
         options={{ headerShown: false }}
       />
+
+      {/* auth */}
+
       <Stack.Screen
         name="AddressBook"
         component={Screens.AddressBook}
@@ -49,7 +48,6 @@ export default () => (
         component={Screens.ImportWithKeplr}
         options={{ headerShown: false }}
       />
-
       <Stack.Screen
         name="SettingsSecurity"
         component={Screens.SettingsSecurity}
@@ -61,12 +59,17 @@ export default () => (
         options={{ headerShown: false }}
       />
 
-      {/* auth */}
+      <Stack.Screen
+        name="Profile"
+        component={Screens.Profile}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Root"
         component={BottomTabNavigator}
         options={{ headerShown: false }}
       />
+
       <Stack.Group screenOptions={{ presentation: "modal" }}>
         <Stack.Screen
           name="ScannerQR"
