@@ -6,12 +6,18 @@ import { configure } from "mobx";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
+import { useEffect } from "react";
+import { COLOR } from "utils";
+import * as NavigationBar from "expo-navigation-bar";
 
 configure({ useProxies: "ifavailable" });
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
+  }, []);
 
   if (!isLoadingComplete) {
     return null;
