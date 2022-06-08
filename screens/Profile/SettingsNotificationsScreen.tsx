@@ -30,7 +30,7 @@ export default observer<Props>(function SettingsNotifications({ navigation }) {
     <>
       <StatusBar style="light" />
 
-      <ThemedGradient style={styles.container}>
+      <ThemedGradient style={styles.container} invert>
         <SafeAreaView style={styles.container}>
           <View style={styles.wrapper}>
             <Header onPressBack={goBack} style={styles.header} />

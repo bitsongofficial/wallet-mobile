@@ -31,7 +31,6 @@ import {
   ChangeCurrency,
   ChangeLanguage,
   ChangeWallet,
-  GenerateMnenonic,
 } from "./components/organisms";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
@@ -112,7 +111,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const [modal, setModal] = useState<ModalType | null>(null);
   const closeModal = useCallback(
-    (type: ModalType) => setModal((value) => (value !== type ? value : null)),
+    (type: ModalType | null) =>
+      setModal((value) => {
+        if (value !== type && type !== null) {
+          return value;
+        } else {
+          return null;
+        }
+        // (value !== type && type !== null ? value : null)
+      }),
     []
   );
   const openChangeWallet = useCallback(() => setModal("ChangeWallet"), []);
@@ -124,9 +131,16 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
 
+  useEffect(() => {
+    if (inputNick.isFocused) {
+      console.log("inputNick.isFocused :>> ", inputNick.isFocused);
+      closeModal(null);
+    }
+  }, [inputNick.isFocused]);
+
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar style="inverted" />
 
       <ThemedGradient style={styles.container} invert>
         <SafeAreaView style={styles.container}>
@@ -199,6 +213,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   />
                   <ListButton
                     text="Wallet Connect"
+                    icon="wallet_connect"
                     onPress={openWalletConnect}
                     style={styles.listButton}
                     arrow
@@ -261,7 +276,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
                 <Button
                   mode="fill"
-                  text="Disconnect and Remove W allet"
+                  text="Disconnect and Remove Wallet"
                   onPress={disconnectAndRemove}
                   style={styles.button}
                   textStyle={styles.buttonText}
@@ -275,6 +290,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
       {/* --------- Bottom Sheets -----------  */}
 
+      <AddAccount
+        isOpen={modal === "AddAccount"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={() => closeModal("AddAccount")}
+      />
       <ChangeWallet
         isOpen={modal === "ChangeWallet"}
         backgroundStyle={styles.bottomSheetBackground}
@@ -292,12 +313,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
         backgroundStyle={styles.bottomSheetBackground}
         animatedPosition={currentPosition}
         onClose={() => closeModal("ChangeCurrency")}
-      />
-      <AddAccount
-        isOpen={modal === "AddAccount"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("AddAccount")}
       />
 
       <BottomSheet
@@ -339,7 +354,7 @@ const styles = StyleSheet.create({
 
   listButton: { marginTop: 4 },
 
-  button: { backgroundColor: COLOR.Dark3 },
+  button: { backgroundColor: COLOR.Dark3, marginBottom: 8 },
   buttonContent: { paddingVertical: 18 },
   buttonText: {
     fontSize: 14,

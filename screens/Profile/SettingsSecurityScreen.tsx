@@ -34,7 +34,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
     <>
       <StatusBar style="light" />
 
-      <ThemedGradient style={styles.container}>
+      <ThemedGradient style={styles.container} invert>
         <SafeAreaView style={styles.container}>
           <View style={styles.wrapper}>
             <Header onPressBack={goBack} style={styles.header} />
@@ -53,22 +53,12 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
                   }
                   // Right={}
                 />
-                <ListButton
-                  icon="password"
-                  text="Change PIN"
-                  onPress={toggleEnablePIN}
-                  arrow
-                />
+                <ListButton icon="password" text="Change PIN" arrow />
               </View>
 
               <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>Account</Subtitle>
-                <ListButton
-                  icon="key"
-                  text="View Mnemonics"
-                  onPress={toggleEnablePIN}
-                  arrow
-                />
+                <ListButton icon="key" text="View Mnemonics" arrow />
               </View>
 
               <View style={styles.section}>
