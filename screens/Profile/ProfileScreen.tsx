@@ -46,16 +46,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const { settings, user, dapp, wallet } = useStore();
 
   // ------- BottomSheet ----------
-  const bottomSheet = useRef<BottomSheetMethods>(null);
-
-  const openBSAvatar = useCallback(
-    () => bottomSheet.current?.snapToIndex(0),
-    []
-  );
-
-  const closeBSAvatar = useCallback(() => bottomSheet.current?.close(), []);
-
-  const snapPoints = useMemo(() => [350, "95%"], []);
 
   const currentPosition = useSharedValue(0);
   const animStyle = useAnimatedStyle(() => ({
@@ -65,12 +55,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const inputNick = useMemo(() => new InputHandler(user?.nick), [user]);
   const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 });
-
-  useEffect(() => {
-    if (inputNick.isFocused) {
-      closeBSAvatar();
-    }
-  }, [inputNick.isFocused]);
 
   /// ---------------
   const theme = useTheme();
@@ -150,7 +134,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
               <Head
                 style={styles.head}
                 input={inputNick}
-                onPressAvatar={openBSAvatar}
+                onPressAvatar={openChangeAvatar}
+                avatar={user?.photo}
               />
               <animated.View style={[styles.wrapper, hidden]}>
                 <Subtitle style={styles.subtitle}>Connected with</Subtitle>
@@ -314,21 +299,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
         animatedPosition={currentPosition}
         onClose={() => closeModal("ChangeCurrency")}
       />
-
-      <BottomSheet
-        enablePanDownToClose
-        snapPoints={snapPoints}
-        ref={bottomSheet}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        index={-1}
-      >
-        <View style={{ marginTop: 15 }}>
-          <View style={{ marginHorizontal: 26 }}>
-            {/* <ChangeAvatar close={closeBSAvatar} /> */}
-          </View>
-        </View>
-      </BottomSheet>
     </>
   );
 });

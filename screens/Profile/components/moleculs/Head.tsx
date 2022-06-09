@@ -13,9 +13,10 @@ type Props = {
   style: StyleProp<ViewStyle>;
   input: InputHandler;
   onPressAvatar?(): void;
+  avatar?: string;
 };
 
-export default observer<Props>(({ style, input, onPressAvatar }) => {
+export default observer<Props>(({ style, input, onPressAvatar, avatar }) => {
   const inputRef = useRef<TextInput>(null);
   const { dapp, user } = useStore();
 
@@ -39,7 +40,10 @@ export default observer<Props>(({ style, input, onPressAvatar }) => {
     <View style={[styles.container, style]}>
       <View style={styles.user}>
         <TouchableOpacity onPress={onPressAvatar}>
-          <Avatar style={styles.avatar} />
+          <Avatar
+            style={styles.avatar}
+            source={avatar ? { uri: avatar } : undefined}
+          />
         </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
           <Title style={hidden}>

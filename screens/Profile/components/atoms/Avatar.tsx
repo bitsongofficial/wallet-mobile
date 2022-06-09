@@ -1,16 +1,23 @@
-import { Image, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import {
+  Image,
+  ImageSourcePropType,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import { COLOR, hexAlpha } from "utils";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
+  source?: ImageSourcePropType | null;
 };
 
-export default ({ style }: Props) => (
+const placeholder = require("assets/images/mock/avatar.png");
+
+export default ({ style, source }: Props) => (
   <View style={[styles.container, style]}>
-    <Image
-      style={styles.img}
-      source={require("assets/images/mock/avatar.png")}
-    />
+    <Image style={styles.img} source={source || placeholder} />
   </View>
 );
 
