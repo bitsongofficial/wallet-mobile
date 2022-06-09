@@ -28,6 +28,7 @@ import {
 import { Head } from "./components/moleculs";
 import {
   AddAccount,
+  ChangeAvatar,
   ChangeCurrency,
   ChangeLanguage,
   ChangeWallet,
@@ -39,8 +40,8 @@ type ModalType =
   | "ChangeWallet"
   | "ChangeLanguage"
   | "ChangeCurrency"
-  | "GenerateMnenonic"
-  | "AddAccount";
+  | "AddAccount"
+  | "ChangeAvatar";
 
 export default observer<Props>(function MainScreen({ navigation }) {
   const { settings, user, dapp, wallet } = useStore();
@@ -110,10 +111,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const openChangeLanguage = useCallback(() => setModal("ChangeLanguage"), []);
   const openChangeCurrency = useCallback(() => setModal("ChangeCurrency"), []);
   const openAddAccount = useCallback(() => setModal("AddAccount"), []);
-  const openGenerateMnenonic = useCallback(
-    () => setModal("GenerateMnenonic"),
-    []
-  );
+  const openChangeAvatar = useCallback(() => setModal("ChangeAvatar"), []);
 
   useEffect(() => {
     if (inputNick.isFocused) {
@@ -274,6 +272,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
       </ThemedGradient>
 
       {/* --------- Bottom Sheets -----------  */}
+      <ChangeAvatar
+        isOpen={modal === "ChangeAvatar"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={() => closeModal("ChangeAvatar")}
+      />
 
       <AddAccount
         isOpen={modal === "AddAccount"}
