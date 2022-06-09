@@ -145,7 +145,7 @@ const Header = ({ onPressBack, style, title, onPressScan }: PropsHeader) => (
     <View style={styles.header_right}>
       <View style={styles.header_scanButtonContainer}>
         <RectButton style={styles.header_scanButton} onPress={onPressScan}>
-          <Icon2 name="scan_1" size={18} stroke={COLOR.White} />
+          <Icon2 name="plus" size={20} stroke={COLOR.White} />
         </RectButton>
       </View>
     </View>

@@ -217,13 +217,6 @@ export default observer<Props>(
                   recover your account.Please store it {"\n"}
                   somewhere safe!
                 </Text>
-                {/* <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "flex-end",
-                    // backgroundColor: "green",
-                  }}
-                > */}
                 <PhraseInput
                   phrase={phrase}
                   bottomsheet
@@ -235,8 +228,6 @@ export default observer<Props>(
                     justifyContent: "flex-end",
                     paddingVertical: 8,
                     paddingBottom: insent.bottom || 8,
-                    // width: "100%",
-                    // backgroundColor: "red",
                   }}
                 />
               </View>

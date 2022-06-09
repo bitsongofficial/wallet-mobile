@@ -45,7 +45,6 @@ export default observer<Props>(
 
     useEffect(() => {
       isOpen ? open() : close();
-      console.log("isOpen :>> ", isOpen);
     }, [isOpen]);
 
     // --------- Search ---------
