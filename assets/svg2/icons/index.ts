@@ -42,10 +42,12 @@ import lock_key_open from "./lock_key_open.svg";
 import password from "./password.svg";
 import fingerprint_simple from "./fingerprint_simple.svg";
 import scan_1 from "./scan_1.svg";
+import scan_2 from "./scan_2.svg";
 import qr_code from "./qr_code.svg";
 import link_simple_horizontal from "./link_simple_horizontal.svg";
 import address_book_big from "./address_book_big.svg";
 import wallet_connect from "./wallet_connect.svg";
+import plus from "./plus.svg";
 
 export default <const>{
   eye_closed_gradient,
@@ -66,6 +68,7 @@ export default <const>{
   inquire,
   scan,
   scan_1,
+  scan_2,
   settings,
   claim,
   restake,
@@ -89,6 +92,7 @@ export default <const>{
   circle_dollar,
   bell,
   trash,
+  plus,
 
   key,
   power,
