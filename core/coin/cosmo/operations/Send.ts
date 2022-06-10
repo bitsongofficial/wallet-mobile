@@ -1,4 +1,4 @@
-import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs/stargate";
+import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
 import { FromToAmount } from "core/types/coin/cosmo/FromToAmount";
 import { Denom, Operation } from "core/types/coin/Generic";
 import { CosmoOperation } from "./CosmoOperation";
