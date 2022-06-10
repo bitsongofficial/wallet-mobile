@@ -125,7 +125,6 @@ export async function test()
 		}
 
 		try {
-			tryRewards(rewards)
 		}
 		catch(e)
 		{
