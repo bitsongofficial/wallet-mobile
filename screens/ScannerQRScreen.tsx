@@ -61,14 +61,14 @@ export default observer<Props>(({ navigation, route }) => {
             value={uri}
             onChangeText={setUri}></TextInput>
           <View style={styles.sector}>
-            {/* <BarCodeScanner
+            <BarCodeScanner
               barCodeTypes={["qr"]}
               onBarCodeScanned={handleBarCodeScanned}
               style={{
                 flexGrow: 1,
                 transform: [{ scale: 2 }],
               }}
-            /> */}
+            />
           </View>
         </View>
 
