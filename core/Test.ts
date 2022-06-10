@@ -89,9 +89,20 @@ async function tryClaim(owner: CosmosWallet, validators: Wallet[]) {
 	Bitsong.Do(CoinOperationEnum.Claim, data)
 }
 
+async function tryValidators() {
+	Bitsong.Do(CoinOperationEnum.Validators)
+}
+
+async function tryProposals() {
+	Bitsong.Do(CoinOperationEnum.Proposals)
+}
+
+async function tryRewards(wallet: Wallet) {
+	Bitsong.Do(CoinOperationEnum.Rewards, {wallet})
+}
+
 export async function test()
 {
-	console.log("Start")
 	const savePhase = false
 	const [wallet, store] = CosmosWalletGenerator.BitsongWallet
 	if(savePhase)
@@ -106,6 +117,7 @@ export async function test()
 		const validator2 = new PublicWallet("bitsongvaloper16h2ry9axyvzwkftv93h6nusdqeqdn552skxxtw")
 		const reward1 = new PublicWallet("bitsong1s0aj6f7hgzr3gfcmm9xz0lg0442qdq9su9llq0")
 		const reward2 = new PublicWallet("bitsong1s0aj6f7hgzr3gfcmm9xz0lg0442qdq9su9llq0")
+		const rewards = new PublicWallet("bitsong1q077tu8lftmn3e5nvgpdyke9us8zfn03q2h3rj")
 		const transaction = {
 			from: wallet,
 			to: pubWallet,
@@ -113,12 +125,7 @@ export async function test()
 		}
 
 		try {
-			trySend(wallet, pubWallet, transaction)
-			// tryVote(wallet, new Long(1, 0), VoteOption.VOTE_OPTION_YES)
-			// tryClaim(wallet, [reward1, reward2])
-			// await tryDelegate(wallet, validator1)
-			// await tryUndelegate(wallet, validator1)
-			// await tryRedelegate(wallet, validator1, validator2)
+			tryRewards(rewards)
 		}
 		catch(e)
 		{
