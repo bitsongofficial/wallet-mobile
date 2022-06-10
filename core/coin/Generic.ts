@@ -3,7 +3,7 @@ import { CoinOperation } from "core/types/coin/OperationTypes";
 
 export class Coin {
 	protected static operations: any = {}
-	public static async Do(operation: CoinOperation, params: any) {
+	public static async Do(operation: CoinOperation, params?: any) {
 		if(operation in this.operations)
 		{
 			return await this.operations[operation].Run(params)
