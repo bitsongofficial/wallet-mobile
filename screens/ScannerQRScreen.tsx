@@ -4,22 +4,25 @@ import { StatusBar } from "expo-status-bar";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { BarCodeScannedCallback } from "expo-barcode-scanner/build/BarCodeScanner";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "hooks";
+import { useStore, useTheme } from "hooks";
 import { Button } from "components/atoms";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 import { observer } from "mobx-react-lite";
+import { TextInput } from "react-native-gesture-handler";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ScannerQR">;
 
 export default observer<Props>(({ navigation, route }) => {
   const theme = useTheme();
+  const {dapp} = useStore()
   const test: BarCodeScannedCallback = (event) => {
     console.log("event :>> ", event);
   };
 
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
+  const [uri, setUri] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -52,15 +55,20 @@ export default observer<Props>(({ navigation, route }) => {
               ? "No access to camera"
               : "This is the only way you will be able to recover your account. Please store it somewhere safe!"}
           </Text>
+          <TextInput
+            style={[theme.text.primary]}
+            placeholder="Public Address"
+            value={uri}
+            onChangeText={setUri}></TextInput>
           <View style={styles.sector}>
-            <BarCodeScanner
+            {/* <BarCodeScanner
               barCodeTypes={["qr"]}
               onBarCodeScanned={handleBarCodeScanned}
               style={{
                 flexGrow: 1,
                 transform: [{ scale: 2 }],
               }}
-            />
+            /> */}
           </View>
         </View>
 
@@ -68,7 +76,7 @@ export default observer<Props>(({ navigation, route }) => {
           <Button
             textStyle={styles.buttonText}
             contentContainerStyle={styles.buttonSize}
-            onPress={() => {}}
+            onPress={() => {dapp.connect(uri)}}
           >
             Scan QR Code
           </Button>
