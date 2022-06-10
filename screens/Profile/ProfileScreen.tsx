@@ -13,7 +13,9 @@ import { animated, useSpring } from "@react-spring/native";
 import { BottomSheet } from "components/moleculs";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import Animated, {
+  Extrapolation,
   interpolate,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
@@ -115,10 +117,35 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   useEffect(() => {
     if (inputNick.isFocused) {
-      console.log("inputNick.isFocused :>> ", inputNick.isFocused);
       closeModal(null);
     }
   }, [inputNick.isFocused]);
+
+  const translationY = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (e) => {
+      translationY.value = e.contentOffset.y;
+    },
+  });
+  const headerContainerAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            translationY.value,
+            [0, 64],
+            [0, -64],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
+      position: "absolute",
+      zIndex: 1000,
+      top: 70,
+      width: "100%",
+      // backgroundColor: "red",
+    };
+  });
 
   return (
     <>
@@ -127,14 +154,25 @@ export default observer<Props>(function MainScreen({ navigation }) {
       <ThemedGradient style={styles.container} invert>
         <SafeAreaView style={styles.container}>
           <Animated.View style={animStyle}>
-            <Header onPressClose={goBack} style={styles.header} />
-            <ScrollView contentContainerStyle={{ paddingTop: 25 }}>
+            <Header
+              onPressClose={goBack}
+              style={styles.header}
+              animtedValue={translationY}
+            />
+            <Animated.View style={headerContainerAnimatedStyle}>
               <Head
                 style={styles.head}
                 input={inputNick}
                 onPressAvatar={openChangeAvatar}
                 avatar={user?.photo}
+                animtedValue={translationY}
               />
+            </Animated.View>
+            <Animated.ScrollView
+              onScroll={scrollHandler}
+              contentContainerStyle={{ paddingTop: 100 }}
+              scrollEventThrottle={1}
+            >
               <animated.View style={[styles.wrapper, hidden]}>
                 <Subtitle style={styles.subtitle}>Connected with</Subtitle>
                 <WalletButton
@@ -266,7 +304,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   contentContainerStyle={styles.buttonContent}
                 />
               </animated.View>
-            </ScrollView>
+            </Animated.ScrollView>
           </Animated.View>
         </SafeAreaView>
       </ThemedGradient>
@@ -310,7 +348,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    marginLeft: 26,
+    marginLeft: 27.5,
     marginRight: 17,
   },
 

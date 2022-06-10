@@ -1,4 +1,10 @@
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import {
+  Dimensions,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import { observer } from "mobx-react-lite";
 import { Button } from "components/atoms";
 import { COLOR, hexAlpha, InputHandler } from "utils";
@@ -8,73 +14,119 @@ import { useStore } from "hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { reaction } from "mobx";
 import { useSpring } from "@react-spring/native";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 
 type Props = {
   style: StyleProp<ViewStyle>;
   input: InputHandler;
   onPressAvatar?(): void;
   avatar?: string;
+  animtedValue: SharedValue<number>;
 };
 
-export default observer<Props>(({ style, input, onPressAvatar, avatar }) => {
-  const inputRef = useRef<TextInput>(null);
-  const { dapp, user } = useStore();
+export default observer<Props>(
+  ({ style, input, onPressAvatar, avatar, animtedValue }) => {
+    const inputRef = useRef<TextInput>(null);
+    const { dapp, user } = useStore();
 
-  const openInput = useCallback(() => inputRef.current?.focus(), []);
+    const openInput = useCallback(() => {
+      inputRef.current?.focus();
+    }, []);
 
-  const [isNickValid, setIsNickValid] = useState(false);
-  // TODO: need debouncer
-  const checkNick = async (value: string) =>
-    setIsNickValid(await dapp.checkNick(value));
+    const [isNickValid, setIsNickValid] = useState(false);
+    // TODO: need debouncer
+    const checkNick = async (value: string) =>
+      setIsNickValid(await dapp.checkNick(value));
 
-  useEffect(() => reaction(() => input.value, checkNick), [input]);
-  useEffect(() => {
-    if (!input.isFocused && isNickValid) {
-      user?.setNick(input.value);
-    }
-  }, [input.isFocused, isNickValid, user, input]);
+    useEffect(() => reaction(() => input.value, checkNick), [input]);
+    useEffect(() => {
+      if (!input.isFocused && isNickValid) {
+        user?.setNick(input.value);
+      }
+    }, [input.isFocused, isNickValid, user, input]);
 
-  const hidden = useSpring({ opacity: input.isFocused ? 0.3 : 1 });
+    const hidden = useSpring({ opacity: input.isFocused ? 0.3 : 1 });
 
-  return (
-    <View style={[styles.container, style]}>
-      <View style={styles.user}>
-        <TouchableOpacity onPress={onPressAvatar}>
-          <Avatar
-            style={styles.avatar}
-            source={avatar ? { uri: avatar } : undefined}
-          />
-        </TouchableOpacity>
-        <View style={{ flexDirection: "row" }}>
-          <Title style={hidden}>
-            {input.value || input.isFocused ? `@` : "Profile"}
-          </Title>
-          <TextInput
-            ref={inputRef}
-            style={styles.input}
-            value={input.value}
-            onChangeText={input.set}
-            onPressIn={(e) => e.preventDefault()}
-            enabled={false}
-            onFocus={input.focusON}
-            onBlur={input.focusOFF}
-            focusable={false}
-          />
+    const titleStyle = useAnimatedStyle(() => {
+      return {
+        transform: [
+          {
+            scale: interpolate(
+              animtedValue.value,
+              [0, 32],
+              [1, 0.8],
+              Extrapolation.CLAMP
+            ),
+          },
+        ],
+        flexDirection: "row",
+        alignItems: "center",
+      };
+    });
+
+    const buttonStyle = useAnimatedStyle(() => {
+      return {
+        transform: [
+          {
+            scale: interpolate(
+              animtedValue.value,
+              [0, 32],
+              [1, 0],
+              Extrapolation.CLAMP
+            ),
+          },
+        ],
+      };
+    });
+
+    return (
+      <View style={[styles.container, style]}>
+        <View style={styles.user}>
+          <TouchableOpacity onPress={onPressAvatar}>
+            <Avatar
+              style={styles.avatar}
+              source={avatar ? { uri: avatar } : undefined}
+            />
+          </TouchableOpacity>
+          <View style={{ flexDirection: "row" }}>
+            <Animated.View style={titleStyle}>
+              <Title style={hidden}>
+                {input.value || input.isFocused ? `@` : "Profile"}
+              </Title>
+              <TextInput
+                // editable={editable}
+                ref={inputRef}
+                style={[styles.input]}
+                value={input.value}
+                onChangeText={input.set}
+                onPressIn={(e) => e.preventDefault()}
+                enabled={false}
+                onFocus={input.focusON}
+                onBlur={input.focusOFF}
+                focusable={false}
+              />
+            </Animated.View>
+          </View>
         </View>
+        {!input.isFocused && (
+          <Button
+            text={!input.value ? "Set nick" : "Edit"}
+            onPress={openInput}
+            style={[styles.button, buttonStyle]}
+            contentContainerStyle={styles.buttonContent}
+            textStyle={styles.buttonText}
+            mode="fill"
+          />
+        )}
       </View>
-      {!input.isFocused && (
-        <Button
-          text={!input.value ? "Set nick" : "Edit"}
-          onPress={openInput}
-          style={styles.button}
-          contentContainerStyle={styles.buttonContent}
-          textStyle={styles.buttonText}
-          mode="fill"
-        />
-      )}
-    </View>
-  );
-});
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
