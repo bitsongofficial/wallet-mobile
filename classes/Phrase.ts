@@ -60,17 +60,18 @@ export default class Phrase {
 
   // -----------------
 
-  static mock = new Array<string>(24).fill("test");
+  static mock = new Array<string>(12).fill("test");
 
   static wordlist: string[] = bip39.wordlists.EN;
   static checkWord = (word: string) => Phrase.wordlist.includes(word); // TODO: check any params
 
-  static async generate(strength: number = 256) {
+  static async generate(strength: number = 128) {
     if (strength % 32 !== 0) {
       throw new TypeError("invalid entropy");
     }
 
     const buffer = Buffer.from(getRandomValues(new Uint8Array(strength / 8)));
-    return bip39.entropyToMnemonic(buffer.toString("hex")).split(" ");
+    const mnemonic = bip39.entropyToMnemonic(buffer)
+    return mnemonic.split(" ")
   }
 }

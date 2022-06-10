@@ -54,7 +54,6 @@ export default class CoinStore {
 		})
 		runInAction(() =>
 		{
-			console.log(coins)
 			this.coins.splice(0, this.coins.length, ...coins)
 		})
 	}
@@ -69,34 +68,31 @@ export default class CoinStore {
 	  )
 	}
 
-	async send(coin: SupportedCoins, address: string, amount:string)
+	async send(coin: SupportedCoins, address: string, dollar:number)
 	{
-	  if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
-	  const coinClass = CoinClasses[coin]
-	  const data: FromToAmount = {
-		from: this.walletStore.activeWallet.wallets[coin] as CosmosWallet,
-		to: new PublicWallet(address),
-		amount: {
-		  amount,
-		  denom: coinClass.coin.denom()
+		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
+		const coinClass = CoinClasses[coin]
+		const data: FromToAmount = {
+			from: this.walletStore.activeWallet.wallets[coin] as CosmosWallet,
+			to: new PublicWallet(address),
+			amount: this.fromDollarsToAmount(dollar, coinClass.coin.denom()),
 		}
-	  }
-	  await coinClass.Do(CoinOperationEnum.Send, data)
-	  this.updateBalances()
+		await coinClass.Do(CoinOperationEnum.Send, data)
+		this.updateBalances()
+	}
+
+	convertRateFromDenom(denom: Denom)
+	{
+		switch(denom)
+		{
+			default:
+				return 1000000
+		}
 	}
 
 	fromAmountToCoin(amount: Amount)
 	{
-		let total = 1
-		let asset = Number(amount.amount)
-		const prices = this.remoteConfigs.prices
-		switch(amount.denom)
-		{
-			default:
-				total *= (asset / 1000000)
-		}
-
-		return total
+		return Number(amount.amount) / this.convertRateFromDenom(amount.denom)
 	}
 
 	fromDenomToPrice(denom: Denom)
@@ -113,5 +109,13 @@ export default class CoinStore {
 	fromAmountToDollars(amount: Amount)
 	{
 		return this.fromAmountToCoin(amount) * this.fromDenomToPrice(amount.denom)
+	}
+
+	fromDollarsToAmount(dollars: number, denom: Denom): Amount
+	{
+		return {
+			amount: Math.round(dollars / this.fromDenomToPrice(denom) * this.convertRateFromDenom(denom)).toString(),
+			denom,
+		}
 	}
 }

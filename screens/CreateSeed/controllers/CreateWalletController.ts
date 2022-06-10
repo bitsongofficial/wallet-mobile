@@ -29,7 +29,7 @@ export default class CreateWalletController {
       case 0:
         return true //AAA this.biometric.access;
       case 1:
-        return true //AAA this.walletName.value.length > 3;
+        return this.walletName.value.length > 3
       case 2:
         return true //AAA this.pin.isValid;
       case 3:

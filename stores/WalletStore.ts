@@ -76,7 +76,7 @@ export default class WalletStore {
 
   async newCosmosWallet(name: string, mnemonic: string[])
   {
-    if(!this.wallets.find(el => (el.data.name == name)))
+    if(!this.wallets.some(el => (el.data.name == name)))
     {
       const mnemonicString = mnemonic.join(" ")
       const wallets:any = {}
@@ -108,10 +108,15 @@ export default class WalletStore {
           addresses
         }
       }
-      runInAction(() => this.wallets.push({
-        data,
-        wallets: this.addSupportedWallets(data, mnemonic.join(" ")),
-      }))
+      runInAction(() =>
+      {
+        const newWallet = {
+          data,
+          wallets: this.addSupportedWallets(data, mnemonic.join(" ")),
+        }
+        this.wallets.push(newWallet)
+        if(this.wallets.length == 1) this.activeWallet = newWallet
+      })
     }
   }
 }
