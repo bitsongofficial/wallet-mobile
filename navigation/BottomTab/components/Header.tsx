@@ -16,7 +16,7 @@ export default function Header({}: BottomTabHeaderProps) {
           <Text style={styles.title}>Cosmonautico</Text>
         </View>
         <View style={styles.left}>
-          <Icon name="bell" size={15} fill={"#202020"} />
+          <Icon name="bell" size={15} fill="#202020" />
           <Image
             source={require("assets/images/mock/avatar.png")}
             style={styles.avatar}
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: 100,
+    backgroundColor: COLOR.Dark3,
   },
   header: {
     flex: 1,

@@ -7,6 +7,7 @@ import { COLOR } from "utils";
 import { Icon } from "components/atoms";
 import { CoinStat, Tabs, ToolbarAction } from "components/organisms";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native-gesture-handler";
 
 type ValueTabs = "Staked" | "Validators";
 
@@ -33,55 +34,58 @@ export default function StakingScreen() {
     <>
       <StatusBar style="light" />
       <SafeAreaView style={styles.container}>
-        <View style={styles.info}>
-          <Text style={styles.balance_title}>My Staking</Text>
-          <Text style={styles.balance_value}>{staking} $</Text>
-        </View>
+        <ScrollView>
+          <View style={styles.info}>
+            <Text style={styles.balance_title}>My Staking</Text>
+            <Text style={styles.balance_value}>{staking} $</Text>
+          </View>
 
-        <View style={styles.toolbar}>
-          <ToolbarAction
-            title="Claim"
-            onPress={handlePressClaim}
-            mode="gradient"
-            Icon={<Icon name="arrow_up_border" size={23} />}
-            size={65}
-          />
-          <ToolbarAction
-            title="Stake"
-            onPress={handlePressStake}
-            Icon={<Icon name="stake" size={23} />}
-            size={65}
-          />
-          <ToolbarAction
-            title="Unstake"
-            onPress={handlePressUnstake}
-            Icon={<Icon name="unstake" size={23} />}
-            size={65}
-          />
-          <ToolbarAction
-            title="Restake"
-            onPress={handlePressRestake}
-            Icon={<Icon name="unstake" size={23} />}
-            size={65}
-          />
-        </View>
+          <View style={styles.toolbar}>
+            <ToolbarAction
+              title="Claim"
+              onPress={handlePressClaim}
+              mode="gradient"
+              Icon={<Icon name="arrow_up_border" size={23} />}
+              size={65}
+            />
+            <ToolbarAction
+              title="Stake"
+              onPress={handlePressStake}
+              Icon={<Icon name="stake" size={23} />}
+              size={65}
+            />
+            <ToolbarAction
+              title="Unstake"
+              onPress={handlePressUnstake}
+              Icon={<Icon name="unstake" size={23} />}
+              size={65}
+            />
+            <ToolbarAction
+              title="Restake"
+              onPress={handlePressRestake}
+              Icon={<Icon name="unstake" size={23} />}
+              size={65}
+            />
+          </View>
 
-        <Tabs
-          values={tabs}
-          active={activeTab}
-          // @ts-ignore TODO: create cool types
-          onPress={setActiveTab}
-          style={styles.tabs}
-        />
-
-        <View style={styles.coins}>
-          <FlatList
-            style={styles.coins_list}
-            contentContainerStyle={{ paddingVertical: 8 }}
-            data={wallet.coins}
-            renderItem={renderCoins}
+          <Tabs
+            values={tabs}
+            active={activeTab}
+            // @ts-ignore TODO: create cool types
+            onPress={setActiveTab}
+            style={styles.tabs}
           />
-        </View>
+
+          <View style={styles.coins}>
+            {wallet.coins.map((coin) => (
+              <CoinStat
+                coin={coin}
+                key={coin.info._id}
+                style={{ marginBottom: 9 }}
+              />
+            ))}
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </>
   );
@@ -137,9 +141,8 @@ const styles = StyleSheet.create({
 
   coins: {
     flex: 1,
-  },
-
-  coins_list: {
+    paddingTop: 8,
+    paddingBottom: 64,
     marginHorizontal: 14,
   },
 
