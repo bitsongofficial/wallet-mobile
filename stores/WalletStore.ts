@@ -20,6 +20,7 @@ export default class WalletStore {
   activeWallet: StoreWallet | null = null
 
   wallets: StoreWallet[] = []
+  loading = false
 
   remoteConfigs
 
@@ -58,6 +59,10 @@ export default class WalletStore {
 
   async loadWallets()
   {
+    runInAction(() =>
+    {
+      this.loading = true
+    })
     const walletsMetaDataSerialized = await AsyncStorage.getItem('walletNames')
     if(walletsMetaDataSerialized == null) return
     const walletsMetaData = JSON.parse(walletsMetaDataSerialized) as Array<WalletData>
@@ -71,6 +76,7 @@ export default class WalletStore {
         }
       })
       if(this.wallets.length > 0) this.activeWallet = this.wallets[0]
+      this.loading = false
     })
   }
 

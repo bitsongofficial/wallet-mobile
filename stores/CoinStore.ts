@@ -15,6 +15,17 @@ import WalletStore, { StoreWallet } from "./WalletStore";
 
 export default class CoinStore {
 	coins: Coin[] = []
+	loading = {
+		balance: false,
+		send: false,
+	}
+	results: {
+		balance: boolean | null,
+		send: boolean | null,
+	} = {
+		balance: null,
+		send: null,
+	}
 	constructor(private walletStore: WalletStore, private remoteConfigs: RemoteConfigsStore) {
 		makeAutoObservable(this, {}, { autoBind: true });
 		autorun(() => {this.updateBalances()})
@@ -22,6 +33,11 @@ export default class CoinStore {
 
 	async updateBalances()
 	{
+		runInAction(() =>
+		{
+			this.loading.balance = true
+			this.results.balance = null
+		})
 		const coins:Coin[] = []
 		const balanceAwaits = [] 
 		const infos:ICoin[] = [] 
@@ -44,17 +60,27 @@ export default class CoinStore {
 				console.log(e)
 			}
 		}
+		let errors = false
 		const balances = await Promise.all(balanceAwaits)
 		balances.forEach((balance:Amount[], i) =>
 		{
-			balance.forEach(asset => {
-				infos[i].balance = this.fromAmountToCoin(asset)
-				coins.push(new Coin(infos[i], this.fromDenomToPrice(asset.denom)))
-			});
+			if(balance)
+			{
+				balance.forEach(asset => {
+					infos[i].balance = this.fromAmountToCoin(asset)
+					coins.push(new Coin(infos[i], this.fromDenomToPrice(asset.denom)))
+				})
+			}
+			else
+			{
+				errors = true
+			}
 		})
 		runInAction(() =>
 		{
 			this.coins.splice(0, this.coins.length, ...coins)
+			this.loading.balance = false
+			this.results.balance = errors
 		})
 	}
 
@@ -70,6 +96,11 @@ export default class CoinStore {
 
 	async send(coin: SupportedCoins, address: string, dollar:number)
 	{
+		runInAction(() =>
+		{
+			this.results.send = null
+			this.loading.send = true
+		})
 		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
 		const coinClass = CoinClasses[coin]
 		const data: FromToAmount = {
@@ -77,7 +108,12 @@ export default class CoinStore {
 			to: new PublicWallet(address),
 			amount: this.fromDollarsToAmount(dollar, coinClass.coin.denom()),
 		}
-		await coinClass.Do(CoinOperationEnum.Send, data)
+		const res = await coinClass.Do(CoinOperationEnum.Send, data)
+		runInAction(() =>
+		{
+			this.loading.send = false
+			this.results.send = res
+		})
 		this.updateBalances()
 	}
 
