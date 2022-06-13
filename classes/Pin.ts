@@ -24,10 +24,11 @@ export default class Pin {
 
   static max = 7;
 
-  static numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."];
+  static numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
   static getRandomKeyboard() {
     const flat = shuffleArray([...Pin.numbers]);
+    flat.splice(9, 0, undefined);
     flat.push("C");
     return sliceIntoChunks(flat, 3);
   }
