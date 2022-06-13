@@ -93,14 +93,17 @@ export default observer<Props>(function StartScreen({ navigation }) {
             />
             <Button
               text="Import Existing Wallet"
-              mode="fill"
+              mode="gradient_border"
               Right={
                 <Icon2 name="chevron_right" stroke={COLOR.White} size={18} />
               }
               onPress={openBottomSheet}
               style={styles.mb24}
               textStyle={[styles.buttonText, theme.text.primary]}
-              contentContainerStyle={styles.buttonContent}
+              contentContainerStyle={[
+                styles.buttonContent_gradient,
+                { backgroundColor: COLOR.Dark3 },
+              ]}
             />
             <Button
               mode="fill"
@@ -135,13 +138,17 @@ export default observer<Props>(function StartScreen({ navigation }) {
             style={styles.mb12}
           />
           <Button
+            mode="gradient_border"
             text="Import with Keplr Extension"
             onPress={importWithKeplr}
             Right={
               <Icon2 name="chevron_right" size={18} stroke={COLOR.White} />
             }
             textStyle={[styles.buttonText, theme.text.primary]}
-            contentContainerStyle={styles.buttonContent}
+            contentContainerStyle={[
+              styles.buttonContent_gradient,
+              { backgroundColor: "#2b2b47" },
+            ]}
             style={styles.mb12}
           />
         </View>
@@ -173,6 +180,11 @@ const styles = StyleSheet.create({
   buttonContent: {
     paddingVertical: 18,
     paddingHorizontal: 24,
+    justifyContent: "space-between",
+  },
+  buttonContent_gradient: {
+    paddingVertical: 16,
+    paddingHorizontal: 22,
     justifyContent: "space-between",
   },
 
