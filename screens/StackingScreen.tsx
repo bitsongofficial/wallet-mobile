@@ -25,11 +25,6 @@ export default function StakingScreen() {
   const handlePressUnstake = useCallback(() => {}, []);
   const handlePressRestake = useCallback(() => {}, []);
 
-  const renderCoins = useCallback<ListRenderItem<Coin>>(
-    ({ item }) => <CoinStat coin={item} style={{ marginBottom: 9 }} />,
-    []
-  );
-
   return (
     <>
       <StatusBar style="light" />
