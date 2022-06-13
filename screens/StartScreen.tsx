@@ -24,7 +24,7 @@ import { COLOR } from "utils";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Start">;
 
-const points = ["30"];
+const points = [270];
 
 export default observer<Props>(function StartScreen({ navigation }) {
   const theme = useTheme();
