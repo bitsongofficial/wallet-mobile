@@ -1,4 +1,4 @@
-import { ICoin } from "../classes/types";
+import { ICoin } from "./types";
 
 export default {
   BitSong: {

@@ -9,12 +9,18 @@ import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
 import { test } from "core/Test";
+import { useEffect } from "react";
+import { COLOR } from "utils";
+import * as NavigationBar from "expo-navigation-bar";
 
 configure({ useProxies: "ifavailable" });
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
+  }, []);
 
   test()
 

@@ -1,23 +1,56 @@
 import React, { forwardRef } from "react";
 import { StyleSheet, View } from "react-native";
+import { observer } from "mobx-react-lite";
 import {
+  BottomSheetModalMethods,
+  BottomSheetMethods,
+} from "@gorhom/bottom-sheet/lib/typescript/types";
+import DefaultBottomSheet, {
   BottomSheetModal as Default,
   BottomSheetModalProps,
+  BottomSheetProps,
 } from "@gorhom/bottom-sheet";
-import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useTheme } from "hooks";
-import { observer } from "mobx-react-lite";
 
-type Props = BottomSheetModalProps;
+type PropsModal = BottomSheetModalProps;
 
-export default observer(
+export const BottomSheetModal = observer(
   forwardRef(function BottomSheetModal(
-    { backgroundStyle, ...props }: Props,
+    { backgroundStyle, ...props }: PropsModal,
     ref: React.Ref<BottomSheetModalMethods>
   ) {
     const theme = useTheme();
     return (
       <Default
+        handleComponent={() => (
+          <View style={styles.handleContainer}>
+            <View
+              style={[styles.handleIndicator, theme.bottomsheet.indicator]}
+            />
+          </View>
+        )}
+        backgroundStyle={[
+          styles.background,
+          theme.bottomsheet.background,
+          backgroundStyle,
+        ]}
+        {...props}
+        ref={ref}
+      />
+    );
+  })
+);
+
+type Props = BottomSheetProps;
+
+export const BottomSheet = observer(
+  forwardRef(function BottomSheet(
+    { backgroundStyle, ...props }: Props,
+    ref: React.Ref<BottomSheetMethods>
+  ) {
+    const theme = useTheme();
+    return (
+      <DefaultBottomSheet
         handleComponent={() => (
           <View style={styles.handleContainer}>
             <View

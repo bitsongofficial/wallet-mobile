@@ -1,5 +1,5 @@
-import { Coin } from "classes";
-import Mock from "./mock";
+import { Coin, Wallet } from "classes";
+import Mock from "../classes/mock";
 import { makeAutoObservable } from "mobx";
 import { round } from "utils";
 
@@ -10,22 +10,43 @@ const rates = {
 };
 
 export default class WalletStore {
-  coins = [
-    new Coin(Mock.BitSong, rates.bitsong),
-    new Coin(Mock.Juno, rates.juno),
-    new Coin(Mock.Osmosis, rates.osmosis),
+  wallets = [
+    new Wallet({
+      name: "Gianni Wallet",
+      address: "1",
+      type: "one", // ?
+    }),
+    new Wallet({
+      name: "Airdrop Fund Wallet",
+      address: "2",
+      type: "one",
+    }),
+    new Wallet({
+      name: "Cold Wallet",
+      address: "3",
+      type: "two",
+    }),
   ];
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  get totalBalance() {
-    return round(
-      this.coins.reduce(
-        (total, coin) => (coin.balanceUSD ? coin.balanceUSD + total : total),
-        0
-      )
+  active = this.wallets[0];
+
+  setActive(wallet: Wallet) {
+    this.active = wallet;
+  }
+
+  deleteWallet(wallet: Wallet) {
+    console.log(
+      "deleteWAllet",
+      wallet.info.name,
+      this.wallets.findIndex((item) => item === wallet)
+    );
+    this.wallets = this.wallets.splice(
+      this.wallets.findIndex((item) => item === wallet),
+      1
     );
   }
 }
