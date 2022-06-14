@@ -16,7 +16,7 @@ export default ({ children, text, style }: Props) => {
       <Text style={[styles.text, theme.text.primary, style]}>
         {text || children}
       </Text>
-      <Icon2 name="chevron_right" stroke={COLOR.Lavender} />
+      <Icon2 name="chevron_down" stroke={COLOR.Lavender} />
     </View>
   );
 };

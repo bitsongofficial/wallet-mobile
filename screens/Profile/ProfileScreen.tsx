@@ -22,6 +22,7 @@ import {
   ListButton,
   Subtitle,
   Title,
+  Value,
   WalletButton,
 } from "./components/atoms";
 import { Head } from "./components/moleculs";
@@ -247,12 +248,18 @@ export default observer<Props>(function MainScreen({ navigation }) {
                     onPress={openChangeLanguage}
                     icon="translate"
                     style={styles.listButton}
+                    Right={<Value text={settings.language.name} />}
                   />
                   <ListButton
                     text="Currency"
                     onPress={openChangeCurrency}
                     icon="circle_dollar"
                     style={styles.listButton}
+                    Right={
+                      settings.currency && (
+                        <Value text={settings.currency?.name} />
+                      )
+                    }
                   />
                   <ListButton
                     text="Night Mode"

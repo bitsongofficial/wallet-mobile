@@ -11,7 +11,7 @@ type Props = {
   icon: IconName;
   children?: string;
   text?: string;
-  Right?: JSX.Element;
+  Right?: JSX.Element | boolean;
 };
 
 export default ({
