@@ -26,6 +26,7 @@ import { COLOR } from "utils";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { ScrollView } from "react-native-gesture-handler";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -45,15 +46,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState<ValueTabs>("Coins");
 
   const callback = useCallback(() => {}, []);
-
-  const renderCoins = useCallback<ListRenderItem<Coin>>(
-    ({ item }) => (
-      <TouchableOpacity onPress={item.increment}>
-        <CoinStat coin={item} style={{ marginBottom: 9 }} />
-      </TouchableOpacity>
-    ),
-    []
-  );
 
   // ------------- bottom sheet -----------
   // ref
@@ -86,52 +78,52 @@ export default observer<Props>(function MainScreen({ navigation }) {
       <StatusBar style="light" />
 
       <SafeAreaView style={styles.container}>
-        <View style={styles.info}>
-          <View style={styles.balance}>
-            <Text style={styles.balance_title}>Total Balance</Text>
-            <Text style={styles.balance_value}>
-              {coin.totalBalance.toLocaleString("en")} $
-            </Text>
-            <Text style={styles.balance_variation}>
-              Variation {variation} %
-            </Text>
-          </View>
+        <ScrollView>
+          <View style={styles.info}>
+            <View style={styles.balance}>
+              <Text style={styles.balance_title}>Total Balance</Text>
+              <Text style={styles.balance_value}>
+                {wallet.totalBalance.toLocaleString("en")} $
+              </Text>
+              <Text style={styles.balance_variation}>
+                Variation {variation} %
+              </Text>
+            </View>
 
-          <View style={styles.reward}>
-            <Text style={styles.reward_title}>Reward</Text>
-            <View style={styles.reward_row}>
-              <Text style={styles.reward_value}>{reward} $</Text>
-              <Button onPress={callback}>CLAIM</Button>
+            <View style={styles.reward}>
+              <Text style={styles.reward_title}>Reward</Text>
+              <View style={styles.reward_row}>
+                <Text style={styles.reward_value}>{reward} $</Text>
+                <Button onPress={callback}>CLAIM</Button>
+              </View>
             </View>
           </View>
-        </View>
 
-        <ToolbarShort
-          style={styles.toolbar_short}
-          onPressAll={openToolbar}
-          onPressInquire={callback}
-          onPressReceive={callback}
-          onPressScan={openScanner}
-          onPressSend={openSend}
-        />
-
-        <Tabs
-          values={tabs}
-          active={activeTab}
-          // @ts-ignore TODO: create cool types
-          onPress={setActiveTab}
-          style={styles.tabs}
-        />
-
-        <View style={styles.coins}>
-          <FlatList
-            style={styles.coins_list}
-            keyExtractor={({ info }) => info._id}
-            data={coin.coins}
-            contentContainerStyle={{ paddingVertical: 8 }}
-            renderItem={renderCoins}
+          <ToolbarShort
+            style={styles.toolbar_short}
+            onPressAll={openToolbar}
+            onPressInquire={callback}
+            onPressReceive={callback}
+            onPressScan={openScanner}
+            onPressSend={openSend}
           />
-        </View>
+
+          <Tabs
+            values={tabs}
+            active={activeTab}
+            // @ts-ignore TODO: create cool types
+            onPress={setActiveTab}
+            style={styles.tabs}
+          />
+
+          <View style={styles.coins}>
+            {wallet.coins.map((coin) => (
+              <TouchableOpacity key={coin.info._id} onPress={coin.increment}>
+                <CoinStat coin={coin} style={{ marginBottom: 9 }} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
 
         <BottomSheetModal
           ref={bottomSheetToolbar}
@@ -256,8 +248,8 @@ const styles = StyleSheet.create({
   },
   coins: {
     flex: 1,
-  },
-  coins_list: {
+    paddingTop: 8,
+    paddingBottom: 64,
     marginHorizontal: 14,
   },
 });

@@ -1,5 +1,5 @@
 import { SupportedCoins } from "constants/Coins";
-import { ICoin } from "../classes/types";
+import { ICoin } from "./types";
 
 const btsg = {
   _id: "1",

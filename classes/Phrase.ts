@@ -20,6 +20,10 @@ export default class Phrase {
     });
   }
 
+  clear() {
+    this.words = [];
+  }
+
   addWord(word: string) {
     this.words?.push(word.toLowerCase());
   }

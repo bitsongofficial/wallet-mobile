@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
@@ -15,12 +8,19 @@ import { Header, Icon2, Input } from "components/atoms";
 import { Pagination } from "components/moleculs";
 import { Subtitle, Title } from "./components/atoms";
 import { Footer, SetPin, CreateSeed } from "./components/organisms";
-import { Fingerprint } from "./components/moleculs";
 import { useCreateWallet, useFooter } from "./hooks";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
 import { useStore } from "hooks"
+import {
+  hasHardwareAsync,
+  isEnrolledAsync,
+  authenticateAsync,
+} from "expo-local-authentication";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
@@ -34,15 +34,22 @@ export default observer<Props>(({ navigation }) => {
   }, []);
 
   const [isHidden, setHidden] = useState(true);
-  const [isModalVisible, setModalVisible] = useState(false);
 
-  const toggleHidden = useCallback(async () => {
-    // if (!controller.biometric.access) {
-    //   setModalVisible((value) => !value);
-    //   controller.biometric.setAccess(true); // TODO: fix for device
-    // }
-    setHidden((value) => !value);
-  }, []);
+  const checkBio = async () => {
+    if (!controller.biometric.access) {
+      await biometricsAuth().catch((e) => console.error("NO", e)); // TODO: need handlers
+
+      // result && controller.biometric.setAccess(result.success);
+      controller.biometric.setAccess(true);
+    }
+  };
+
+  const toggleHidden = useCallback(
+    () => checkBio().then(() => setHidden((value) => !value)),
+    []
+  );
+
+  const insets = useSafeAreaInsets();
 
   const saveWallet = () =>
   {
@@ -53,22 +60,23 @@ export default observer<Props>(({ navigation }) => {
   return (
     <>
       <StatusBar style="light" />
-      <SafeAreaView style={styles.container}>
-        <Header
-          Left={
-            <Pagination
-              count={controller.steps.titles.length}
-              acitveIndex={controller.steps.active}
-            />
-          }
-          Center={<Icon2 name="logo" size={56} />}
-        />
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoiding}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoiding}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={-insets.bottom}
+      >
+        <SafeAreaView style={styles.container}>
+          <Header
+            Left={
+              <Pagination
+                count={controller.steps.titles.length}
+                acitveIndex={controller.steps.active}
+              />
+            }
+            Center={<Icon2 name="logo" size={56} />}
+          />
           <View>
-            <Title text={controller.steps.title} />
+            <Title text={controller.steps.title} style={styles.title} />
             <Subtitle style={styles.subtitle}>
               This is the only way you will be able to {"\n"}recover your
               account. Please store it {"\n"}somewhere safe!
@@ -92,7 +100,6 @@ export default observer<Props>(({ navigation }) => {
                   placeholder="Wallet Name"
                   value={controller.walletName.value}
                   onChangeText={controller.walletName.set}
-                  style={styles.input}
                 />
               )}
 
@@ -108,27 +115,32 @@ export default observer<Props>(({ navigation }) => {
             onPressBack={goBack}
             onPressNext={(controller.steps.active === 3 && controller.isCanNext) ? saveWallet : goNext}
             nextButtonText="Continue"
-            isHideNext={!controller.isCanNext}
+            isDisableNext={!controller.isCanNext}
           />
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-
-      <Modal
-        transparent
-        visible={isModalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.overlay}>
-          <Fingerprint onCancel={() => setModalVisible(false)} />
-        </View>
-      </Modal>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </>
   );
 });
 
+const biometricsAuth = async () => {
+  const compatible = await hasHardwareAsync();
+  if (!compatible)
+    throw "This device is not compatible for biometric authentication";
+
+  const enrolled = await isEnrolledAsync();
+  if (!enrolled)
+    throw `This device doesn't have biometric authentication enabled`;
+
+  const result = await authenticateAsync();
+  if (!result.success) throw `${result.error} - Authentication unsuccessful`;
+  return result;
+};
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLOR.Dark3,
+    paddingHorizontal: 30,
     flexGrow: 1,
   },
   overlay: {
@@ -139,7 +151,6 @@ const styles = StyleSheet.create({
   },
   keyboardAvoiding: {
     flexGrow: 1,
-    marginHorizontal: 30,
   },
   scrollviewContent: {
     flexGrow: 1,
@@ -159,14 +170,12 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   // ------ Text -------
+  title: { marginTop: 50 },
   subtitle: {
     marginTop: 8,
   },
   toggle: {
     marginTop: 24,
     width: 173,
-  },
-  input: {
-    marginTop: 24,
   },
 });

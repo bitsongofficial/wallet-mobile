@@ -1,11 +1,12 @@
-import { Coin } from "classes";
-import Mock from "./mock";
+import { Coin, Wallet } from "classes";
+import Mock from "../classes/mock";
 import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CosmosWalletGenerator } from "core/storing/Wallet";
 import { Wallet, WalletData } from "core/types/storing/Generic";
 import { CoinClasses, SupportedCoins } from "constants/Coins";
 import RemoteConfigsStore from "./RemoteConfigsStore";
+import { round } from "utils";
 
 export interface StoreWallet {
   data: WalletData,
@@ -18,8 +19,25 @@ export default class WalletStore {
   walletsHanlder: IReactionDisposer
   firstLoadHandler: IReactionDisposer
   activeWallet: StoreWallet | null = null
+  wallets = [
+    new Wallet({
+      name: "Gianni Wallet",
+      address: "1",
+      type: "one", // ?
+    }),
+    new Wallet({
+      name: "Airdrop Fund Wallet",
+      address: "2",
+      type: "one",
+    }),
+    new Wallet({
+      name: "Cold Wallet",
+      address: "3",
+      type: "two",
+    }),
+  ];
 
-  wallets: StoreWallet[] = []
+  walletsA: StoreWallet[] = []
   loading = false
 
   remoteConfigs

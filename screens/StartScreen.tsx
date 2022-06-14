@@ -24,7 +24,7 @@ import { COLOR } from "utils";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Start">;
 
-const points = ["30"];
+const points = [270];
 
 export default observer<Props>(function StartScreen({ navigation }) {
   const theme = useTheme();
@@ -84,7 +84,9 @@ export default observer<Props>(function StartScreen({ navigation }) {
           <View style={styles.buttons} onLayout={getLayoutButtons}>
             <Button
               text="Create Wallet"
-              Right={<Icon2 name="chevron_right" size={18} />}
+              Right={
+                <Icon2 name="chevron_right" stroke={COLOR.White} size={18} />
+              }
               onPress={createCreateWallet}
               style={styles.mb18}
               textStyle={[styles.buttonText, theme.text.primary]}
@@ -92,22 +94,29 @@ export default observer<Props>(function StartScreen({ navigation }) {
             />
             <Button
               text="Import Existing Wallet"
-              mode="fill"
-              Right={<Icon2 name="chevron_right" size={18} />}
+              mode="gradient_border"
+              Right={
+                <Icon2 name="chevron_right" stroke={COLOR.White} size={18} />
+              }
               onPress={openBottomSheet}
               style={styles.mb24}
               textStyle={[styles.buttonText, theme.text.primary]}
-              contentContainerStyle={styles.buttonContent}
+              contentContainerStyle={[
+                styles.buttonContent_gradient,
+                { backgroundColor: COLOR.Dark3 },
+              ]}
             />
             <Button
               mode="fill"
               onPress={test}
               contentContainerStyle={styles.buttonContent}
-              Right={<Icon2 name="chevron_right" size={18} />}
+              Right={
+                <Icon2 name="chevron_right" stroke={COLOR.White} size={18} />
+              }
             >
               <Text style={[styles.buttonText, theme.text.colorText]}>
                 Import with{" "}
-                <Text style={[theme.text.primary]}>Ledger Nano X</Text>
+                <Text style={theme.text.primary}>Ledger Nano X</Text>
               </Text>
             </Button>
             { wallet.activeWallet && <Button
@@ -131,18 +140,26 @@ export default observer<Props>(function StartScreen({ navigation }) {
           </Text>
           <Button
             text="Import from Seed Phrase"
-            Right={<Icon2 name="chevron_right" size={18} />}
+            Right={
+              <Icon2 name="chevron_right" size={18} stroke={COLOR.White} />
+            }
             onPress={importFromSeed}
             textStyle={[styles.buttonText, theme.text.primary]}
             contentContainerStyle={styles.buttonContent}
             style={styles.mb12}
           />
           <Button
+            mode="gradient_border"
             text="Import with Keplr Extension"
             onPress={importWithKeplr}
-            Right={<Icon2 name="chevron_right" size={18} />}
+            Right={
+              <Icon2 name="chevron_right" size={18} stroke={COLOR.White} />
+            }
             textStyle={[styles.buttonText, theme.text.primary]}
-            contentContainerStyle={styles.buttonContent}
+            contentContainerStyle={[
+              styles.buttonContent_gradient,
+              { backgroundColor: "#2b2b47" },
+            ]}
             style={styles.mb12}
           />
         </View>
@@ -174,6 +191,11 @@ const styles = StyleSheet.create({
   buttonContent: {
     paddingVertical: 18,
     paddingHorizontal: 24,
+    justifyContent: "space-between",
+  },
+  buttonContent_gradient: {
+    paddingVertical: 16,
+    paddingHorizontal: 22,
     justifyContent: "space-between",
   },
 

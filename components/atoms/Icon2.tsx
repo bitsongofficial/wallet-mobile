@@ -1,14 +1,17 @@
 import { StyleSheet, View } from "react-native";
 import { SvgCss, XmlProps } from "react-native-svg";
 import Icons from "assets/svg2/icons";
+import { COLOR } from "utils";
+
+export type IconName = keyof typeof Icons;
 
 type Props = Omit<XmlProps, "xml" | "fill"> & {
   size?: number;
   fill?: string;
-  name: keyof typeof Icons;
+  name: IconName;
 };
 
-export default ({ size = 14, name, fill, ...props }: Props) => {
+export default ({ size = 14, name, ...props }: Props) => {
   const style = {
     width: size,
     height: size,
@@ -18,29 +21,14 @@ export default ({ size = 14, name, fill, ...props }: Props) => {
 
   if (Icon) {
     return (
-      <SvgCss
-        {...props}
-        {...style}
-        fill={fill}
-        xml={Icon}
-        style={[style, props.style]}
-      />
+      <SvgCss {...props} {...style} xml={Icon} style={[style, props.style]} />
     );
   }
-  return (
-    <View
-      style={[
-        styles.fake,
-        style,
-        fill !== undefined ? { backgroundColor: fill } : undefined,
-        props.style,
-      ]}
-    />
-  );
+  return <View style={[styles.fake, style, props.style]} />;
 };
 
 const styles = StyleSheet.create({
   fake: {
-    backgroundColor: "white",
+    backgroundColor: COLOR.White,
   },
 });

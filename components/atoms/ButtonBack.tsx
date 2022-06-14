@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useTheme } from "hooks";
 import Icon2 from "./Icon2";
+import { COLOR } from "utils";
 
 type ButtonProps = {
   onPress?(): void;
@@ -22,7 +23,7 @@ export default ({ onPress, style, text }: ButtonProps) => {
     <View style={[styles.container, style]}>
       <TouchableOpacity onPress={onPress}>
         <View style={styles.inner}>
-          <Icon2 name="chevron_left" size={18} />
+          <Icon2 name="chevron_left" size={18} stroke={COLOR.White} />
           <Text style={[styles.text, theme.text.primary]}>
             {text || "Back"}
           </Text>

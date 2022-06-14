@@ -18,13 +18,20 @@ export default class SendController {
   }
 
   addAmountNumber(num: string) {
-    if ((num === "." && !this.creater.amount.includes(num)) || num !== ".") {
-      this.creater.setAmount(this.creater.amount + num);
+    const { coin, amount } = this.creater;
+    const isDotIsOnce = (num === "." && !amount.includes(num)) || num !== ".";
+
+    if (isDotIsOnce) {
+      const nextAmount = amount + num;
+      const balance = coin?.balanceUSD;
+
+      !balance || balance > Number(nextAmount)
+        ? this.creater.setAmount(nextAmount)
+        : this.creater.setMax();
     }
   }
 
   removeAmountNumber() {
-    const amount = this.creater.amount.slice(0, -1);
-    if (amount) this.creater.setAmount(amount);
+    this.creater.setAmount(this.creater.amount.slice(0, -1));
   }
 }

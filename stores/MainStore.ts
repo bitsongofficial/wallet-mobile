@@ -1,3 +1,4 @@
+import { DApp, User } from "classes";
 import { makeAutoObservable } from "mobx";
 import SettingsStore from "./SettingsStore";
 import WalletStore from "./WalletStore";
@@ -10,12 +11,20 @@ export default class MainStore {
   configs = {
     remote: new RemoteConfigsStore()
   };
-  wallet = new WalletStore(this.configs.remote);
+  walletA = new WalletStore(this.configs.remote);
+  walletStore = new WalletStore();
   settings = new SettingsStore();
   coin = new CoinStore(this.wallet, this.configs.remote);
   dapp = new DappConnectionStore(this.wallet);
 
+  user: null | User = new User(); //  null;
+  dapp = new DApp(); // MOck DApp functions
+
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  get wallet() {
+    return this.walletStore.active;
   }
 }

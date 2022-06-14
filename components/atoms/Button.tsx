@@ -10,7 +10,7 @@ import ThemedGradient from "./ThemedGradient";
 import { useTheme } from "hooks";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-type Mode = "gradient" | "fill";
+type Mode = "gradient" | "fill" | "gradient_border";
 
 type ButtonProps = {
   onPress?(): void;
@@ -38,21 +38,24 @@ export default ({
   Right,
 }: ButtonProps) => {
   const themeStyle = useTheme();
-  const Background = mode === "gradient" ? ThemedGradient : View;
+  const Background =
+    mode === "gradient" || mode === "gradient_border" ? ThemedGradient : View;
 
   return (
     <TouchableOpacity onPress={!disable ? onPress : undefined}>
       <View style={[styles.container, style, disable && styles.disable]}>
-        <Background style={[styles.gradient, contentContainerStyle]}>
-          {!!Left && Left}
-          {text || typeof children === "string" ? (
-            <Text style={[styles.text, themeStyle.text.primary, textStyle]}>
-              {text || children}
-            </Text>
-          ) : (
-            children
-          )}
-          {!!Right && Right}
+        <Background style={mode === "gradient_border" && styles.border}>
+          <View style={[styles.content, contentContainerStyle]}>
+            {!!Left && Left}
+            {text || typeof children === "string" ? (
+              <Text style={[styles.text, themeStyle.text.primary, textStyle]}>
+                {text || children}
+              </Text>
+            ) : (
+              children
+            )}
+            {!!Right && Right}
+          </View>
         </Background>
       </View>
     </TouchableOpacity>
@@ -64,12 +67,17 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     overflow: "hidden",
   },
-  gradient: {
+  content: {
     paddingVertical: 9,
     paddingHorizontal: 24,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+    borderRadius: 50,
+    // backgroundColor: "red",
+  },
+  border: {
+    padding: 2,
   },
   text: {
     fontFamily: "CircularStd",

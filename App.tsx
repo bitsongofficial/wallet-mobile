@@ -9,15 +9,20 @@ import useCachedResources from "./hooks/useCachedResources"
 import useColorScheme from "./hooks/useColorScheme"
 import Navigation from "./navigation"
 import { test } from "core/Test"
+import { useEffect } from "react"
+import { COLOR } from "utils";
+import * as NavigationBar from "expo-navigation-bar";
 import firebase from '@react-native-firebase/app'
 import messaging from '@react-native-firebase/messaging'
-import { useEffect } from "react"
 
 configure({ useProxies: "ifavailable" });
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
+  }, []);
 
   useEffect(() =>
   {

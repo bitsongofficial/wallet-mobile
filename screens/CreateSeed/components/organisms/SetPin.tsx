@@ -1,21 +1,26 @@
+import { useMemo } from "react";
 import { StyleSheet } from "react-native";
+import { observer } from "mobx-react-lite";
 import { Numpad } from "components/moleculs";
 import { Pin } from "classes";
 import { PinCode } from "../moleculs";
-import { observer } from "mobx-react-lite";
 
 type Props = { pin: Pin };
 
-export default observer(({ pin }: Props) => (
-  <>
-    <PinCode value={pin.value} style={styles.pin} />
-    <Numpad
-      onPressRemove={pin.remove}
-      onPress={pin.push}
-      style={styles.numpad}
-    />
-  </>
-));
+export default observer(({ pin }: Props) => {
+  const numpad = useMemo(Pin.getRandomKeyboard, []);
+  return (
+    <>
+      <PinCode value={pin.value} style={styles.pin} />
+      <Numpad
+        onPressRemove={pin.remove}
+        onPress={pin.push}
+        style={styles.numpad}
+        numpad={numpad}
+      />
+    </>
+  );
+});
 
 const styles = StyleSheet.create({
   pin: { flex: 1 },

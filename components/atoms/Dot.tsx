@@ -10,7 +10,7 @@ type DotProps = {
 export default ({ active, style }: DotProps) => {
   const isActive = useSpring({
     width: active ? 19 : 8,
-    backgroundColor: active ? COLOR.White : "#5A5A6D",
+    backgroundColor: active ? COLOR.White : COLOR.Marengo,
   });
 
   return (
