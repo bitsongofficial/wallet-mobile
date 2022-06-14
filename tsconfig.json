@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": "./",
+    "target": "ES5",
     "paths": {
       "assets": ["./assets"],
       "components": ["./components"],

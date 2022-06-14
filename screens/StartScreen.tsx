@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useTheme } from "hooks";
+import { useStore, useTheme } from "hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -28,6 +28,7 @@ const points = ["30"];
 
 export default observer<Props>(function StartScreen({ navigation }) {
   const theme = useTheme();
+  const {wallet} = useStore()
 
   const [layout, setLayout] = useState<LayoutRectangle>();
   const getLayoutButtons = useCallback(
@@ -109,6 +110,16 @@ export default observer<Props>(function StartScreen({ navigation }) {
                 <Text style={[theme.text.primary]}>Ledger Nano X</Text>
               </Text>
             </Button>
+            { wallet.activeWallet && <Button
+              mode="fill"
+              onPress={test}
+              contentContainerStyle={styles.buttonContent}
+              Right={<Icon2 name="chevron_right" size={18} />}
+            >
+              <Text style={[styles.buttonText, theme.text.colorText]}>
+                Skip
+              </Text>
+            </Button> }
           </View>
         </View>
       </SafeAreaView>

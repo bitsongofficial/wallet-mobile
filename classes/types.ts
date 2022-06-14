@@ -1,3 +1,5 @@
+import { SupportedCoins } from "constants/Coins";
+
 export interface ICoin {
   _id: string;
   logo: any;
@@ -5,6 +7,7 @@ export interface ICoin {
   brand: string;
   coinName: string;
   address: string;
+  coin: SupportedCoins;
 }
 
 export type IPerson = {

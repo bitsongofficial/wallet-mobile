@@ -1,6 +1,9 @@
 import WalletConnect from "@walletconnect/client"
+import { Bitsong } from "core/coin/bitsong/Bitsong";
+import { PublicWallet } from "core/storing/Generic";
+import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 
-export class WalletConnectCosmoClientV1 {
+export class WalletConnectCosmosClientV1 {
 	connector = null
 	wallets
 	constructor(uri, wallets)
@@ -31,21 +34,54 @@ export class WalletConnectCosmoClientV1 {
 			if (error) {
 				throw error;
 			}
-
+			console.log("session_request")
 			const accounts = await this.getAccounts()
+			console.log(accounts)
 
 			connector.approveSession({
 				accounts,
 				chainId: 1                  // required
 			})
 		})
-		connector.on("call_request", (error, payload) => {
+		connector.on("call_request", async (error, payload) => {
 			if (error) {
 			  throw error;
 			}
-			connector.approveRequest({
-			  
-			})
+			const params = payload.params[0]
+			console.log(params)
+			switch(params.typeUrl)
+			{
+				case "MsgSend":
+					let fromWallet = null
+					for(const wallet of this.wallets)
+					{
+						console.log(wallet)
+						const address = await wallet.Address()
+						console.log(address)
+						if(address == params.value.fromAddress) fromWallet = wallet
+					}
+					console.log(fromWallet)
+					if(fromWallet)
+					{
+						const sendParams = {
+							from: fromWallet,
+							to: new PublicWallet(params.value.toAddress),
+							amount: params.value.amount
+						}
+						console.log(sendParams)
+						const res = await Bitsong.Do(CoinOperationEnum.Send, sendParams)
+						console.log(res)
+						connector.approveRequest({
+							id: payload.id,
+						  	result: res,
+							jsonrpc: payload.method,
+						})
+					}
+					else
+					{
+						connector.rejectRequest({})
+					}
+			}
 		})
 		connector.on("disconnect", (error, payload) => {
 			if (error) {
@@ -59,7 +95,9 @@ export class WalletConnectCosmoClientV1 {
 	{
 		const accountRequests = []
 		const accounts = []
+		console.log(this.wallets)
 		this.wallets.forEach(w => {
+			console.log(w)
 			const request = async () =>
 			{
 				accounts.push(await w.Address())
@@ -72,6 +110,7 @@ export class WalletConnectCosmoClientV1 {
 
 	connect()
 	{
+		console.log("connect...")
 		this.connector.connect()
 	}
 }

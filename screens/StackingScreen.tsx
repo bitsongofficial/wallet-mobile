@@ -13,7 +13,7 @@ type ValueTabs = "Staked" | "Validators";
 const tabs: ValueTabs[] = ["Staked", "Validators"];
 
 export default function StakingScreen() {
-  const { wallet } = useStore();
+  const { coin } = useStore();
   // need culc by wallet
   const staking = "10,128.88";
 
@@ -78,7 +78,7 @@ export default function StakingScreen() {
           <FlatList
             style={styles.coins_list}
             contentContainerStyle={{ paddingVertical: 8 }}
-            data={wallet.coins}
+            data={coin.coins}
             renderItem={renderCoins}
           />
         </View>

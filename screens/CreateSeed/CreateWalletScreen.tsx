@@ -4,6 +4,7 @@ import {
   Modal,
   Platform,
   StyleSheet,
+  Text,
   View,
 } from "react-native";
 import { observer } from "mobx-react-lite";
@@ -19,11 +20,13 @@ import { useCreateWallet, useFooter } from "./hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
+import { useStore } from "hooks"
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useCreateWallet();
+  const {wallet} = useStore();
   const [goBack, goNext] = useFooter(controller.steps);
 
   useEffect(() => {
@@ -34,12 +37,18 @@ export default observer<Props>(({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleHidden = useCallback(async () => {
-    if (!controller.biometric.access) {
-      setModalVisible((value) => !value);
-      controller.biometric.setAccess(true); // TODO: fix for device
-    }
+    // if (!controller.biometric.access) {
+    //   setModalVisible((value) => !value);
+    //   controller.biometric.setAccess(true); // TODO: fix for device
+    // }
     setHidden((value) => !value);
   }, []);
+
+  const saveWallet = () =>
+  {
+    wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
+    goNext()
+  }
 
   return (
     <>
@@ -97,7 +106,7 @@ export default observer<Props>(({ navigation }) => {
 
           <Footer
             onPressBack={goBack}
-            onPressNext={goNext}
+            onPressNext={(controller.steps.active === 3 && controller.isCanNext) ? saveWallet : goNext}
             nextButtonText="Continue"
             isHideNext={!controller.isCanNext}
           />

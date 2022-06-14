@@ -9,6 +9,9 @@ export enum CoinOperationEnum {
 	Balance = 'BALANCE',
 	Vote = 'VOTE',
 	History = 'HISTORY',
+	Validators = 'VALIDATORS',
+	Proposals = "PROPOSALS",
+	Rewards = "REWARDS",
 }
 
 export type CoinOperation = OperationTypeEnum | CoinOperationEnum

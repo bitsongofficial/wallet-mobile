@@ -37,7 +37,7 @@ type Props = CompositeScreenProps<
 >;
 
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { wallet } = useStore();
+  const { coin } = useStore();
   // need culc by wallet
   const variation = "+ 7.46";
   const reward = "107.23";
@@ -90,7 +90,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
           <View style={styles.balance}>
             <Text style={styles.balance_title}>Total Balance</Text>
             <Text style={styles.balance_value}>
-              {wallet.totalBalance.toLocaleString("en")} $
+              {coin.totalBalance.toLocaleString("en")} $
             </Text>
             <Text style={styles.balance_variation}>
               Variation {variation} %
@@ -127,7 +127,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
           <FlatList
             style={styles.coins_list}
             keyExtractor={({ info }) => info._id}
-            data={wallet.coins}
+            data={coin.coins}
             contentContainerStyle={{ paddingVertical: 8 }}
             renderItem={renderCoins}
           />
