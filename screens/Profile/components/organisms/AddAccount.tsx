@@ -184,23 +184,13 @@ export default observer<Props>(
                   placeholder="Write a name"
                   autoFocus
                   style={{ marginBottom: 24 }}
+                  keyboardAppearance="dark"
                 />
                 <Subtitle style={styles.subtitle}>
                   Access VIP experiences, exclusive previews,{"\n"}
                   finance your own music projects and have your say.
                 </Subtitle>
-                <View
-                  style={[
-                    // styles.footer,
-                    {
-                      flexGrow: 1,
-                      justifyContent: "flex-end",
-                      paddingVertical: 8,
-                      alignItems: "center",
-                    },
-                    { backgroundColor: "orange" },
-                  ]}
-                >
+                <View style={styles.footer}>
                   <Button
                     text="Add Account"
                     contentContainerStyle={styles.buttonContinueContent}
@@ -361,13 +351,14 @@ const styles = StyleSheet.create({
   // ------ Footer -----
 
   footer: {
-    position: "absolute",
-    width: "100%",
-    zIndex: 10,
-
-    padding: 16,
+    flexGrow: 1,
+    justifyContent: "flex-end",
     alignItems: "center",
-    marginTop: 30,
+
+    position: "absolute",
+    bottom: 20,
+    paddingBottom: 16,
+    width: "100%",
   },
 
   buttonContinueContent: {
