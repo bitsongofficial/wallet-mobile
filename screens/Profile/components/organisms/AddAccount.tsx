@@ -70,12 +70,6 @@ export default observer<Props>(
 
     const insent = useSafeAreaInsets();
 
-    const [isShowButton, setIsShowButton] = useState(false);
-    const handleAnimate = useCallback(
-      (from) => setIsShowButton(from === -1),
-      []
-    );
-
     // --------- Phrase ----------
 
     const phrase = useMemo(() => new Phrase(), []);
@@ -111,7 +105,6 @@ export default observer<Props>(
           backgroundStyle={backgroundStyle}
           animatedPosition={animatedPosition}
           onClose={handleClose}
-          onAnimate={handleAnimate}
           android_keyboardInputMode="adjustResize"
           index={-1}
         >

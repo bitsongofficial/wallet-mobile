@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
 
   footer: {
     justifyContent: "flex-end",
-    // backgroundColor: "orange",
     flexGrow: 1,
     marginTop: 30,
   },

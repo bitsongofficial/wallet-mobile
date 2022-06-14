@@ -56,10 +56,7 @@ export default ({
     >
       <View style={styles.wrapper}>
         <View style={[styles.container, style]}>
-          <RectButton
-            style={{ backgroundColor: "orange" }}
-            onPress={handlePress}
-          >
+          <RectButton onPress={handlePress}>
             <View style={styles.inner}>
               <Icon2
                 name="link_simple_horizontal"
