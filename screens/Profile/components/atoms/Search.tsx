@@ -7,12 +7,14 @@ import { TextInput } from "react-native-gesture-handler";
 type SearchProps = TextInputProps & {
   loupe?: boolean;
   bottomsheet?: boolean;
+  Right?: JSX.Element;
 };
 
 export default ({
   style,
   loupe = true,
   bottomsheet = true,
+  Right,
   ...props
 }: SearchProps) => {
   const Input = bottomsheet ? BottomSheetTextInput : TextInput;
@@ -22,6 +24,7 @@ export default ({
       <Input
         style={styles.input}
         placeholderTextColor={hexAlpha(COLOR.White, 50)}
+        keyboardAppearance="dark"
         {...props}
       />
       {loupe && (
@@ -33,6 +36,7 @@ export default ({
           />
         </View>
       )}
+      {Right && <View style={styles.right}>{Right}</View>}
     </View>
   );
 };
@@ -51,6 +55,10 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     paddingHorizontal: 25,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  right: {
     alignItems: "center",
     justifyContent: "center",
   },
