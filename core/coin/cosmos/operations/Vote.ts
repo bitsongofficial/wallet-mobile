@@ -1,4 +1,4 @@
-import { assertIsDeliverTxSuccess, GasPrice, MsgVoteEncodeObject, SigningStargateClient } from "@cosmjs/stargate";
+import { assertIsDeliverTxSuccess, GasPrice, MsgVoteEncodeObject, SigningStargateClient } from "@cosmjs-rn/stargate";
 import { ProposalVote } from "core/types/coin/cosmos/ProposalVote";
 import { MsgVote } from "cosmjs-types/cosmos/gov/v1beta1/tx";
 import { CosmosOperation } from "./CosmosOperation";

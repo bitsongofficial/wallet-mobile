@@ -1,4 +1,4 @@
-import { StargateClient } from "@cosmjs/stargate";
+import { StargateClient } from "@cosmjs-rn/stargate";
 import { BalanceData } from "core/types/coin/cosmos/BalanceData";
 import { Denom } from "core/types/coin/Generic";
 import { CosmosOperation } from "./CosmosOperation";

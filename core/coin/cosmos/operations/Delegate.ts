@@ -1,4 +1,4 @@
-import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs/stargate";
+import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
 import { DelegateData } from "core/types/coin/cosmos/DelegateData";
 import { CosmosOperation } from "./CosmosOperation";
 

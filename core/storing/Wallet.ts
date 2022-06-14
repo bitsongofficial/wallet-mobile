@@ -1,5 +1,5 @@
-import { stringToPath } from "@cosmjs/crypto";
-import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
+import { stringToPath } from "@cosmjs-rn/crypto";
+import { DirectSecp256k1HdWallet } from "@cosmjs-rn/proto-signing";
 import { SupportedCoins } from "constants/Coins";
 import { MnemonicToWallet } from "core/types/storing/Cosmos";
 import { CosmosWalletData, MnemonicStore, Wallet } from "core/types/storing/Generic";
