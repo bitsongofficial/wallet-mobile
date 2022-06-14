@@ -53,34 +53,29 @@ export default observer<Props>(
     const hidden = useSpring({ opacity: input.isFocused ? 0.3 : 1 });
 
     const titleStyle = useAnimatedStyle(() => {
+      const scale = interpolate(
+        animtedValue.value,
+        [0, 32],
+        [1, 0.8],
+        Extrapolation.CLAMP
+      );
       return {
-        transform: [
-          {
-            scale: interpolate(
-              animtedValue.value,
-              [0, 32],
-              [1, 0.8],
-              Extrapolation.CLAMP
-            ),
-          },
-        ],
+        transform: [{ scale }],
         flexDirection: "row",
         alignItems: "center",
       };
     });
 
     const buttonStyle = useAnimatedStyle(() => {
+      const scale = interpolate(
+        animtedValue.value,
+        [0, 16],
+        [1, 0],
+        Extrapolation.CLAMP
+      );
+      console.log("scale :>> ", scale);
       return {
-        transform: [
-          {
-            scale: interpolate(
-              animtedValue.value,
-              [0, 32],
-              [1, 0],
-              Extrapolation.CLAMP
-            ),
-          },
-        ],
+        transform: [{ scale }],
       };
     });
 
@@ -114,14 +109,16 @@ export default observer<Props>(
           </View>
         </View>
         {!input.isFocused && (
-          <Button
-            text={!input.value ? "Set nick" : "Edit"}
-            onPress={openInput}
-            style={[styles.button, buttonStyle]}
-            contentContainerStyle={styles.buttonContent}
-            textStyle={styles.buttonText}
-            mode="fill"
-          />
+          <Animated.View style={buttonStyle}>
+            <Button
+              text={!input.value ? "Set nick" : "Edit"}
+              onPress={openInput}
+              style={styles.button}
+              contentContainerStyle={styles.buttonContent}
+              textStyle={styles.buttonText}
+              mode="fill"
+            />
+          </Animated.View>
         )}
       </View>
     );

@@ -1,17 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useStore, useTheme } from "hooks";
-import { Button, Icon2, Switch, ThemedGradient } from "components/atoms";
-import { RectButton, ScrollView } from "react-native-gesture-handler";
-import { COLOR, hexAlpha, InputHandler } from "utils";
+import { Button, Switch, ThemedGradient } from "components/atoms";
+import { COLOR, InputHandler } from "utils";
 import { animated, useSpring } from "@react-spring/native";
-import { BottomSheet } from "components/moleculs";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -51,10 +48,13 @@ export default observer<Props>(function MainScreen({ navigation }) {
   // ------- BottomSheet ----------
 
   const currentPosition = useSharedValue(0);
-  const animStyle = useAnimatedStyle(() => ({
-    flex: 1,
-    opacity: interpolate(currentPosition.value, [0, 350], [0, 0.5]),
-  }));
+  const animStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(currentPosition.value, [0, 350], [0, 0.5]);
+    return {
+      flex: 1,
+      opacity,
+    };
+  });
 
   const inputNick = useMemo(() => new InputHandler(user?.nick), [user]);
   const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 });
@@ -99,14 +99,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const [modal, setModal] = useState<ModalType | null>(null);
   const closeModal = useCallback(
     (type: ModalType | null) =>
-      setModal((value) => {
-        if (value !== type && type !== null) {
-          return value;
-        } else {
-          return null;
-        }
-        // (value !== type && type !== null ? value : null)
-      }),
+      setModal((value) => (value !== type && type !== null ? value : null)),
     []
   );
   const openChangeWallet = useCallback(() => setModal("ChangeWallet"), []);
