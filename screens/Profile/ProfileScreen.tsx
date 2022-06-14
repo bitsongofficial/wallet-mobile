@@ -27,6 +27,7 @@ import {
 import { Head } from "./components/moleculs";
 import {
   AddAccount,
+  AddWatchAccount,
   ChangeAvatar,
   ChangeCurrency,
   ChangeLanguage,
@@ -40,7 +41,8 @@ type ModalType =
   | "ChangeLanguage"
   | "ChangeCurrency"
   | "AddAccount"
-  | "ChangeAvatar";
+  | "ChangeAvatar"
+  | "AddWatchAccount";
 
 export default observer<Props>(function MainScreen({ navigation }) {
   const { settings, user, dapp, wallet } = useStore();
@@ -106,6 +108,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const openChangeLanguage = useCallback(() => setModal("ChangeLanguage"), []);
   const openChangeCurrency = useCallback(() => setModal("ChangeCurrency"), []);
   const openAddAccount = useCallback(() => setModal("AddAccount"), []);
+  const openAddWatchAccount = useCallback(
+    () => setModal("AddWatchAccount"),
+    []
+  );
   const openChangeAvatar = useCallback(() => setModal("ChangeAvatar"), []);
 
   useEffect(() => {
@@ -183,7 +189,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                 />
                 <ListButton
                   text="Add a Watch account"
-                  onPress={openAddWatchaccount}
+                  onPress={openAddWatchAccount}
                   /* todo change eye.svg */
                   icon="eye"
                   arrow
@@ -316,6 +322,14 @@ export default observer<Props>(function MainScreen({ navigation }) {
         animatedPosition={currentPosition}
         onClose={() => closeModal("AddAccount")}
       />
+
+      <AddWatchAccount
+        isOpen={modal === "AddWatchAccount"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={() => closeModal("AddWatchAccount")}
+      />
+
       <ChangeWallet
         isOpen={modal === "ChangeWallet"}
         backgroundStyle={styles.bottomSheetBackground}

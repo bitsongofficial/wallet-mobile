@@ -1,1 +1,1 @@
-export useBottomSheetBackButton from './useBottomSheetBackButton'
+export { default as useBottomSheetBackButton } from "./useBottomSheetBackButton";
