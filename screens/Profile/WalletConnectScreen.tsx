@@ -107,26 +107,6 @@ export default observer<Props>(function WalletConnect({ navigation }) {
   );
 });
 
-type CircleProps = {
-  children: React.ReactNode;
-  size: number;
-  opacity?: number;
-};
-
-const Circle = ({ children, size, opacity = 1 }: CircleProps) => (
-  <View
-    style={{
-      width: size,
-      height: size,
-      borderRadius: size,
-      backgroundColor: hexAlpha("#737ae2", opacity * 100),
-      alignItems: "center",
-      justifyContent: "center",
-    }}
-  >
-    {children}
-  </View>
-);
 type PropsHeader = {
   onPressBack(): void;
   onPressScan(): void;
@@ -145,7 +125,7 @@ const Header = ({ onPressBack, style, title, onPressScan }: PropsHeader) => (
     <View style={styles.header_right}>
       <View style={styles.header_scanButtonContainer}>
         <RectButton style={styles.header_scanButton} onPress={onPressScan}>
-          <Icon2 name="plus" size={20} stroke={COLOR.White} />
+          <Icon2 name="scan_2" size={20} stroke={COLOR.White} />
         </RectButton>
       </View>
     </View>

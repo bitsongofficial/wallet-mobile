@@ -64,7 +64,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
           <Header
             onPressBack={goBack}
             style={[styles.header, styles.wrapper]}
-            title="Wallet Connect"
+            title="Address Book"
             onPressScan={() => {}}
           />
           <View style={[styles.wrapper, { flex: 1 }]}>
@@ -121,7 +121,7 @@ const Header = ({ onPressBack, style, title, onPressScan }: PropsHeader) => (
     <View style={styles.header_right}>
       <View style={styles.header_scanButtonContainer}>
         <RectButton style={styles.header_scanButton} onPress={onPressScan}>
-          <Icon2 name="scan_2" size={18} stroke={COLOR.White} />
+          <Icon2 name="plus" size={18} stroke={COLOR.White} />
         </RectButton>
       </View>
     </View>
