@@ -1,20 +1,33 @@
 import "./shim"
 
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { configure } from "mobx";
-import useCachedResources from "./hooks/useCachedResources";
-import useColorScheme from "./hooks/useColorScheme";
-import Navigation from "./navigation";
-import { test } from "core/Test";
+import { StatusBar } from "expo-status-bar"
+import { StyleSheet } from "react-native"
+import { SafeAreaProvider } from "react-native-safe-area-context"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { configure } from "mobx"
+import useCachedResources from "./hooks/useCachedResources"
+import useColorScheme from "./hooks/useColorScheme"
+import Navigation from "./navigation"
+import { test } from "core/Test"
+import firebase from '@react-native-firebase/app'
+import messaging from '@react-native-firebase/messaging'
+import { useEffect } from "react"
 
 configure({ useProxies: "ifavailable" });
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+
+  useEffect(() =>
+  {
+    messaging()
+      .getToken({
+        senderId: firebase.app().options.messagingSenderId
+      })
+      .then(x => console.log(x))
+      .catch(e => console.log(e))
+  }, [])
 
   if (!isLoadingComplete) {
     return null;
