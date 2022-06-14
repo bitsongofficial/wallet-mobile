@@ -85,7 +85,6 @@ export default observer<Props>(
                 placeholder="Public Address"
                 value={inputWallet.value}
                 onChangeText={inputWallet.set}
-                autoFocus
                 Right={
                   <Button
                     text="Paste"
@@ -106,7 +105,6 @@ export default observer<Props>(
                 onChangeText={inputName.set}
                 style={styles.search}
                 placeholder="Write a name"
-                autoFocus
               />
             </>
           )}
