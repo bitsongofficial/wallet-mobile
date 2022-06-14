@@ -86,7 +86,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
 
-  const toggleNightMode = useCallback(() => {}, []);
+  const [isNight, setIsNight] = useState(false);
+  const toggleNightMode = useCallback(() => setIsNight((v) => !v), []);
+
   const openCurrencyApp = useCallback(() => {}, []);
   const openFAQ = useCallback(() => {}, []);
   const openTermsAndConditions = useCallback(() => {}, []);
@@ -266,6 +268,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
                     onPress={toggleNightMode}
                     icon="moon"
                     style={styles.listButton}
+                    Right={
+                      <Switch active={isNight} onPress={toggleNightMode} />
+                    }
                   />
                 </View>
 
