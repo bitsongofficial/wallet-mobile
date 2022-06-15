@@ -83,7 +83,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
             <View style={styles.balance}>
               <Text style={styles.balance_title}>Total Balance</Text>
               <Text style={styles.balance_value}>
-                {wallet.totalBalance.toLocaleString("en")} $
+                {coin.totalBalance.toLocaleString("en")} $
               </Text>
               <Text style={styles.balance_variation}>
                 Variation {variation} %
@@ -117,7 +117,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
           />
 
           <View style={styles.coins}>
-            {wallet.coins.map((coin) => (
+            {coin.coins.map((coin) => (
               <TouchableOpacity key={coin.info._id} onPress={coin.increment}>
                 <CoinStat coin={coin} style={{ marginBottom: 9 }} />
               </TouchableOpacity>

@@ -1,4 +1,5 @@
 import { Coin } from "classes";
+import mock from "classes/mock";
 import { ICoin } from "classes/types";
 import { CoinClasses, SupportedCoins } from "constants/Coins";
 import { PublicWallet } from "core/storing/Generic";
@@ -9,7 +10,6 @@ import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { WalletData } from "core/types/storing/Generic";
 import { autorun, keys, makeAutoObservable, runInAction, values } from "mobx";
 import { round } from "utils";
-import mock from "./mock";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore, { StoreWallet } from "./WalletStore";
 
@@ -48,10 +48,11 @@ export default class CoinStore {
 			const info = Object.assign({}, mock[chain])
 			try
 			{
-				const data = values(this.walletStore.activeWallet as StoreWallet)[0] as WalletData
+				const walletValues = values(this.walletStore.activeWallet as StoreWallet)
+				const data = walletValues[0] as WalletData
 				info.address = data.metadata.addresses[chain]
 				balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
-					wallet: new PublicWallet(this.walletStore.activeWallet?.data.metadata.addresses[chain])
+					wallet: new PublicWallet(info.address)
 				}))
 				infos.push(info)
 				coinRates.push()
@@ -61,27 +62,34 @@ export default class CoinStore {
 			}
 		}
 		let errors = false
-		const balances = await Promise.all(balanceAwaits)
-		balances.forEach((balance:Amount[], i) =>
+		try
 		{
-			if(balance)
+			const balances = await Promise.all(balanceAwaits)
+			balances.forEach((balance:Amount[], i) =>
 			{
-				balance.forEach(asset => {
-					infos[i].balance = this.fromAmountToCoin(asset)
-					coins.push(new Coin(infos[i], this.fromDenomToPrice(asset.denom)))
-				})
-			}
-			else
+				if(balance)
+				{
+					balance.forEach(asset => {
+						infos[i].balance = this.fromAmountToCoin(asset)
+						coins.push(new Coin(infos[i], this.fromDenomToPrice(asset.denom)))
+					})
+				}
+				else
+				{
+					errors = true
+				}
+			})
+			runInAction(() =>
 			{
-				errors = true
-			}
-		})
-		runInAction(() =>
+				this.coins.splice(0, this.coins.length, ...coins)
+				this.loading.balance = false
+				this.results.balance = errors
+			})
+		}
+		catch(e)
 		{
-			this.coins.splice(0, this.coins.length, ...coins)
-			this.loading.balance = false
-			this.results.balance = errors
-		})
+			console.log(e)
+		}
 	}
 
 	get totalBalance()
@@ -103,18 +111,35 @@ export default class CoinStore {
 		})
 		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
 		const coinClass = CoinClasses[coin]
-		const data: FromToAmount = {
-			from: this.walletStore.activeWallet.wallets[coin] as CosmosWallet,
-			to: new PublicWallet(address),
-			amount: this.fromDollarsToAmount(dollar, coinClass.coin.denom()),
-		}
-		const res = await coinClass.Do(CoinOperationEnum.Send, data)
-		runInAction(() =>
+		try
 		{
-			this.loading.send = false
-			this.results.send = res
-		})
-		this.updateBalances()
+			const wallet = this.walletStore.activeWallet.wallets[coin]
+			if(!(wallet instanceof CosmosWallet))
+			{
+				runInAction(() =>
+				{
+					this.loading.send = false
+					this.results.send = false
+				})
+				return
+			}
+			const data: FromToAmount = {
+				from:  wallet as CosmosWallet,
+				to: new PublicWallet(address),
+				amount: this.fromDollarsToAmount(dollar, coinClass.coin.denom()),
+			}
+			const res = await coinClass.Do(CoinOperationEnum.Send, data)
+			runInAction(() =>
+			{
+				this.loading.send = false
+				this.results.send = res
+			})
+			this.updateBalances()
+		}
+		catch(e)
+		{
+			console.log(e)
+		}
 	}
 
 	convertRateFromDenom(denom: Denom)

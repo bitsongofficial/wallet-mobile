@@ -3,16 +3,16 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { RectButton, Swipeable } from "react-native-gesture-handler";
 import { COLOR, hexAlpha } from "utils";
 import { Icon2, IconName, ThemedGradient } from "components/atoms";
-import { Wallet } from "classes";
 import { SwipeActions } from "../atoms";
+import { StoreWallet } from "stores/WalletStore";
 
 type Props = {
-  value: Wallet;
-  onPress(value: Wallet): void;
-  onPressEdit?(value: Wallet): void;
-  onPressDelete(value: Wallet): void;
+  value: StoreWallet;
+  onPress(value: StoreWallet): void;
+  onPressEdit?(value: StoreWallet): void;
+  onPressDelete(value: StoreWallet): void;
   isActive?: boolean;
-  mapItemsRef: Map<Wallet, React.RefObject<Swipeable>>;
+  mapItemsRef: Map<StoreWallet, React.RefObject<Swipeable>>;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -26,9 +26,9 @@ export default ({
   style,
 }: Props) => {
   const handlePress = useCallback(() => onPress(value), [onPress, value]);
-  const { name, type } = value.info;
+  const { name, metadata } = value.data;
 
-  const iconName: IconName = type === "one" ? "wallet" : "eye";
+  const iconName: IconName = metadata.type === "one" ? "wallet" : "eye";
 
   const ref = useRef<Swipeable>(null);
 
@@ -40,7 +40,7 @@ export default ({
     () =>
       mapItemsRef.forEach(
         (ref, key) =>
-          key.info.address !== value.info.address && ref.current?.close()
+          key.data.metadata.address !== value.data.metadata.address && ref.current?.close()
       ),
     [value, mapItemsRef]
   );

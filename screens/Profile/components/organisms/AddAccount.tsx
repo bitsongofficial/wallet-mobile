@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
-import { useTheme } from "hooks";
+import { useStore, useTheme } from "hooks";
 import { COLOR, hexAlpha, InputHandler } from "utils";
 import Icon2, { IconName } from "components/atoms/Icon2";
 import { Agreement, Search, Subtitle, Title } from "../atoms";
@@ -36,6 +36,7 @@ type Props = {
 
 export default observer<Props>(
   ({ backgroundStyle, animatedPosition, isOpen, onClose }) => {
+    const {wallet} = useStore()
     // ------ BottomSheet -------
     const snapPoints = useMemo(() => [350, "95%"], []);
     const bottomSheet = useRef<BottomSheetMethods>(null);
@@ -95,6 +96,11 @@ export default observer<Props>(
     }, [onClose]);
 
     useBottomSheetBackButton(isOpen, handleClose);
+
+    const saveWallet = () =>
+    {
+      wallet.newCosmosWallet(input.value, phrase.words)
+    }
 
     return (
       <>
@@ -188,6 +194,7 @@ export default observer<Props>(
                     text="Add Account"
                     contentContainerStyle={styles.buttonContinueContent}
                     textStyle={styles.buttonContinueText}
+                    onPress={saveWallet}
                   />
                 </View>
               </>

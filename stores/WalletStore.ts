@@ -1,12 +1,9 @@
-import { Coin, Wallet } from "classes";
-import Mock from "../classes/mock";
 import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CosmosWalletGenerator } from "core/storing/Wallet";
 import { Wallet, WalletData } from "core/types/storing/Generic";
 import { CoinClasses, SupportedCoins } from "constants/Coins";
 import RemoteConfigsStore from "./RemoteConfigsStore";
-import { round } from "utils";
 
 export interface StoreWallet {
   data: WalletData,
@@ -19,25 +16,8 @@ export default class WalletStore {
   walletsHanlder: IReactionDisposer
   firstLoadHandler: IReactionDisposer
   activeWallet: StoreWallet | null = null
-  wallets = [
-    new Wallet({
-      name: "Gianni Wallet",
-      address: "1",
-      type: "one", // ?
-    }),
-    new Wallet({
-      name: "Airdrop Fund Wallet",
-      address: "2",
-      type: "one",
-    }),
-    new Wallet({
-      name: "Cold Wallet",
-      address: "3",
-      type: "two",
-    }),
-  ];
 
-  walletsA: StoreWallet[] = []
+  wallets: StoreWallet[] = []
   loading = false
 
   remoteConfigs
@@ -47,7 +27,7 @@ export default class WalletStore {
     this.remoteConfigs = remoteConfigs
     this.firstLoadHandler = autorun(() =>
     {
-      if(this.remoteConfigs.firstLoad) {
+      if(!this.remoteConfigs.firstLoad) {
         this.loadWallets()
         this.firstLoadHandler()
       }
@@ -142,5 +122,20 @@ export default class WalletStore {
         if(this.wallets.length == 1) this.activeWallet = newWallet
       })
     }
+  }
+
+  changeActive(wallet: number | StoreWallet | null)
+  {
+    if(wallet == null) return
+    if(typeof wallet == "number") wallet = this.wallets[wallet]
+    this.activeWallet = wallet
+  }
+
+  deleteWallet(wallet: StoreWallet)
+  {
+    this.wallets.splice(
+      this.wallets.findIndex((item) => item === wallet),
+      1
+    )
   }
 }

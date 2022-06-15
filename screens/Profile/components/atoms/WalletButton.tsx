@@ -1,13 +1,13 @@
 import { useCallback } from "react";
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
-import { Wallet } from "classes";
 import { COLOR, hexAlpha } from "utils";
 import { Icon2 } from "components/atoms";
+import { StoreWallet } from "stores/WalletStore";
 
 type Props = {
-  wallet: Wallet;
-  onPress(wallet: Wallet): void;
+  wallet: StoreWallet | null;
+  onPress(wallet: StoreWallet): void;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -23,7 +23,7 @@ export default ({ onPress, wallet, style }: Props) => {
           style={styles.icon}
         />
         <View style={styles.info}>
-          <Text style={styles.name}>{wallet.info.name}</Text>
+          <Text style={styles.name}>{wallet?.data.name}</Text>
           <Text style={styles.address}>bitsong1id02h0c...2029d</Text>
         </View>
         <Icon2 size={13} name="chevron_down" stroke={COLOR.RoyalBlue} />

@@ -21,9 +21,9 @@ import { Button, Icon2, Switch } from "components/atoms";
 import { BottomSheet } from "components/moleculs";
 import { ListButton, Search, Title } from "../atoms";
 import { WalletItemEdited } from "../moleculs";
-import { Wallet } from "classes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
+import { StoreWallet } from "stores/WalletStore";
 
 type Props = {
   isOpen?: boolean;
@@ -36,7 +36,7 @@ type Props = {
 
 export default observer<Props>(
   ({ animatedPosition, isOpen, onClose, backgroundStyle }) => {
-    const { settings, walletStore } = useStore();
+    const { settings, wallet } = useStore();
 
     // ------ BottomSheet -------
 
@@ -54,39 +54,39 @@ export default observer<Props>(
     const filtred = useMemo(() => {
       if (inputSearch.value) {
         const lowerCase = inputSearch.value.toLowerCase();
-        return walletStore.wallets.filter(({ info }) =>
-          info.name.toLowerCase().includes(lowerCase)
+        return wallet.wallets.filter(({ data }) =>
+          data.name?.toLowerCase().includes(lowerCase)
         );
       } else {
-        return walletStore.wallets;
+        return wallet.wallets;
       }
-    }, [inputSearch.value, walletStore.wallets]);
+    }, [inputSearch.value, wallet.wallets]);
 
     // ---------- Edit -----------
-    const [edited, setEdited] = useState<Wallet>(); // need store
+    const [edited, setEdited] = useState<StoreWallet>(); // need store
 
     const inputWalletName = useMemo(
-      () => new InputHandler(edited?.info.name),
+      () => new InputHandler(edited?.data.name),
       [edited]
     );
 
     const removeEdited = useCallback(() => setEdited(undefined), []);
 
     const saveEdited = useCallback(
-      () => edited?.setInfo({ name: inputWalletName.value }),
+      () => { if(edited) edited.data.name = inputWalletName.value },
       [edited, inputWalletName]
     );
 
     // ------- FlatList ----------
 
     const mapItemsRef = useMemo(
-      () => observable.map<Wallet, React.RefObject<Swipeable>>(),
+      () => observable.map<StoreWallet, React.RefObject<Swipeable>>(),
       []
     );
 
-    const [selectedWallet, setSelectedWallet] = useState(walletStore.active);
+    const [selectedWallet, setSelectedWallet] = useState(wallet.activeWallet);
 
-    const keyExtractor = ({ info }: Wallet) => info.address;
+    const keyExtractor = ({ data }: StoreWallet) => data.metadata.address;
     const renderWallets = useCallback(
       ({ item }) => (
         <View style={{ marginBottom: 13 }}>
@@ -94,7 +94,7 @@ export default observer<Props>(
             value={item}
             isActive={selectedWallet === item}
             onPress={setSelectedWallet}
-            onPressDelete={walletStore.deleteWallet}
+            onPressDelete={wallet.deleteWallet}
             onPressEdit={setEdited}
             mapItemsRef={mapItemsRef}
           />
@@ -115,7 +115,7 @@ export default observer<Props>(
     // -------- Done ---------
 
     const setWallet = useCallback(() => {
-      walletStore.setActive(selectedWallet);
+      wallet.changeActive(selectedWallet);
       close();
     }, [selectedWallet]);
 
@@ -125,7 +125,7 @@ export default observer<Props>(
       onClose && onClose();
       removeEdited();
       mapItemsRef.forEach((ref) => ref.current?.close());
-      setSelectedWallet(walletStore.active);
+      setSelectedWallet(wallet.activeWallet);
     }, [onClose]);
 
     useBottomSheetBackButton(isOpen, handleClose);

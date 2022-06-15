@@ -179,7 +179,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                 <Subtitle style={styles.subtitle}>Connected with</Subtitle>
                 <WalletButton
                   onPress={openChangeWallet}
-                  wallet={wallet}
+                  wallet={wallet.activeWallet}
                   style={{ marginBottom: 16 }}
                 />
 

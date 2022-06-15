@@ -5,6 +5,14 @@ import WalletStore from "./WalletStore";
 export default class DappConnectionStore {
 	connection: WalletConnectCosmosClientV1 | null = null
 
+	loading = {
+	  checkNick: false,
+	};
+  
+	async checkNick(nick: string) {
+	  return true;
+	}
+
 	constructor(private walletStore: WalletStore,) {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
