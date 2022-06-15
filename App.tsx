@@ -12,42 +12,11 @@ import { test } from "core/Test"
 import { useEffect } from "react"
 import { COLOR } from "utils";
 import * as NavigationBar from "expo-navigation-bar";
-import firebase from '@react-native-firebase/app'
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging'
 import FullscreenOverlay from "components/atoms/FullscreenOverlay"
 import { Loader } from "components/atoms"
 import { useStore } from "hooks"
 
 configure({ useProxies: "ifavailable" });
-
-const requestUserPermission = async () => {
-  const authorizationStatus = await messaging().requestPermission();
-
-  if (authorizationStatus) {
-    console.log('Permission status:', authorizationStatus);
-  }
-
-  return authorizationStatus
-}
-
-const requestToken = async () => {
-  try {
-    const authorizationStatus = await requestUserPermission()
-
-    if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
-      const token = await messaging().getToken({
-        senderId: firebase.app().options.messagingSenderId
-      })
-
-      console.log(token)
-      //Alert.alert('A new FCM message arrived!', JSON.stringify(token));
-    } else {
-      console.error('Push notification, authorization denied')
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -56,15 +25,6 @@ export default function App() {
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
-    requestToken()
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    });
-
-    return unsubscribe;
   }, []);
 
   if (!isLoadingComplete) {

@@ -3,11 +3,12 @@ import { Bitsong } from "core/coin/bitsong/Bitsong";
 import { PublicWallet } from "core/storing/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
+import Config from "react-native-config";
 
 export class WalletConnectCosmosClientV1 {
 	connector: WalletConnect | null = null
 	wallets
-	constructor(uri: string, wallets: Wallet[])
+	constructor(uri: string, wallets: Wallet[], fcmToken: string)
 	{
 		this.wallets = wallets
 		const connector = new WalletConnect(
@@ -22,14 +23,13 @@ export class WalletConnectCosmosClientV1 {
 					name: "WalletConnect",
 				},
 			},
-			// {
-			//   // Optional
-			//   url: "<YOUR_PUSH_SERVER_URL>",
-			//   type: "fcm",
-			//   token: token,
-			//   peerMeta: true,
-			//   language: language,
-			// }
+			{
+			   url: Config.PUSH_NOTIFICATION_SERVER_URL,
+			   type: 'fcm',
+			   token: fcmToken,
+			   peerMeta: true,
+			   language: 'it',
+			}
 		);
 		connector.on("session_request", async (error, payload) => {
 			if (error) {
