@@ -3,18 +3,37 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import {
+  BottomTabHeaderProps,
+  BottomTabScreenProps,
+} from "@react-navigation/bottom-tabs";
 import {
   CompositeScreenProps,
   NavigatorScreenParams,
 } from "@react-navigation/native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import {
+  NativeStackHeaderProps,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
   }
 }
+
+type LoaderParams<
+  T extends any = any,
+  A extends any[] = any[],
+  F = (...args: A) => Promise<T>
+> = {
+  callback: F;
+  onSucceess?(result: T): void;
+  onError?(error: unknown): void;
+  header?: (
+    props: NativeStackHeaderProps | BottomTabHeaderProps
+  ) => React.ReactNode;
+};
 
 export type RootStackParamList = {
   // Before  Auth
@@ -35,6 +54,8 @@ export type RootStackParamList = {
   SettingsNotifications: undefined;
   WalletConnect: undefined;
   AddressBook: undefined;
+
+  Loader: LoaderParams | undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
@@ -45,6 +66,8 @@ export type RootTabParamList = {
   StackingTab: undefined;
   Tab1: undefined;
   Tab2: undefined;
+
+  Loader: LoaderParams | undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
