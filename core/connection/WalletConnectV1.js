@@ -51,7 +51,7 @@ export class WalletConnectCosmosClientV1 {
 			console.log(params)
 			switch(params.typeUrl)
 			{
-				case "MsgSend":
+				case "/cosmos.bank.v1beta1.MsgSend":
 					let fromWallet = null
 					for(const wallet of this.wallets)
 					{

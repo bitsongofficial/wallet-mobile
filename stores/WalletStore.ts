@@ -27,7 +27,7 @@ export default class WalletStore {
     this.remoteConfigs = remoteConfigs
     this.firstLoadHandler = autorun(() =>
     {
-      if(!this.remoteConfigs.firstLoad) {
+      if(this.remoteConfigs.firstLoad) {
         this.loadWallets()
         this.firstLoadHandler()
       }
