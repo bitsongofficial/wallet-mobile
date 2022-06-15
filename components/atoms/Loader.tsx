@@ -14,7 +14,7 @@ type Props = {
   style?: ImageStyle;
 };
 
-export default ({ size = 32 }: Props) => {
+export default ({ size = 32, style }: Props) => {
   const sizeStyle = useMemo<ImageStyle>(
     () => ({ width: size, height: size, borderRadius: size }),
     [size]
@@ -44,7 +44,7 @@ export default ({ size = 32 }: Props) => {
     <Animated.Image
       width={size}
       height={size}
-      style={[sizeStyle, animatedStyles]}
+      style={[sizeStyle, animatedStyles, style]}
       source={require("assets/images/spinner-loader.png")}
     />
   );
