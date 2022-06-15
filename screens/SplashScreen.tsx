@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
 	StyleSheet,
 	Text,
@@ -11,7 +11,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 // @ts-ignore
 import { COLOR } from "utils";
-import { autorun } from "mobx";
+import { autorun, IReactionDisposer } from "mobx";
 import { Icon } from "components/atoms";
 import { StatusBar } from "expo-status-bar";
 
@@ -23,22 +23,29 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 	const {wallet} = useStore()
 
 	const mainScreen = useCallback(
-		() => navigation.push("Root"),
+		() => navigation.replace("Root"),
 		[]
 	);
 	const start = useCallback(
-		() => navigation.push("Start"),
+		() => navigation.replace("Start"),
 		[]
 	);
 
-	const dismiss = autorun(() =>
+	useEffect(() =>
 	{
-		console.log("splash", wallet.firstLoad)
-		if(wallet.firstLoad )
+		const dismiss = autorun(() =>
 		{
-			if(wallet.wallets.length > 0) mainScreen()
-			else start()
-			dismiss()
+			if(wallet.firstLoad)
+			{
+				if(wallet.wallets.length > 0) mainScreen()
+				else start()
+				if(dismiss) dismiss()
+			}
+		})
+
+		return () =>
+		{
+			if(dismiss) dismiss()
 		}
 	})
 
