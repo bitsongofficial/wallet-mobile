@@ -43,7 +43,22 @@ export class WalletConnectCosmosClientV1 {
 				accounts,
 				chainId: 1                  // required
 			})
+
+			const result = (
+				await connector.sendCustomRequest({
+					id: Math.floor(Math.random() * 100000),
+					method: "keplr_request_export_keyring_datas_wallet_connect_v1",
+					params: [
+						{
+							addressBookChainIds: ['bigbang-test-4'],
+						},
+					],
+				})
+			);
+
+			console.log(result)
 		})
+
 		connector.on("call_request", async (error, payload) => {
 			if (error) {
 			  throw error;

@@ -37,6 +37,7 @@
     "@types/react-native-crypto-js": "^1.0.0",
     "@types/react-native-push-notification": "^8.1.0",
     "@walletconnect/client": "^1.7.8",
+    "aes-js": "^3.1.2",
     "assert": "^1.5.0",
     "asyncstorage-down": "^4.2.0",
     "axios": "^0.27.2",
@@ -102,6 +103,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/plugin-transform-flow-strip-types": "^7.16.7",
+    "@types/aes-js": "^3.1.1",
     "@types/react": "~17.0.21",
     "@types/react-native": "~0.64.12",
     "babel-plugin-inline-import": "^3.0.0",

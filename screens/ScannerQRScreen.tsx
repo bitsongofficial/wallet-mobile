@@ -36,7 +36,16 @@ export default observer<Props>(({ navigation, route }) => {
       if (!scanned) {
         setScanned(true);
         navigation.goBack();
-        route.params.onBarCodeScanned(data);
+
+        let jsonData = data
+        
+        try {
+          jsonData = JSON.parse(data)
+        } catch (error) {
+          console.error(error)
+        }
+
+        route.params.onBarCodeScanned(jsonData);
       }
     },
     [route, scanned, navigation]

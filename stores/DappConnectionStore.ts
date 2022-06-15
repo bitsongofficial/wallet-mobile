@@ -17,12 +17,14 @@ export default class DappConnectionStore {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
-	async connect(pairString: string)
-	{
+	async connect(payload: string | { wcURI: string; sharedPassword: string })
+	{	
 		if(this.walletStore.activeWallet)
 		{
 			try
 			{
+				const pairString = typeof payload === 'object' ? payload.wcURI : payload
+
 				this.connection = new WalletConnectCosmosClientV1(pairString, [this.walletStore.activeWallet.wallets.btsg])
 			}
 			catch(e)
