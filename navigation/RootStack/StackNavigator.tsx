@@ -14,7 +14,11 @@ export default () => (
   <BottomSheetModalProvider>
     <Stack.Navigator>
       {/* not auth */}
-
+      <Stack.Screen
+        name="Splash"
+        component={Screens.Splash}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Start"
         component={Screens.Start}

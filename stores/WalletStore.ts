@@ -20,6 +20,7 @@ export default class WalletStore {
 
   wallets: StoreWallet[] = []
   loading = false
+  firstLoad = false
 
   remoteConfigs
 
@@ -77,20 +78,24 @@ export default class WalletStore {
     if(granted === PermissionsAndroid.RESULTS.GRANTED)
     {
       const walletsMetaDataSerialized = await AsyncStorage.getItem('walletNames')
-      if(walletsMetaDataSerialized == null) return
-      const walletsMetaData = JSON.parse(walletsMetaDataSerialized) as Array<WalletData>
-      if(walletsMetaData == null) return
-      runInAction(() =>
+      if(walletsMetaDataSerialized != null)
       {
-        this.wallets = walletsMetaData.map(walletData => {
-          return {
-            data: walletData,
-            wallets: this.addSupportedWallets(walletData),
-          }
-        })
-        if(this.wallets.length > 0) this.activeWallet = this.wallets[0]
-        this.loading = false
-      })
+        const walletsMetaData = JSON.parse(walletsMetaDataSerialized) as Array<WalletData>
+        if(walletsMetaData != null)
+        {
+          runInAction(() =>
+          {
+            this.wallets = walletsMetaData.map(walletData => {
+              return {
+                data: walletData,
+                wallets: this.addSupportedWallets(walletData),
+              }
+            })
+            if(this.wallets.length > 0) this.activeWallet = this.wallets[0]
+            this.loading = false
+          })
+        }
+      }
     }
     else
     {
@@ -99,6 +104,10 @@ export default class WalletStore {
         this.loading = false
       })
     }
+    runInAction(() =>
+    {
+      this.firstLoad = true
+    })
   }
 
   async newCosmosWallet(name: string, mnemonic: string[])

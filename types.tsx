@@ -37,6 +37,7 @@ type LoaderParams<
 
 export type RootStackParamList = {
   // Before  Auth
+  Splash: undefined;
   Start: undefined;
   CreateWallet: undefined;
   ImportFromSeed: undefined;
