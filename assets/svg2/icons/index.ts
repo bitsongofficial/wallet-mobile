@@ -48,6 +48,8 @@ import link_simple_horizontal from "./link_simple_horizontal.svg";
 import address_book_big from "./address_book_big.svg";
 import wallet_connect from "./wallet_connect.svg";
 import plus from "./plus.svg";
+import check_error from "./check_error.svg";
+import check_fulfilled from "./check_fulfilled.svg";
 
 export default <const>{
   eye_closed_gradient,
@@ -79,6 +81,8 @@ export default <const>{
   clock_counter,
   qr_code,
   link_simple_horizontal,
+  check_error,
+  check_fulfilled,
 
   address_book,
   address_book_big,
