@@ -16,6 +16,7 @@ import { RootStackParamList, RootTabParamList } from "types";
 import { Pagination } from "components/moleculs";
 import { SendController } from "./classes";
 import { Header } from "./components/atoms";
+import { Header as BottomTabHeader } from "navigation/BottomTab/components";
 import {
   InsertImport,
   SendRecap,
@@ -49,12 +50,19 @@ export default observer<Props>(function SendModal({
     () => (steps.title === "Insert Import" ? close() : steps.goBack()),
     [steps, close]
   );
-  const send = () =>
-  {
-    if(controller.creater.coin)
-      store.coin.send(controller.creater.coin.info.coin, controller.creater.addressInput.value, controller.creater.amount)
-    close()
-  }
+  const send = () => {
+    const { coin, addressInput, amount } = controller.creater;
+    if (coin) {
+      navigation.push("Loader", {
+        header: BottomTabHeader,
+        callback: async () => {
+          // await wait(2000); // for example
+          await store.coin.send(coin.info.coin, addressInput.value, amount);
+        },
+      });
+    }
+    close();
+  };
 
   useEffect(() => {
     const handler = BackHandler.addEventListener("hardwareBackPress", () => {

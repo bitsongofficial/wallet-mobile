@@ -15,7 +15,7 @@ export function round(v: number, num = 2) {
 }
 
 export const wait = (duration: number) =>
-  new Promise((resolve) => setTimeout(resolve, duration));
+  new Promise<any>((resolve) => setTimeout(resolve, duration));
 
 export function sliceIntoChunks<T>(arr: T[], size: number) {
   const res = [];

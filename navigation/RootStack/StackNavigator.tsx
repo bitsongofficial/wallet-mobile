@@ -70,6 +70,12 @@ export default () => (
         options={{ headerShown: false }}
       />
 
+      <Stack.Screen
+        name="Loader"
+        component={Screens.Loader}
+        options={{ headerShown: false }}
+      />
+
       <Stack.Group screenOptions={{ presentation: "modal" }}>
         <Stack.Screen
           name="ScannerQR"
