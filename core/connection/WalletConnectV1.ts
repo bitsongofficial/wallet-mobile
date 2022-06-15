@@ -2,11 +2,12 @@ import WalletConnect from "@walletconnect/client"
 import { Bitsong } from "core/coin/bitsong/Bitsong";
 import { PublicWallet } from "core/storing/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
+import { Wallet } from "core/types/storing/Generic";
 
 export class WalletConnectCosmosClientV1 {
-	connector = null
+	connector: WalletConnect | null = null
 	wallets
-	constructor(uri, wallets)
+	constructor(uri: string, wallets: Wallet[])
 	{
 		this.wallets = wallets
 		const connector = new WalletConnect(
@@ -93,8 +94,8 @@ export class WalletConnectCosmosClientV1 {
 
 	async getAccounts()
 	{
-		const accountRequests = []
-		const accounts = []
+		const accountRequests:Promise<void>[] = []
+		const accounts:string[] = []
 		console.log(this.wallets)
 		this.wallets.forEach(w => {
 			console.log(w)
@@ -111,6 +112,6 @@ export class WalletConnectCosmosClientV1 {
 	connect()
 	{
 		console.log("connect...")
-		this.connector.connect()
+		this.connector?.connect()
 	}
 }
