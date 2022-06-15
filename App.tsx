@@ -1,7 +1,7 @@
 import "./shim"
 
 import { StatusBar } from "expo-status-bar"
-import { Alert, StyleSheet } from "react-native"
+import { Alert, StyleSheet, Text, View } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { configure } from "mobx"
@@ -14,6 +14,9 @@ import { COLOR } from "utils";
 import * as NavigationBar from "expo-navigation-bar";
 import firebase from '@react-native-firebase/app'
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging'
+import FullscreenOverlay from "components/atoms/FullscreenOverlay"
+import { Loader } from "components/atoms"
+import { useStore } from "hooks"
 
 configure({ useProxies: "ifavailable" });
 
@@ -49,6 +52,7 @@ const requestToken = async () => {
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  const {settings} = useStore()
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
@@ -71,6 +75,11 @@ export default function App() {
         <SafeAreaProvider>
           <Navigation colorScheme={colorScheme} />
           <StatusBar />
+          <FullscreenOverlay showing={settings.showLoadingOverlay}>
+            <View style={{display: "flex", justifyContent: "center", alignItems: "center", flex: 1}}>
+              <Loader size={60}></Loader>
+            </View>
+          </FullscreenOverlay>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );

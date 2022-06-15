@@ -8,6 +8,7 @@ export default class SettingsStore {
   theme: "light" | "dark" = "dark";
   language: ILang = languages[0];
   currency: ICurrency | null = currencies[0];
+  showLoadingOverlay = false;
 
   notifications: NotifSettings = {
     enable: true,
