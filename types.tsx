@@ -43,7 +43,7 @@ export type RootStackParamList = {
   CreateWallet: undefined;
   ImportFromSeed: undefined;
   ImportWithKeplr: { data: string };
-  SendRecap: { creater: TransactionCreater };
+  SendRecap: undefined;
 
   // Common
   ScannerQR: { onBarCodeScanned(data: string): void };

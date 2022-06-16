@@ -1,3 +1,4 @@
+import { CoinClasses, SupportedCoins } from "constants/Coins"
 import { Amount, Denom } from "core/types/coin/Generic"
 
 export function convertRateFromDenom(denom: Denom)
@@ -34,4 +35,9 @@ export function fromDollarsToAmount(dollars: number, denom: Denom, prices:any): 
 		amount: Math.round(dollars / fromDenomToPrice(denom, prices) * convertRateFromDenom(denom)).toString(),
 		denom,
 	}
+}
+
+export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
+{
+	return CoinClasses[coin].coin.denom()
 }

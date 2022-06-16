@@ -46,4 +46,9 @@ export default class DappConnectionStore {
 	{
 		this.connection?.confirmPending(false)
 	}
+
+	get confirmationExtraData()
+	{
+		return this.connection?.confirmationExtraData
+	}
 }

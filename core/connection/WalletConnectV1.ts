@@ -14,6 +14,7 @@ export class WalletConnectCosmosClientV1 {
 	connector: WalletConnect | null = null
 	wallets
 	pendingAction: (() => void) | null = null
+	confirmationExtraData: any
 	constructor(uri: string, wallets: Wallet[], fcmToken: string)
 	{
 		this.wallets = wallets
@@ -43,7 +44,6 @@ export class WalletConnectCosmosClientV1 {
 			}
 			console.log("session_request")
 			const accounts = await this.getAccounts()
-			console.log(accounts)
 
 			connector.approveSession({
 				accounts,
@@ -55,19 +55,15 @@ export class WalletConnectCosmosClientV1 {
 			  throw error;
 			}
 			const params = payload.params[0]
-			console.log(params)
 			switch(params.typeUrl)
 			{
 				case "/cosmos.bank.v1beta1.MsgSend":
 					let fromWallet = null
 					for(const wallet of this.wallets)
 					{
-						console.log(wallet)
 						const address = await wallet.Address()
-						console.log(address)
 						if(address == params.value.fromAddress) fromWallet = wallet
 					}
-					console.log(fromWallet)
 					if(fromWallet)
 					{
 						const sendParams = {
@@ -76,8 +72,6 @@ export class WalletConnectCosmosClientV1 {
 							amount: params.value.amount
 						}
 						
-						
-						const choice = await this.askSendConfirmation(params.value.toAddress, sendParams.amount)
 						this.pendingAction = async () =>
 						{
 							const res = await Bitsong.Do(CoinOperationEnum.Send, sendParams)
@@ -87,6 +81,8 @@ export class WalletConnectCosmosClientV1 {
 								jsonrpc: payload.method,
 							})
 						}
+						
+						this.askSendConfirmation(params.value.toAddress, sendParams.amount)
 					}
 					else
 					{
@@ -107,7 +103,6 @@ export class WalletConnectCosmosClientV1 {
 		const accountRequests:Promise<void>[] = []
 		const accounts:string[] = []
 		this.wallets.forEach(w => {
-			console.log(w)
 			const request = async () =>
 			{
 				accounts.push(await w.Address())
@@ -131,9 +126,11 @@ export class WalletConnectCosmosClientV1 {
 		creater.setAmount(fromAmountToDollars(amount, configs.remote.prices).toFixed(2))
 		creater.addressInput.set(address)
 
-		navigate("SendRecap", {
-			creater, 
-		})
+		this.confirmationExtraData = {
+			creater
+		}
+
+		navigate("SendRecap")
 	}
 
 	confirmPending(choice: boolean)
@@ -146,5 +143,15 @@ export class WalletConnectCosmosClientV1 {
 		{
 			this.connector?.rejectRequest({})
 		}
+	}
+
+	reject()
+	{
+		this.connector?.rejectRequest({
+			error: {
+				code: 1,
+				message: "Rejected",
+			}
+		})
 	}
 }

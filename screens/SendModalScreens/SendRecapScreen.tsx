@@ -24,17 +24,14 @@ import { RouteProp } from "@react-navigation/native";
 type Props = {
   style?: StyleProp<ViewStyle>;
   navigation: NativeStackNavigationProp<RootStackParamList>;
-  route: RouteProp<RootStackParamList, "SendRecap">;
 };
 
 export default observer<Props>(function SendRecapScreen({
   navigation,
-  route
 }) {
-  console.log("creater", route.params.creater)
   const store = useStore();
   const controller = useMemo(
-    () => new SendController(store.coin.coins[0], route.params.creater),
+    () => new SendController(store.coin.coins[0], store.dapp.confirmationExtraData.creater as TransactionCreater),
     [store]
   );
   const { steps } = controller;
