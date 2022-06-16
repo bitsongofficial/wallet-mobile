@@ -79,7 +79,6 @@ export default class RemoteConfigsStore {
 		}
 		catch(e: any)
 		{
-			console.log(promises[1])
 			console.log(e)
 		}
 	}
