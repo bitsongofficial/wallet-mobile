@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   ListRenderItem,
@@ -27,6 +27,8 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
+import FullscreenOverlay from "components/atoms/FullscreenOverlay";
+import { autorun, runInAction } from "mobx";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -38,7 +40,7 @@ type Props = CompositeScreenProps<
 >;
 
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { coin, dapp } = useStore();
+  const { coin, dapp, settings } = useStore();
   // need culc by wallet
   const variation = "+ 7.46";
   const reward = "107.23";
@@ -72,6 +74,23 @@ export default observer<Props>(function MainScreen({ navigation }) {
     () => ({ paddingBottom: safeAreaInsets.bottom }),
     [safeAreaInsets.bottom]
   );
+
+  // useEffect(() =>
+  // {
+  //   const disposer = autorun(() =>
+  //   {
+  //     if(settings.showLoadingOverlay != coin.loading.balance) runInAction(() =>
+  //     {
+  //       settings.showLoadingOverlay = coin.loading.balance
+	// 			console.log("main", settings.showLoadingOverlay)
+  //     })
+  //   })
+
+  //   return () =>
+  //   {
+  //     if(disposer) disposer()
+  //   }
+  // }, [])
 
   return (
     <>

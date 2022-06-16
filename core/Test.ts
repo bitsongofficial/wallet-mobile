@@ -25,13 +25,9 @@ async function trySend(wallet: any, pubWallet: any, transaction: any)
 	{
 		let senderBalance = await Bitsong.Do(CoinOperationEnum.Balance, {wallet: wallet})
 		let receiverBalance = await Bitsong.Do(CoinOperationEnum.Balance, {wallet: pubWallet})
-		console.log("S:", senderBalance)
-		console.log("R:", receiverBalance)
 		await Bitsong.Do(CoinOperationEnum.Send, transaction)
 		senderBalance = await Bitsong.Do(CoinOperationEnum.Balance, {wallet: wallet})
 		receiverBalance = await Bitsong.Do(CoinOperationEnum.Balance, {wallet: pubWallet})
-		console.log("S:", senderBalance)
-		console.log("R:", receiverBalance)
 		// const pairString = 'wc:8caefe47-7adf-4bbc-a819-38441d1309ed@1?bridge=https%3A%2F%2Fy.bridge.walletconnect.org&key=6d8c314ab81d5f70c4365c3781e8c190d0844853dc5508210f6cf6a3ba78e144'
 		// const wc = new WalletConnectCosmosClientV1(pairString, [pubWallet])
 	}

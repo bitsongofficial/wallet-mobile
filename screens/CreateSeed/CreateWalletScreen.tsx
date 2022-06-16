@@ -29,7 +29,6 @@ type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useCreateWallet();
-
   const { wallet, settings } = useStore();
 
   // ------- check auth types ------------
@@ -38,7 +37,6 @@ export default observer<Props>(({ navigation }) => {
   useEffect(() => {
     supportedAuthenticationTypesAsync().then(setAuthenticationTypes);
   }, []);
-
   const [goBack, goNext] = useFooter(controller.steps);
 
   useEffect(() => {
@@ -65,11 +63,10 @@ export default observer<Props>(({ navigation }) => {
   const insets = useSafeAreaInsets();
 
   const saveWallet = () => {
-    wallet.newCosmosWallet(
-      controller.walletName.value,
-      controller.phrase.words
-    );
-    goNext();
+    settings.setShowLoadingOverlay(true)
+    await wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
+    settings.setShowLoadingOverlay(false)
+    goNext()
   };
 
   const setCheckMethod = useCallback(

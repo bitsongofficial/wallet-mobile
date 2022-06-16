@@ -122,7 +122,8 @@ export class CosmosWallet implements Wallet {
 const CosmosWalletFromChain = function(options: CosmosWalletData): [CosmosWallet, MnemonicStore]
 {
 	const name = options.name ?? options.chain
-	const s = new AskPinMnemonicStore(standardWalletName(name), async () => {return "123456"})
+	const pin = options.pin ?? ""
+	const s = new AskPinMnemonicStore(standardWalletName(name), async () => {return "123456"}, pin)
 
 	let deriver = MnemonicToWalletGenerator.fromCosmosChain(options.chain)
 	const w = new CosmosWallet(s, deriver, options.metadata)

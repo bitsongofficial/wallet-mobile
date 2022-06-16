@@ -9,6 +9,7 @@ export default class SettingsStore {
   language: ILang = languages[0];
   currency: ICurrency | null = currencies[0];
   checkMethod: CheckMethod | null = null;
+  showLoadingOverlay = false;
 
   notifications: NotifSettings = {
     enable: true,
@@ -47,5 +48,10 @@ export default class SettingsStore {
 
   setCheckMethod(checkMethod: CheckMethod) {
     this.checkMethod = checkMethod;
+  }
+
+  setShowLoadingOverlay(show: boolean)
+  {
+    this.showLoadingOverlay = show
   }
 }
