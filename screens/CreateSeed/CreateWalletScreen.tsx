@@ -26,7 +26,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useCreateWallet();
-  const {wallet} = useStore();
+  const {wallet, settings} = useStore();
   const [goBack, goNext] = useFooter(controller.steps);
 
   useEffect(() => {
@@ -51,9 +51,11 @@ export default observer<Props>(({ navigation }) => {
 
   const insets = useSafeAreaInsets();
 
-  const saveWallet = () =>
+  const saveWallet = async () =>
   {
-    wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
+    settings.setShowLoadingOverlay(true)
+    await wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
+    settings.setShowLoadingOverlay(false)
     goNext()
   }
 

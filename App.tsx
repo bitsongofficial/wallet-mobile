@@ -15,16 +15,19 @@ import * as NavigationBar from "expo-navigation-bar";
 import FullscreenOverlay from "components/atoms/FullscreenOverlay"
 import { Loader } from "components/atoms"
 import { useStore } from "hooks"
+import { setUpPushNotificationsEvents } from "utils/pushNotifications"
+import { observer } from "mobx-react-lite"
 
 configure({ useProxies: "ifavailable" });
 
-export default function App() {
+const App = observer(() => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const {settings} = useStore()
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
+    setUpPushNotificationsEvents()
   }, []);
 
   if (!isLoadingComplete) {
@@ -44,8 +47,10 @@ export default function App() {
       </GestureHandlerRootView>
     );
   }
-}
+})
 
 const styles = StyleSheet.create({
   gestureHandler: { flex: 1 },
 });
+
+export default App

@@ -119,7 +119,6 @@ export default class WalletStore {
     if (!sharedData.wcURI || !sharedData.sharedPassword) {
       throw new Error("Invalid qr code");
     }
-    console.log("sd", sharedData)
     try
     {
       const connector = new WalletConnect(
@@ -143,9 +142,7 @@ export default class WalletStore {
           connector.on("session_request", (error) => {
             if (error) {
               reject(error)
-              console.log(error)
             } else {
-              console.log("AAA")
               connector.approveSession({ accounts: [], chainId: 77777 })
       
               resolve()
@@ -233,14 +230,18 @@ export default class WalletStore {
           addresses
         }
       }
-      runInAction(() =>
+      return new Promise<void>((resolve, reject) =>
       {
-        const newWallet = {
-          data,
-          wallets: this.addSupportedWallets(data, mnemonic.join(" ")),
-        }
-        this.wallets.push(newWallet)
-        if(this.wallets.length == 1) this.activeWallet = newWallet
+        runInAction(() =>
+        {
+          const newWallet = {
+            data,
+            wallets: this.addSupportedWallets(data, mnemonic.join(" ")),
+          }
+          this.wallets.push(newWallet)
+          if(this.wallets.length == 1) this.activeWallet = newWallet
+          resolve()
+        })
       })
     }
   }

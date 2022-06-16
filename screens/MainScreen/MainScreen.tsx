@@ -28,7 +28,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
 import FullscreenOverlay from "components/atoms/FullscreenOverlay";
-import { autorun } from "mobx";
+import { autorun, runInAction } from "mobx";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -75,18 +75,22 @@ export default observer<Props>(function MainScreen({ navigation }) {
     [safeAreaInsets.bottom]
   );
 
-  useEffect(() =>
-  {
-    const disposer = autorun(() =>
-    {
-      settings.showLoadingOverlay = coin.loading.balance
-    })
+  // useEffect(() =>
+  // {
+  //   const disposer = autorun(() =>
+  //   {
+  //     if(settings.showLoadingOverlay != coin.loading.balance) runInAction(() =>
+  //     {
+  //       settings.showLoadingOverlay = coin.loading.balance
+	// 			console.log("main", settings.showLoadingOverlay)
+  //     })
+  //   })
 
-    return () =>
-    {
-      if(disposer) disposer()
-    }
-  })
+  //   return () =>
+  //   {
+  //     if(disposer) disposer()
+  //   }
+  // }, [])
 
   return (
     <>

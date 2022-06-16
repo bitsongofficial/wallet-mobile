@@ -10,13 +10,11 @@ type Props = {
 
 export default ({ children, showing }:Props) => {
   const theme = useTheme();
-  if(showing) return (
-    <View style={[styles.container]}>
+  console.log("Show", showing)
+  return (
+    <View style={[styles.container, {position: showing ? "absolute" : "relative", display: showing ? "flex" : "none"}]}>
       {children}
     </View>
-  )
-  else return (
-	  <></>
   )
 };
 
@@ -24,7 +22,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLOR.Dark3,
 	opacity: 0.85,
-	position: "absolute",
 	left: 0,
 	right: 0,
 	top: 0,

@@ -44,4 +44,9 @@ export default class SettingsStore {
   setPin(settings: Partial<PinSettings>) {
     this.pin = { ...this.pin, ...settings };
   }
+
+  setShowLoadingOverlay(show: boolean)
+  {
+    this.showLoadingOverlay = show
+  }
 }

@@ -21,7 +21,7 @@ type Props = {
 
 export const navigationRef = React.createRef<NavigationContainerRef<RootStackParamList>>()
 
-export function navigate(name: keyof RootStackParamList, params:any) {
+export function navigate(name: keyof RootStackParamList, params?:any) {
   navigationRef.current?.navigate<keyof RootStackParamList>(name, params);
 }
 

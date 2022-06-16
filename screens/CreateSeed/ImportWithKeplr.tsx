@@ -16,7 +16,7 @@ import { useStore } from "hooks";
 type Props = NativeStackScreenProps<RootStackParamList, "ImportWithKeplr">;
 
 export default observer<Props>(({ navigation, route }) => {
-  const {wallet} = useStore()
+  const {wallet, settings} = useStore()
   const controller = useImportWithKeplr();
   const [goBack, goNext] = useFooter(controller.steps);
   useEffect(() => {
@@ -24,7 +24,9 @@ export default observer<Props>(({ navigation, route }) => {
   }, [route.params.data]);
   const save = async () =>
   {
+    settings.setShowLoadingOverlay(true)
     await wallet.importFromKeplr("keplr", route.params.data)
+    settings.setShowLoadingOverlay(false)
     goNext()
   }
   return (

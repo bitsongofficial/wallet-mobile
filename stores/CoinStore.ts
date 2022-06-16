@@ -37,7 +37,6 @@ export default class CoinStore {
 		runInAction(() =>
 		{
 			this.loading.balance = true
-			console.log("A", this.loading.balance)
 			this.results.balance = null
 		})
 		const coins:Coin[] = []
@@ -88,7 +87,6 @@ export default class CoinStore {
 			{
 				this.coins.splice(0, this.coins.length, ...coins)
 				this.loading.balance = false
-				console.log("B", this.loading.balance)
 				this.results.balance = errors
 			})
 		}

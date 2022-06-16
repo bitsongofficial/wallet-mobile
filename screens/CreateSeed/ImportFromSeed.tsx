@@ -19,7 +19,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "ImportFromSeed">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useImportFromSeed();
-  const { wallet } = useStore()
+  const { wallet, settings } = useStore()
   const [goBack, goNext] = useFooter(controller.steps);
 
   const scrollview = useRef<ScrollView>(null);
@@ -33,9 +33,11 @@ export default observer<Props>(({ navigation }) => {
     controller.phrase.setWords(clipboard.split(" "))
   }, [controller.phrase]);
 
-  const saveWallet = () =>
+  const saveWallet = async () =>
   {
-    wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
+    settings.setShowLoadingOverlay(true)
+    await wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
+    settings.setShowLoadingOverlay(false)
     goNext()
   }
 
