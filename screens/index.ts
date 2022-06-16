@@ -12,4 +12,5 @@ export { default as SettingsSecurity } from "./Profile/SettingsSecurityScreen";
 export { default as SettingsNotifications } from "./Profile/SettingsNotificationsScreen";
 export { default as WalletConnect } from "./Profile/WalletConnectScreen";
 export { default as AddressBook } from "./Profile/AddressBookScreen";
+export { SendRecapScreen as SendRecap } from  "./SendModalScreens"
 export { CreateWallet, ImportFromSeed, ImportWithKeplr } from "./CreateSeed";

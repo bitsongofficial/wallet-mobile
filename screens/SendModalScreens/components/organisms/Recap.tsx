@@ -13,6 +13,7 @@ type Props = {
   onPress(): void;
   style?: StyleProp<ViewStyle>;
   memoInput: InputHandler;
+  bottomSheet?: boolean;
 };
 
 export default observer<Props>(function CardWallet({
@@ -20,6 +21,7 @@ export default observer<Props>(function CardWallet({
   onPress,
   style,
   memoInput,
+  bottomSheet
 }: Props) {
   const theme = useTheme();
   const { addressInput, amount, coin, receiver } = creater;
@@ -70,7 +72,7 @@ export default observer<Props>(function CardWallet({
       </Card>
 
       <Input
-        bottomsheet
+        bottomsheet={bottomSheet}
         placeholder="Add memo"
         value={memoInput.value}
         onChangeText={memoInput.set}

@@ -1,13 +1,19 @@
 import WalletConnect from "@walletconnect/client"
+import { Transaction } from "classes";
 import { Bitsong } from "core/coin/bitsong/Bitsong";
 import { PublicWallet } from "core/storing/Generic";
+import { Amount } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
+import { fromAmountToDollars } from "core/utils/Coin";
+import { store } from "hooks/useStore";
+import { navigate } from "navigation";
 import Config from "react-native-config";
 
 export class WalletConnectCosmosClientV1 {
 	connector: WalletConnect | null = null
 	wallets
+	pendingAction: (() => void) | null = null
 	constructor(uri: string, wallets: Wallet[], fcmToken: string)
 	{
 		this.wallets = wallets
@@ -69,14 +75,18 @@ export class WalletConnectCosmosClientV1 {
 							to: new PublicWallet(params.value.toAddress),
 							amount: params.value.amount
 						}
-						console.log(sendParams)
-						const res = await Bitsong.Do(CoinOperationEnum.Send, sendParams)
-						console.log(res)
-						connector.approveRequest({
-							id: payload.id,
-						  	result: res,
-							jsonrpc: payload.method,
-						})
+						
+						
+						const choice = await this.askSendConfirmation(params.value.toAddress, sendParams.amount)
+						this.pendingAction = async () =>
+						{
+							const res = await Bitsong.Do(CoinOperationEnum.Send, sendParams)
+							this.connector?.approveRequest({
+								id: payload.id,
+								result: res,
+								jsonrpc: payload.method,
+							})
+						}
 					}
 					else
 					{
@@ -96,7 +106,6 @@ export class WalletConnectCosmosClientV1 {
 	{
 		const accountRequests:Promise<void>[] = []
 		const accounts:string[] = []
-		console.log(this.wallets)
 		this.wallets.forEach(w => {
 			console.log(w)
 			const request = async () =>
@@ -113,5 +122,29 @@ export class WalletConnectCosmosClientV1 {
 	{
 		console.log("connect...")
 		this.connector?.connect()
+	}
+
+	async askSendConfirmation(address: string, amount: Amount)
+	{
+		const {configs} = store
+		const creater = new Transaction.Creater()
+		creater.setAmount(fromAmountToDollars(amount, configs.remote.prices).toFixed(2))
+		creater.addressInput.set(address)
+
+		navigate("SendRecap", {
+			creater, 
+		})
+	}
+
+	confirmPending(choice: boolean)
+	{
+		if(choice && this.pendingAction)
+		{
+			this.pendingAction()
+		}
+		else
+		{
+			this.connector?.rejectRequest({})
+		}
 	}
 }

@@ -34,6 +34,11 @@ export default () => (
         component={Screens.WalletConnect}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="SendRecap"
+        component={Screens.SendRecap}
+        options={{ headerShown: false }}
+      />
 
       {/* auth */}
 

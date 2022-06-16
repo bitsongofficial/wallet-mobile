@@ -36,4 +36,14 @@ export default class DappConnectionStore {
 			throw new Error("No active wallet to use in connection")
 		}
 	}
+
+	confirmPending()
+	{
+		this.connection?.confirmPending(true)
+	}
+
+	rejectPending()
+	{
+		this.connection?.confirmPending(false)
+	}
 }
