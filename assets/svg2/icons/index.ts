@@ -50,6 +50,7 @@ import wallet_connect from "./wallet_connect.svg";
 import plus from "./plus.svg";
 import check_error from "./check_error.svg";
 import check_fulfilled from "./check_fulfilled.svg";
+import faceid_gradient from "./faceid.svg";
 
 export default <const>{
   eye_closed_gradient,
@@ -83,6 +84,7 @@ export default <const>{
   link_simple_horizontal,
   check_error,
   check_fulfilled,
+  faceid_gradient,
 
   address_book,
   address_book_big,
