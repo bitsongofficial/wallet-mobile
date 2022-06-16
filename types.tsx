@@ -15,6 +15,7 @@ import {
   NativeStackHeaderProps,
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
+import TransactionCreater from "classes/Transaction/Creater";
 
 declare global {
   namespace ReactNavigation {
@@ -42,6 +43,7 @@ export type RootStackParamList = {
   CreateWallet: undefined;
   ImportFromSeed: undefined;
   ImportWithKeplr: { data: string };
+  SendRecap: { creater: TransactionCreater };
 
   // Common
   ScannerQR: { onBarCodeScanned(data: string): void };
