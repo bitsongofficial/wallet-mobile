@@ -5,6 +5,9 @@ import { Wallet, WalletData } from "core/types/storing/Generic";
 import { CoinClasses, SupportedCoins } from "constants/Coins";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import { PermissionsAndroid } from "react-native";
+import { ExportKeyRingData, QRCodeSharedData, WCExportKeyRingDatasResponse } from "core/types/storing/Keplr";
+import WalletConnect from "@walletconnect/client";
+import { Counter, ModeOfOperation } from "aes-js"
 
 export interface StoreWallet {
   data: WalletData,
@@ -108,6 +111,92 @@ export default class WalletStore {
     {
       this.firstLoad = true
     })
+  }
+
+  async importFromKeplr(name: string, keplrQRData: string)
+  {
+    const sharedData = JSON.parse(keplrQRData) as QRCodeSharedData;
+    if (!sharedData.wcURI || !sharedData.sharedPassword) {
+      throw new Error("Invalid qr code");
+    }
+    console.log("sd", sharedData)
+    try
+    {
+      const connector = new WalletConnect(
+        {
+          // Required
+          uri: sharedData.wcURI,
+          // Required
+          clientMeta: {
+            description: "WalletConnect Developer App",
+            url: "https://walletconnect.org",
+            icons: ["https://walletconnect.org/walletconnect-logo.png"],
+            name: "WalletConnect",
+          },
+        })
+
+        if (connector.connected) {
+          await connector.killSession();
+        }
+    
+        await new Promise<void>((resolve, reject) => {
+          connector.on("session_request", (error) => {
+            if (error) {
+              reject(error)
+              console.log(error)
+            } else {
+              console.log("AAA")
+              connector.approveSession({ accounts: [], chainId: 77777 })
+      
+              resolve()
+            }
+          })
+        })
+        const result = (
+          await connector.sendCustomRequest({
+            id: Math.floor(Math.random() * 100000),
+            method: "keplr_request_export_keyring_datas_wallet_connect_v1",
+            params: [
+              // {
+              //   addressBookChainIds: ['bigbang-test-4'],
+              // },
+            ],
+          })
+        )[0] as WCExportKeyRingDatasResponse
+        
+        const counter = new Counter(0)
+        counter.setBytes(Buffer.from(result.encrypted.iv, "hex"));
+        const aesCtr = new ModeOfOperation.ctr(
+          Buffer.from(sharedData.sharedPassword, "hex"),
+          counter
+        )
+
+        const decrypted = aesCtr.decrypt(
+          Buffer.from(result.encrypted.ciphertext, "hex")
+        )
+
+        const exportedKeyRingDatas = JSON.parse(
+          Buffer.from(decrypted).toString()
+        ) as ExportKeyRingData[]
+
+        const walletsLoading: Promise<void>[] = []
+        exportedKeyRingDatas.forEach(keyRingData =>
+          {
+            console.log(keyRingData)
+            // We are considering just mnemonic wallets for now because we need to focus on other tasks
+            // but adding them should be straightforward
+            if(keyRingData.type == "mnemonic")
+            {
+              const mnemonic = keyRingData.key
+              walletsLoading.push(this.newCosmosWallet(keyRingData.meta.name, mnemonic.split(" ")))
+            }
+          })
+        return await Promise.all(walletsLoading)
+    }
+    catch(e)
+    {
+      console.log(e)
+    }    
   }
 
   async newCosmosWallet(name: string, mnemonic: string[])
