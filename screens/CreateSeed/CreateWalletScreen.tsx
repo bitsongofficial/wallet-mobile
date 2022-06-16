@@ -7,7 +7,7 @@ import { COLOR, hexAlpha } from "utils";
 import { Header, Icon2, Input } from "components/atoms";
 import { Pagination } from "components/moleculs";
 import { Subtitle, Title } from "./components/atoms";
-import { Footer, SetPin, CreateSeed } from "./components/organisms";
+import { Footer, SetPin, CreateSeed, FaceID } from "./components/organisms";
 import { useCreateWallet, useFooter } from "./hooks";
 import {
   SafeAreaView,
@@ -15,18 +15,30 @@ import {
 } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
-import { useStore } from "hooks"
+import { useStore } from "hooks";
 import {
   hasHardwareAsync,
   isEnrolledAsync,
   authenticateAsync,
+  supportedAuthenticationTypesAsync,
+  AuthenticationType,
 } from "expo-local-authentication";
+import { CheckMethod } from "stores/type";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useCreateWallet();
-  const {wallet} = useStore();
+
+  const { wallet, settings } = useStore();
+
+  // ------- check auth types ------------
+
+  const [authTypes, setAuthenticationTypes] = useState<AuthenticationType[]>();
+  useEffect(() => {
+    supportedAuthenticationTypesAsync().then(setAuthenticationTypes);
+  }, []);
+
   const [goBack, goNext] = useFooter(controller.steps);
 
   useEffect(() => {
@@ -37,7 +49,8 @@ export default observer<Props>(({ navigation }) => {
 
   const checkBio = async () => {
     if (!controller.biometric.access) {
-      await biometricsAuth().catch((e) => console.error("NO", e)); // TODO: need handlers
+      await biometricsAuth();
+      // .catch((e) => console.error("NO", e)); // TODO: need handlers
 
       // result && controller.biometric.setAccess(result.success);
       controller.biometric.setAccess(true);
@@ -51,11 +64,21 @@ export default observer<Props>(({ navigation }) => {
 
   const insets = useSafeAreaInsets();
 
-  const saveWallet = () =>
-  {
-    wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
-    goNext()
-  }
+  const saveWallet = () => {
+    wallet.newCosmosWallet(
+      controller.walletName.value,
+      controller.phrase.words
+    );
+    goNext();
+  };
+
+  const setCheckMethod = useCallback(
+    (method: CheckMethod) => {
+      settings.setCheckMethod(method);
+      goNext();
+    },
+    [goNext]
+  );
 
   return (
     <>
@@ -75,48 +98,60 @@ export default observer<Props>(({ navigation }) => {
             }
             Center={<Icon2 name="logo" size={56} />}
           />
-          <View>
-            <Title text={controller.steps.title} style={styles.title} />
-            <Subtitle style={styles.subtitle}>
-              This is the only way you will be able to {"\n"}recover your
-              account. Please store it {"\n"}somewhere safe!
-            </Subtitle>
-          </View>
-          {controller.steps.active === 0 ? (
-            controller.phrase.words && (
-              <CreateSeed
-                isHidden={isHidden}
-                onPressToggle={toggleHidden}
-                phrase={controller.phrase}
-              />
-            )
+          {controller.steps.title === "Choice Auth Method" && authTypes ? (
+            <FaceID authTypes={authTypes} onDone={setCheckMethod} />
           ) : (
-            <ScrollView
-              style={{ flex: 1 }}
-              contentContainerStyle={styles.scrollviewContent}
-            >
-              {controller.steps.active === 1 && (
-                <Input
-                  placeholder="Wallet Name"
-                  value={controller.walletName.value}
-                  onChangeText={controller.walletName.set}
-                />
+            <>
+              <View>
+                <Title text={controller.steps.title} style={styles.title} />
+                <Subtitle style={styles.subtitle}>
+                  This is the only way you will be able to {"\n"}recover your
+                  account. Please store it {"\n"}somewhere safe!
+                </Subtitle>
+              </View>
+              {controller.steps.active === 0 ? (
+                controller.phrase.words && (
+                  <CreateSeed
+                    isHidden={isHidden}
+                    onPressToggle={toggleHidden}
+                    phrase={controller.phrase}
+                  />
+                )
+              ) : (
+                <ScrollView
+                  style={{ flex: 1 }}
+                  contentContainerStyle={styles.scrollviewContent}
+                >
+                  {controller.steps.active === 1 && (
+                    <Input
+                      placeholder="Wallet Name"
+                      value={controller.walletName.value}
+                      onChangeText={controller.walletName.set}
+                    />
+                  )}
+
+                  {controller.steps.active === 2 && (
+                    <SetPin pin={controller.pin} />
+                  )}
+
+                  {controller.steps.active === 3 && (
+                    <SetPin pin={controller.confirm} />
+                  )}
+                </ScrollView>
               )}
 
-              {controller.steps.active === 2 && <SetPin pin={controller.pin} />}
-
-              {controller.steps.active === 3 && (
-                <SetPin pin={controller.confirm} />
-              )}
-            </ScrollView>
+              <Footer
+                onPressBack={goBack}
+                onPressNext={
+                  controller.steps.active === 3 && controller.isCanNext
+                    ? saveWallet
+                    : goNext
+                }
+                nextButtonText="Continue"
+                isDisableNext={!controller.isCanNext}
+              />
+            </>
           )}
-
-          <Footer
-            onPressBack={goBack}
-            onPressNext={(controller.steps.active === 3 && controller.isCanNext) ? saveWallet : goNext}
-            nextButtonText="Continue"
-            isDisableNext={!controller.isCanNext}
-          />
         </SafeAreaView>
       </KeyboardAvoidingView>
     </>
