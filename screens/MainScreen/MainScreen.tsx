@@ -32,7 +32,7 @@ import { autorun, runInAction } from "mobx";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
-const tabs: ValueTabs[] = ["Coins", "Fan Tokens"];
+const tabs: ValueTabs[] = ["Coins",];
 
 type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>,
@@ -104,18 +104,18 @@ export default observer<Props>(function MainScreen({ navigation }) {
               <Text style={styles.balance_value}>
                 {coin.totalBalance.toLocaleString("en")} $
               </Text>
-              <Text style={styles.balance_variation}>
+              {/* <Text style={styles.balance_variation}>
                 Variation {variation} %
-              </Text>
+              </Text> */}
             </View>
 
-            <View style={styles.reward}>
+            {/* <View style={styles.reward}>
               <Text style={styles.reward_title}>Reward</Text>
               <View style={styles.reward_row}>
                 <Text style={styles.reward_value}>{reward} $</Text>
                 <Button onPress={callback}>CLAIM</Button>
               </View>
-            </View>
+            </View> */}
           </View>
 
           <ToolbarShort
@@ -137,7 +137,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
           <View style={styles.coins}>
             {coin.coins.map((coin) => (
-              <TouchableOpacity key={coin.info._id} onPress={coin.increment}>
+              <TouchableOpacity key={coin.info._id} disabled={true}>
                 <CoinStat coin={coin} style={{ marginBottom: 9 }} />
               </TouchableOpacity>
             ))}
