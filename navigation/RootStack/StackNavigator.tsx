@@ -39,6 +39,11 @@ export default () => (
         component={Screens.SendRecap}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="PinRequest"
+        component={Screens.Pin}
+        options={{ headerShown: false }}
+      />
 
       {/* auth */}
 

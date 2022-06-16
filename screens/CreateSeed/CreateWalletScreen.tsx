@@ -64,7 +64,7 @@ export default observer<Props>(({ navigation }) => {
 
   const saveWallet = async () => {
     settings.setShowLoadingOverlay(true)
-    await wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
+    await wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words, controller.pin.value)
     settings.setShowLoadingOverlay(false)
     goNext()
   };

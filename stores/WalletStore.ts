@@ -113,7 +113,7 @@ export default class WalletStore {
     })
   }
 
-  async importFromKeplr(name: string, keplrQRData: string)
+  async importFromKeplr(name: string, keplrQRData: string, pin?: string)
   {
     const sharedData = JSON.parse(keplrQRData) as QRCodeSharedData;
     if (!sharedData.wcURI || !sharedData.sharedPassword) {
@@ -185,7 +185,7 @@ export default class WalletStore {
             if(keyRingData.type == "mnemonic")
             {
               const mnemonic = keyRingData.key
-              walletsLoading.push(this.newCosmosWallet(keyRingData.meta.name, mnemonic.split(" ")))
+              walletsLoading.push(this.newCosmosWallet(keyRingData.meta.name, mnemonic.split(" "), pin))
             }
           })
         return await Promise.all(walletsLoading)
@@ -196,7 +196,7 @@ export default class WalletStore {
     }    
   }
 
-  async newCosmosWallet(name: string, mnemonic: string[])
+  async newCosmosWallet(name: string, mnemonic: string[], pin?:string)
   {
     if(!this.wallets.some(el => (el.data.name == name)))
     {
@@ -205,7 +205,7 @@ export default class WalletStore {
       const storeWaitings = []
       for(const chain of this.remoteConfigs.enabledCoins)
       {
-        const [wallet, store] = CosmosWalletGenerator.CosmosWalletFromChain({name, chain})
+        const [wallet, store] = CosmosWalletGenerator.CosmosWalletFromChain({name, chain, pin})
         storeWaitings.push(store.Set(mnemonicString))
         wallets[chain] = wallet
       }

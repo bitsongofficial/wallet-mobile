@@ -40,7 +40,7 @@ export default () => (
       />
       <BottomTab.Screen
         name="StackingTab"
-        component={Screens.Stacking}
+        component={Screens.Main}
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon2 name="stake" size={20} stroke={getStroke(focused)} />
@@ -49,7 +49,7 @@ export default () => (
       />
       <BottomTab.Screen
         name="Tab1"
-        component={Screens.TabOneScreen}
+        component={Screens.Main}
         options={() => ({
           headerShown: false,
           tabBarIcon: ({ focused }) => (
@@ -59,7 +59,7 @@ export default () => (
       />
       <BottomTab.Screen
         name="Tab2"
-        component={Screens.TabTwoScreen}
+        component={Screens.Main}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (

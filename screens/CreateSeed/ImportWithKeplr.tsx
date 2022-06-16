@@ -25,7 +25,7 @@ export default observer<Props>(({ navigation, route }) => {
   const save = async () =>
   {
     settings.setShowLoadingOverlay(true)
-    await wallet.importFromKeplr("keplr", route.params.data)
+    await wallet.importFromKeplr("keplr", route.params.data, controller.pin.value)
     settings.setShowLoadingOverlay(false)
     goNext()
   }

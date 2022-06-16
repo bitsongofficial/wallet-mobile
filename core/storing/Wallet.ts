@@ -5,6 +5,7 @@ import { MnemonicToWallet } from "core/types/storing/Cosmos";
 import { CosmosWalletData, MnemonicStore, Wallet } from "core/types/storing/Generic";
 import { Derivator } from "core/types/utils/derivator";
 import { BaseDerivator } from "core/utils/Derivator";
+import { askPin } from "screens/PinScreen";
 import { AskPinMnemonicStore } from "./MnemonicStore";
 
 function standardWalletName(name: string)
@@ -123,7 +124,7 @@ const CosmosWalletFromChain = function(options: CosmosWalletData): [CosmosWallet
 {
 	const name = options.name ?? options.chain
 	const pin = options.pin ?? ""
-	const s = new AskPinMnemonicStore(standardWalletName(name), async () => {return "123456"}, pin)
+	const s = new AskPinMnemonicStore(standardWalletName(name), askPin, pin)
 
 	let deriver = MnemonicToWalletGenerator.fromCosmosChain(options.chain)
 	const w = new CosmosWallet(s, deriver, options.metadata)

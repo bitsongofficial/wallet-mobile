@@ -44,6 +44,7 @@ export type RootStackParamList = {
   ImportFromSeed: undefined;
   ImportWithKeplr: { data: string };
   SendRecap: undefined;
+  PinRequest: {resolve: (value: string | PromiseLike<string>) => void, reject: (reason?: any) => void}
 
   // Common
   ScannerQR: { onBarCodeScanned(data: string): void };
