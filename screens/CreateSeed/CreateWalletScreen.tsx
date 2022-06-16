@@ -62,7 +62,7 @@ export default observer<Props>(({ navigation }) => {
 
   const insets = useSafeAreaInsets();
 
-  const saveWallet = () => {
+  const saveWallet = async () => {
     settings.setShowLoadingOverlay(true)
     await wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
     settings.setShowLoadingOverlay(false)
