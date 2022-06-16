@@ -1,5 +1,13 @@
-import { useTheme } from "hooks";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { useCallback } from "react";
+import {
+  GestureResponderEvent,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import { COLOR, hexAlpha } from "utils";
 
 type Props = {
@@ -7,14 +15,33 @@ type Props = {
   index?: number;
   style?: StyleProp<ViewStyle>;
   hidden?: boolean;
+
+  onPress?(text: string): void;
+  isActive: boolean;
 };
 
-export default ({ index, text, style, hidden }: Props) => {
+export default ({ index, text, style, hidden, onPress, isActive }: Props) => {
+  const handlePress = useCallback(
+    (e: GestureResponderEvent) => {
+      e.preventDefault();
+      text && onPress && onPress(text);
+    },
+    [text, onPress]
+  );
   return (
-    <View style={[styles.container, hidden && styles.containerHidden, style]}>
-      <Text style={[styles.index, hidden && styles.hidden]}>{index}.</Text>
-      <Text style={[styles.text, hidden && styles.hidden]}>{text}</Text>
-    </View>
+    <TouchableOpacity onPress={handlePress}>
+      <View
+        style={[
+          styles.container,
+          hidden && styles.containerHidden,
+          isActive && styles.containerHidden,
+          style,
+        ]}
+      >
+        <Text style={[styles.index, hidden && styles.hidden]}>{index}.</Text>
+        <Text style={[styles.text, hidden && styles.hidden]}>{text}</Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 

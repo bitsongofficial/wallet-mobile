@@ -51,10 +51,29 @@ export default class Phrase {
     return Phrase.wordlist.find((word) => word.startsWith(value));
   }
 
+  activeIndex: number | null = null; // for update
+
+  get activeWord() {
+    return this.activeIndex !== null ? this.words[this.activeIndex] : null;
+  }
+
+  setActiveIndex(index: number | null) {
+    this.activeIndex = index;
+    if (this.activeWord) {
+      this.inputSet(this.activeWord);
+    }
+  }
+
   inputSubmit() {
     if (this.hint) {
-      this.addWord(this.hint);
-      this.input.clear();
+      if (this.activeIndex !== null) {
+        this.words[this.activeIndex] = this.hint;
+        this.setActiveIndex(null);
+        this.input.clear();
+      } else {
+        this.addWord(this.hint);
+        this.input.clear();
+      }
     }
   }
 
@@ -75,7 +94,7 @@ export default class Phrase {
     }
 
     const buffer = Buffer.from(getRandomValues(new Uint8Array(strength / 8)));
-    const mnemonic = bip39.entropyToMnemonic(buffer)
-    return mnemonic.split(" ")
+    const mnemonic = bip39.entropyToMnemonic(buffer);
+    return mnemonic.split(" ");
   }
 }
