@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   content_gradient: {
     paddingVertical: 11,
     paddingHorizontal: 22,
+    borderRadius: 50,
     justifyContent: "space-between",
     backgroundColor: COLOR.Dark3,
   },
