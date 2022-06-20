@@ -73,7 +73,6 @@ export default observer<Props>(
         [1, 0],
         Extrapolation.CLAMP
       );
-      console.log("scale :>> ", scale);
       return {
         transform: [{ scale }],
       };
