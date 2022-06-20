@@ -14,7 +14,7 @@ import { COLOR } from "utils";
 import * as NavigationBar from "expo-navigation-bar";
 import FullscreenOverlay from "components/atoms/FullscreenOverlay"
 import { Loader } from "components/atoms"
-import { useStore } from "hooks"
+import { useLoading } from "hooks";
 import { setUpPushNotificationsEvents } from "utils/pushNotifications"
 import { observer } from "mobx-react-lite"
 
@@ -23,7 +23,7 @@ configure({ useProxies: "ifavailable" });
 const App = observer(() => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-  const {settings} = useStore()
+  const loading = useLoading();
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
@@ -38,8 +38,9 @@ const App = observer(() => {
         <SafeAreaProvider>
           <Navigation colorScheme={colorScheme} />
           <StatusBar />
-          <FullscreenOverlay showing={settings.showLoadingOverlay}>
-            <View style={{display: "flex", justifyContent: "center", alignItems: "center", flex: 1}}>
+
+          <FullscreenOverlay showing={loading.isOpen}>
+            <View style={styles.loaderContainer}>
               <Loader size={60}></Loader>
             </View>
           </FullscreenOverlay>
@@ -47,10 +48,16 @@ const App = observer(() => {
       </GestureHandlerRootView>
     );
   }
-})
+});
 
 const styles = StyleSheet.create({
   gestureHandler: { flex: 1 },
+  loaderContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
 });
 
 export default App
