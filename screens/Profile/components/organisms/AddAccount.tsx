@@ -1,6 +1,4 @@
 import {
-  BackHandler,
-  KeyboardAvoidingView,
   Platform,
   StyleProp,
   StyleSheet,
@@ -8,22 +6,28 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
-import { useStore, useTheme } from "hooks";
+import { useStore } from "hooks";
 import { COLOR, hexAlpha, InputHandler } from "utils";
-import Icon2, { IconName } from "components/atoms/Icon2";
-import { Agreement, Search, Subtitle, Title } from "../atoms";
+import { Title } from "../atoms";
 import { SharedValue } from "react-native-reanimated";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { BottomSheet, Phrase as PhraseView } from "components/moleculs";
+import {
+  BottomSheet,
+  InputWord,
+  // Phrase as PhraseView,
+  PhraseHorisontal,
+} from "components/moleculs";
 import { Phrase, Steps } from "classes";
-import { Button } from "components/atoms";
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { Button, Input } from "components/atoms";
+import {
+  BottomSheetFooter,
+  BottomSheetFooterProps,
+} from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PhraseInput } from "screens/CreateSeed/components/organisms";
 import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
+import { ChooseStep, CreateStep, InputNameStep } from "../moleculs/AddAccount";
 
 type Props = {
   isOpen?: boolean;
@@ -36,7 +40,7 @@ type Props = {
 
 export default observer<Props>(
   ({ backgroundStyle, animatedPosition, isOpen, onClose }) => {
-    const {wallet} = useStore()
+    const { wallet } = useStore();
     // ------ BottomSheet -------
     const snapPoints = useMemo(() => [350, "95%"], []);
     const bottomSheet = useRef<BottomSheetMethods>(null);
@@ -97,10 +101,9 @@ export default observer<Props>(
 
     useBottomSheetBackButton(isOpen, handleClose);
 
-    const saveWallet = () =>
-    {
-      wallet.newCosmosWallet(input.value, phrase.words)
-    }
+    const saveWallet = () => {
+      wallet.newCosmosWallet(input.value, phrase.words);
+    };
 
     return (
       <>
@@ -108,121 +111,58 @@ export default observer<Props>(
           enablePanDownToClose
           snapPoints={snapPoints}
           ref={bottomSheet}
-          backgroundStyle={backgroundStyle}
+          backgroundStyle={[backgroundStyle]}
           animatedPosition={animatedPosition}
           onClose={handleClose}
           android_keyboardInputMode="adjustResize"
+          keyboardBehavior={
+            Platform.OS === "android" ? "interactive" : "fillParent"
+          }
           index={-1}
+          footerComponent={(props) =>
+            steps.title === "Import" && (
+              <Footer {...props} phrase={phrase} onPressDone={openName} />
+            )
+          }
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "height" : "padding"}
-            style={styles.container}
-          >
+          <View style={styles.wrapper}>
             {steps.title === "Choose" && (
-              <>
-                <Title style={styles.title}>Add a new account</Title>
-                <View style={styles.buttons}>
-                  <ButtonChoose
-                    icon="wallet"
-                    text="Create Account"
-                    onPress={openCreate}
-                    style={{ marginBottom: 12 }}
-                  />
-                  <ButtonChoose
-                    icon="wallet"
-                    text="Import Mnemonics"
-                    onPress={openImport}
-                  />
-                </View>
-                <Agreement style={styles.agreements} />
-              </>
+              <ChooseStep
+                onPressCreate={openCreate}
+                onPressImport={openImport}
+              />
             )}
-
             {steps.title === "Create" && (
-              <>
-                <Title style={styles.title}>Create new Mnemonics</Title>
-                <Text style={styles.caption}>
-                  This is the only way you will be able to{"\n"}
-                  recover your account.Please store it {"\n"}
-                  somewhere safe!
-                </Text>
-                <View style={{ alignItems: "center" }}>
-                  <Button
-                    style={styles.buttonToggle}
-                    onPress={toggle}
-                    // mode={isHidden ? "gradient" : ""}
-                    text={isHidden ? "Show" : "Hide"}
-                    contentContainerStyle={styles.buttonToggleContainer}
-                  />
-                </View>
-                <BottomSheetScrollView
-                  style={{ flexGrow: 1 }}
-                  contentContainerStyle={{ paddingBottom: 116 }}
-                >
-                  <PhraseView
-                    style={styles.phrase}
-                    hidden={isHidden}
-                    value={phrase.words}
-                  />
-                </BottomSheetScrollView>
-              </>
+              <CreateStep
+                isHidden={isHidden}
+                phrase={phrase}
+                onPressToggle={toggle}
+              />
             )}
-
             {steps.title === "Name" && (
-              <>
-                <Title style={styles.title}>Name your Wallet</Title>
-                <Text style={styles.caption}>
-                  This is the only way you will be able to{"\n"}
-                  recover your account.Please store it {"\n"}
-                  somewhere safe!
-                </Text>
-                <Search
-                  loupe={false}
-                  value={input.value}
-                  onChangeText={input.set}
-                  placeholder="Write a name"
-                  autoFocus
-                  style={{ marginBottom: 24 }}
-                  keyboardAppearance="dark"
-                />
-                <Subtitle style={styles.subtitle}>
-                  Access VIP experiences, exclusive previews,{"\n"}
-                  finance your own music projects and have your say.
-                </Subtitle>
-                <View style={styles.footer}>
-                  <Button
-                    text="Add Account"
-                    contentContainerStyle={styles.buttonContinueContent}
-                    textStyle={styles.buttonContinueText}
-                    onPress={saveWallet}
-                  />
-                </View>
-              </>
+              <InputNameStep
+                input={input}
+                onPressAdd={saveWallet}
+                //
+              />
             )}
-            {steps.title === "Import" && (
-              <View style={{ flexGrow: 1 }}>
+          </View>
+          {steps.title === "Import" && (
+            <>
+              <View style={styles.wrapper}>
                 <Title style={styles.title}>Import Mnemonics</Title>
                 <Text style={styles.caption}>
                   This is the only way you will be able to{"\n"}
                   recover your account.Please store it {"\n"}
                   somewhere safe!
                 </Text>
-                <PhraseInput
-                  phrase={phrase}
-                  bottomsheet
-                  scrollStyle={{
-                    flexGrow: 1,
-                  }}
-                  inputStyle={{
-                    flexGrow: 1,
-                    justifyContent: "flex-end",
-                    paddingVertical: 8,
-                    paddingBottom: insent.bottom || 8,
-                  }}
-                />
               </View>
-            )}
-          </KeyboardAvoidingView>
+              <PhraseHorisontal
+                phrase={phrase}
+                contentContainerStyle={{ paddingHorizontal: 26 }}
+              />
+            </>
+          )}
         </BottomSheet>
         {steps.title === "Create" && (
           <View style={[styles.footer, { bottom: insent.bottom }]}>
@@ -238,35 +178,44 @@ export default observer<Props>(
     );
   }
 );
-
-type ButtonProps = {
-  icon: IconName;
-  text: string;
-  style?: StyleProp<ViewStyle>;
-  onPress?(): void;
+type FooterProps = BottomSheetFooterProps & {
+  phrase: Phrase;
+  onPressDone(): void;
 };
 
-const ButtonChoose = ({ icon, text, style, onPress }: ButtonProps) => (
-  <TouchableOpacity style={[styles.buttonContainer, style]} onPress={onPress}>
-    <View style={styles.left}>
-      <Icon2
-        name={icon}
-        style={styles.icon}
-        stroke={hexAlpha(COLOR.White, 50)}
-        size={20}
-      />
-      <Text style={styles.text}>{text}</Text>
-    </View>
-
-    <Icon2 name="chevron_right" stroke={COLOR.White} size={18} />
-  </TouchableOpacity>
+const Footer = observer(
+  ({ phrase, animatedFooterPosition, onPressDone }: FooterProps) => {
+    return (
+      <BottomSheetFooter
+        animatedFooterPosition={animatedFooterPosition}
+        bottomInset={24}
+      >
+        {phrase.words.length === 16 ? (
+          <Button
+            text="Done"
+            onPress={onPressDone}
+            style={{ marginHorizontal: 26 }}
+            textStyle={styles.buttonContinueText}
+            contentContainerStyle={styles.buttonContinueContent}
+          />
+        ) : (
+          <InputWord
+            bottomsheet
+            phrase={phrase}
+            style={{ marginHorizontal: 16, marginBottom: 16 }}
+          />
+        )}
+      </BottomSheetFooter>
+    );
+  }
 );
 
+// ----------------------
+
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     marginTop: 15,
     marginHorizontal: 26,
-    flexGrow: 1,
   },
   title: {
     fontSize: 16,
