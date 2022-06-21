@@ -72,10 +72,9 @@ export default observer<Props>(
 
     const removeEdited = useCallback(() => setEdited(undefined), []);
 
-    const saveEdited = useCallback(
-      () => { if(edited) edited.data.name = inputWalletName.value },
-      [edited, inputWalletName]
-    );
+    const saveEdited = useCallback(() => {
+      if (edited) edited.data.name = inputWalletName.value;
+    }, [edited, inputWalletName]);
 
     // ------- FlatList ----------
 
@@ -258,6 +257,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     height: Dimensions.get("screen").height * 0.9,
     marginTop: 15,
+    backgroundColor: "orange",
   },
   wrapper: { marginHorizontal: 26 },
 

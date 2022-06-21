@@ -25,26 +25,27 @@ import { Circles, ListButton, Subtitle, Title } from "./components/atoms";
 import { Wallet } from "classes";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
+import { StoreWallet } from "stores/WalletStore";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">;
 
 export default observer<Props>(function WalletConnect({ navigation }) {
-  const { walletStore } = useStore();
+  const { wallet } = useStore();
 
   // ------- Wallets ------
-  const wallets = walletStore.wallets;
+  const wallets = wallet.wallets;
   const mapItemsRef = useMemo(
-    () => observable.map<Wallet, React.RefObject<Swipeable>>(),
+    () => observable.map<StoreWallet, React.RefObject<Swipeable>>(),
     []
   );
 
-  const renderWallet = useCallback<ListRenderItem<Wallet>>(
+  const renderWallet = useCallback<ListRenderItem<StoreWallet>>(
     ({ item }) => (
       <View style={{ marginBottom: 13 }}>
         <WalletItem
           value={item}
           onPress={() => {}}
-          onPressDelete={walletStore.deleteWallet}
+          onPressDelete={wallet.deleteWallet}
           // onPressEdit={setEdited}
           mapItemsRef={mapItemsRef}
         />
