@@ -1,7 +1,7 @@
 import "./shim"
 
 import { StatusBar } from "expo-status-bar"
-import { StyleSheet } from "react-native"
+import { Alert, StyleSheet } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { configure } from "mobx"
@@ -13,26 +13,55 @@ import { useEffect } from "react"
 import { COLOR } from "utils";
 import * as NavigationBar from "expo-navigation-bar";
 import firebase from '@react-native-firebase/app'
-import messaging from '@react-native-firebase/messaging'
+import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging'
 
 configure({ useProxies: "ifavailable" });
+
+const requestUserPermission = async () => {
+  const authorizationStatus = await messaging().requestPermission();
+
+  if (authorizationStatus) {
+    console.log('Permission status:', authorizationStatus);
+  }
+
+  return authorizationStatus
+}
+
+const requestToken = async () => {
+  try {
+    const authorizationStatus = await requestUserPermission()
+
+    if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+      const token = await messaging().getToken({
+        senderId: firebase.app().options.messagingSenderId
+      })
+
+      console.log(token)
+      Alert.alert('A new FCM message arrived!', JSON.stringify(token));
+    } else {
+      console.error('Push notification, authorization denied')
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
+    requestToken()
   }, []);
 
-  useEffect(() =>
-  {
-    messaging()
-      .getToken({
-        senderId: firebase.app().options.messagingSenderId
-      })
-      .then(x => console.log(x))
-      .catch(e => console.log(e))
-  }, [])
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
 
   if (!isLoadingComplete) {
     return null;

@@ -48,14 +48,17 @@ export default class CoinStore {
 			const info = Object.assign({}, mock[chain])
 			try
 			{
-				const walletValues = values(this.walletStore.activeWallet as StoreWallet)
-				const data = walletValues[0] as WalletData
-				info.address = data.metadata.addresses[chain]
-				balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
-					wallet: new PublicWallet(info.address)
-				}))
-				infos.push(info)
-				coinRates.push()
+				if(this.walletStore.activeWallet)
+				{
+					const walletValues = values(this.walletStore.activeWallet as StoreWallet)
+					const data = walletValues[0] as WalletData
+					info.address = data.metadata.addresses[chain]
+					balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
+						wallet: new PublicWallet(info.address)
+					}))
+					infos.push(info)
+					coinRates.push()
+				}
 			}
 			catch(e) {
 				console.log(e)

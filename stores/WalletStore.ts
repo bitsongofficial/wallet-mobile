@@ -4,6 +4,7 @@ import { CosmosWalletGenerator } from "core/storing/Wallet";
 import { Wallet, WalletData } from "core/types/storing/Generic";
 import { CoinClasses, SupportedCoins } from "constants/Coins";
 import RemoteConfigsStore from "./RemoteConfigsStore";
+import { PermissionsAndroid } from "react-native";
 
 export interface StoreWallet {
   data: WalletData,
@@ -27,14 +28,23 @@ export default class WalletStore {
     this.remoteConfigs = remoteConfigs
     this.firstLoadHandler = autorun(() =>
     {
-      if(!this.remoteConfigs.firstLoad) {
+      if(this.remoteConfigs.firstLoad) {
         this.loadWallets()
         this.firstLoadHandler()
       }
     })
     this.walletsHanlder = reaction(
       () => JSON.stringify(this.wallets.map(w => toJS(w.data))),
-      json => AsyncStorage.setItem('walletNames', json)
+      async (json) =>
+      {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+        )
+        if (granted === PermissionsAndroid.RESULTS.GRANTED)
+        {
+          AsyncStorage.setItem('walletNames', json)
+        }
+      }
     )
   }
 
@@ -61,21 +71,34 @@ export default class WalletStore {
     {
       this.loading = true
     })
-    const walletsMetaDataSerialized = await AsyncStorage.getItem('walletNames')
-    if(walletsMetaDataSerialized == null) return
-    const walletsMetaData = JSON.parse(walletsMetaDataSerialized) as Array<WalletData>
-    if(walletsMetaData == null) return
-    runInAction(() =>
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+    )
+    if(granted === PermissionsAndroid.RESULTS.GRANTED)
     {
-      this.wallets = walletsMetaData.map(walletData => {
-        return {
-          data: walletData,
-          wallets: this.addSupportedWallets(walletData),
-        }
+      const walletsMetaDataSerialized = await AsyncStorage.getItem('walletNames')
+      if(walletsMetaDataSerialized == null) return
+      const walletsMetaData = JSON.parse(walletsMetaDataSerialized) as Array<WalletData>
+      if(walletsMetaData == null) return
+      runInAction(() =>
+      {
+        this.wallets = walletsMetaData.map(walletData => {
+          return {
+            data: walletData,
+            wallets: this.addSupportedWallets(walletData),
+          }
+        })
+        if(this.wallets.length > 0) this.activeWallet = this.wallets[0]
+        this.loading = false
       })
-      if(this.wallets.length > 0) this.activeWallet = this.wallets[0]
-      this.loading = false
-    })
+    }
+    else
+    {
+      runInAction(() =>
+      {
+        this.loading = false
+      })
+    }
   }
 
   async newCosmosWallet(name: string, mnemonic: string[])

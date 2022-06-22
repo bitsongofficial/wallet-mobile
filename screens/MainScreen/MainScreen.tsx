@@ -38,7 +38,7 @@ type Props = CompositeScreenProps<
 >;
 
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { coin } = useStore();
+  const { coin, dapp } = useStore();
   // need culc by wallet
   const variation = "+ 7.46";
   const reward = "107.23";
@@ -63,7 +63,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const closeSend = useCallback(() => bottomSheetSEND.current?.close(), []);
 
   const openScanner = useCallback(
-    () => navigation.navigate("ScannerQR", { onBarCodeScanned: console.log }),
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: dapp.connect}),
     []
   );
 

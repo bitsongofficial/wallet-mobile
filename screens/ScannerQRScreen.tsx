@@ -55,11 +55,11 @@ export default observer<Props>(({ navigation, route }) => {
               ? "No access to camera"
               : "This is the only way you will be able to recover your account. Please store it somewhere safe!"}
           </Text>
-          <TextInput
+          {/* <TextInput
             style={[theme.text.primary]}
             placeholder="Public Address"
             value={uri}
-            onChangeText={setUri}></TextInput>
+            onChangeText={setUri}></TextInput> */}
           <View style={styles.sector}>
             <BarCodeScanner
               barCodeTypes={["qr"]}

@@ -23,7 +23,6 @@ export default class DappConnectionStore {
 		{
 			try
 			{
-				console.log(this.walletStore.activeWallet.wallets.btsg)
 				this.connection = new WalletConnectCosmosClientV1(pairString, [this.walletStore.activeWallet.wallets.btsg])
 			}
 			catch(e)
