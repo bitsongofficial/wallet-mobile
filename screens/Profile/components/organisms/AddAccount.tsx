@@ -2,32 +2,32 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
-  Text,
+  TextInputProps,
   View,
   ViewStyle,
 } from "react-native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "hooks";
 import { COLOR, hexAlpha, InputHandler } from "utils";
-import { Title } from "../atoms";
 import { SharedValue } from "react-native-reanimated";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import {
-  BottomSheet,
-  InputWord,
-  // Phrase as PhraseView,
-  PhraseHorisontal,
-} from "components/moleculs";
+import { BottomSheet, InputWord } from "components/moleculs";
 import { Phrase, Steps } from "classes";
-import { Button, Input } from "components/atoms";
+import { Button } from "components/atoms";
 import {
   BottomSheetFooter,
   BottomSheetFooterProps,
 } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
-import { ChooseStep, CreateStep, InputNameStep } from "../moleculs/AddAccount";
+import {
+  ChooseStep,
+  CreateStep,
+  ImportStep,
+  InputNameStep,
+} from "../moleculs/AddAccount";
+import * as Clipboard from "expo-clipboard";
 
 type Props = {
   isOpen?: boolean;
@@ -58,17 +58,30 @@ export default observer<Props>(
 
     const openCreate = useCallback(() => {
       open(1);
+      phrase.create();
       steps.goTo("Create");
     }, []);
 
     const openImport = useCallback(() => {
       open(1);
+      phrase.clear();
       steps.goTo("Import");
     }, []);
 
     const openName = useCallback(() => {
       open(1);
       steps.goTo("Name");
+    }, []);
+
+    const goBack = useCallback(() => {
+      if (steps.active === 0) {
+        close();
+      } else {
+        steps.goBack();
+        if (steps.title === "Choose") {
+          open(0);
+        }
+      }
     }, []);
 
     // --------- Buttons ----------
@@ -83,8 +96,23 @@ export default observer<Props>(
     const toggle = useCallback(() => setHidden((value) => !value), []);
 
     useEffect(() => {
-      if (steps.title === "Create") phrase.create(); // TODO: need tests
-    }, [phrase, steps.active]);
+      setHidden(true);
+    }, [steps.active]);
+
+    const paste = useCallback(async () => {
+      const clipboard = await Clipboard.getStringAsync();
+      const words = clipboard.split(/[^a-zа-я$]+/gi, 12).filter((w) => w);
+
+      if (words.length === 12) {
+        phrase.setWords(words);
+        phrase.setActiveIndex(phrase.words.length - 1);
+      }
+    }, [phrase]);
+
+    const handlePressGo = useCallback(() => {
+      phrase.inputSubmit();
+      phrase.isValid && steps.goTo("Name");
+    }, []);
 
     // ---------- Name -----------
 
@@ -99,11 +127,14 @@ export default observer<Props>(
       phrase.clear();
     }, [onClose]);
 
-    useBottomSheetBackButton(isOpen, handleClose);
+    useBottomSheetBackButton(isOpen, goBack);
 
-    const saveWallet = () => {
-      wallet.newCosmosWallet(input.value, phrase.words);
-    };
+    const saveWallet = useCallback(() => {
+      if (input.value && phrase.isValid) {
+        wallet.newCosmosWallet(input.value, phrase.words);
+        close();
+      }
+    }, []);
 
     return (
       <>
@@ -121,47 +152,44 @@ export default observer<Props>(
           index={-1}
           footerComponent={(props) =>
             steps.title === "Import" && (
-              <Footer {...props} phrase={phrase} onPressDone={openName} />
+              <Footer
+                {...props}
+                phrase={phrase}
+                onPressDone={openName}
+                onPressInputKeyboardSubmit={handlePressGo}
+              />
             )
           }
         >
-          <View style={styles.wrapper}>
-            {steps.title === "Choose" && (
+          {steps.title === "Choose" && (
+            <View style={[styles.wrapper]}>
               <ChooseStep
                 onPressCreate={openCreate}
                 onPressImport={openImport}
               />
-            )}
-            {steps.title === "Create" && (
+            </View>
+          )}
+          {steps.title === "Create" && (
+            <View style={[styles.wrapper]}>
               <CreateStep
                 isHidden={isHidden}
                 phrase={phrase}
                 onPressToggle={toggle}
               />
-            )}
-            {steps.title === "Name" && (
+            </View>
+          )}
+          {steps.title === "Name" && (
+            <View style={[styles.wrapper]}>
               <InputNameStep
                 input={input}
+                isAddDisable={!phrase.isValid || input.value.length < 3}
                 onPressAdd={saveWallet}
-                //
+                onPressBack={goBack}
               />
-            )}
-          </View>
+            </View>
+          )}
           {steps.title === "Import" && (
-            <>
-              <View style={styles.wrapper}>
-                <Title style={styles.title}>Import Mnemonics</Title>
-                <Text style={styles.caption}>
-                  This is the only way you will be able to{"\n"}
-                  recover your account.Please store it {"\n"}
-                  somewhere safe!
-                </Text>
-              </View>
-              <PhraseHorisontal
-                phrase={phrase}
-                contentContainerStyle={{ paddingHorizontal: 26 }}
-              />
-            </>
+            <ImportStep onPressPaste={paste} phrase={phrase} />
           )}
         </BottomSheet>
         {steps.title === "Create" && (
@@ -178,13 +206,20 @@ export default observer<Props>(
     );
   }
 );
+
 type FooterProps = BottomSheetFooterProps & {
   phrase: Phrase;
   onPressDone(): void;
+  onPressInputKeyboardSubmit: TextInputProps["onSubmitEditing"];
 };
 
 const Footer = observer(
-  ({ phrase, animatedFooterPosition, onPressDone }: FooterProps) => {
+  ({
+    phrase,
+    animatedFooterPosition,
+    onPressDone,
+    onPressInputKeyboardSubmit,
+  }: FooterProps) => {
     return (
       <BottomSheetFooter
         animatedFooterPosition={animatedFooterPosition}
@@ -201,6 +236,7 @@ const Footer = observer(
         ) : (
           <InputWord
             bottomsheet
+            onSubmitEditing={onPressInputKeyboardSubmit}
             phrase={phrase}
             style={{ marginHorizontal: 16, marginBottom: 16 }}
           />
@@ -216,6 +252,7 @@ const styles = StyleSheet.create({
   wrapper: {
     marginTop: 15,
     marginHorizontal: 26,
+    flex: 1,
   },
   title: {
     fontSize: 16,
