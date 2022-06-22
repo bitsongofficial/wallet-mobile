@@ -257,7 +257,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     height: Dimensions.get("screen").height * 0.9,
     marginTop: 15,
-    backgroundColor: "orange",
   },
   wrapper: { marginHorizontal: 26 },
 
