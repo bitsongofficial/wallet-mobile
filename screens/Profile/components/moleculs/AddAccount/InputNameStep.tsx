@@ -1,45 +1,56 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Search, Subtitle, Title } from "../../atoms";
-import { Button } from "components/atoms";
+import { Button, ButtonBack } from "components/atoms";
 import { observer } from "mobx-react-lite";
 import { COLOR, InputHandler } from "utils";
 
 type InputNameStepProps = {
   input: InputHandler;
+  isAddDisable: boolean;
   onPressAdd(): void;
+  onPressBack(): void;
 };
 
-export default observer(({ input, onPressAdd }: InputNameStepProps) => (
-  <>
-    <Title style={styles.title}>Name your Wallet</Title>
-    <Text style={styles.caption}>
-      This is the only way you will be able to{"\n"}
-      recover your account.Please onPressAddstore it {"\n"}
-      somewhere safe!
-    </Text>
-    <Search
-      loupe={false}
-      value={input.value}
-      onChangeText={input.set}
-      placeholder="Write a name"
-      autoFocus
-      style={{ marginBottom: 24 }}
-      keyboardAppearance="dark"
-    />
-    <Subtitle style={styles.subtitle}>
-      Access VIP experiences, exclusive previews,{"\n"}
-      finance your own music projects and have your say.
-    </Subtitle>
-    <View style={styles.footer}>
-      <Button
-        text="Add Account"
-        contentContainerStyle={styles.buttonContinueContent}
-        textStyle={styles.buttonContinueText}
-        onPress={onPressAdd}
+export default observer(
+  ({ input, onPressAdd, onPressBack, isAddDisable }: InputNameStepProps) => (
+    <>
+      <Title style={styles.title}>Name your Wallet</Title>
+      <Text style={styles.caption}>
+        This is the only way you will be able to{"\n"}
+        recover your account.Please onPressAddstore it {"\n"}
+        somewhere safe!
+      </Text>
+      <Search
+        loupe={false}
+        value={input.value}
+        onChangeText={input.set}
+        placeholder="Write a name"
+        autoFocus
+        isFocus={input.isFocused}
+        onFocus={input.focusON}
+        onBlur={input.focusOFF}
+        style={{ marginBottom: 24 }}
+        keyboardAppearance="dark"
       />
-    </View>
-  </>
-));
+      <Subtitle style={styles.subtitle}>
+        Access VIP experiences, exclusive previews,{"\n"}
+        finance your own music projects and have your say.
+      </Subtitle>
+      <View style={styles.footer}>
+        <ButtonBack onPress={onPressBack} />
+        <View style={{ width: "66%" }}>
+          <Button
+            text="Add Account"
+            disable={isAddDisable}
+            contentContainerStyle={styles.buttonContinueContent}
+            textStyle={styles.buttonContinueText}
+            onPress={onPressAdd}
+          />
+        </View>
+      </View>
+    </>
+  )
+);
 
 const styles = StyleSheet.create({
   title: {
@@ -57,11 +68,12 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexGrow: 1,
-    justifyContent: "flex-end",
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
 
     position: "absolute",
-    bottom: 20,
+    bottom: 0,
     paddingBottom: 16,
     width: "100%",
   },
@@ -79,7 +91,6 @@ const styles = StyleSheet.create({
   },
 
   buttonContinueContent: {
-    paddingHorizontal: 40,
     paddingVertical: 18,
   },
   buttonContinueText: {

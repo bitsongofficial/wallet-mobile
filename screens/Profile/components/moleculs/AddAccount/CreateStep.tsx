@@ -1,10 +1,12 @@
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { Phrase } from "classes";
-import { Button } from "components/atoms";
+import { Button, GradientText } from "components/atoms";
 import { StyleSheet, Text, View } from "react-native";
 import { Title } from "../../atoms";
 import { Phrase as PhraseView } from "components/moleculs";
 import { COLOR } from "utils";
+import { observer } from "mobx-react-lite";
+import { useTheme } from "hooks";
 
 type CreateStepProps = {
   isHidden: boolean;
@@ -12,36 +14,52 @@ type CreateStepProps = {
   phrase: Phrase;
 };
 
-export default ({ isHidden, onPressToggle, phrase }: CreateStepProps) => {
-  return (
-    <>
-      <Title style={styles.title}>Create new Mnemonics</Title>
-      <Text style={styles.caption}>
-        This is the only way you will be able to{"\n"}
-        recover your account.Please store it {"\n"}
-        somewhere safe!
-      </Text>
-      <View style={{ alignItems: "center" }}>
-        <Button
-          style={styles.button}
-          onPress={onPressToggle}
-          text={isHidden ? "Show" : "Hide"}
-          contentContainerStyle={styles.buttonContainer}
-        />
-      </View>
-      <BottomSheetScrollView
-        style={{ flexGrow: 1 }}
-        contentContainerStyle={{ paddingBottom: 116 }}
-      >
-        <PhraseView
-          style={styles.phrase}
-          hidden={isHidden}
-          value={phrase.words}
-        />
-      </BottomSheetScrollView>
-    </>
-  );
-};
+export default observer(
+  ({ isHidden, onPressToggle, phrase }: CreateStepProps) => {
+    const theme = useTheme();
+    return (
+      <>
+        <Title style={styles.title}>Create new Mnemonics</Title>
+        <Text style={styles.caption}>
+          This is the only way you will be able to{"\n"}
+          recover your account.Please store it {"\n"}
+          somewhere safe!
+        </Text>
+        <View style={{ alignItems: "center" }}>
+          {isHidden ? (
+            <Button
+              style={styles.button}
+              onPress={onPressToggle}
+              text="Show"
+              contentContainerStyle={styles.buttonContainer}
+            />
+          ) : (
+            <Button
+              style={styles.button}
+              onPress={onPressToggle}
+              mode="gradient_border"
+              contentContainerStyle={styles.buttonContainer_gradient}
+            >
+              <GradientText style={[styles.text, theme.text.primary]}>
+                Hide
+              </GradientText>
+            </Button>
+          )}
+        </View>
+        <BottomSheetScrollView
+          style={{ flexGrow: 1 }}
+          contentContainerStyle={{ paddingBottom: 116 }}
+        >
+          <PhraseView
+            style={styles.phrase}
+            hidden={isHidden}
+            value={phrase.words}
+          />
+        </BottomSheetScrollView>
+      </>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   title: {
@@ -66,11 +84,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  text: {
+    fontFamily: "CircularStd",
+    fontStyle: "normal",
+    fontWeight: "500",
+    fontSize: 12,
+    lineHeight: 15,
+  },
+
   button: {
     marginBottom: 25,
   },
   buttonContainer: {
     paddingHorizontal: 16,
     paddingVertical: 8,
+  },
+  buttonContainer_gradient: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 50,
+    backgroundColor: COLOR.Dark3,
   },
 });
