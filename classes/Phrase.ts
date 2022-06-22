@@ -10,7 +10,7 @@ export default class Phrase {
   }
 
   get isValid() {
-    return true; // TODO: calc me
+    return this.words.length === 12;
   }
 
   async create() {
@@ -37,7 +37,7 @@ export default class Phrase {
 
   // -------------
 
-  private input = new InputHandler();
+  input = new InputHandler();
 
   get inputValue() {
     return this.input.value;
