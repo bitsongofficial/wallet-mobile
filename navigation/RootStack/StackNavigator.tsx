@@ -14,7 +14,11 @@ export default () => (
   <BottomSheetModalProvider>
     <Stack.Navigator>
       {/* not auth */}
-
+      <Stack.Screen
+        name="Splash"
+        component={Screens.Splash}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Start"
         component={Screens.Start}
@@ -28,6 +32,16 @@ export default () => (
       <Stack.Screen
         name="WalletConnect"
         component={Screens.WalletConnect}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SendRecap"
+        component={Screens.SendRecap}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PinRequest"
+        component={Screens.Pin}
         options={{ headerShown: false }}
       />
 

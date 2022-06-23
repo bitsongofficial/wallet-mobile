@@ -1,5 +1,6 @@
 import { Coin, Steps } from "classes";
 import Transaction from "classes/Transaction";
+import TransactionCreater from "classes/Transaction/Creater";
 import { makeAutoObservable } from "mobx";
 
 export default class SendController {
@@ -12,7 +13,8 @@ export default class SendController {
 
   creater = new Transaction.Creater();
 
-  constructor(coin: Coin) {
+  constructor(coin: Coin, creater?: TransactionCreater) {
+    if(creater) this.creater = creater
     this.creater.setCoin(coin);
     makeAutoObservable(this, {}, { autoBind: true });
   }

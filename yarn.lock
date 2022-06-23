@@ -2278,6 +2278,11 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
+"@types/aes-js@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@types/aes-js/-/aes-js-3.1.1.tgz#34b3978122310c135de4b377270d1d65676fae28"
+  integrity sha512-SDSGgXT3LRCH6qMWk8OHT1vLSVNuHNvCpKCx2/TYtQMbMGGgxJC9fspwSkQjqzRagrWnCrxuLL3jMNXLXHHvSw==
+
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.19"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.19.tgz#7b497495b7d1b4812bdb9d02804d0576f43ee460"

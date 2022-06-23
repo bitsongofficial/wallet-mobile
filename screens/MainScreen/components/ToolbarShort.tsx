@@ -31,12 +31,10 @@ export default observer(function ToolbarShort({
       />
       <ToolbarAction
         title="Receive"
-        onPress={onPressReceive}
         Icon={<Icon2 stroke={COLOR.White} size={18} name="arrow_down" />}
       />
       <ToolbarAction
         title="Inquire"
-        onPress={onPressInquire}
         Icon={<Icon2 stroke={COLOR.White} size={18} name="inquire" />}
       />
       <ToolbarAction

@@ -25,12 +25,14 @@ type Props = {
   controller: SendController;
   onPressBack(): void;
   onPressSend(): void;
+  isShowBack?: boolean;
 };
 
 export default observer(function SelectReceiver({
   controller,
   onPressBack,
   onPressSend,
+  isShowBack
 }: Props) {
   const theme = useTheme();
 
@@ -81,6 +83,7 @@ export default observer(function SelectReceiver({
 
       {!keyboard.keyboardShown && (
         <Footer
+          isShowBack={isShowBack}
           onPressBack={onPressBack}
           onPressCenter={onPressSend}
           centerTitle="Send"

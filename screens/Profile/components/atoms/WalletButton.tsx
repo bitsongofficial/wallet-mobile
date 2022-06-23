@@ -4,6 +4,7 @@ import { RectButton } from "react-native-gesture-handler";
 import { COLOR, hexAlpha } from "utils";
 import { Icon2 } from "components/atoms";
 import { StoreWallet } from "stores/WalletStore";
+import { trimAddress } from "utils/string";
 
 type Props = {
   wallet: StoreWallet | null;
@@ -24,7 +25,7 @@ export default ({ onPress, wallet, style }: Props) => {
         />
         <View style={styles.info}>
           <Text style={styles.name}>{wallet?.data.name}</Text>
-          <Text style={styles.address}>bitsong1id02h0c...2029d</Text>
+          <Text style={styles.address}>{trimAddress(wallet?.data.metadata.addresses.btsg)}</Text>
         </View>
         <Icon2 size={13} name="chevron_down" stroke={COLOR.RoyalBlue} />
       </View>

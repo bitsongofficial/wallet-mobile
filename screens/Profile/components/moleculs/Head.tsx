@@ -108,7 +108,7 @@ export default observer<Props>(
             </Animated.View>
           </View>
         </View>
-        {!input.isFocused && (
+        {/* {!input.isFocused && (
           <Animated.View style={buttonStyle}>
             <Button
               text={!input.value ? "Set nick" : "Edit"}
@@ -119,7 +119,7 @@ export default observer<Props>(
               mode="fill"
             />
           </Animated.View>
-        )}
+        )} */}
       </View>
     );
   }
