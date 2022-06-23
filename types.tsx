@@ -66,8 +66,6 @@ export type RootTabParamList = {
   StackingTab: undefined;
   Tab1: undefined;
   Tab2: undefined;
-
-  Loader: LoaderParams | undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
