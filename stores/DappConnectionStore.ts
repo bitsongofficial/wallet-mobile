@@ -5,6 +5,7 @@ import WalletStore from "./WalletStore";
 
 export default class DappConnectionStore {
 	connection: WalletConnectCosmosClientV1 | null = null
+	confirmationExtraData: any
 
 	loading = {
 	  checkNick: false,
@@ -47,8 +48,8 @@ export default class DappConnectionStore {
 		this.connection?.confirmPending(false)
 	}
 
-	get confirmationExtraData()
+	setConfirmationExtraData(data: any)
 	{
-		return this.connection?.confirmationExtraData
+		this.confirmationExtraData = data
 	}
 }
