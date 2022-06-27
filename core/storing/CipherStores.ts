@@ -1,9 +1,9 @@
 import { AESCipher } from "core/cryptography/AES";
 import { Cipher } from "core/types/cryptography/Generic";
-import { SecureStore, Store } from "core/types/storing/Generic";
+import { Store } from "core/types/storing/Generic";
 import { AsyncStore } from "./AsyncStore";
 
-export abstract class CipherStore implements SecureStore {
+export abstract class CipherStore implements Store {
 	constructor(public store: Store, public cipher: Cipher){}
 	async Get()
 	{

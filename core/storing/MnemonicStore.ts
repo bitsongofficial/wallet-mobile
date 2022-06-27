@@ -1,11 +1,9 @@
-import { AESCipher } from "core/cryptography/AES";
 import { FakeCipher } from "core/cryptography/FakeCipher";
 import { Cipher } from "core/types/cryptography/Generic";
-import { MnemonicStore, SecureStore, Store } from "core/types/storing/Generic";
-import { AsyncStore } from "./AsyncStore";
+import { MnemonicStore, Store } from "core/types/storing/Generic";
 import { AESStore } from "./CipherStores";
 
-export class PinMnemonicStore implements SecureStore, MnemonicStore {
+export class PinMnemonicStore implements Store, MnemonicStore {
 	store: Store;
 	cipher: Cipher;
 	constructor(field: string, pin: number)
@@ -23,7 +21,7 @@ export class PinMnemonicStore implements SecureStore, MnemonicStore {
 	}
 }
 
-export class AskPinMnemonicStore implements SecureStore, MnemonicStore {
+export class AskPinMnemonicStore implements Store, MnemonicStore {
 	store: AESStore;
 	cipher: Cipher;
 	constructor(private field: string, private pinRequester: () => Promise<any>, initialPin = "")

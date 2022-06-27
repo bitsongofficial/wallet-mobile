@@ -25,9 +25,4 @@ export interface Wallet extends Metadata {
 	Key(): Promise<string>,
 }
 
-export interface SecureStore extends Store {
-	store: Store,
-	cipher: Cipher,
-}
-
-export interface MnemonicStore extends SecureStore {}
+export interface MnemonicStore extends Store {}
