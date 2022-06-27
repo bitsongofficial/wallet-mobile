@@ -125,5 +125,4 @@ export async function test()
 			console.log(e)
 		}
 	}
-	console.log("End")
 }

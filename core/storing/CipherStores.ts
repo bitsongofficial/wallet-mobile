@@ -39,7 +39,6 @@ export class AESSaltStore implements Store {
 		{
 			console.log("no salt")
 		}
-		console.log(crypto)
 		return uuid.v4()
 	}
 	async getCipher()
