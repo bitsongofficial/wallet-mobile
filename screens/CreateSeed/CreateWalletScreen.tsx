@@ -15,7 +15,7 @@ import {
 } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
-import { useStore } from "hooks";
+import { useLoading, useStore } from "hooks";
 import {
   hasHardwareAsync,
   isEnrolledAsync,
@@ -30,6 +30,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 export default observer<Props>(({ navigation }) => {
   const controller = useCreateWallet();
   const { wallet, settings } = useStore();
+  const globalLoader = useLoading();
 
   // ------- check auth types ------------
 
@@ -63,10 +64,13 @@ export default observer<Props>(({ navigation }) => {
   const insets = useSafeAreaInsets();
 
   const saveWallet = async () => {
-    settings.setShowLoadingOverlay(true)
-    await wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words, controller.pin.value)
-    settings.setShowLoadingOverlay(false)
-    goNext()
+    globalLoader.open();
+    await wallet.newCosmosWallet(
+      controller.walletName.value,
+      controller.phrase.words
+    );
+    globalLoader.close();
+    goNext();
   };
 
   const setCheckMethod = useCallback(

@@ -14,7 +14,7 @@ import { COLOR } from "utils";
 import * as NavigationBar from "expo-navigation-bar";
 import FullscreenOverlay from "components/atoms/FullscreenOverlay";
 import { Loader } from "components/atoms";
-import { useStore } from "hooks";
+import { useLoading } from "hooks";
 import { setUpPushNotificationsEvents } from "utils/pushNotifications";
 import { observer } from "mobx-react-lite";
 
@@ -23,7 +23,7 @@ configure({ useProxies: "ifavailable" });
 const App = observer(() => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-  const { settings } = useStore();
+  const loading = useLoading();
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -40,9 +40,10 @@ const App = observer(() => {
         <SafeAreaProvider>
           <Navigation colorScheme={colorScheme} />
           <StatusBar />
-          <FullscreenOverlay showing={settings.showLoadingOverlay}>
+
+          <FullscreenOverlay showing={loading.isOpen}>
             <View style={styles.loaderContainer}>
-              <Loader size={60}></Loader>
+              <Loader size={60} />
             </View>
           </FullscreenOverlay>
         </SafeAreaProvider>
