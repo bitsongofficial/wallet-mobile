@@ -5,7 +5,7 @@ import { MnemonicToWallet } from "core/types/storing/Cosmos";
 import { CosmosWalletData, MnemonicStore, Wallet } from "core/types/storing/Generic";
 import { Derivator } from "core/types/utils/derivator";
 import { BaseDerivator } from "core/utils/Derivator";
-import { askPin } from "screens/PinScreen";
+import { askPin } from "navigation";
 import { AskPinMnemonicStore } from "./MnemonicStore";
 
 function standardWalletName(name: string)

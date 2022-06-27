@@ -19,10 +19,14 @@ type Props = {
   colorScheme: ColorSchemeName;
 };
 
-export const navigationRef = React.createRef<NavigationContainerRef<RootStackParamList>>()
+export const navigationRef =
+  React.createRef<NavigationContainerRef<RootStackParamList>>();
 
-export function navigate(name: keyof RootStackParamList, params?:any) {
-  navigationRef.current?.navigate<keyof RootStackParamList>(name, params);
+export function navigate<T extends keyof RootStackParamList>(
+  name: T,
+  params?: RootStackParamList[T]
+) {
+  navigationRef.current?.navigate<T>(name, params);
 }
 
 export default function Navigation({ colorScheme }: Props) {
@@ -35,5 +39,24 @@ export default function Navigation({ colorScheme }: Props) {
     >
       <RootStack />
     </NavigationContainer>
+  );
+}
+
+// ----------- Pin ------------
+
+type OptionsAskPin = Omit<RootStackParamList["PinRequest"], "callback">;
+
+export function askPin(options?: OptionsAskPin) {
+  const defaultOptions: OptionsAskPin = {
+    isHiddenCode: true,
+    isRandomKeyboard: false,
+  };
+
+  return new Promise<string>((resolve, reject) =>
+    navigate("PinRequest", {
+      callback: (result) => (result ? resolve(result) : reject()),
+      ...defaultOptions,
+      ...options,
+    })
   );
 }
