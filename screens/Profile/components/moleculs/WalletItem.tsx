@@ -34,7 +34,8 @@ export default ({
     () =>
       mapItemsRef.forEach(
         (ref, key) =>
-          key.data.metadata.address !== value.data.metadata.address && ref.current?.close()
+          key.data.metadata.address !== value.data.metadata.address &&
+          ref.current?.close()
       ),
     [value, mapItemsRef]
   );

@@ -8,6 +8,7 @@ type SearchProps = TextInputProps & {
   loupe?: boolean;
   bottomsheet?: boolean;
   Right?: JSX.Element;
+  isFocus?: boolean;
 };
 
 export default ({
@@ -15,12 +16,16 @@ export default ({
   loupe = true,
   bottomsheet = true,
   Right,
+  isFocus,
   ...props
 }: SearchProps) => {
   const Input = bottomsheet ? BottomSheetTextInput : TextInput;
+  console.log("isFocus", isFocus);
 
   return (
-    <View style={[styles.container, style]}>
+    <View
+      style={[styles.container, isFocus && styles.container_focused, style]}
+    >
       <Input
         style={styles.input}
         placeholderTextColor={hexAlpha(COLOR.White, 50)}
@@ -48,6 +53,10 @@ const styles = StyleSheet.create({
     height: 62,
     flexDirection: "row",
     paddingLeft: 25,
+  },
+  container_focused: {
+    borderWidth: 2,
+    borderColor: COLOR.Marengo,
   },
   input: {
     flex: 1,
