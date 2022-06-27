@@ -68,7 +68,11 @@ export default class CoinStore {
 		let errors = false
 		try
 		{
-			const balances = await Promise.all(balanceAwaits)
+			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
+				{
+					if(r.status == "fulfilled") return r.value
+					return 0
+				})
 			balances.forEach((balance:Amount[], i) =>
 			{
 				if(balance)
@@ -92,7 +96,7 @@ export default class CoinStore {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.log("B", e)
 		}
 	}
 
