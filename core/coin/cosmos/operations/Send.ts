@@ -13,7 +13,8 @@ export class Send extends CosmosOperation {
 
 		try
 		{
-			const result = await client.sendTokens(firstAccount.address, await data.to.Address(), [data.amount], "auto", data.description);
+			const amount = Array.isArray(data.amount) ? data.amount : [data.amount]
+			const result = await client.sendTokens(firstAccount.address, await data.to.Address(), amount, "auto", data.description);
 			assertIsDeliverTxSuccess(result)
 			return {
 				hash: result.transactionHash
