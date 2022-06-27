@@ -16,6 +16,7 @@ import { Loader } from "components/atoms"
 import { useStore } from "hooks"
 import { setUpPushNotificationsEvents } from "utils/pushNotifications"
 import { observer } from "mobx-react-lite"
+import { test } from "core/Test"
 
 configure({ useProxies: "ifavailable" });
 
@@ -28,6 +29,8 @@ const App = observer(() => {
     NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
     setUpPushNotificationsEvents()
   }, []);
+
+  test()
 
   if (!isLoadingComplete) {
     return null;
