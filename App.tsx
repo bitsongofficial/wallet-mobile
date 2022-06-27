@@ -1,14 +1,13 @@
 import "./shim"
 
 import { StatusBar } from "expo-status-bar"
-import { Alert, StyleSheet, Text, View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { configure } from "mobx"
 import useCachedResources from "./hooks/useCachedResources"
 import useColorScheme from "./hooks/useColorScheme"
 import Navigation from "./navigation"
-import { test } from "core/Test"
 import { useEffect } from "react"
 import { COLOR } from "utils";
 import * as NavigationBar from "expo-navigation-bar";

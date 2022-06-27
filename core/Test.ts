@@ -1,10 +1,8 @@
 import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 import Long from "long"
 import { Bitsong } from "./coin/bitsong/Bitsong"
-import { WalletConnectCosmosClient } from "./connection/WalletConnect"
-import { WalletConnectCosmosClientV1 } from "./connection/WalletConnectV1"
+
 import { PublicWallet } from "./storing/Generic"
-import { PinMnemonicStore } from "./storing/MnemonicStore"
 import { CosmosWallet, CosmosWalletGenerator } from "./storing/Wallet"
 import { ClaimData } from "./types/coin/cosmos/ClaimData"
 import { DelegateData } from "./types/coin/cosmos/DelegateData"
