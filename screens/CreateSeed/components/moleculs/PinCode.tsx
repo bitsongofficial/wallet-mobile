@@ -7,9 +7,11 @@ import { useTheme } from "hooks";
 type Props = {
   value?: Pin["value"];
   style?: StyleProp<ViewStyle>;
+  isHidden?: boolean;
+  isError?: boolean;
 };
 
-export default ({ value = "", style }: Props) => {
+export default ({ value = "", style, isHidden, isError }: Props) => {
   const theme = useTheme();
   const nums = useMemo(
     () => [...value.split(""), ...new Array(Pin.max - value.length).fill(null)],
@@ -21,7 +23,25 @@ export default ({ value = "", style }: Props) => {
       {nums.map((num, index) => (
         <View key={index} style={styles.item}>
           {num ? (
-            <Text style={[styles.num, theme.text.primary]}>{num}</Text>
+            isHidden ? (
+              <View
+                style={[
+                  styles.placeholder,
+                  styles.placeholder_fill,
+                  isError && { backgroundColor: COLOR.Pink },
+                ]}
+              />
+            ) : (
+              <Text
+                style={[
+                  styles.num,
+                  theme.text.primary,
+                  isError && { color: COLOR.Pink },
+                ]}
+              >
+                {num}
+              </Text>
+            )
           ) : (
             <View style={styles.placeholder} />
           )}
@@ -55,5 +75,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: COLOR.White,
     opacity: 0.15,
+  },
+
+  placeholder_fill: {
+    opacity: 1,
   },
 });
