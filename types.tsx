@@ -36,6 +36,7 @@ type LoaderParams<
   ) => React.ReactNode;
 };
 
+// PinRequest: {resolve: (value: string | PromiseLike<string>) => void, reject: (reason?: any) => void}
 export type RootStackParamList = {
   // Before  Auth
   Splash: undefined;
@@ -44,7 +45,6 @@ export type RootStackParamList = {
   ImportFromSeed: undefined;
   ImportWithKeplr: { data: string };
   SendRecap: undefined;
-  PinRequest: {resolve: (value: string | PromiseLike<string>) => void, reject: (reason?: any) => void}
 
   // Common
   ScannerQR: { onBarCodeScanned(data: string): void };
@@ -60,6 +60,14 @@ export type RootStackParamList = {
   AddressBook: undefined;
 
   Loader: LoaderParams | undefined;
+  PinRequest: {
+    callback(pin?: string): void;
+
+    errorMax?: number;
+    title?: string;
+    isRandomKeyboard?: boolean;
+    isHiddenCode?: boolean;
+  };
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
