@@ -1,6 +1,8 @@
 export interface CoingeckoPrice {
-	[key: string] : {
-		eur?: number,
-		usd?: number,
-	}
+	eur?: number,
+	usd?: number,
+}
+
+export interface CoingeckoPrices {
+	[key: string] : CoingeckoPrice
 }
