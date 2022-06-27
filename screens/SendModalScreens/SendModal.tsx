@@ -16,7 +16,7 @@ import { RootStackParamList, RootTabParamList } from "types";
 import { Pagination } from "components/moleculs";
 import { SendController } from "./classes";
 import { Header } from "./components/atoms";
-import { Header as BottomTabHeader } from "navigation/BottomTab/components";
+import { Header as BottomTabHeader } from "components/organisms";
 import {
   InsertImport,
   SendRecap,
@@ -54,6 +54,7 @@ export default observer<Props>(function SendModal({
     const { coin, addressInput, amount } = controller.creater;
     if (coin) {
       navigation.push("Loader", {
+        // @ts-ignore
         header: BottomTabHeader,
         callback: async () => {
           // await wait(2000); // for example
