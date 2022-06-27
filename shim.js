@@ -24,3 +24,16 @@ if (typeof localStorage !== 'undefined') {
 // If using the crypto shim, uncomment the following line to ensure
 // crypto is loaded first, so it can populate global.crypto
 require('crypto')
+
+Promise.allSettled = Promise.allSettled || ((promises) => Promise.all(
+  promises.map(p => p
+      .then(value => ({
+          status: "fulfilled",
+          value
+      }))
+      .catch(reason => ({
+          status: "rejected",
+          reason
+      }))
+  )
+))
