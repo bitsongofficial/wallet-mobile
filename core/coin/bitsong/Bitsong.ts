@@ -3,6 +3,7 @@ import { SupportedCoins } from "constants/Coins";
 import { Coin } from "core/coin/Generic";
 import { Denom } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
+import Config from "react-native-config";
 import { CosmosCoin } from "../cosmos/CosmosCoin";
 import { Balance } from "../cosmos/operations/Balance";
 import { Claim } from "../cosmos/operations/Claim";
@@ -29,7 +30,7 @@ export class Bitsong extends CosmosCoin {
 		return Bitsong.explorer
 	}
 	public RPCEndpoint(): string {
-		return "https://rpc.testnet.bitsong.network:443/"
+		return Config.BITSONG_RPC
 	}
 	static coin = new Bitsong()
 	static operations = {
