@@ -20,7 +20,7 @@ export function fromDenomToPrice(denom: Denom, prices:any): number
 	switch(denom)
 	{
 		default:
-			return prices.bitsong
+			return prices.btsg
 	}
 }
 
