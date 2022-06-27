@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   ListRenderItem,
@@ -27,10 +27,12 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
+import FullscreenOverlay from "components/atoms/FullscreenOverlay";
+import { autorun, runInAction } from "mobx";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
-const tabs: ValueTabs[] = ["Coins", "Fan Tokens"];
+const tabs: ValueTabs[] = ["Coins",];
 
 type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>,
@@ -38,7 +40,7 @@ type Props = CompositeScreenProps<
 >;
 
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { coin, dapp } = useStore();
+  const { coin, dapp, settings } = useStore();
   // need culc by wallet
   const variation = "+ 7.46";
   const reward = "107.23";
@@ -73,6 +75,23 @@ export default observer<Props>(function MainScreen({ navigation }) {
     [safeAreaInsets.bottom]
   );
 
+  // useEffect(() =>
+  // {
+  //   const disposer = autorun(() =>
+  //   {
+  //     if(settings.showLoadingOverlay != coin.loading.balance) runInAction(() =>
+  //     {
+  //       settings.showLoadingOverlay = coin.loading.balance
+	// 			console.log("main", settings.showLoadingOverlay)
+  //     })
+  //   })
+
+  //   return () =>
+  //   {
+  //     if(disposer) disposer()
+  //   }
+  // }, [])
+
   return (
     <>
       <StatusBar style="light" />
@@ -85,18 +104,18 @@ export default observer<Props>(function MainScreen({ navigation }) {
               <Text style={styles.balance_value}>
                 {coin.totalBalance.toLocaleString("en")} $
               </Text>
-              <Text style={styles.balance_variation}>
+              {/* <Text style={styles.balance_variation}>
                 Variation {variation} %
-              </Text>
+              </Text> */}
             </View>
 
-            <View style={styles.reward}>
+            {/* <View style={styles.reward}>
               <Text style={styles.reward_title}>Reward</Text>
               <View style={styles.reward_row}>
                 <Text style={styles.reward_value}>{reward} $</Text>
                 <Button onPress={callback}>CLAIM</Button>
               </View>
-            </View>
+            </View> */}
           </View>
 
           <ToolbarShort
@@ -118,7 +137,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
           <View style={styles.coins}>
             {coin.coins.map((coin) => (
-              <TouchableOpacity key={coin.info._id} onPress={coin.increment}>
+              <TouchableOpacity key={coin.info._id} disabled={true}>
                 <CoinStat coin={coin} style={{ marginBottom: 9 }} />
               </TouchableOpacity>
             ))}

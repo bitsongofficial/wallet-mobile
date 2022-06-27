@@ -2,12 +2,14 @@ import { makeAutoObservable } from "mobx";
 import { ICurrency, ILang } from "screens/Profile/type";
 import languages from "constants/languages";
 import currencies from "constants/currencies";
-import { NotifSettings, PinSettings } from "./type";
+import { CheckMethod, NotifSettings, PinSettings } from "./type";
 
 export default class SettingsStore {
   theme: "light" | "dark" = "dark";
   language: ILang = languages[0];
   currency: ICurrency | null = currencies[0];
+  checkMethod: CheckMethod | null = null;
+  showLoadingOverlay = false;
 
   notifications: NotifSettings = {
     enable: true,
@@ -42,5 +44,14 @@ export default class SettingsStore {
 
   setPin(settings: Partial<PinSettings>) {
     this.pin = { ...this.pin, ...settings };
+  }
+
+  setCheckMethod(checkMethod: CheckMethod) {
+    this.checkMethod = checkMethod;
+  }
+
+  setShowLoadingOverlay(show: boolean)
+  {
+    this.showLoadingOverlay = show
   }
 }

@@ -15,6 +15,7 @@ import {
   NativeStackHeaderProps,
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
+import TransactionCreater from "classes/Transaction/Creater";
 
 declare global {
   namespace ReactNavigation {
@@ -35,12 +36,15 @@ type LoaderParams<
   ) => React.ReactNode;
 };
 
+// PinRequest: {resolve: (value: string | PromiseLike<string>) => void, reject: (reason?: any) => void}
 export type RootStackParamList = {
   // Before  Auth
+  Splash: undefined;
   Start: undefined;
   CreateWallet: undefined;
   ImportFromSeed: undefined;
   ImportWithKeplr: { data: string };
+  SendRecap: undefined;
 
   // Common
   ScannerQR: { onBarCodeScanned(data: string): void };
@@ -56,6 +60,14 @@ export type RootStackParamList = {
   AddressBook: undefined;
 
   Loader: LoaderParams | undefined;
+  PinRequest: {
+    callback(pin?: string): void;
+
+    errorMax?: number;
+    title?: string;
+    isRandomKeyboard?: boolean;
+    isHiddenCode?: boolean;
+  };
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

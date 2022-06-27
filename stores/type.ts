@@ -14,3 +14,5 @@ export type PinSettings = {
   pin: string | null;
   biometric_enable: boolean;
 };
+
+export type CheckMethod = "FaceID" | "TouchID";

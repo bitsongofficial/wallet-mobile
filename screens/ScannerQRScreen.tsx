@@ -60,7 +60,7 @@ export default observer<Props>(({ navigation, route }) => {
             placeholder="Public Address"
             value={uri}
             onChangeText={setUri}></TextInput> */}
-          <View style={styles.sector}>
+          {hasPermission && <View style={styles.sector}>
             <BarCodeScanner
               barCodeTypes={["qr"]}
               onBarCodeScanned={handleBarCodeScanned}
@@ -69,7 +69,7 @@ export default observer<Props>(({ navigation, route }) => {
                 transform: [{ scale: 2 }],
               }}
             />
-          </View>
+          </View>}
         </View>
 
         <View style={styles.bottomContainer}>

@@ -9,7 +9,7 @@ export default class Pin {
   }
 
   get isValid() {
-    return this.value.length === 7;
+    return this.value.length === Pin.max;
   }
 
   push(num: string) {
@@ -22,14 +22,34 @@ export default class Pin {
     this.value = this.value.slice(0, -1);
   }
 
+  clear() {
+    this.value = "";
+  }
+
   static max = 7;
 
-  static numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+  static numbers: (string | undefined)[] = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "0",
+  ];
 
-  static getRandomKeyboard() {
-    const flat = shuffleArray([...Pin.numbers]);
+  static getKeyboard(options?: KeyboardOptions): (string | undefined)[][] {
+    const flat = [...Pin.numbers];
+    if (options?.random) {
+      shuffleArray(flat);
+    }
     flat.splice(9, 0, undefined);
     flat.push("C");
     return sliceIntoChunks(flat, 3);
   }
 }
+
+type KeyboardOptions = { random?: boolean };

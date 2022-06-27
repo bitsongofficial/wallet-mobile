@@ -88,7 +88,6 @@ export class WalletConnectCosmosClient {
 			async (proposal: SessionTypes.Proposal) => {
 				const { proposer, permissions } = proposal;
 				const { metadata } = proposer;
-				console.log("proposal: ", proposal)
 				let approved: boolean = wccc.checkValidDapp(proposal) && wccc.checkUserApproval();
 				wccc.handleSessionUserApproval(approved, proposal);
 			}
