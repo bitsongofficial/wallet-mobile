@@ -1,29 +1,31 @@
 import "./shim";
 
 import { StatusBar } from "expo-status-bar";
-import { Alert, Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { configure } from "mobx";
+import { configure, toJS } from "mobx";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
-import { test } from "core/Test";
 import { useEffect } from "react";
 import { COLOR } from "utils";
 import * as NavigationBar from "expo-navigation-bar";
 import FullscreenOverlay from "components/atoms/FullscreenOverlay";
 import { Loader } from "components/atoms";
-import { useLoading } from "hooks";
+import { useGlobalBottomsheet, useLoading } from "hooks";
 import { setUpPushNotificationsEvents } from "utils/pushNotifications";
 import { observer } from "mobx-react-lite";
+import { BottomSheet } from "components/moleculs";
 
 configure({ useProxies: "ifavailable" });
 
 const App = observer(() => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+
   const loading = useLoading();
+  const bottomsheet = useGlobalBottomsheet();
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -46,6 +48,12 @@ const App = observer(() => {
               <Loader size={60} />
             </View>
           </FullscreenOverlay>
+
+          <BottomSheet
+            {...toJS(bottomsheet.defaultProps)}
+            {...toJS(bottomsheet.props)}
+            ref={bottomsheet.ref}
+          />
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
