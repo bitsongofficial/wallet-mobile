@@ -1,7 +1,8 @@
 import { SupportedCoins } from "constants/Coins";
 import { getCoinGeckoPrices } from "core/rest/coingecko";
-import { CoingeckoPrice, CoingeckoPrices } from "core/types/rest/coingecko";
-import { autorun, makeAutoObservable, runInAction, toJS } from "mobx";
+import { CoingeckoPrices } from "core/types/rest/coingecko";
+import { makeAutoObservable, runInAction } from "mobx";
+import BackgroundTimer from "react-native-background-timer";
 
 import firebase from '@react-native-firebase/app'
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging'
@@ -51,7 +52,7 @@ export default class RemoteConfigsStore {
 		{
 			this.prices[sc] = 1
 		}
-		setInterval(this.requestData, 1000 * 60 * 60)
+		BackgroundTimer.runBackgroundTimer(this.requestData, 1000 * 60 * 60)
 		this.requestData()
 	}
 
