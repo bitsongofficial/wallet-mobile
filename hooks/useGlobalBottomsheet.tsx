@@ -7,7 +7,7 @@ import { WithSpringConfig, WithTimingConfig } from "react-native-reanimated";
 class GlobalBottomSheet implements BottomSheetMethods {
   readonly defaultProps: BottomSheetProps = {
     enablePanDownToClose: true,
-    snapPoints: [350],
+    snapPoints: ["85%"],
     android_keyboardInputMode: "adjustResize",
     index: -1,
     children: <></>,
@@ -20,8 +20,13 @@ class GlobalBottomSheet implements BottomSheetMethods {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  setProps(props?: BottomSheetProps) {
+  setProps(props?: Partial<BottomSheetProps>) {
     this.props = props || {};
+  }
+
+  openDefault(children: JSX.Element) {
+    this.setProps({ children });
+    this.snapToIndex(0);
   }
 
   // ------------ BottomSheetMethods --------------
