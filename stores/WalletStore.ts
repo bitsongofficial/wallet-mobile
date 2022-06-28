@@ -2,12 +2,13 @@ import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, t
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CosmosWalletGenerator } from "core/storing/Wallet";
 import { Wallet, WalletData } from "core/types/storing/Generic";
-import { CoinClasses, SupportedCoins } from "constants/Coins";
+import { SupportedCoins } from "constants/Coins";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import { PermissionsAndroid } from "react-native";
 import { ExportKeyRingData, QRCodeSharedData, WCExportKeyRingDatasResponse } from "core/types/storing/Keplr";
 import WalletConnect from "@walletconnect/client";
 import { Counter, ModeOfOperation } from "aes-js"
+import { CoinClasses } from "core/types/coin/Dictionaries";
 
 export interface StoreWallet {
   data: WalletData,

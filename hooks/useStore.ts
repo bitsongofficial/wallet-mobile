@@ -1,7 +1,5 @@
 import { useMemo } from "react";
-import MainStore from "../stores/MainStore";
-
-export const store = new MainStore();
+import { store } from "stores/Store";
 
 export default function useStore() {
   return useMemo(() => store, []);

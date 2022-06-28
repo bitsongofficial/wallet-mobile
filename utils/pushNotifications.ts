@@ -1,4 +1,4 @@
-import { navigate } from "navigation";
+import { navigate } from "navigation/utils";
 import PushNotification from "react-native-push-notification";
 
 export function setUpPushNotificationsEvents()

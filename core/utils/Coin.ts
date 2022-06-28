@@ -1,4 +1,5 @@
-import { CoinClasses, SupportedCoins } from "constants/Coins"
+import { SupportedCoins } from "constants/Coins"
+import { CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 
 export function convertRateFromDenom(denom: Denom)

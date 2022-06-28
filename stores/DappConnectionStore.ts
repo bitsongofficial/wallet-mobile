@@ -1,11 +1,13 @@
+import { Transaction } from "classes";
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
+import { fromAmountToDollars } from "core/utils/Coin";
 import { makeAutoObservable } from "mobx";
+import { navigate } from "navigation/utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
 
 export default class DappConnectionStore {
-	connection: WalletConnectCosmosClientV1 | null = null
-	confirmationExtraData: any
+	connections: WalletConnectCosmosClientV1[] = []
 
 	loading = {
 	  checkNick: false,
@@ -25,7 +27,10 @@ export default class DappConnectionStore {
 		{
 			try
 			{
-				this.connection = new WalletConnectCosmosClientV1(pairString, [this.walletStore.activeWallet.wallets.btsg], this.remoteConfigsStore.pushNotificationToken)
+				this.connections.push(new WalletConnectCosmosClientV1(pairString,
+					[this.walletStore.activeWallet.wallets.btsg],
+					this.remoteConfigsStore.pushNotificationToken,
+					this.onRequest))
 			}
 			catch(e)
 			{
@@ -38,18 +43,23 @@ export default class DappConnectionStore {
 		}
 	}
 
-	confirmPending()
+	onRequest(type: string, data: any, handler: acceptRejectType)
 	{
-		this.connection?.confirmPending(true)
-	}
+		switch(type)
+		{
+			case "/cosmos.bank.v1beta1.MsgSend":
+				const creater = new Transaction.Creater()
+				creater.setAmount(fromAmountToDollars(data.amount, this.remoteConfigsStore.prices).toFixed(2))
+				creater.addressInput.set(data.to)
 
-	rejectPending()
-	{
-		this.connection?.confirmPending(false)
-	}
+				const params = {
+					creater,
+					accept: handler.accept,
+					reject: handler.reject
+				}
 
-	setConfirmationExtraData(data: any)
-	{
-		this.confirmationExtraData = data
+				navigate("SendRecap", params)
+				break
+		}
 	}
 }

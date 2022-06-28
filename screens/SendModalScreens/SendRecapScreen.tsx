@@ -7,7 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { observer } from "mobx-react-lite";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useStore } from "hooks";
 import { RootStackParamList } from "types";
 import { SendController } from "./classes";
@@ -21,17 +21,15 @@ import { useKeyboard } from "@react-native-community/hooks";
 import { Footer } from "./components/atoms";
 import { RouteProp } from "@react-navigation/native";
 
-type Props = {
-  style?: StyleProp<ViewStyle>;
-  navigation: NativeStackNavigationProp<RootStackParamList>;
-};
+type Props = NativeStackScreenProps<RootStackParamList, "SendRecap">;
 
 export default observer<Props>(function SendRecapScreen({
   navigation,
+  route
 }) {
   const store = useStore();
   const controller = useMemo(
-    () => new SendController(store.coin.coins[0], store.dapp.confirmationExtraData.creater as TransactionCreater),
+    () => new SendController(store.coin.coins[0], route.params.creater),
     [store]
   );
   const { steps } = controller;
@@ -43,13 +41,13 @@ export default observer<Props>(function SendRecapScreen({
     [steps]
   );
   const send = () => {
-    store.dapp.confirmPending()
+    route.params.accept()
     goBack()
   };
 
   useEffect(() => {
     const handler = BackHandler.addEventListener("hardwareBackPress", () => {
-      store.dapp.rejectPending();
+      route.params.reject()
       return true;
     });
     return () => handler.remove();

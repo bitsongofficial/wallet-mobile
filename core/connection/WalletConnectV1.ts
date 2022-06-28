@@ -6,16 +6,16 @@ import { Amount } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
 import { fromAmountToDollars } from "core/utils/Coin";
-import { store } from "hooks/useStore";
 import { navigate } from "navigation";
 import Config from "react-native-config";
+import { store } from "stores/Store";
 
 export class WalletConnectCosmosClientV1 {
 	connector: WalletConnect | null = null
 	wallets
 	pendingAction: (() => void) | null = null
 	confirmationExtraData: any
-	constructor(uri: string, wallets: Wallet[], fcmToken: string)
+	constructor(uri: string, wallets: Wallet[], fcmToken: string, onRequest: (type:string, data:any, handler: acceptRejectType) => void)
 	{
 		this.wallets = wallets
 		const connector = new WalletConnect(
@@ -55,6 +55,14 @@ export class WalletConnectCosmosClientV1 {
 			  throw error;
 			}
 			const params = payload.params[0]
+			let data
+			let accept:anonymousHandler = () => null
+			let reject:anonymousHandler = () => connector.rejectRequest({
+				error: {
+					code: 1,
+					message: "Rejected",
+				}
+			})
 			switch(params.typeUrl)
 			{
 				case "/cosmos.bank.v1beta1.MsgSend":
@@ -72,7 +80,7 @@ export class WalletConnectCosmosClientV1 {
 							amount: params.value.amount
 						}
 						
-						this.pendingAction = async () =>
+						accept = async () =>
 						{
 							const res = await Bitsong.Do(CoinOperationEnum.Send, sendParams)
 							this.connector?.approveRequest({
@@ -81,14 +89,23 @@ export class WalletConnectCosmosClientV1 {
 								jsonrpc: payload.method,
 							})
 						}
-						
-						this.askSendConfirmation(params.value.toAddress, sendParams.amount)
+
+						data = {
+							to: params.value.toAddress,
+							amount: sendParams.amount,
+						}
 					}
 					else
 					{
-						connector.rejectRequest({})
+						reject()
 					}
+					break
 			}
+
+			onRequest(params.typeUrl, data, {
+				accept,
+				reject
+			})
 		})
 		connector.on("disconnect", (error, payload) => {
 			if (error) {
@@ -117,39 +134,5 @@ export class WalletConnectCosmosClientV1 {
 	{
 		console.log("connect...")
 		this.connector?.connect()
-	}
-
-	async askSendConfirmation(address: string, amount: Amount)
-	{
-		const {configs} = store
-		const creater = new Transaction.Creater()
-		creater.setAmount(fromAmountToDollars(amount, configs.remote.prices).toFixed(2))
-		creater.addressInput.set(address)
-
-		store.dapp.setConfirmationExtraData({creater})
-
-		navigate("SendRecap")
-	}
-
-	confirmPending(choice: boolean)
-	{
-		if(choice && this.pendingAction)
-		{
-			this.pendingAction()
-		}
-		else
-		{
-			this.connector?.rejectRequest({})
-		}
-	}
-
-	reject()
-	{
-		this.connector?.rejectRequest({
-			error: {
-				code: 1,
-				message: "Rejected",
-			}
-		})
 	}
 }
