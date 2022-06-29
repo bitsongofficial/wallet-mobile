@@ -2,6 +2,7 @@ import { getRandomBytes } from "expo-random";
 
 export { default as COLOR } from "./colors";
 export { default as InputHandler } from "./InputHandler";
+export { default as Emitter, Handler } from "./Emitter";
 
 export const bip39 = require("../utils/bip39.browser");
 

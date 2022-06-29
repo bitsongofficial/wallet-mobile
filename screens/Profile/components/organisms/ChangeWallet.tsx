@@ -72,10 +72,9 @@ export default observer<Props>(
 
     const removeEdited = useCallback(() => setEdited(undefined), []);
 
-    const saveEdited = useCallback(
-      () => { if(edited) edited.data.name = inputWalletName.value },
-      [edited, inputWalletName]
-    );
+    const saveEdited = useCallback(() => {
+      if (edited) edited.data.name = inputWalletName.value;
+    }, [edited, inputWalletName]);
 
     // ------- FlatList ----------
 

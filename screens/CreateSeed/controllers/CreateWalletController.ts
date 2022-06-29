@@ -8,6 +8,7 @@ export default class CreateWalletController {
     "Name Your Wallet",
     "Set PIN",
     "Confirm PIN",
+    "Choice Auth Method",
   ]);
 
   phrase = new Phrase();
@@ -27,13 +28,13 @@ export default class CreateWalletController {
   get isCanNext() {
     switch (this.steps.active) {
       case 0:
-        return true //AAA this.biometric.access;
+        return true; //AAA this.biometric.access;
       case 1:
-        return this.walletName.value.length > 3
+        return this.walletName.value.length > 3;
       case 2:
-        return true //AAA this.pin.isValid;
+        return true; //AAA this.pin.isValid;
       case 3:
-        return true //AAA this.confirm.isValid && this.pin.isValid && this.isConfirmEqual;
+        return true; //AAA this.confirm.isValid && this.pin.isValid && this.isConfirmEqual;
       default:
         return false;
     }

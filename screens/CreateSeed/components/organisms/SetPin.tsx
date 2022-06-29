@@ -8,7 +8,7 @@ import { PinCode } from "../moleculs";
 type Props = { pin: Pin };
 
 export default observer(({ pin }: Props) => {
-  const numpad = useMemo(Pin.getRandomKeyboard, []);
+  const numpad = useMemo(() => Pin.getKeyboard({ random: true }), []);
   return (
     <>
       <PinCode value={pin.value} style={styles.pin} />

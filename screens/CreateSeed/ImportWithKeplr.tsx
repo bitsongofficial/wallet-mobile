@@ -11,16 +11,25 @@ import { Pagination } from "components/moleculs";
 import { Subtitle, Title } from "./components/atoms";
 import { Footer, SetPin } from "./components/organisms";
 import { useFooter, useImportWithKeplr } from "./hooks";
+import { useLoading, useStore } from "hooks";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ImportWithKeplr">;
 
 export default observer<Props>(({ navigation, route }) => {
+  const { wallet } = useStore();
   const controller = useImportWithKeplr();
   const [goBack, goNext] = useFooter(controller.steps);
+  const globalLoader = useLoading();
+
   useEffect(() => {
     // controller.setWallet(route.params.data);
   }, [route.params.data]);
-
+  const save = async () => {
+    globalLoader.open();
+    await wallet.importFromKeplr("keplr", route.params.data);
+    globalLoader.close();
+    goNext();
+  };
   return (
     <>
       <StatusBar style="light" />
@@ -52,7 +61,7 @@ export default observer<Props>(({ navigation, route }) => {
 
           <Footer
             onPressBack={goBack}
-            onPressNext={goNext}
+            onPressNext={controller.steps.active === 1 ? save : goNext}
             nextButtonText="Continue"
             isHideNext={controller.isCanNext}
           />

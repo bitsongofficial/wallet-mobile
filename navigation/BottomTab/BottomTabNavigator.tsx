@@ -2,9 +2,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "types";
 import * as Screens from "screens";
 import { Icon2 } from "components/atoms";
-import { Header, MainTabBar } from "./components";
+import { MainTabBar } from "./components";
 import { COLOR, hexAlpha } from "utils";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { Header } from "components/organisms";
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
@@ -40,7 +41,7 @@ export default () => (
       />
       <BottomTab.Screen
         name="StackingTab"
-        component={Screens.Stacking}
+        component={Screens.Main}
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon2 name="stake" size={20} stroke={getStroke(focused)} />
@@ -49,7 +50,7 @@ export default () => (
       />
       <BottomTab.Screen
         name="Tab1"
-        component={Screens.TabOneScreen}
+        component={Screens.Main}
         options={() => ({
           headerShown: false,
           tabBarIcon: ({ focused }) => (
@@ -59,11 +60,11 @@ export default () => (
       />
       <BottomTab.Screen
         name="Tab2"
-        component={Screens.TabTwoScreen}
+        component={Screens.Main}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <Icon2 name="circle" size={20} stroke={getStroke(focused)} />
+            <Icon2 name="circle" size={20} stroke={getStroke(focused)}/>
           ),
         }}
       />

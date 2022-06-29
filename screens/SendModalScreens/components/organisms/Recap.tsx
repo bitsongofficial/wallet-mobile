@@ -2,17 +2,19 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
 import { Card, Icon, Input } from "components/atoms";
-import { useTheme } from "hooks";
+import { useStore, useTheme } from "hooks";
 import { IPerson } from "classes/types";
 import { Coin, Transaction } from "classes";
 import { COLOR, InputHandler } from "utils";
 import { SendController } from "screens/SendModalScreens/classes";
+import { fromAmountToCoin, fromCoinToDefaultDenom, fromDollarsToAmount } from "core/utils/Coin";
 
 type Props = {
   creater: SendController["creater"];
   onPress(): void;
   style?: StyleProp<ViewStyle>;
   memoInput: InputHandler;
+  bottomSheet?: boolean;
 };
 
 export default observer<Props>(function CardWallet({
@@ -20,8 +22,10 @@ export default observer<Props>(function CardWallet({
   onPress,
   style,
   memoInput,
+  bottomSheet
 }: Props) {
   const theme = useTheme();
+  const {configs} = useStore()
   const { addressInput, amount, coin, receiver } = creater;
   return (
     <View style={[styles.container, style]}>
@@ -37,14 +41,14 @@ export default observer<Props>(function CardWallet({
           {amount} $
         </Text>
 
-        <View style={styles.row}>
+        {coin && coin.info.coin && <View style={styles.row}>
           <Text style={[styles.text, styles.mr17, theme.text.colorText]}>
             as
           </Text>
           <Text style={[styles.text, theme.text.primary]}>
-            28,345 {coin?.info.coinName.toUpperCase()}
+            {fromAmountToCoin(fromDollarsToAmount(parseFloat(amount), fromCoinToDefaultDenom(coin.info.coin), configs.remote.prices))} {coin.info.coinName.toUpperCase()}
           </Text>
-        </View>
+        </View>}
 
         <View style={styles.row}>
           <Text style={[styles.text, styles.mr17, theme.text.colorText]}>
@@ -70,7 +74,7 @@ export default observer<Props>(function CardWallet({
       </Card>
 
       <Input
-        bottomsheet
+        bottomsheet={bottomSheet}
         placeholder="Add memo"
         value={memoInput.value}
         onChangeText={memoInput.set}

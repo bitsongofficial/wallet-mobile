@@ -17,6 +17,7 @@ export interface WalletData {
 
 export interface CosmosWalletData extends WalletData {
 	chain: SupportedCoins,
+	pin?: string,
 }
 
 export interface Wallet extends Metadata {

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, ReactNode } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -50,8 +50,10 @@ export default memo(
     };
 
     const Background = mode === "gradient" ? ThemedGradient : View;
+    const itemStyles = [styles.container, style]
+    if(onPress == undefined) itemStyles.push(styles.disabled)
     return (
-      <View style={[styles.container, style]}>
+      <View style={itemStyles}>
         {nullContent ? (
           <>
             <View style={[styles.button, sizeStyle]} />
@@ -59,7 +61,7 @@ export default memo(
           </>
         ) : (
           <>
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity onPress={onPress} disabled={onPress == undefined}>
               <View style={[styles.button, sizeStyle, buttonStyle]}>
                 <Background
                   style={[
@@ -86,6 +88,9 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     alignItems: "center",
+  },
+  disabled: {
+    opacity:0.2,
   },
   button: {
     marginBottom: 16,

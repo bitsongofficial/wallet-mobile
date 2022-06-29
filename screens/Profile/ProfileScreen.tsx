@@ -69,7 +69,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const navToPrivacy = useCallback(() => {}, []);
   const navToTerms = useCallback(() => {}, []);
-  const disconnectAndRemove = useCallback(() => {}, []);
+  const disconnectAndRemove = useCallback(() => {
+  }, []);
 
   const openAddWatchaccount = useCallback(() => {}, []);
   const openSecurity = useCallback(
@@ -190,13 +191,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   arrow
                   style={styles.listButton}
                 />
-                <ListButton
+                {/* <ListButton
                   text="Add a Watch account"
                   onPress={openAddWatchAccount}
-                  /* todo change eye.svg */
                   icon="eye"
                   arrow
-                />
+                /> */}
 
                 <Agreement
                   onPressPrivacy={navToPrivacy}
@@ -204,116 +204,118 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   style={styles.agreement}
                 />
 
-                <Title style={styles.title}>Settings</Title>
+                <View style={{opacity: 0.2}} pointerEvents={"none"}>
+                  <Title style={styles.title}>Settings</Title>
 
-                <View style={styles.section}>
-                  <Subtitle style={styles.subtitle}>Account</Subtitle>
-                  <ListButton
-                    onPress={openSecurity}
-                    icon="star_shield"
-                    text="Security"
-                    arrow
-                    style={styles.listButton}
-                  />
-                  <ListButton
-                    onPress={openAddressBook}
-                    icon="address_book"
-                    text="Address Book"
-                    arrow
-                    style={styles.listButton}
-                  />
-                  <ListButton
-                    text="Notifications"
-                    onPress={openNotifications}
-                    icon="bell"
-                    style={styles.listButton}
-                    Right={
-                      <Switch
-                        active={settings.notifications.enable}
-                        onPress={toggleNotification}
-                      />
-                    }
-                  />
-                  <ListButton
-                    text="Wallet Connect"
-                    icon="wallet_connect"
-                    onPress={openWalletConnect}
-                    style={styles.listButton}
-                    arrow
+                  <View style={styles.section}>
+                    <Subtitle style={styles.subtitle}>Account</Subtitle>
+                    <ListButton
+                      onPress={openSecurity}
+                      icon="star_shield"
+                      text="Security"
+                      arrow
+                      style={styles.listButton}
+                    />
+                    <ListButton
+                      onPress={openAddressBook}
+                      icon="address_book"
+                      text="Address Book"
+                      arrow
+                      style={styles.listButton}
+                    />
+                    <ListButton
+                      text="Notifications"
+                      onPress={openNotifications}
+                      icon="bell"
+                      style={styles.listButton}
+                      Right={
+                        <Switch
+                          active={settings.notifications.enable}
+                          onPress={toggleNotification}
+                        />
+                      }
+                    />
+                    <ListButton
+                      text="Wallet Connect"
+                      icon="wallet_connect"
+                      onPress={openWalletConnect}
+                      style={styles.listButton}
+                      arrow
+                    />
+                  </View>
+
+                  <View style={styles.section}>
+                    <Subtitle style={styles.subtitle}>App Preferences</Subtitle>
+                    <ListButton
+                      text="Language"
+                      onPress={openChangeLanguage}
+                      icon="translate"
+                      style={styles.listButton}
+                      Right={<Value text={settings.language.name} />}
+                    />
+                    <ListButton
+                      text="Currency"
+                      onPress={openChangeCurrency}
+                      icon="circle_dollar"
+                      style={styles.listButton}
+                      Right={
+                        settings.currency && (
+                          <Value text={settings.currency?.name} />
+                        )
+                      }
+                    />
+                    <ListButton
+                      text="Night Mode"
+                      onPress={toggleNightMode}
+                      icon="moon"
+                      style={styles.listButton}
+                      Right={
+                        <Switch active={isNight} onPress={toggleNightMode} />
+                      }
+                    />
+                  </View>
+
+                  <View style={styles.section}>
+                    <Subtitle style={styles.subtitle}>Support</Subtitle>
+                    <ListButton
+                      text="Currency App"
+                      onPress={openCurrencyApp}
+                      icon="star"
+                      arrow
+                      style={styles.listButton}
+                    />
+                    <ListButton
+                      text="FAQ"
+                      onPress={openFAQ}
+                      icon="chat_dots"
+                      arrow
+                      style={styles.listButton}
+                    />
+                    <ListButton
+                      text="Terms and conditions"
+                      onPress={openTermsAndConditions}
+                      icon="file_text"
+                      arrow
+                      style={styles.listButton}
+                    />
+                    <ListButton
+                      text="Privacy Policy"
+                      onPress={openPrivacyPolicy}
+                      icon="file_text"
+                      style={styles.listButton}
+                      arrow
+                    />
+                  </View>
+
+                  <Button
+                    mode="fill"
+                    text="Disconnect and Remove Wallet"
+                    onPress={disconnectAndRemove}
+                    style={styles.button}
+                    textStyle={styles.buttonText}
+                    contentContainerStyle={styles.buttonContent}
                   />
                 </View>
-
-                <View style={styles.section}>
-                  <Subtitle style={styles.subtitle}>App Preferences</Subtitle>
-                  <ListButton
-                    text="Language"
-                    onPress={openChangeLanguage}
-                    icon="translate"
-                    style={styles.listButton}
-                    Right={<Value text={settings.language.name} />}
-                  />
-                  <ListButton
-                    text="Currency"
-                    onPress={openChangeCurrency}
-                    icon="circle_dollar"
-                    style={styles.listButton}
-                    Right={
-                      settings.currency && (
-                        <Value text={settings.currency?.name} />
-                      )
-                    }
-                  />
-                  <ListButton
-                    text="Night Mode"
-                    onPress={toggleNightMode}
-                    icon="moon"
-                    style={styles.listButton}
-                    Right={
-                      <Switch active={isNight} onPress={toggleNightMode} />
-                    }
-                  />
-                </View>
-
-                <View style={styles.section}>
-                  <Subtitle style={styles.subtitle}>Support</Subtitle>
-                  <ListButton
-                    text="Currency App"
-                    onPress={openCurrencyApp}
-                    icon="star"
-                    arrow
-                    style={styles.listButton}
-                  />
-                  <ListButton
-                    text="FAQ"
-                    onPress={openFAQ}
-                    icon="chat_dots"
-                    arrow
-                    style={styles.listButton}
-                  />
-                  <ListButton
-                    text="Terms and conditions"
-                    onPress={openTermsAndConditions}
-                    icon="file_text"
-                    arrow
-                    style={styles.listButton}
-                  />
-                  <ListButton
-                    text="Privacy Policy"
-                    onPress={openPrivacyPolicy}
-                    icon="file_text"
-                    style={styles.listButton}
-                    arrow
-                  />
-                </View>
-
-                <Button
-                  mode="fill"
-                  text="Disconnect and Remove Wallet"
-                  onPress={disconnectAndRemove}
-                  style={styles.button}
-                  textStyle={styles.buttonText}
-                  contentContainerStyle={styles.buttonContent}
-                />
               </animated.View>
             </Animated.ScrollView>
           </Animated.View>
