@@ -13,7 +13,7 @@ import { fromAmountToCoin, fromDenomToPrice, fromDollarsToAmount } from "core/ut
 import { autorun, makeAutoObservable, runInAction, values } from "mobx";
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
-import WalletStore, { StoreWallet } from "./WalletStore";
+import WalletStore, { ProfileWallets } from "./WalletStore";
 
 export default class CoinStore {
 	coins: Coin[] = []
@@ -50,11 +50,10 @@ export default class CoinStore {
 			const info = Object.assign({}, mock[chain])
 			try
 			{
-				if(this.walletStore.activeWallet)
+				if(this.walletStore.activeProfile)
 				{
-					const walletValues = values(this.walletStore.activeWallet as StoreWallet)
-					const data = walletValues[0] as WalletData
-					info.address = data.metadata.addresses[chain]
+					const profile = this.walletStore.activeWallet
+					info.address = profile?.wallets[chain].Address()
 					balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
 						wallet: new PublicWallet(info.address)
 					}))
@@ -97,7 +96,7 @@ export default class CoinStore {
 		}
 		catch(e)
 		{
-			console.log("B", e)
+			console.log(e)
 		}
 	}
 
