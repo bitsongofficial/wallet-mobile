@@ -1,0 +1,10 @@
+<svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M36.186 60C38.25 61.5 41.25 63 45 63C48.75 63 51.75 61.5 53.814 60M60 36V42M30 36V42M45 36V48C45 49.656 43.656 51 42 51M78 27V18C78 14.685 75.315 12 72 12H63M27 12H18C14.685 12 12 14.685 12 18V27M63 78H72C75.315 78 78 75.315 78 72V63M12 63V72C12 75.315 14.685 78 18 78H27" stroke="#4863E8" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M36.186 60C38.25 61.5 41.25 63 45 63C48.75 63 51.75 61.5 53.814 60M60 36V42M30 36V42M45 36V48C45 49.656 43.656 51 42 51M78 27V18C78 14.685 75.315 12 72 12H63M27 12H18C14.685 12 12 14.685 12 18V27M63 78H72C75.315 78 78 75.315 78 72V63M12 63V72C12 75.315 14.685 78 18 78H27" stroke="url(#paint0_linear_2438_3464)" stroke-opacity="0.2" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="paint0_linear_2438_3464" x1="45" y1="12" x2="45" y2="78" gradientUnits="userSpaceOnUse">
+<stop stop-color="#EF015A"/>
+<stop offset="1" stop-color="#EF015A" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>

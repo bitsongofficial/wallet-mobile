@@ -7,9 +7,11 @@ import {
   NavigationContainer,
   DefaultTheme,
   DarkTheme,
+  NavigationContainerRef,
 } from "@react-navigation/native";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
+import { RootStackParamList } from "types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import RootStack from "./RootStack";
 
@@ -17,14 +19,44 @@ type Props = {
   colorScheme: ColorSchemeName;
 };
 
+export const navigationRef =
+  React.createRef<NavigationContainerRef<RootStackParamList>>();
+
+export function navigate<T extends keyof RootStackParamList>(
+  name: T,
+  params?: RootStackParamList[T]
+) {
+  navigationRef.current?.navigate<T>(name, params);
+}
+
 export default function Navigation({ colorScheme }: Props) {
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       // TODO: remove
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      ref={navigationRef}
     >
       <RootStack />
     </NavigationContainer>
+  );
+}
+
+// ----------- Pin ------------
+
+type OptionsAskPin = Omit<RootStackParamList["PinRequest"], "callback">;
+
+export function askPin(options?: OptionsAskPin) {
+  const defaultOptions: OptionsAskPin = {
+    isHiddenCode: true,
+    isRandomKeyboard: false,
+  };
+
+  return new Promise<string>((resolve, reject) =>
+    navigate("PinRequest", {
+      callback: (result) => (result ? resolve(result) : reject()),
+      ...defaultOptions,
+      ...options,
+    })
   );
 }

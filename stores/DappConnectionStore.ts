@@ -1,5 +1,6 @@
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 import { makeAutoObservable } from "mobx";
+import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
 
 export default class DappConnectionStore {
@@ -13,7 +14,7 @@ export default class DappConnectionStore {
 	  return true;
 	}
 
-	constructor(private walletStore: WalletStore,) {
+	constructor(private walletStore: WalletStore, private remoteConfigsStore: RemoteConfigsStore) {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
@@ -23,7 +24,7 @@ export default class DappConnectionStore {
 		{
 			try
 			{
-				this.connection = new WalletConnectCosmosClientV1(pairString, [this.walletStore.activeWallet.wallets.btsg])
+				this.connection = new WalletConnectCosmosClientV1(pairString, [this.walletStore.activeWallet.wallets.btsg], this.remoteConfigsStore.pushNotificationToken)
 			}
 			catch(e)
 			{
@@ -34,5 +35,20 @@ export default class DappConnectionStore {
 		{
 			throw new Error("No active wallet to use in connection")
 		}
+	}
+
+	confirmPending()
+	{
+		this.connection?.confirmPending(true)
+	}
+
+	rejectPending()
+	{
+		this.connection?.confirmPending(false)
+	}
+
+	get confirmationExtraData()
+	{
+		return this.connection?.confirmationExtraData
 	}
 }

@@ -1,18 +1,21 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Icon } from "components/atoms";
 import { COLOR } from "utils";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useCallback } from "react";
+import { StyleProp } from "react-native";
 
-export default function Header({ navigation }: BottomTabHeaderProps) {
-  const insets = useSafeAreaInsets();
+type Props = {
+  style?: StyleProp<ViewStyle>;
+} & (BottomTabHeaderProps | NativeStackHeaderProps);
 
-  const openProfile = useCallback(() => navigation.push("Profile"), []);
+export default function Header({ navigation, style }: Props) {
+  const openProfile = useCallback(() => navigation?.push("Profile"), []);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, style]}>
       <View style={styles.header}>
         <View style={styles.right}>
           <Icon name="cosmo" size={40} />

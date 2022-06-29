@@ -13,14 +13,15 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFooter, useImportFromSeed } from "./hooks";
 import * as Clipboard from "expo-clipboard";
-import { useStore } from "hooks";
+import { useLoading, useStore } from "hooks";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ImportFromSeed">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useImportFromSeed();
-  const { wallet } = useStore()
+  const { wallet } = useStore();
   const [goBack, goNext] = useFooter(controller.steps);
+  const globalLoader = useLoading();
 
   const scrollview = useRef<ScrollView>(null);
   const scrollingEnd = useCallback(() => {
@@ -30,14 +31,18 @@ export default observer<Props>(({ navigation }) => {
   const pasteFromClipboard = useCallback(async () => {
     const clipboard = await Clipboard.getStringAsync(); // TODO: Check, why not working
     // controller.phrase.setWords(clipboard.split(/^.+\w+\d+(\s+[\sa-zA-Z]+)$/));
-    controller.phrase.setWords(clipboard.split(" "))
+    controller.phrase.setWords(clipboard.split(" "));
   }, [controller.phrase]);
 
-  const saveWallet = () =>
-  {
-    wallet.newCosmosWallet(controller.walletName.value, controller.phrase.words)
-    goNext()
-  }
+  const saveWallet = async () => {
+    globalLoader.open();
+    await wallet.newCosmosWallet(
+      controller.walletName.value,
+      controller.phrase.words
+    );
+    globalLoader.close();
+    goNext();
+  };
 
   return (
     <>
@@ -108,7 +113,11 @@ export default observer<Props>(({ navigation }) => {
         </KeyboardAvoidingView>
         <Footer
           onPressBack={goBack}
-          onPressNext={(controller.steps.active == 3 && controller.isCanNext) ? saveWallet : goNext}
+          onPressNext={
+            controller.steps.active == 3 && controller.isCanNext
+              ? saveWallet
+              : goNext
+          }
           nextButtonText="Continue"
           isHideNext={!controller.isCanNext}
           style={styles.mh30}

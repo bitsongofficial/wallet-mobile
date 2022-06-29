@@ -8,6 +8,7 @@ import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
 import { Amount, Denom } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { WalletData } from "core/types/storing/Generic";
+import { fromAmountToCoin, fromDenomToPrice, fromDollarsToAmount } from "core/utils/Coin";
 import { autorun, keys, makeAutoObservable, runInAction, values } from "mobx";
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
@@ -73,8 +74,8 @@ export default class CoinStore {
 				if(balance)
 				{
 					balance.forEach(asset => {
-						infos[i].balance = this.fromAmountToCoin(asset)
-						coins.push(new Coin(infos[i], this.fromDenomToPrice(asset.denom)))
+						infos[i].balance = fromAmountToCoin(asset)
+						coins.push(new Coin(infos[i], fromDenomToPrice(asset.denom, this.remoteConfigs.prices)))
 					})
 				}
 				else
@@ -129,7 +130,7 @@ export default class CoinStore {
 			const data: FromToAmount = {
 				from:  wallet as CosmosWallet,
 				to: new PublicWallet(address),
-				amount: this.fromDollarsToAmount(dollar, coinClass.coin.denom()),
+				amount: fromDollarsToAmount(dollar, coinClass.coin.denom(), this.remoteConfigs.prices),
 			}
 			const res = await coinClass.Do(CoinOperationEnum.Send, data)
 			runInAction(() =>
@@ -142,44 +143,6 @@ export default class CoinStore {
 		catch(e)
 		{
 			console.log(e)
-		}
-	}
-
-	convertRateFromDenom(denom: Denom)
-	{
-		switch(denom)
-		{
-			default:
-				return 1000000
-		}
-	}
-
-	fromAmountToCoin(amount: Amount)
-	{
-		return Number(amount.amount) / this.convertRateFromDenom(amount.denom)
-	}
-
-	fromDenomToPrice(denom: Denom)
-	{
-		const prices = this.remoteConfigs.prices
-
-		switch(denom)
-		{
-			default:
-				return prices.bitsong
-		}
-	}
-
-	fromAmountToDollars(amount: Amount)
-	{
-		return this.fromAmountToCoin(amount) * this.fromDenomToPrice(amount.denom)
-	}
-
-	fromDollarsToAmount(dollars: number, denom: Denom): Amount
-	{
-		return {
-			amount: Math.round(dollars / this.fromDenomToPrice(denom) * this.convertRateFromDenom(denom)).toString(),
-			denom,
 		}
 	}
 }

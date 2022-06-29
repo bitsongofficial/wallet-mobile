@@ -1,71 +1,37 @@
 import "./shim";
 
 import { StatusBar } from "expo-status-bar";
-import { Alert, Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { configure } from "mobx";
+import { configure, toJS } from "mobx";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
-import { test } from "core/Test";
 import { useEffect } from "react";
 import { COLOR } from "utils";
 import * as NavigationBar from "expo-navigation-bar";
-import firebase from "@react-native-firebase/app";
-import messaging, {
-  FirebaseMessagingTypes,
-} from "@react-native-firebase/messaging";
-import { useTheme } from "hooks";
+import FullscreenOverlay from "components/atoms/FullscreenOverlay";
+import { Loader } from "components/atoms";
+import { useGlobalBottomsheet, useLoading } from "hooks";
+import { setUpPushNotificationsEvents } from "utils/pushNotifications";
+import { observer } from "mobx-react-lite";
+import { BottomSheet } from "components/moleculs";
 
 configure({ useProxies: "ifavailable" });
 
-const requestUserPermission = async () => {
-  const authorizationStatus = await messaging().requestPermission();
-
-  if (authorizationStatus) {
-    console.log("Permission status:", authorizationStatus);
-  }
-
-  return authorizationStatus;
-};
-
-const requestToken = async () => {
-  try {
-    const authorizationStatus = await requestUserPermission();
-
-    if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
-      const token = await messaging().getToken({
-        senderId: firebase.app().options.messagingSenderId,
-      });
-
-      console.log(token);
-      Alert.alert("A new FCM message arrived!", JSON.stringify(token));
-    } else {
-      console.error("Push notification, authorization denied");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-export default function App() {
+const App = observer(() => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+
+  const loading = useLoading();
+  const bottomsheet = useGlobalBottomsheet();
 
   useEffect(() => {
     if (Platform.OS === "android") {
       NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
     }
-    requestToken();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage));
-    });
-
-    return unsubscribe;
+    setUpPushNotificationsEvents();
   }, []);
 
   const theme = useTheme();
@@ -80,12 +46,32 @@ export default function App() {
         <SafeAreaProvider>
           <Navigation colorScheme={colorScheme} />
           <StatusBar />
+
+          <FullscreenOverlay showing={loading.isOpen}>
+            <View style={styles.loaderContainer}>
+              <Loader size={60} />
+            </View>
+          </FullscreenOverlay>
+
+          <BottomSheet
+            {...toJS(bottomsheet.defaultProps)}
+            {...toJS(bottomsheet.props)}
+            ref={bottomsheet.ref}
+          />
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
   }
-}
+});
 
 const styles = StyleSheet.create({
   gestureHandler: { flex: 1 },
+  loaderContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
 });
+
+export default App;
