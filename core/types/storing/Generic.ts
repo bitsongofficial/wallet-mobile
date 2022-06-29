@@ -10,6 +10,11 @@ export interface Store {
 	Set(data: any): Promise<boolean>,
 }
 
+export interface Vault {
+	Lock(): void,
+	Unlock(pin: string): void,
+}
+
 export interface WalletData {
 	name?: string,
 	metadata?: any,
@@ -17,6 +22,7 @@ export interface WalletData {
 
 export interface CosmosWalletData extends WalletData {
 	chain: SupportedCoins,
+	store: Store
 	pin?: string,
 }
 
@@ -26,3 +32,9 @@ export interface Wallet extends Metadata {
 }
 
 export interface MnemonicStore extends Store {}
+
+export enum WalletTypes {
+	UNDEFINED,
+	COSMOS,
+	WATCH,
+}

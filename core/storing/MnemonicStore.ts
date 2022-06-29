@@ -1,7 +1,7 @@
 import { FakeCipher } from "core/cryptography/FakeCipher";
 import { Cipher } from "core/types/cryptography/Generic";
-import { MnemonicStore, Store } from "core/types/storing/Generic";
-import { AESStore } from "./CipherStores";
+import { MnemonicStore, Store, Vault } from "core/types/storing/Generic";
+import { AESSaltStore, AESStore } from "./CipherStores";
 
 export class PinMnemonicStore implements Store, MnemonicStore {
 	store: Store;
@@ -21,29 +21,34 @@ export class PinMnemonicStore implements Store, MnemonicStore {
 	}
 }
 
-export class AskPinMnemonicStore implements Store, MnemonicStore {
-	store: AESStore;
-	cipher: Cipher;
-	constructor(private field: string, private pinRequester: () => Promise<any>, initialPin = "")
-	{
-		this.store = new AESStore(field, initialPin)
-		this.cipher = new FakeCipher()
+export class AskPinMnemonicStore implements Vault, Store, MnemonicStore {
+	pin: string = ""
+	constructor(private field: string, private pinRequester: () => Promise<any>)
+	{}
+	Lock(): void {
+		this.pin = ""
+	}
+	Unlock(pin: string): void {
+		this.pin = pin
 	}
 
 	async Get() {
-		await this.AskPin()
-		return await this.store.Get()
+		return await this.withPin(async store => await store.Get())
 	}
 
 	async Set(data: string) {
-		await this.AskPin()
-		return await this.store.Set(data)
+		return await this.withPin(async store => await store.Set(data))
 	}
 
-	async AskPin()
+	async askPin()
 	{
-		// Ask Pin here
-		const pin = await this.pinRequester()
-		this.store = new AESStore(this.field, pin)
+		const pin = this.pin != "" ? this.pin : await this.pinRequester()
+		return new AESSaltStore(this.field, pin)
+	}
+
+	async withPin(f: (store: Store) => void): Promise<any>
+	{
+		const store = await this.askPin()
+		return await f(store)
 	}
 }

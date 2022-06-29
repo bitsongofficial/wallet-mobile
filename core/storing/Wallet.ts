@@ -2,10 +2,9 @@ import { stringToPath } from "@cosmjs-rn/crypto";
 import { DirectSecp256k1HdWallet } from "@cosmjs-rn/proto-signing";
 import { SupportedCoins } from "constants/Coins";
 import { MnemonicToWallet } from "core/types/storing/Cosmos";
-import { CosmosWalletData, MnemonicStore, Wallet } from "core/types/storing/Generic";
+import { CosmosWalletData, MnemonicStore, Store, Wallet } from "core/types/storing/Generic";
 import { Derivator } from "core/types/utils/derivator";
 import { BaseDerivator } from "core/utils/Derivator";
-import { AskPinMnemonicStore } from "./MnemonicStore";
 
 function standardWalletName(name: string)
 {
@@ -95,13 +94,15 @@ const MnemonicToWalletGenerator = {
 }
 
 export class CosmosWallet implements Wallet {
-	constructor(private mnemonicStore: MnemonicStore, private accountDeriver: MnemonicToWallet, public metadata?: any)
+	private address: string = ""
+	constructor(private mnemonicStore: MnemonicStore, private accountDeriver: MnemonicToWallet)
 	{
 
 	}
 	async Address()
 	{
-		return (await this.Keys()).public
+		if(this.address == "") this.address = (await this.Keys()).public
+		return this.address
 	}
 	async Key()
 	{
@@ -119,15 +120,15 @@ export class CosmosWallet implements Wallet {
 	}
 }
 
-const CosmosWalletFromChain = function(options: CosmosWalletData): [CosmosWallet, MnemonicStore]
+const CosmosWalletFromChain = function(options: CosmosWalletData): CosmosWallet
 {
-	const name = options.name ?? options.chain
+	const chain = options.chain ?? SupportedCoins.BITSONG
 	const pin = options.pin ?? ""
-	const s = new AskPinMnemonicStore(standardWalletName(name), async () => {return "123456"}, pin)
+	const store = options.store
 
 	let deriver = MnemonicToWalletGenerator.fromCosmosChain(options.chain)
-	const w = new CosmosWallet(s, deriver, options.metadata)
-	return [w, s]
+	const w = new CosmosWallet(store, deriver)
+	return w
 }
 
 const CosmosWalletGenerator = {
@@ -139,7 +140,10 @@ const CosmosWalletGenerator = {
 		})).mnemonic
 	},
 	CosmosWalletFromChain,
-	BitsongWallet: CosmosWalletFromChain({chain: SupportedCoins.BITSONG})
+	BitsongWallet: (store: Store) => CosmosWalletFromChain({
+		chain: SupportedCoins.BITSONG,
+		store,
+	})
 }
 
 export {MnemonicToWalletGenerator, CosmosWalletGenerator}

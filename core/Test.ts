@@ -3,6 +3,7 @@ import Long from "long"
 import { Bitsong } from "./coin/bitsong/Bitsong"
 
 import { PublicWallet } from "./storing/Generic"
+import { AskPinMnemonicStore } from "./storing/MnemonicStore"
 import { CosmosWallet, CosmosWalletGenerator } from "./storing/Wallet"
 import { ClaimData } from "./types/coin/cosmos/ClaimData"
 import { DelegateData } from "./types/coin/cosmos/DelegateData"
@@ -98,7 +99,8 @@ async function tryRewards(wallet: Wallet) {
 export async function test()
 {
 	const savePhase = false
-	const [wallet, store] = CosmosWalletGenerator.BitsongWallet
+	const store = new AskPinMnemonicStore("test_wallet", async () => "1234567")
+	const wallet = CosmosWalletGenerator.BitsongWallet(store)
 	if(savePhase)
 	{
 		const a = 'man hungry enjoy price timber girl omit type absent target enrich butter'

@@ -25,6 +25,7 @@ export class AESStore extends CipherStore {
 
 export class AESSaltStore implements Store {
 	asyncStore: AsyncStore
+	salt: string | number[] = ""
 	constructor(field: string, private key: string)
 	{
 		this.asyncStore = new AsyncStore(field)
@@ -39,7 +40,8 @@ export class AESSaltStore implements Store {
 		{
 			console.log("no salt")
 		}
-		return uuid.v4()
+		if(this.salt == "") this.salt = uuid.v4()
+		return this.salt
 	}
 	async getCipher()
 	{
