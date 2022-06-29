@@ -126,9 +126,7 @@ export class WalletConnectCosmosClientV1 {
 		creater.setAmount(fromAmountToDollars(amount, configs.remote.prices).toFixed(2))
 		creater.addressInput.set(address)
 
-		this.confirmationExtraData = {
-			creater
-		}
+		store.dapp.setConfirmationExtraData({creater})
 
 		navigate("SendRecap")
 	}
