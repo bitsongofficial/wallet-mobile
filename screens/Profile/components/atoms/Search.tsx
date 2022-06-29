@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     height: 62,
     flexDirection: "row",
     paddingLeft: 25,
+    overflow: "hidden",
   },
   container_focused: {
     borderWidth: 2,

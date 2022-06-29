@@ -15,6 +15,8 @@ export type IPerson = {
   avatar: any;
   firstName: string;
   lastName: string;
+  nickname: string;
+  address: string;
 };
 
 // WIP
