@@ -1,29 +1,48 @@
-import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
+import {autorun, flow, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CosmosWalletGenerator } from "core/storing/Wallet";
-import { Wallet, WalletData } from "core/types/storing/Generic";
-import { CoinClasses, SupportedCoins } from "constants/Coins";
+import { Wallet, WalletTypes } from "core/types/storing/Generic";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import { PermissionsAndroid } from "react-native";
 import { ExportKeyRingData, QRCodeSharedData, WCExportKeyRingDatasResponse } from "core/types/storing/Keplr";
 import WalletConnect from "@walletconnect/client";
 import { Counter, ModeOfOperation } from "aes-js"
+import { SerializableI } from "core/types/utils/serializable";
+import { AESSaltStore } from "core/storing/CipherStores";
+import { AskPinMnemonicStore } from "core/storing/MnemonicStore";
+import { SupportedCoins, SupportedCoinsMap } from "constants/Coins";
 
-export interface StoreWallet {
-  data: WalletData,
-  wallets: {
-    [K in SupportedCoins]: Wallet
-  },
+const stored_wallets_location = "StoredWallets"
+const cosmos_mnemonic_prefix = "mnemonic_"
+
+const askPin = async () => "1234567"
+
+interface StoreWallet extends SerializableI {
+  name: string,
+  wallet: Wallet,
+}
+
+interface Profile {
+  name: string,
+  type: WalletTypes,
+  data: any,
+}
+
+export interface ProfileWallets {
+  profile: Profile,
+  wallets: SupportedCoinsMap
 }
 
 export default class WalletStore {
   walletsHanlder: IReactionDisposer
   firstLoadHandler: IReactionDisposer
-  activeWallet: StoreWallet | null = null
+  activeProfile: Profile | null = null
 
-  wallets: StoreWallet[] = []
+  profiles: Profile[] = []
+  wallets: ProfileWallets[] = []
   loading = false
   firstLoad = false
+  loadedFromMemory = false
 
   remoteConfigs
 
@@ -37,8 +56,14 @@ export default class WalletStore {
         this.firstLoadHandler()
       }
     })
+
+    autorun(() =>
+    {
+      this.setUpWallets()
+    })
+
     this.walletsHanlder = reaction(
-      () => JSON.stringify(this.wallets.map(w => toJS(w.data))),
+      () => JSON.stringify(toJS(this.profiles)),
       async (json) =>
       {
         const granted = await PermissionsAndroid.request(
@@ -46,70 +71,36 @@ export default class WalletStore {
         )
         if (granted === PermissionsAndroid.RESULTS.GRANTED)
         {
-          AsyncStorage.setItem('walletNames', json)
+          AsyncStorage.setItem(stored_wallets_location, json)
         }
       }
     )
   }
 
-  private addSupportedWallets(walletData: WalletData, mnemonic?: string)
-  {
-    let wallets:any = {}
-    for(const chain of this.remoteConfigs.enabledCoins)
-    {
-      const [wallet, store] = CosmosWalletGenerator.CosmosWalletFromChain(
-      {
-        chain: CoinClasses[<SupportedCoins>chain].coin.chain(),
-        metadata: walletData.metadata,
-        name: walletData.name,
-      })
-      wallets[chain] = wallet
-      if(mnemonic) store.Set(mnemonic)
-    }
-    return wallets
-  }
-
   async loadWallets()
   {
-    runInAction(() =>
-    {
-      this.loading = true
-    })
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
     )
     if(granted === PermissionsAndroid.RESULTS.GRANTED)
     {
-      const walletsMetaDataSerialized = await AsyncStorage.getItem('walletNames')
-      if(walletsMetaDataSerialized != null)
+      const serializedWalletsRaw = await AsyncStorage.getItem(stored_wallets_location)
+      if(serializedWalletsRaw != null)
       {
-        const walletsMetaData = JSON.parse(walletsMetaDataSerialized) as Array<WalletData>
-        if(walletsMetaData != null)
+        const serializedWallets = JSON.parse(serializedWalletsRaw) as Array<Profile>
+        if(serializedWallets != null)
         {
           runInAction(() =>
           {
-            this.wallets = walletsMetaData.map(walletData => {
-              return {
-                data: walletData,
-                wallets: this.addSupportedWallets(walletData),
-              }
-            })
-            if(this.wallets.length > 0) this.activeWallet = this.wallets[0]
-            this.loading = false
+            this.profiles.splice(0, this.profiles.length, ...serializedWallets)
+            if(this.profiles.length > 0) this.activeProfile = this.profiles[0]
           })
         }
       }
     }
-    else
-    {
-      runInAction(() =>
-      {
-        this.loading = false
-      })
-    }
     runInAction(() =>
     {
-      this.firstLoad = true
+      this.loadedFromMemory = true
     })
   }
 
@@ -179,7 +170,6 @@ export default class WalletStore {
         const walletsLoading: Promise<void>[] = []
         exportedKeyRingDatas.forEach(keyRingData =>
           {
-            console.log(keyRingData)
             // We are considering just mnemonic wallets for now because we need to focus on other tasks
             // but adding them should be straightforward
             if(keyRingData.type == "mnemonic")
@@ -198,66 +188,95 @@ export default class WalletStore {
 
   async newCosmosWallet(name: string, mnemonic: string[], pin?:string)
   {
-    if(!this.wallets.some(el => (el.data.name == name)))
+    if(!this.profiles.some(el => (el.name == name)))
     {
       const mnemonicString = mnemonic.join(" ")
-      const wallets:any = {}
-      const storeWaitings = []
-      for(const chain of this.remoteConfigs.enabledCoins)
+      const mnemonicPath = cosmos_mnemonic_prefix + name
+      const mnemonicStore = new AskPinMnemonicStore(mnemonicPath, askPin)
+      await mnemonicStore.Set(mnemonicString)
+      runInAction(() =>
       {
-        const [wallet, store] = CosmosWalletGenerator.CosmosWalletFromChain({name, chain, pin})
-        storeWaitings.push(store.Set(mnemonicString))
-        wallets[chain] = wallet
-      }
-      await Promise.all(storeWaitings)
-      const addresses:any = {}
-      const chainAddressPairWaitings:any = []
-      for(const chain of this.remoteConfigs.enabledCoins)
-      {
-        chainAddressPairWaitings.push(new Promise(async (resolve, reject) =>
-        {
-          resolve([chain, await wallets[chain].Address()])
-        }))
-      }
-      const chainAddressPairs = await Promise.all(chainAddressPairWaitings)
-      chainAddressPairs.forEach(cap =>
-      {
-        addresses[cap[0]] = cap[1]
-      })
-      let data = {
-        name,
-        metadata: {
-          addresses
-        }
-      }
-      return new Promise<void>((resolve, reject) =>
-      {
-        runInAction(() =>
-        {
-          const newWallet = {
-            data,
-            wallets: this.addSupportedWallets(data, mnemonic.join(" ")),
+        this.addProfile({
+          name,
+          type: WalletTypes.COSMOS,
+          data: {
+            mnemonicPath
           }
-          this.wallets.push(newWallet)
-          if(this.wallets.length == 1) this.activeWallet = newWallet
-          resolve()
         })
       })
     }
   }
 
-  changeActive(wallet: number | StoreWallet | null)
+  changeActive(profile: number | Profile | null)
   {
-    if(wallet == null) return
-    if(typeof wallet == "number") wallet = this.wallets[wallet]
-    this.activeWallet = wallet
+    if(profile == null) return
+    if(typeof profile == "number") profile = this.profiles[profile]
+    this.activeProfile = profile
   }
 
-  deleteWallet(wallet: StoreWallet)
+  deleteProfile(profile: StoreWallet)
   {
-    this.wallets.splice(
-      this.wallets.findIndex((item) => item === wallet),
+    this.profiles.splice(
+      this.profiles.findIndex((item) => item.name === profile.name),
       1
     )
+  }
+
+  addProfile(profile: Profile)
+  {
+    this.profiles.push(profile)
+  }
+
+  async setUpWallets()
+  {
+    if(!this.loadedFromMemory) return
+    runInAction(() =>
+    {
+      this.loading = true
+    })
+    if(this.profiles.length > 0)
+    {
+      const wallets: ProfileWallets[] = []
+      const pin = await askPin()
+      toJS(this.profiles).forEach(async profile =>
+      {
+        switch(profile.type)
+        {
+          case WalletTypes.COSMOS:
+            const cosmosWallets: SupportedCoinsMap = {}
+            const store = new AskPinMnemonicStore(profile.data.mnemonicPath, askPin)
+            store.Unlock(pin)
+            for(const chain of this.remoteConfigs.enabledCoins)
+            {
+              const wallet = CosmosWalletGenerator.CosmosWalletFromChain({
+                chain,
+                store,
+              })
+              cosmosWallets[chain] = wallet
+              wallet.Address()
+            }
+            store.Lock()
+            wallets.push({
+              profile,
+              wallets: cosmosWallets
+            })
+            break
+        }
+      })
+      runInAction(() =>
+      {
+        this.wallets.splice(0, this.wallets.length, ...wallets)
+      })
+    }
+    runInAction(() =>
+    {
+      this.firstLoad = true
+      this.loading = false
+    })
+  }
+
+  get activeWallet()
+  {
+    return this.wallets.find(w => w.profile.name == this.activeProfile?.name) ?? null
   }
 }

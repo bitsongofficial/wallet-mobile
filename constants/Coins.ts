@@ -1,5 +1,3 @@
-import { Bitsong } from "core/coin/bitsong/Bitsong";
-
 export enum SupportedCoins {
 	BITSONG = "btsg",
 	// JUNO = "juno",
@@ -8,6 +6,6 @@ export enum SupportedCoins {
 	// STARGATE = "stars",
 }
 
-export const CoinClasses = {
-	[SupportedCoins.BITSONG]: Bitsong
+export type SupportedCoinsMap = {
+	[k in SupportedCoins]?: any
 }

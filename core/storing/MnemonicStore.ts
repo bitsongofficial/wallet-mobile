@@ -1,11 +1,9 @@
-import { AESCipher } from "core/cryptography/AES";
 import { FakeCipher } from "core/cryptography/FakeCipher";
 import { Cipher } from "core/types/cryptography/Generic";
-import { MnemonicStore, SecureStore, Store } from "core/types/storing/Generic";
-import { AsyncStore } from "./AsyncStore";
-import { AESStore } from "./CipherStores";
+import { MnemonicStore, Store, Vault } from "core/types/storing/Generic";
+import { AESSaltStore, AESStore } from "./CipherStores";
 
-export class PinMnemonicStore implements SecureStore, MnemonicStore {
+export class PinMnemonicStore implements Store, MnemonicStore {
 	store: Store;
 	cipher: Cipher;
 	constructor(field: string, pin: number)
@@ -23,55 +21,34 @@ export class PinMnemonicStore implements SecureStore, MnemonicStore {
 	}
 }
 
-export class AskPinMnemonicStore implements SecureStore, MnemonicStore {
-	store: AESStore;
-	cipher: Cipher;
-	private firstStore = false;
-	private firstGet = false;
-	constructor(private field: string, private pinRequester: () => Promise<any>, initialPin = "")
-	{
-		if(initialPin)
-		{
-			this.firstStore = true
-			this.firstGet = true
-		}
-		console.log(initialPin, typeof initialPin)
-		this.store = new AESStore(field, initialPin)
-		this.cipher = new FakeCipher()
+export class AskPinMnemonicStore implements Vault, Store, MnemonicStore {
+	pin: string = ""
+	constructor(private field: string, private pinRequester: () => Promise<any>)
+	{}
+	Lock(): void {
+		this.pin = ""
+	}
+	Unlock(pin: string): void {
+		this.pin = pin
 	}
 
 	async Get() {
-		if(this.firstGet)
-		{
-			this.firstGet = false
-		}
-		else
-		{
-			await this.AskPin()
-		}
-		const data = await this.store.Get()
-		console.log("key", (this.store.cipher as AESCipher).key)
-		console.log(data)
-		return data
+		return await this.withPin(async store => await store.Get())
 	}
 
 	async Set(data: string) {
-		if(this.firstStore)
-		{
-			this.firstStore = false
-		}
-		else
-		{
-			await this.AskPin()
-		}
-		console.log("key", (this.store.cipher as AESCipher).key)
-		return await this.store.Set(data)
+		return await this.withPin(async store => await store.Set(data))
 	}
 
-	async AskPin()
+	async askPin()
 	{
-		const pin = await this.pinRequester()
-		console.log(pin, typeof pin)
-		this.store = new AESStore(this.field, pin)
+		const pin = this.pin != "" ? this.pin : await this.pinRequester()
+		return new AESSaltStore(this.field, pin)
+	}
+
+	async withPin(f: (store: Store) => void): Promise<any>
+	{
+		const store = await this.askPin()
+		return await f(store)
 	}
 }

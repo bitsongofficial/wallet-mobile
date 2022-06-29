@@ -1,18 +1,19 @@
 import { Coin } from "classes";
 import mock from "classes/mock";
 import { ICoin } from "classes/types";
-import { CoinClasses, SupportedCoins } from "constants/Coins";
+import { SupportedCoins } from "constants/Coins";
 import { PublicWallet } from "core/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
+import { CoinClasses } from "core/types/coin/Dictionaries";
 import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
-import { Amount, Denom } from "core/types/coin/Generic";
+import { Amount } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { WalletData } from "core/types/storing/Generic";
 import { fromAmountToCoin, fromDenomToPrice, fromDollarsToAmount } from "core/utils/Coin";
-import { autorun, keys, makeAutoObservable, runInAction, values } from "mobx";
+import { autorun, makeAutoObservable, runInAction, values } from "mobx";
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
-import WalletStore, { StoreWallet } from "./WalletStore";
+import WalletStore, { ProfileWallets } from "./WalletStore";
 
 export default class CoinStore {
 	coins: Coin[] = []
@@ -49,11 +50,10 @@ export default class CoinStore {
 			const info = Object.assign({}, mock[chain])
 			try
 			{
-				if(this.walletStore.activeWallet)
+				if(this.walletStore.activeProfile)
 				{
-					const walletValues = values(this.walletStore.activeWallet as StoreWallet)
-					const data = walletValues[0] as WalletData
-					info.address = data.metadata.addresses[chain]
+					const profile = this.walletStore.activeWallet
+					info.address = profile?.wallets[chain].Address()
 					balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
 						wallet: new PublicWallet(info.address)
 					}))
@@ -68,7 +68,11 @@ export default class CoinStore {
 		let errors = false
 		try
 		{
-			const balances = await Promise.all(balanceAwaits)
+			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
+				{
+					if(r.status == "fulfilled") return r.value
+					return 0
+				})
 			balances.forEach((balance:Amount[], i) =>
 			{
 				if(balance)

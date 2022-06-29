@@ -1,4 +1,5 @@
-import { CoinClasses, SupportedCoins } from "constants/Coins"
+import { SupportedCoins } from "constants/Coins"
+import { CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 
 export function convertRateFromDenom(denom: Denom)
@@ -20,7 +21,7 @@ export function fromDenomToPrice(denom: Denom, prices:any): number
 	switch(denom)
 	{
 		default:
-			return prices.bitsong
+			return prices.btsg
 	}
 }
 

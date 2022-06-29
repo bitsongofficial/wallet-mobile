@@ -1,7 +1,8 @@
 import { SupportedCoins } from "constants/Coins";
-import { getCoinGeckoPrice } from "core/rest/coingecko";
-import { CoingeckoPrice } from "core/types/rest/coingecko";
-import { autorun, makeAutoObservable, runInAction, toJS } from "mobx";
+import { getCoinGeckoPrices } from "core/rest/coingecko";
+import { CoingeckoPrices } from "core/types/rest/coingecko";
+import { makeAutoObservable, runInAction } from "mobx";
+import BackgroundTimer from "react-native-background-timer";
 
 import firebase from '@react-native-firebase/app'
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging'
@@ -38,16 +39,20 @@ const requestToken = async () => {
 export default class RemoteConfigsStore {
 	firstLoad = false
 	loading = true
-	prices = {
-		bitsong: 1,
-	}
+	prices: {
+		[key in SupportedCoins]?: number
+	} = {}
 	enabledCoins: SupportedCoins[] = []
 	pushNotificationToken = ''
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 
-		setInterval(this.requestData, 1000 * 60 * 60)
+		for(const sc of Object.values(SupportedCoins))
+		{
+			this.prices[sc] = 1
+		}
+		BackgroundTimer.runBackgroundTimer(this.requestData, 1000 * 60 * 60)
 		this.requestData()
 	}
 
@@ -59,22 +64,27 @@ export default class RemoteConfigsStore {
 		{
 			setTimeout(() => {resolve([SupportedCoins.BITSONG])}, 1000)
 		}))
-		promises.push(getCoinGeckoPrice(SupportedCoins.BITSONG))
+		promises.push(getCoinGeckoPrices([SupportedCoins.BITSONG]))
 		promises.push(requestToken())
 		try
 		{
-			const responses = await Promise.all(promises)
-			const enabledCoins = responses[0] as SupportedCoins[]
-			const bitsongPrice = responses[1] as CoingeckoPrice
-			const pushNotificationToken = responses[2] as string
-
+			const results = (await Promise.allSettled(promises)).map(e =>
+				{
+					if(e.status == "fulfilled") return e.value
+					return null
+				})
+			const [enabledCoins, coingeckoPrices, pushNotificationToken] = results as [SupportedCoins[], CoingeckoPrices, string]
 			runInAction(() =>
 			{
-				this.prices.bitsong = bitsongPrice.bitsong.usd ?? 1
-				this.enabledCoins.splice(1, this.enabledCoins.length, ...enabledCoins)
+				for(const sc of Object.values(SupportedCoins))
+				{
+					this.prices[sc] = coingeckoPrices[sc].usd ?? 1
+				}
+				// this.prices.bitsong = bitsongPrice
+				this.enabledCoins.splice(1, this.enabledCoins.length, ...(enabledCoins ?? []))
+				this.pushNotificationToken = pushNotificationToken ?? ""
 				this.firstLoad = true
 				this.loading = false
-				this.pushNotificationToken = pushNotificationToken
 			})
 		}
 		catch(e: any)

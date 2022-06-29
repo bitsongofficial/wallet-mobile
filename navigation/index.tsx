@@ -14,20 +14,11 @@ import { ColorSchemeName } from "react-native";
 import { RootStackParamList } from "types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import RootStack from "./RootStack";
+import { navigationRef } from "./utils";
 
 type Props = {
   colorScheme: ColorSchemeName;
 };
-
-export const navigationRef =
-  React.createRef<NavigationContainerRef<RootStackParamList>>();
-
-export function navigate<T extends keyof RootStackParamList>(
-  name: T,
-  params?: RootStackParamList[T]
-) {
-  navigationRef.current?.navigate<T>(name, params);
-}
 
 export default function Navigation({ colorScheme }: Props) {
   return (

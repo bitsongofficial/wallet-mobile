@@ -10,7 +10,6 @@ type Props = {
 
 export default ({ children, showing }:Props) => {
   const theme = useTheme();
-  console.log("Show", showing)
   return (
     <View style={[styles.container, {position: showing ? "absolute" : "relative", display: showing ? "flex" : "none"}]}>
       {children}

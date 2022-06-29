@@ -1,10 +1,9 @@
 import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 import Long from "long"
 import { Bitsong } from "./coin/bitsong/Bitsong"
-import { WalletConnectCosmosClient } from "./connection/WalletConnect"
-import { WalletConnectCosmosClientV1 } from "./connection/WalletConnectV1"
+
 import { PublicWallet } from "./storing/Generic"
-import { PinMnemonicStore } from "./storing/MnemonicStore"
+import { AskPinMnemonicStore } from "./storing/MnemonicStore"
 import { CosmosWallet, CosmosWalletGenerator } from "./storing/Wallet"
 import { ClaimData } from "./types/coin/cosmos/ClaimData"
 import { DelegateData } from "./types/coin/cosmos/DelegateData"
@@ -100,7 +99,8 @@ async function tryRewards(wallet: Wallet) {
 export async function test()
 {
 	const savePhase = false
-	const [wallet, store] = CosmosWalletGenerator.BitsongWallet
+	const store = new AskPinMnemonicStore("test_wallet", async () => "1234567")
+	const wallet = CosmosWalletGenerator.BitsongWallet(store)
 	if(savePhase)
 	{
 		const a = 'man hungry enjoy price timber girl omit type absent target enrich butter'
@@ -127,5 +127,4 @@ export async function test()
 			console.log(e)
 		}
 	}
-	console.log("End")
 }

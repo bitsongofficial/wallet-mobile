@@ -5,6 +5,6 @@ import { Wallet } from "core/types/storing/Generic"
 export interface FromToAmount {
 	from: CosmosWallet,
 	to: Wallet,
-	amount: Amount,
+	amount: Amount | Amount[],
 	description?: string,
 }

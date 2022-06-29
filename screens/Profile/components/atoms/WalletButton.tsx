@@ -1,19 +1,28 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { COLOR, hexAlpha } from "utils";
 import { Icon2 } from "components/atoms";
-import { StoreWallet } from "stores/WalletStore";
 import { trimAddress } from "utils/string";
+import { ProfileWallets } from "stores/WalletStore";
 
 type Props = {
-  wallet: StoreWallet | null;
-  onPress(wallet: StoreWallet): void;
+  wallet: ProfileWallets | null;
+  onPress(wallet: ProfileWallets | null): void;
   style?: StyleProp<ViewStyle>;
 };
 
 export default ({ onPress, wallet, style }: Props) => {
   const handlePress = useCallback(() => onPress(wallet), [onPress, wallet]);
+  const [address, setAddress] = useState("")
+  useEffect(() =>
+  {
+    (async () =>
+    {
+      const address = await wallet?.wallets.btsg.Address()
+      setAddress(trimAddress(address))
+    })()
+  })
   return (
     <RectButton onPress={handlePress} style={style}>
       <View style={styles.container}>
@@ -24,8 +33,8 @@ export default ({ onPress, wallet, style }: Props) => {
           style={styles.icon}
         />
         <View style={styles.info}>
-          <Text style={styles.name}>{wallet?.data.name}</Text>
-          <Text style={styles.address}>{trimAddress(wallet?.data.metadata.addresses.btsg)}</Text>
+          <Text style={styles.name}>{wallet?.profile.name}</Text>
+          <Text style={styles.address}>{address}</Text>
         </View>
         <Icon2 size={13} name="chevron_down" stroke={COLOR.RoyalBlue} />
       </View>
