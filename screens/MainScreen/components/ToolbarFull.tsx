@@ -47,14 +47,12 @@ export default observer(function ToolbarFull({
           size={65}
         />
         <ToolbarAction
-          onPress={onPressReceive}
           backgroundStyle={styles.actionBackground}
           title="Receive"
           Icon={<Icon2 size={18} stroke={COLOR.White} name="arrow_down" />}
           size={65}
         />
         <ToolbarAction
-          onPress={onPressInquire}
           backgroundStyle={styles.actionBackground}
           title="Inquire"
           Icon={<Icon2 size={18} stroke={COLOR.White} name="inquire" />}
@@ -70,28 +68,24 @@ export default observer(function ToolbarFull({
       </View>
       <View style={styles.row}>
         <ToolbarAction
-          onPress={onPressClaim}
           backgroundStyle={styles.actionBackground}
           title="Claim"
           Icon={<Icon2 size={18} stroke={COLOR.White} name="claim" />}
           size={65}
         />
         <ToolbarAction
-          onPress={onPressStake}
           backgroundStyle={styles.actionBackground}
           title="Stake"
           Icon={<Icon2 size={18} stroke={COLOR.White} name="stake" />}
           size={65}
         />
         <ToolbarAction
-          onPress={onPressUnstake}
           backgroundStyle={styles.actionBackground}
           title="Unstake"
           Icon={<Icon2 size={18} stroke={COLOR.White} name="unstake" />}
           size={65}
         />
         <ToolbarAction
-          onPress={onPressRestake}
           backgroundStyle={styles.actionBackground}
           title="Restake"
           Icon={<Icon2 size={18} stroke={COLOR.White} name="restake" />}
@@ -101,19 +95,16 @@ export default observer(function ToolbarFull({
       <View style={styles.row}>
         <ToolbarAction
           backgroundStyle={styles.actionBackground}
-          onPress={onPressIssue}
           title="Issue"
           size={65}
         />
         <ToolbarAction
           backgroundStyle={styles.actionBackground}
-          onPress={onPressMint}
           title="Mint"
           size={65}
         />
         <ToolbarAction
           backgroundStyle={styles.actionBackground}
-          onPress={onPressBurn}
           title="Burn"
           size={65}
         />

@@ -2,7 +2,7 @@ import { Cipher } from "core/types/cryptography/Generic"
 import CryptoJS from "react-native-crypto-js"
 
 export class AESCipher implements Cipher {
-	constructor(private key: string)
+	constructor(public key: string)
 	{
 
 	}

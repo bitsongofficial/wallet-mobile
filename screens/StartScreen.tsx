@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Image,
   LayoutChangeEvent,
@@ -28,19 +28,16 @@ const points = [270];
 
 export default observer<Props>(function StartScreen({ navigation }) {
   const theme = useTheme();
-  const {wallet} = useStore()
+  const { wallet } = useStore();
 
-  const [layout, setLayout] = useState<LayoutRectangle>();
-  const getLayoutButtons = useCallback(
-    ({ nativeEvent: { layout } }: LayoutChangeEvent) => setLayout(layout),
-    []
-  );
+  // --------- Bottosheet ----------
 
   const bottomSheet = useRef<BottomSheetModalMethods>(null);
-  useFocusEffect(useCallback(() => () => bottomSheet.current?.close(), []));
+  useFocusEffect(useCallback(() => () => bottomSheet.current?.close(), [])); // TODO: remove bottomsheet modal and useFocus effect
 
   const openBottomSheet = useCallback(() => bottomSheet.current?.present(), []);
 
+  // ---------- Navigation -----------
   const createCreateWallet = useCallback(
     () => navigation.push("CreateWallet"),
     []
@@ -52,9 +49,8 @@ export default observer<Props>(function StartScreen({ navigation }) {
   const importWithKeplr = useCallback(
     () =>
       navigation.push("ScannerQR", {
-        onBarCodeScanned: (data) => {
-          navigation.push("ImportWithKeplr", { data });
-        },
+        onBarCodeScanned: (data) =>
+          navigation.push("ImportWithKeplr", { data }),
       }),
     []
   );
@@ -81,7 +77,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
             A nice phrase to {"\n"}welcome our users.
           </Text>
 
-          <View style={styles.buttons} onLayout={getLayoutButtons}>
+          <View style={styles.buttons}>
             <Button
               text="Create Wallet"
               Right={
@@ -119,16 +115,18 @@ export default observer<Props>(function StartScreen({ navigation }) {
                 <Text style={theme.text.primary}>Ledger Nano X</Text>
               </Text>
             </Button>
-            { wallet.activeWallet && <Button
-              mode="fill"
-              onPress={test}
-              contentContainerStyle={styles.buttonContent}
-              Right={<Icon2 name="chevron_right" size={18} />}
-            >
-              <Text style={[styles.buttonText, theme.text.colorText]}>
-                Skip
-              </Text>
-            </Button> }
+            {wallet.activeWallet && (
+              <Button
+                mode="fill"
+                onPress={test}
+                contentContainerStyle={styles.buttonContent}
+                Right={<Icon2 name="chevron_right" size={18} />}
+              >
+                <Text style={[styles.buttonText, theme.text.colorText]}>
+                  Skip
+                </Text>
+              </Button>
+            )}
           </View>
         </View>
       </SafeAreaView>

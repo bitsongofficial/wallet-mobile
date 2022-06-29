@@ -35,6 +35,7 @@ export default ({
       mapItemsRef.forEach(
         (ref, key) =>
           key.wallets.btsg?.Address() !== value.wallets.btsg?.Address() && ref.current?.close()
+          ref.current?.close()
       ),
     [value, mapItemsRef]
   );

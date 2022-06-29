@@ -15,7 +15,7 @@ export default function useFooter(steps: Steps) {
       steps.active < steps.titles.length - 1
         ? steps.next()
         : navigation.reset({ index: 0, routes: [{ name: "Root" }] }),
-    [navigation, steps.active]
+    [navigation, steps.active, steps.titles.length]
   );
 
   return [goBack, goNext] as const;

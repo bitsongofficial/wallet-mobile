@@ -11,7 +11,7 @@ import { StatusBar } from "expo-status-bar";
 import { Coin } from "classes";
 import { Button } from "components/atoms";
 import { CoinStat, Tabs } from "components/organisms";
-import { useStore } from "hooks";
+import { useGlobalBottomsheet, useStore } from "hooks";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -32,7 +32,7 @@ import { autorun, runInAction } from "mobx";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
-const tabs: ValueTabs[] = ["Coins", "Fan Tokens"];
+const tabs: ValueTabs[] = ["Coins"];
 
 type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>,
@@ -42,30 +42,55 @@ type Props = CompositeScreenProps<
 export default observer<Props>(function MainScreen({ navigation }) {
   const { coin, dapp, settings } = useStore();
   // need culc by wallet
-  const variation = "+ 7.46";
-  const reward = "107.23";
 
   const [activeTab, setActiveTab] = useState<ValueTabs>("Coins");
 
   const callback = useCallback(() => {}, []);
 
   // ------------- bottom sheet -----------
-  // ref
-  const bottomSheetToolbar = useRef<BottomSheetModalMethods>(null);
-  const bottomSheetSEND = useRef<BottomSheetModalMethods>(null);
+  const globalBottomsheet = useGlobalBottomsheet();
 
-  const snapPoints = useMemo(() => ["70%"], []);
+  const openToolbar = useCallback(() => {
+    globalBottomsheet.setProps({
+      snapPoints: ["70%"],
+      children: (
+        <ToolbarFull
+          style={styles.toolbar_full}
+          onPressSend={openSend}
+          onPressReceive={callback}
+          onPressInquire={callback}
+          onPressScan={callback}
+          onPressClaim={callback}
+          onPressStake={callback}
+          onPressUnstake={callback}
+          onPressRestake={callback}
+          onPressIssue={callback}
+          onPressMint={callback}
+          onPressBurn={callback}
+        />
+      ),
+    });
+    globalBottomsheet.snapToIndex(0);
+  }, []);
 
-  const openToolbar = useCallback(
-    () => bottomSheetToolbar.current?.present(),
-    []
-  );
+  const openSend = useCallback(() => {
+    globalBottomsheet.setProps({
+      snapPoints: ["85%"],
+      children: (
+        <SendModal
+          style={sendCoinContainerStyle}
+          close={closeSend}
+          navigation={navigation}
+        />
+      ),
+    });
+    globalBottomsheet.snapToIndex(0);
+  }, []);
 
-  const openSend = useCallback(() => bottomSheetSEND.current?.present(), []);
-  const closeSend = useCallback(() => bottomSheetSEND.current?.close(), []);
+  const closeSend = useCallback(() => globalBottomsheet.close(), []);
 
   const openScanner = useCallback(
-    () => navigation.navigate("ScannerQR", { onBarCodeScanned: dapp.connect}),
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: dapp.connect }),
     []
   );
 
@@ -74,23 +99,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
     () => ({ paddingBottom: safeAreaInsets.bottom }),
     [safeAreaInsets.bottom]
   );
-
-  // useEffect(() =>
-  // {
-  //   const disposer = autorun(() =>
-  //   {
-  //     if(settings.showLoadingOverlay != coin.loading.balance) runInAction(() =>
-  //     {
-  //       settings.showLoadingOverlay = coin.loading.balance
-	// 			console.log("main", settings.showLoadingOverlay)
-  //     })
-  //   })
-
-  //   return () =>
-  //   {
-  //     if(disposer) disposer()
-  //   }
-  // }, [])
 
   return (
     <>
@@ -104,17 +112,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
               <Text style={styles.balance_value}>
                 {coin.totalBalance.toLocaleString("en")} $
               </Text>
-              <Text style={styles.balance_variation}>
-                Variation {variation} %
-              </Text>
-            </View>
-
-            <View style={styles.reward}>
-              <Text style={styles.reward_title}>Reward</Text>
-              <View style={styles.reward_row}>
-                <Text style={styles.reward_value}>{reward} $</Text>
-                <Button onPress={callback}>CLAIM</Button>
-              </View>
             </View>
           </View>
 
@@ -137,48 +134,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
           <View style={styles.coins}>
             {coin.coins.map((coin) => (
-              <TouchableOpacity key={coin.info._id} onPress={coin.increment}>
+              <TouchableOpacity key={coin.info._id} disabled={true}>
                 <CoinStat coin={coin} style={{ marginBottom: 9 }} />
               </TouchableOpacity>
             ))}
           </View>
         </ScrollView>
-
-        <BottomSheetModal
-          ref={bottomSheetToolbar}
-          index={0}
-          snapPoints={snapPoints}
-        >
-          <ToolbarFull
-            style={styles.toolbar_full}
-            onPressSend={openSend}
-            onPressReceive={callback}
-            onPressInquire={callback}
-            onPressScan={callback}
-            onPressClaim={callback}
-            onPressStake={callback}
-            onPressUnstake={callback}
-            onPressRestake={callback}
-            onPressIssue={callback}
-            onPressMint={callback}
-            onPressBurn={callback}
-          />
-        </BottomSheetModal>
-
-        <BottomSheetModal
-          ref={bottomSheetSEND}
-          snapPoints={["85%"]}
-          keyboardBehavior="extend"
-          keyboardBlurBehavior="restore" // for android inner scroll
-          android_keyboardInputMode="adjustResize"
-          enableOverDrag={false}
-        >
-          <SendModal
-            style={sendCoinContainerStyle}
-            close={closeSend}
-            navigation={navigation}
-          />
-        </BottomSheetModal>
       </SafeAreaView>
     </>
   );

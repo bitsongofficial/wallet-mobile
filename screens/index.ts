@@ -13,4 +13,5 @@ export { default as SettingsNotifications } from "./Profile/SettingsNotification
 export { default as WalletConnect } from "./Profile/WalletConnectScreen";
 export { default as AddressBook } from "./Profile/AddressBookScreen";
 export { SendRecapScreen as SendRecap } from  "./SendModalScreens"
+export { default as Pin } from  "./PinScreen"
 export { CreateWallet, ImportFromSeed, ImportWithKeplr } from "./CreateSeed";

@@ -32,3 +32,22 @@ export default function Navigation({ colorScheme }: Props) {
     </NavigationContainer>
   );
 }
+
+// ----------- Pin ------------
+
+type OptionsAskPin = Omit<RootStackParamList["PinRequest"], "callback">;
+
+export function askPin(options?: OptionsAskPin) {
+  const defaultOptions: OptionsAskPin = {
+    isHiddenCode: true,
+    isRandomKeyboard: false,
+  };
+
+  return new Promise<string>((resolve, reject) =>
+    navigate("PinRequest", {
+      callback: (result) => (result ? resolve(result) : reject()),
+      ...defaultOptions,
+      ...options,
+    })
+  );
+}

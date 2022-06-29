@@ -43,6 +43,8 @@ export default observer(
                   style={styles.word}
                   index={index + 1}
                   key={index}
+                  isActive={index === phrase.activeIndex}
+                  onPress={() => phrase.setActiveIndex(index)}
                 />
               ))}
             </ScrollView>

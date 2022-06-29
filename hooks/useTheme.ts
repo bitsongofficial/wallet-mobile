@@ -36,6 +36,7 @@ interface ITheme {
     >;
     indicator: ViewStyle;
   };
+  appBackground: ViewStyle;
 }
 
 const Theme = {
@@ -81,6 +82,9 @@ const Theme = {
       indicator: {
         backgroundColor: "#404059",
       },
+    },
+    appBackground: {
+      backgroundColor: COLOR.Dark3,
     },
   } as ITheme,
   light: {} as ITheme,

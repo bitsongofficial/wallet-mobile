@@ -73,7 +73,6 @@ export default observer<Props>(
         [1, 0],
         Extrapolation.CLAMP
       );
-      console.log("scale :>> ", scale);
       return {
         transform: [{ scale }],
       };
@@ -108,7 +107,7 @@ export default observer<Props>(
             </Animated.View>
           </View>
         </View>
-        {!input.isFocused && (
+        {/* {!input.isFocused && (
           <Animated.View style={buttonStyle}>
             <Button
               text={!input.value ? "Set nick" : "Edit"}
@@ -119,7 +118,7 @@ export default observer<Props>(
               mode="fill"
             />
           </Animated.View>
-        )}
+        )} */}
       </View>
     );
   }
