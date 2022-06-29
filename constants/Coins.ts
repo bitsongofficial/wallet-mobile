@@ -5,3 +5,7 @@ export enum SupportedCoins {
 	// OSMO = "osmo",
 	// STARGATE = "stars",
 }
+
+export type SupportedCoinsMap = {
+	[k in SupportedCoins]?: any
+}
