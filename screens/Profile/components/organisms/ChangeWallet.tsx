@@ -23,7 +23,7 @@ import { ListButton, Search, Title } from "../atoms";
 import { WalletItemEdited } from "../moleculs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
-import { StoreWallet } from "stores/WalletStore";
+import { ProfileWallets } from "stores/WalletStore";
 
 type Props = {
   isOpen?: boolean;
@@ -54,8 +54,8 @@ export default observer<Props>(
     const filtred = useMemo(() => {
       if (inputSearch.value) {
         const lowerCase = inputSearch.value.toLowerCase();
-        return wallet.wallets.filter(({ data }) =>
-          data.name?.toLowerCase().includes(lowerCase)
+        return wallet.wallets.filter(({ profile }) =>
+          profile.name?.toLowerCase().includes(lowerCase)
         );
       } else {
         return wallet.wallets;
@@ -63,30 +63,30 @@ export default observer<Props>(
     }, [inputSearch.value, wallet.wallets]);
 
     // ---------- Edit -----------
-    const [edited, setEdited] = useState<StoreWallet>(); // need store
+    const [edited, setEdited] = useState<ProfileWallets>(); // need store
 
     const inputWalletName = useMemo(
-      () => new InputHandler(edited?.data.name),
+      () => new InputHandler(edited?.profile.name),
       [edited]
     );
 
     const removeEdited = useCallback(() => setEdited(undefined), []);
 
     const saveEdited = useCallback(
-      () => { if(edited) edited.data.name = inputWalletName.value },
+      () => { if(edited) edited.profile.name = inputWalletName.value },
       [edited, inputWalletName]
     );
 
     // ------- FlatList ----------
 
     const mapItemsRef = useMemo(
-      () => observable.map<StoreWallet, React.RefObject<Swipeable>>(),
+      () => observable.map<ProfileWallets, React.RefObject<Swipeable>>(),
       []
     );
 
-    const [selectedWallet, setSelectedWallet] = useState(wallet.activeWallet);
+    const [selectedWallet, setSelectedWallet] = useState(wallet.activeProfile);
 
-    const keyExtractor = ({ data }: StoreWallet) => data.metadata.address;
+    const keyExtractor = ({ wallets }: ProfileWallets) => wallets.btsg.Address();
     const renderWallets = useCallback(
       ({ item }) => (
         <View style={{ marginBottom: 13 }}>
@@ -94,7 +94,7 @@ export default observer<Props>(
             value={item}
             isActive={selectedWallet === item}
             onPress={setSelectedWallet}
-            onPressDelete={wallet.deleteWallet}
+            onPressDelete={wallet.deleteProfile}
             onPressEdit={setEdited}
             mapItemsRef={mapItemsRef}
           />
@@ -125,7 +125,7 @@ export default observer<Props>(
       onClose && onClose();
       removeEdited();
       mapItemsRef.forEach((ref) => ref.current?.close());
-      setSelectedWallet(wallet.activeWallet);
+      setSelectedWallet(wallet.activeProfile);
     }, [onClose]);
 
     useBottomSheetBackButton(isOpen, handleClose);

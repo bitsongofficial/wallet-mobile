@@ -4,15 +4,16 @@ import { RectButton, Swipeable } from "react-native-gesture-handler";
 import { COLOR, hexAlpha } from "utils";
 import { Icon2, IconName, ThemedGradient } from "components/atoms";
 import { SwipeActions } from "../atoms";
-import { StoreWallet } from "stores/WalletStore";
+import { ProfileWallets } from "stores/WalletStore";
+import { WalletTypes } from "core/types/storing/Generic";
 
 type Props = {
-  value: StoreWallet;
-  onPress(value: StoreWallet): void;
-  onPressEdit?(value: StoreWallet): void;
-  onPressDelete(value: StoreWallet): void;
+  value: ProfileWallets;
+  onPress(value: ProfileWallets): void;
+  onPressEdit?(value: ProfileWallets): void;
+  onPressDelete(value: ProfileWallets): void;
   isActive?: boolean;
-  mapItemsRef: Map<StoreWallet, React.RefObject<Swipeable>>;
+  mapItemsRef: Map<ProfileWallets, React.RefObject<Swipeable>>;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -26,9 +27,9 @@ export default ({
   style,
 }: Props) => {
   const handlePress = useCallback(() => onPress(value), [onPress, value]);
-  const { name, metadata } = value.data;
+  const {name, type} = value.profile;
 
-  const iconName: IconName = metadata.type === "one" ? "wallet" : "eye";
+  const iconName: IconName = type === WalletTypes.WATCH ? "eye" : "wallet";
 
   const ref = useRef<Swipeable>(null);
 
@@ -40,7 +41,7 @@ export default ({
     () =>
       mapItemsRef.forEach(
         (ref, key) =>
-          key.data.metadata.address !== value.data.metadata.address && ref.current?.close()
+          key.wallets.btsg.Address() !== value.wallets.btsg.Address() && ref.current?.close()
       ),
     [value, mapItemsRef]
   );
