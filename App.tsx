@@ -34,11 +34,15 @@ const App = observer(() => {
     setUpPushNotificationsEvents();
   }, []);
 
+  const theme = useTheme();
+
   if (!isLoadingComplete) {
     return null;
   } else {
     return (
-      <GestureHandlerRootView style={styles.gestureHandler}>
+      <GestureHandlerRootView
+        style={[styles.gestureHandler, theme.appBackground]}
+      >
         <SafeAreaProvider>
           <Navigation colorScheme={colorScheme} />
           <StatusBar />
