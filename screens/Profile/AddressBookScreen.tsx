@@ -74,8 +74,6 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 
   const goBack = useCallback(() => navigation.goBack(), []);
 
-  const input = useMemo(() => new InputHandler(), []);
-
   // ------- BottomSheet ----------
 
   const currentPosition = useSharedValue(0);
@@ -110,8 +108,8 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
             />
             <View style={[styles.wrapper]}>
               <Search
-                value={input.value}
-                onChangeText={input.set}
+                value={contacts.inputSearch.value}
+                onChangeText={contacts.inputSearch.set}
                 placeholder="Search Address"
                 bottomsheet={false}
               />

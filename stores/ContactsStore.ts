@@ -1,5 +1,6 @@
 import { IPerson } from "classes/types";
 import { makeAutoObservable } from "mobx";
+import { InputHandler } from "utils";
 
 export default class ContactsStore {
   persons: IPerson[] = [
@@ -38,9 +39,22 @@ export default class ContactsStore {
   ];
 
   favorites = new Set<IPerson["_id"]>();
+  inputSearch = new InputHandler();
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  private get filterdPersons() {
+    const { inputSearch, persons } = this;
+    if (inputSearch.value) {
+      const lowerCase = inputSearch.value.toLowerCase();
+      return persons.filter(({ nickname }) =>
+        nickname.toLowerCase().includes(lowerCase)
+      );
+    } else {
+      return persons;
+    }
   }
 
   get sectionsData() {
@@ -49,14 +63,14 @@ export default class ContactsStore {
       data: IPerson[];
     };
 
-    const { persons, favorites } = this;
+    const { filterdPersons, favorites } = this;
 
     const favoritesData: ContactsSection = {
       label: "Favorite",
-      data: persons.filter((person) => favorites.has(person._id)),
+      data: filterdPersons.filter((person) => favorites.has(person._id)),
     };
 
-    const records = persons.reduce((records, person) => {
+    const records = filterdPersons.reduce((records, person) => {
       const key = person.nickname[0].toUpperCase();
 
       if (records[key]) {
@@ -86,7 +100,8 @@ export default class ContactsStore {
 
   delete(person: IPerson) {
     const index = this.persons.findIndex(({ _id }) => person._id === _id);
-    if (index >= 1) {
+
+    if (index >= 0) {
       this.persons.splice(index, 1);
       this.favorites.delete(person._id);
     }
