@@ -6,3 +6,4 @@ export { default as AddAccount } from "./AddAccount";
 export { default as AddWatchAccount } from "./AddWatchAccount";
 export { default as ChangeAvatar } from "./ChangeAvatar";
 export { default as AddContact } from "./AddContact";
+export { default as EditContact } from "./EditContact";
