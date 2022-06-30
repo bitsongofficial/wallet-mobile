@@ -11,11 +11,10 @@ import { SerializableI } from "core/types/utils/serializable";
 import { AESSaltStore } from "core/storing/CipherStores";
 import { AskPinMnemonicStore } from "core/storing/MnemonicStore";
 import { SupportedCoins, SupportedCoinsMap } from "constants/Coins";
+import { askPin } from "navigation";
 
 const stored_wallets_location = "StoredWallets"
 const cosmos_mnemonic_prefix = "mnemonic_"
-
-const askPin = async () => "1234567"
 
 interface StoreWallet extends SerializableI {
   name: string,
@@ -168,6 +167,7 @@ export default class WalletStore {
         ) as ExportKeyRingData[]
 
         const walletsLoading: Promise<void>[] = []
+        const actualPin = pin ?? await askPin()
         exportedKeyRingDatas.forEach(keyRingData =>
           {
             // We are considering just mnemonic wallets for now because we need to focus on other tasks
@@ -175,7 +175,7 @@ export default class WalletStore {
             if(keyRingData.type == "mnemonic")
             {
               const mnemonic = keyRingData.key
-              walletsLoading.push(this.newCosmosWallet(keyRingData.meta.name, mnemonic.split(" "), pin))
+              walletsLoading.push(this.newCosmosWallet(keyRingData.meta.name, mnemonic.split(" "), actualPin))
             }
           })
         return await Promise.all(walletsLoading)
@@ -193,7 +193,9 @@ export default class WalletStore {
       const mnemonicString = mnemonic.join(" ")
       const mnemonicPath = cosmos_mnemonic_prefix + name
       const mnemonicStore = new AskPinMnemonicStore(mnemonicPath, askPin)
+      if(pin) mnemonicStore.Unlock(pin)
       await mnemonicStore.Set(mnemonicString)
+      if(pin) mnemonicStore.Lock()
       runInAction(() =>
       {
         this.addProfile({

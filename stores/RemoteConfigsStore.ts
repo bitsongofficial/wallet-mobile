@@ -43,7 +43,7 @@ export default class RemoteConfigsStore {
 		[key in SupportedCoins]?: number
 	} = {}
 	enabledCoins: SupportedCoins[] = []
-	pushNotificationToken = ''
+	pushNotificationToken = ""
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })

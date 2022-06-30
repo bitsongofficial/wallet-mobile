@@ -38,7 +38,8 @@ export default observer<Props>(({ navigation }) => {
     globalLoader.open();
     await wallet.newCosmosWallet(
       controller.walletName.value,
-      controller.phrase.words
+      controller.phrase.words,
+      controller.pin.value,
     );
     globalLoader.close();
     goNext();

@@ -6,7 +6,6 @@ import { Amount } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
 import { fromAmountToDollars } from "core/utils/Coin";
-import { navigate } from "navigation";
 import Config from "react-native-config";
 import { store } from "stores/Store";
 

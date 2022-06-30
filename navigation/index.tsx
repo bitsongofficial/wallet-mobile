@@ -14,7 +14,7 @@ import { ColorSchemeName } from "react-native";
 import { RootStackParamList } from "types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import RootStack from "./RootStack";
-import { navigationRef } from "./utils";
+import { navigate, navigationRef } from "./utils";
 
 type Props = {
   colorScheme: ColorSchemeName;
@@ -45,7 +45,7 @@ export function askPin(options?: OptionsAskPin) {
 
   return new Promise<string>((resolve, reject) =>
     navigate("PinRequest", {
-      callback: (result) => (result ? resolve(result) : reject()),
+      callback: (result: any) => (result ? resolve(result) : reject()),
       ...defaultOptions,
       ...options,
     })
