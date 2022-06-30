@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
   },
   buttonStar: {
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
     padding: 5,
