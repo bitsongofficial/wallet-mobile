@@ -32,6 +32,7 @@ const EASING = Easing.elastic(1.5);
 
 export default observer<Props>(({ navigation, route }) => {
   const { callback, title = "Confirm with PIN", errorMax = 3 } = route.params;
+  const { wallet } = useStore()
 
   const goBack = useCallback(() => navigation.goBack(), []);
 
@@ -50,14 +51,16 @@ export default observer<Props>(({ navigation, route }) => {
 
   useEffect(() => {
     if (pin.isValid) {
-      const isConfirm = settings.pin.pin === pin.value;
-      setConfirm(isConfirm);
-      // setConfirm(true);
-      if (isConfirm) {
-        setErrorCount(0);
-      } else {
-        setErrorCount((v) => v + 1);
-      }
+      (async () => {
+        const isConfirm = await wallet.verifyPin(pin.value);
+        setConfirm(isConfirm);
+        // setConfirm(true);
+        if (isConfirm) {
+          setErrorCount(0);
+        } else {
+          setErrorCount((v) => v + 1);
+        }
+      })()
     } else {
       setConfirm(null);
     }

@@ -7,16 +7,17 @@ import { PermissionsAndroid } from "react-native";
 import { ExportKeyRingData, QRCodeSharedData, WCExportKeyRingDatasResponse } from "core/types/storing/Keplr";
 import WalletConnect from "@walletconnect/client";
 import { Counter, ModeOfOperation } from "aes-js"
-import { SerializableI } from "core/types/utils/serializable";
-import { AESSaltStore } from "core/storing/CipherStores";
 import { AskPinMnemonicStore } from "core/storing/MnemonicStore";
-import { SupportedCoins, SupportedCoinsMap } from "constants/Coins";
+import { SupportedCoinsMap } from "constants/Coins";
 import { askPin } from "navigation";
+import uuid from 'react-native-uuid';
+import { argon2Encode, argon2Verify } from "utils/argon";
 
-const stored_wallets_location = "StoredWallets"
+const stored_wallets_path = "stored_wallets"
 const cosmos_mnemonic_prefix = "mnemonic_"
+const pin_hash_path = "pin_hash"
 
-interface StoreWallet extends SerializableI {
+interface StoreWallet {
   name: string,
   wallet: Wallet,
 }
@@ -33,8 +34,10 @@ export interface ProfileWallets {
 }
 
 export default class WalletStore {
-  walletsHanlder: IReactionDisposer
-  firstLoadHandler: IReactionDisposer
+  private walletsHanlder: IReactionDisposer
+  private firstLoadHandler: IReactionDisposer
+  private walletSetUpPin: string | undefined
+
   activeProfile: Profile | null = null
 
   profiles: Profile[] = []
@@ -43,11 +46,8 @@ export default class WalletStore {
   firstLoad = false
   loadedFromMemory = false
 
-  remoteConfigs
-
-  constructor(remoteConfigs: RemoteConfigsStore) {
-    makeAutoObservable(this, {}, { autoBind: true });
-    this.remoteConfigs = remoteConfigs
+  constructor(private remoteConfigs: RemoteConfigsStore) {
+    makeAutoObservable(this, {}, { autoBind: true })
     this.firstLoadHandler = autorun(() =>
     {
       if(this.remoteConfigs.firstLoad) {
@@ -70,10 +70,42 @@ export default class WalletStore {
         )
         if (granted === PermissionsAndroid.RESULTS.GRANTED)
         {
-          AsyncStorage.setItem(stored_wallets_location, json)
+          AsyncStorage.setItem(stored_wallets_path, json)
         }
       }
     )
+  }
+
+  async setPin(pin: string): Promise<void> {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+    )
+    if (granted === PermissionsAndroid.RESULTS.GRANTED)
+    {
+      const encodedHash = await argon2Encode(pin)
+      await AsyncStorage.setItem(pin_hash_path, encodedHash)
+    }
+  }
+
+  async verifyPin(pin: string): Promise<boolean> {
+    if(pin == "") return false
+    try
+    {
+      const storedHash = await AsyncStorage.getItem(pin_hash_path)
+      if(storedHash)
+      {
+        return await argon2Verify(pin, storedHash)
+      }
+      else
+      {
+        this.setPin(pin)
+        return true
+      }
+    }
+    catch(e)
+    {
+    }
+    return false
   }
 
   async loadWallets()
@@ -83,7 +115,7 @@ export default class WalletStore {
     )
     if(granted === PermissionsAndroid.RESULTS.GRANTED)
     {
-      const serializedWalletsRaw = await AsyncStorage.getItem(stored_wallets_location)
+      const serializedWalletsRaw = await AsyncStorage.getItem(stored_wallets_path)
       if(serializedWalletsRaw != null)
       {
         const serializedWallets = JSON.parse(serializedWalletsRaw) as Array<Profile>
@@ -183,7 +215,8 @@ export default class WalletStore {
     catch(e)
     {
       console.log(e)
-    }    
+    }
+    return true
   }
 
   async newCosmosWallet(name: string, mnemonic: string[], pin?:string)
@@ -198,6 +231,7 @@ export default class WalletStore {
       if(pin) mnemonicStore.Lock()
       runInAction(() =>
       {
+        this.walletSetUpPin = pin
         this.addProfile({
           name,
           type: WalletTypes.COSMOS,
@@ -239,7 +273,8 @@ export default class WalletStore {
     if(this.profiles.length > 0)
     {
       const wallets: ProfileWallets[] = []
-      const pin = await askPin()
+      const pin = this.walletSetUpPin ?? await askPin()
+      this.walletSetUpPin = undefined
       toJS(this.profiles).forEach(async profile =>
       {
         switch(profile.type)

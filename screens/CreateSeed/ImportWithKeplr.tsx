@@ -26,6 +26,7 @@ export default observer<Props>(({ navigation, route }) => {
   }, [route.params.data]);
   const save = async () => {
     globalLoader.open();
+    await wallet.setPin(controller.pin.value)
     await wallet.importFromKeplr("keplr", route.params.data);
     globalLoader.close();
     goNext();

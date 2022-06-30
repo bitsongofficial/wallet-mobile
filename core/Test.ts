@@ -12,6 +12,7 @@ import { RedelegateData } from "./types/coin/cosmos/RedelegateData"
 import { Denom } from "./types/coin/Generic"
 import { CoinOperationEnum } from "./types/coin/OperationTypes"
 import { Wallet } from "./types/storing/Generic"
+import { argon2Encode, argon2Verify } from "utils/argon"
 
 const amount = {
 	denom: Denom.UBTSG,
@@ -121,6 +122,21 @@ export async function test()
 		}
 		
 		try {
+			// const bin2String = (array: number[]) =>
+			// {
+			// 	const result = String.fromCharCode(...array)
+			// 	return result;
+			// }
+			// const s = "WnDWzhwa5uIu6OHKGhuWHbaHoHNoCDsyu4iYzqb7n+A="
+			// const b = Buffer.from(s, 'base64')
+			// const salt = b.toString("utf-8")
+			// console.log(b.length, salt.length)
+			// const result = await argon2("password", salt, {
+			// 	memory: 4096,
+			// 	hashLength: 20,
+			// })
+			// const { encodedHash } = result
+			// console.log(encodedHash)
 		}
 		catch(e)
 		{

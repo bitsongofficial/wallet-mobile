@@ -65,6 +65,7 @@ export default observer<Props>(({ navigation }) => {
 
   const saveWallet = async () => {
     globalLoader.open();
+    await wallet.setPin(controller.pin.value)
     await wallet.newCosmosWallet(
       controller.walletName.value,
       controller.phrase.words,
