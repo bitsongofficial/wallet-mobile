@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ListRenderItem,
   SectionList,
@@ -11,7 +11,6 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  FlatList,
   RectButton,
   Swipeable,
   TouchableOpacity,
@@ -25,7 +24,7 @@ import { COLOR, hexAlpha, InputHandler } from "utils";
 import { Button, Icon2, ThemedGradient } from "components/atoms";
 import { Circles, Search, Subtitle, Title } from "./components/atoms";
 import { ContactItem } from "./components/moleculs";
-import { AddContact } from "./components/organisms";
+import { AddContact, EditContact, RemoveContact } from "./components/organisms";
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -35,15 +34,19 @@ import { IPerson } from "classes/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "AddressBook">;
 
+type ModalType = "Edit" | "Add" | "Remove";
+
 export default observer<Props>(function AddressBookScreen({ navigation }) {
   const { contacts } = useStore();
-  // -------- Sections Data ----------
 
   // ------- Wallets ------
   const mapItemsRef = useMemo(
     () => observable.map<IPerson, React.RefObject<Swipeable>>(),
     []
   );
+
+  const [removed, setRemoved] = useState<IPerson | null>(null);
+  const [edited, setEdited] = useState<IPerson | null>(null);
 
   const renderContact = useCallback<ListRenderItem<IPerson>>(
     ({ item }) => (
@@ -52,8 +55,8 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
           value={item}
           onPress={() => {}}
           onPressStar={contacts.addToFavorites}
-          onPressDelete={contacts.delete}
-          onPressEdit={openEdit}
+          onPressDelete={setRemoved}
+          onPressEdit={setEdited}
           mapItemsRef={mapItemsRef}
         />
       </View>
@@ -85,13 +88,26 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
     };
   });
 
-  const [isShowAddContact, setShowAddContact] = useState(false);
-  const closeAddContact = useCallback(() => setShowAddContact(false), []);
-  const openAddContact = useCallback(() => setShowAddContact(true), []);
+  const [modal, setModal] = useState<ModalType | null>(null);
+  const closeModal = useCallback((type: ModalType | null) => {
+    setModal((value) => (value !== type && type !== null ? value : null));
+    setRemoved(null);
+    setEdited(null);
+  }, []);
 
-  const openEdit = useCallback(() => {}, []);
+  const openAdd = useCallback(() => setModal("Add"), []);
+  const openEdit = useCallback(() => setModal("Edit"), []);
+  const openRemove = useCallback(() => setModal("Remove"), []);
 
-  console.log("contacts.sectionsData", contacts.sectionsData);
+  useEffect(() => {
+    removed && openRemove();
+  }, [removed]);
+
+  useEffect(() => {
+    edited && openEdit();
+  }, [edited]);
+
+  useEffect(() => contacts.inputSearch.clear, []);
 
   return (
     <>
@@ -104,7 +120,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
               onPressBack={goBack}
               style={[styles.header, styles.wrapper]}
               title="Address Book"
-              onPressPlus={openAddContact}
+              onPressPlus={openAdd}
             />
             <View style={[styles.wrapper]}>
               <Search
@@ -118,6 +134,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
             {contacts.persons.length > 0 ? (
               <SectionList
                 style={{ marginTop: 10 }}
+                keyExtractor={({ _id }) => _id}
                 contentContainerStyle={{ paddingTop: 30 }}
                 sections={contacts.sectionsData}
                 renderItem={renderContact}
@@ -147,11 +164,11 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
             )}
             <View style={styles.buttonContainer}>
               <Button
-                onPress={openAddContact}
+                text="Add Contact"
+                onPress={openAdd}
                 textStyle={styles.buttonText}
                 contentContainerStyle={styles.buttonContent}
                 mode="fill"
-                text="Add Contact"
               />
             </View>
           </Animated.View>
@@ -159,10 +176,26 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
       </ThemedGradient>
 
       <AddContact
-        isOpen={isShowAddContact}
+        isOpen={modal === "Add"}
         backgroundStyle={styles.bottomSheetBackground}
         animatedPosition={currentPosition}
-        onClose={closeAddContact}
+        onClose={() => closeModal("Add")}
+      />
+
+      <RemoveContact
+        contact={removed}
+        isOpen={modal === "Remove"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={() => closeModal("Remove")}
+      />
+
+      <EditContact
+        contact={edited}
+        isOpen={modal === "Edit"}
+        backgroundStyle={styles.bottomSheetBackground}
+        animatedPosition={currentPosition}
+        onClose={() => closeModal("Edit")}
       />
     </>
   );
