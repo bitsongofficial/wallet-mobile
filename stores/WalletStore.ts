@@ -43,13 +43,6 @@ export default class WalletStore {
 
   constructor(private remoteConfigs: RemoteConfigsStore) {
     makeAutoObservable(this, {}, { autoBind: true })
-    this.firstLoadHandler = autorun(() =>
-    {
-      if(this.remoteConfigs.firstLoad) {
-        this.loadWallets()
-        this.firstLoadHandler()
-      }
-    })
 
     autorun(() =>
     {
@@ -69,6 +62,16 @@ export default class WalletStore {
         }
       }
     )
+  }
+
+  async loadWallets() {
+    this.firstLoadHandler = autorun(() =>
+    {
+      if(this.remoteConfigs.firstLoad) {
+        this.loadWalletsInner()
+        this.firstLoadHandler()
+      }
+    })
   }
 
   async setPin(pin: string): Promise<void> {
@@ -103,7 +106,7 @@ export default class WalletStore {
     return false
   }
 
-  async loadWallets()
+  async loadWalletsInner()
   {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE

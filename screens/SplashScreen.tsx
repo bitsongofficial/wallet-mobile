@@ -41,6 +41,10 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 				else start()
 				if(dismiss) dismiss()
 			}
+			else
+			{
+				wallet.loadWallets()
+			}
 		})
 
 		return () =>
