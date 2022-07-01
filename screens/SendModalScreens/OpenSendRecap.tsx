@@ -22,10 +22,14 @@ const styles = {
 
 export function openSendRecap (creater: TransactionCreater, accept: Function, reject: Function)
 {
+  const flags = {
+    accepted: false
+  }
 	const globalBottomsheet = useGlobalBottomsheet()
     const send = () => {
       try
       {
+        flags.accepted = true
         accept()
       }
       catch(e)
@@ -38,13 +42,16 @@ export function openSendRecap (creater: TransactionCreater, accept: Function, re
     globalBottomsheet.setProps({
       snapPoints: ["85%"],
       onClose: () => {
-        try
+        if(!flags.accepted)
         {
-          reject()
-        }
-        catch(e)
-        {
-          console.log(e)
+          try
+          {
+            reject()
+          }
+          catch(e)
+          {
+            console.log(e)
+          }
         }
       },
       children: (
