@@ -41,9 +41,9 @@ export default class CoinStore {
 			this.results.balance = null
 		})
 		const coins:Coin[] = []
-		const balanceAwaits = [] 
+		const balanceAwaits:Promise<any>[] = [] 
 		const infos:ICoin[] = [] 
-		const coinRates:number[] = [] 
+		const waitings: Promise<boolean>[] = []
 		for(const chain of this.remoteConfigs.enabledCoins)
 		{
 			const coin = CoinClasses[chain]
@@ -52,13 +52,16 @@ export default class CoinStore {
 			{
 				if(this.walletStore.activeProfile)
 				{
-					const profile = this.walletStore.activeWallet
-					info.address = profile?.wallets[chain].Address()
-					balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
-						wallet: new PublicWallet(info.address)
-					}))
-					infos.push(info)
-					coinRates.push()
+					waitings.push((async () =>
+					{
+						const profile = this.walletStore.activeWallet
+						info.address = await profile?.wallets[chain].Address()
+						balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
+							wallet: new PublicWallet(info.address)
+						}))
+						infos.push(info)
+						return true
+					})())
 				}
 			}
 			catch(e) {
@@ -66,10 +69,12 @@ export default class CoinStore {
 			}
 		}
 		let errors = false
+		await Promise.allSettled(waitings)
 		try
 		{
 			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
 				{
+					console.log(r)
 					if(r.status == "fulfilled") return r.value
 					return 0
 				})
