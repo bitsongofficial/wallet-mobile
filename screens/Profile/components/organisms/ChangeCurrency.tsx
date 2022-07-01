@@ -19,7 +19,6 @@ import { SharedValue } from "react-native-reanimated";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ICurrency } from "screens/Profile/type";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Button } from "components/atoms";
 import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
 
 type Props = {
@@ -64,7 +63,10 @@ export default observer<Props>(
 
     // ------- FlatList ----------
 
-    const [selected, setSelected] = useState(settings.currency);
+    const setCurrency = useCallback((currency: ICurrency) => {
+      settings.setCurrency(currency);
+      close();
+    }, []);
 
     const keyExtractor = ({ _id }: ICurrency) => _id;
     const renderCurrencies = useCallback<ListRenderItem<ICurrency>>(
@@ -72,82 +74,46 @@ export default observer<Props>(
         <CurrencyItem
           value={item}
           key={item._id}
-          isActive={item._id === selected?._id}
-          onPress={setSelected}
+          isActive={settings.currency?._id === item._id}
+          onPress={setCurrency}
         />
       ),
-      [selected]
+      [settings.currency]
     );
 
     // --------- Close -----------
 
-    const handleClose = useCallback(() => {
-      onClose && onClose();
-      setSelected(settings.currency);
-    }, [onClose]);
-
+    const handleClose = useCallback(() => onClose && onClose(), [onClose]);
     useBottomSheetBackButton(isOpen, handleClose);
 
-    // --------- Buttons ----------
-
-    const insent = useSafeAreaInsets();
-
-    const [isShowButton, setIsShowButton] = useState(false);
-    const handleAnimate = useCallback(
-      (from) => setIsShowButton(from === -1),
-      []
-    );
-
-    // -------- Done ---------
-
-    const setCurrency = useCallback(() => {
-      if (selected) {
-        settings.setCurrency(selected);
-        close();
-      }
-    }, [selected]);
-
     return (
-      <>
-        <BottomSheet
-          enablePanDownToClose
-          snapPoints={snapPoints}
-          ref={bottomSheet}
-          backgroundStyle={backgroundStyle}
-          animatedPosition={animatedPosition}
-          onClose={handleClose}
-          onAnimate={handleAnimate}
-          index={-1}
-        >
-          <View style={styles.container}>
-            <Title style={styles.title}>Seleziona Valuta</Title>
-            <Search
-              placeholder="Cerca Valuta"
-              value={input.value}
-              onChangeText={input.set}
-              style={styles.search}
-            />
-            <BottomSheetFlatList
-              data={filtred}
-              style={styles.scroll}
-              contentContainerStyle={styles.scrollContent}
-              keyExtractor={keyExtractor}
-              renderItem={renderCurrencies}
-            />
-          </View>
-        </BottomSheet>
-
-        {isShowButton && (
-          <View style={[styles.buttons, { bottom: insent.bottom }]}>
-            <Button
-              text={`Select ${selected?.name}`}
-              onPress={setCurrency}
-              textStyle={styles.buttonText}
-              contentContainerStyle={styles.buttonContent}
-            />
-          </View>
-        )}
-      </>
+      <BottomSheet
+        enablePanDownToClose
+        snapPoints={snapPoints}
+        ref={bottomSheet}
+        backgroundStyle={backgroundStyle}
+        animatedPosition={animatedPosition}
+        onClose={handleClose}
+        onAnimate={handleAnimate}
+        index={-1}
+      >
+        <View style={styles.container}>
+          <Title style={styles.title}>Seleziona Valuta</Title>
+          <Search
+            placeholder="Cerca Valuta"
+            value={input.value}
+            onChangeText={input.set}
+            style={styles.search}
+          />
+          <BottomSheetFlatList
+            data={filtred}
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            keyExtractor={keyExtractor}
+            renderItem={renderCurrencies}
+          />
+        </View>
+      </BottomSheet>
     );
   }
 );
