@@ -58,7 +58,7 @@ export default observer<Props>(function SendModal({
         header: BottomTabHeader,
         callback: async () => {
           // await wait(2000); // for example
-          await store.coin.send(coin.info.coin, addressInput.value, amount);
+          await store.coin.send(coin.info.coin, addressInput.value, parseFloat(amount));
         },
       });
     }
