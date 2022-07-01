@@ -61,89 +61,56 @@ export default observer<Props>(
 
     // ------- FlatList ----------
 
-    const [selectedLang, setSelected] = useState(settings.language);
+    const setLanguage = useCallback((lang: ILang) => {
+      settings.setLanguage(lang);
+      close();
+    }, []);
 
     const keyExtractor = ({ id }: ILang) => id;
     const renderLanguage = useCallback<ListRenderItem<ILang>>(
       ({ item }) => (
         <LanguageItem
           value={item}
-          isActive={item.id === selectedLang.id}
-          onPress={setSelected}
+          isActive={item.id === settings.language.id}
+          onPress={setLanguage}
         />
       ),
-      [selectedLang]
+      [settings.language]
     );
 
     // --------- Close -----------
 
-    const handleClose = useCallback(() => {
-      onClose && onClose();
-      setSelected(settings.language);
-    }, [onClose]);
-
+    const handleClose = useCallback(() => onClose && onClose(), [onClose]);
     useBottomSheetBackButton(isOpen, handleClose);
 
-    // --------- Buttons ----------
-
-    const insent = useSafeAreaInsets();
-
-    const [isShowButton, setIsShowButton] = useState(false);
-    const handleAnimate = useCallback(
-      (from) => setIsShowButton(from === -1),
-      []
-    );
-
-    console.log("change languatge isOpen", isOpen);
-
-    // -------- Done ---------
-
-    const setLanguage = useCallback(() => {
-      settings.setLanguage(selectedLang);
-      close();
-    }, [selectedLang]);
-
     return (
-      <>
-        <BottomSheet
-          enablePanDownToClose
-          snapPoints={snapPoints}
-          ref={bottomSheet}
-          backgroundStyle={backgroundStyle}
-          animatedPosition={animatedPosition}
-          onClose={handleClose}
-          onAnimate={handleAnimate}
-          index={-1}
-        >
-          <View style={styles.container}>
-            <Title style={styles.title}>Seleziona Lingua</Title>
-            <Search
-              placeholder="Cerca Lingua"
-              style={styles.search}
-              value={input.value}
-              onChangeText={input.set}
-            />
-            <BottomSheetFlatList
-              data={filtred}
-              style={styles.scroll}
-              contentContainerStyle={styles.scrollContent}
-              keyExtractor={keyExtractor}
-              renderItem={renderLanguage}
-            />
-          </View>
-        </BottomSheet>
-
-        {isShowButton && (
-          <View style={[styles.buttons, { bottom: insent.bottom }]}>
-            <Button
-              text={`Select ${selectedLang.value}`}
-              onPress={setLanguage}
-              textStyle={styles.buttonText}
-              contentContainerStyle={styles.buttonContent}
-            />
-          </View>
-        )}
-      </>
+      <BottomSheet
+        enablePanDownToClose
+        snapPoints={snapPoints}
+        ref={bottomSheet}
+        backgroundStyle={backgroundStyle}
+        animatedPosition={animatedPosition}
+        onClose={handleClose}
+        onAnimate={handleAnimate}
+        index={-1}
+      >
+        <View style={styles.container}>
+          <Title style={styles.title}>Seleziona Lingua</Title>
+          <Search
+            placeholder="Cerca Lingua"
+            style={styles.search}
+            value={input.value}
+            onChangeText={input.set}
+          />
+          <BottomSheetFlatList
+            data={filtred}
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            keyExtractor={keyExtractor}
+            renderItem={renderLanguage}
+          />
+        </View>
+      </BottomSheet>
     );
   }
 );
