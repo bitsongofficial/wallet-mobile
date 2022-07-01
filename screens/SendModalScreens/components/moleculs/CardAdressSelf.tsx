@@ -4,6 +4,7 @@ import { Card, Icon } from "components/atoms";
 import { useTheme } from "hooks";
 import { Coin } from "classes";
 import { COLOR } from "utils";
+import { trimAddress } from "utils/string";
 
 type Props = {
   coin?: Coin | null;
@@ -14,7 +15,7 @@ export default observer<Props>(function CardWallet({ coin, style }) {
   const theme = useTheme();
   if (!coin) return null;
   const { address } = coin.info;
-  const shortAd = `${address.substring(0, 16)}..${address.slice(-7)}`;
+  const shortAd = trimAddress(address);
 
   return (
     <Card style={[styles.card, style]}>
