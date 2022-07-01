@@ -91,7 +91,6 @@ export default observer<Props>(
         backgroundStyle={backgroundStyle}
         animatedPosition={animatedPosition}
         onClose={handleClose}
-        onAnimate={handleAnimate}
         index={-1}
       >
         <View style={styles.container}>
