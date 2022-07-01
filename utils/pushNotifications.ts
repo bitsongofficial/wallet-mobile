@@ -7,7 +7,7 @@ export function setUpPushNotificationsEvents()
 		onNotification: function(notification)
 		{
 			const { data } = notification;
-			navigate("SendRecap")
+			navigate("Splash")
 		}
 	})
 }
