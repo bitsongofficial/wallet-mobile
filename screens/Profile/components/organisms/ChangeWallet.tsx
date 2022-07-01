@@ -84,7 +84,7 @@ export default observer<Props>(
       []
     );
 
-    const [selectedWallet, setSelectedWallet] = useState(wallet.activeProfile);
+    const [selectedWallet, setSelectedWallet] = useState(wallet.activeWallet);
 
     const keyExtractor = ({ wallets }: ProfileWallets) => wallets.btsg.Address();
     const renderWallets = useCallback(
@@ -125,7 +125,7 @@ export default observer<Props>(
       onClose && onClose();
       removeEdited();
       mapItemsRef.forEach((ref) => ref.current?.close());
-      setSelectedWallet(wallet.activeProfile);
+      setSelectedWallet(wallet.activeWallet);
     }, [onClose]);
 
     useBottomSheetBackButton(isOpen, handleClose);

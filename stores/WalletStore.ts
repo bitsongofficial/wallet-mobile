@@ -9,18 +9,13 @@ import WalletConnect from "@walletconnect/client";
 import { Counter, ModeOfOperation } from "aes-js"
 import { AskPinMnemonicStore } from "core/storing/MnemonicStore";
 import { SupportedCoinsMap } from "constants/Coins";
-import { askPin } from "navigation";
 import uuid from 'react-native-uuid';
 import { argon2Encode, argon2Verify } from "utils/argon";
+import { askPin } from "navigation/AskPin";
 
 const stored_wallets_path = "stored_wallets"
 const cosmos_mnemonic_prefix = "mnemonic_"
 const pin_hash_path = "pin_hash"
-
-interface StoreWallet {
-  name: string,
-  wallet: Wallet,
-}
 
 interface Profile {
   name: string,
@@ -226,12 +221,13 @@ export default class WalletStore {
       const mnemonicString = mnemonic.join(" ")
       const mnemonicPath = cosmos_mnemonic_prefix + name
       const mnemonicStore = new AskPinMnemonicStore(mnemonicPath, askPin)
-      if(pin) mnemonicStore.Unlock(pin)
+      const actualPin = pin ?? await askPin()
+      mnemonicStore.Unlock(actualPin)
       await mnemonicStore.Set(mnemonicString)
-      if(pin) mnemonicStore.Lock()
+      mnemonicStore.Lock()
       runInAction(() =>
       {
-        this.walletSetUpPin = pin
+        this.walletSetUpPin = actualPin
         this.addProfile({
           name,
           type: WalletTypes.COSMOS,
@@ -243,17 +239,26 @@ export default class WalletStore {
     }
   }
 
-  changeActive(profile: number | Profile | null)
+  private resolveProfile(profile: number | Profile | ProfileWallets)
   {
-    if(profile == null) return
-    if(typeof profile == "number") profile = this.profiles[profile]
-    this.activeProfile = profile
+    let actualProfile: Profile = profile as Profile
+    const inputProfile = profile as any
+    if(typeof profile == "number") actualProfile = this.profiles[profile]
+    else if(inputProfile.profile) actualProfile = inputProfile.profile
+    return actualProfile
   }
 
-  deleteProfile(profile: StoreWallet)
+  changeActive(profile: number | Profile | ProfileWallets | null)
   {
+    if(profile == null) return
+    this.activeProfile = this.resolveProfile(profile)
+  }
+
+  deleteProfile(profile: ProfileWallets | Profile)
+  {
+    const actualProfile = this.resolveProfile(profile)
     this.profiles.splice(
-      this.profiles.findIndex((item) => item.name === profile.name),
+      this.profiles.findIndex((item) => item.name === actualProfile.name),
       1
     )
   }
@@ -261,11 +266,13 @@ export default class WalletStore {
   addProfile(profile: Profile)
   {
     this.profiles.push(profile)
+    if(this.profiles.length == 1) this.changeActive(0)
   }
 
   async setUpWallets()
   {
     if(!this.loadedFromMemory) return
+    if(!this.remoteConfigs.firstLoad) return
     runInAction(() =>
     {
       this.loading = true
@@ -275,7 +282,7 @@ export default class WalletStore {
       const wallets: ProfileWallets[] = []
       const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
-      toJS(this.profiles).forEach(async profile =>
+      await Promise.all(toJS(this.profiles).map(async profile =>
       {
         switch(profile.type)
         {
@@ -283,6 +290,7 @@ export default class WalletStore {
             const cosmosWallets: SupportedCoinsMap = {}
             const store = new AskPinMnemonicStore(profile.data.mnemonicPath, askPin)
             store.Unlock(pin)
+            const addressesWaitings: Promise<string>[] = []
             for(const chain of this.remoteConfigs.enabledCoins)
             {
               const wallet = CosmosWalletGenerator.CosmosWalletFromChain({
@@ -290,8 +298,9 @@ export default class WalletStore {
                 store,
               })
               cosmosWallets[chain] = wallet
-              wallet.Address()
+              addressesWaitings.push(wallet.Address())
             }
+            await Promise.all(addressesWaitings)
             store.Lock()
             wallets.push({
               profile,
@@ -299,7 +308,7 @@ export default class WalletStore {
             })
             break
         }
-      })
+      }))
       runInAction(() =>
       {
         this.wallets.splice(0, this.wallets.length, ...wallets)

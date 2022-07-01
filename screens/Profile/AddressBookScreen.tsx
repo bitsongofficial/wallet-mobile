@@ -22,7 +22,7 @@ import { COLOR, InputHandler } from "utils";
 import { Circles, Search, Subtitle, Title } from "./components/atoms";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
-import { StoreWallet } from "stores/WalletStore";
+import { ProfileWallets } from "stores/WalletStore";
 
 type Props = NativeStackScreenProps<RootStackParamList, "AddressBook">;
 
@@ -32,17 +32,17 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
   // ------- Wallets ------
   const wallets = wallet.wallets;
   const mapItemsRef = useMemo(
-    () => observable.map<StoreWallet, React.RefObject<Swipeable>>(),
+    () => observable.map<ProfileWallets, React.RefObject<Swipeable>>(),
     []
   );
 
-  const renderWallet = useCallback<ListRenderItem<StoreWallet>>(
+  const renderWallet = useCallback<ListRenderItem<ProfileWallets>>(
     ({ item }) => (
       <View style={{ marginBottom: 13 }}>
         <WalletItem
           value={item}
           onPress={() => {}}
-          onPressDelete={wallet.deleteWallet}
+          onPressDelete={wallet.deleteProfile}
           // onPressEdit={setEdited}
           mapItemsRef={mapItemsRef}
         />
