@@ -24,14 +24,28 @@ export function openSendRecap (creater: TransactionCreater, accept: Function, re
 {
 	const globalBottomsheet = useGlobalBottomsheet()
     const send = () => {
-      accept()
+      try
+      {
+        accept()
+      }
+      catch(e)
+      {
+        console.log(e)
+      }
       globalBottomsheet.close()
     }
     const memo = new InputHandler()
     globalBottomsheet.setProps({
       snapPoints: ["85%"],
       onClose: () => {
-        reject()
+        try
+        {
+          reject()
+        }
+        catch(e)
+        {
+          console.log(e)
+        }
       },
       children: (
         <View style={styles.wrapper}>
