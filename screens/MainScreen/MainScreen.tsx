@@ -8,8 +8,6 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { Coin } from "classes";
-import { Button } from "components/atoms";
 import { CoinStat, Tabs } from "components/organisms";
 import { useGlobalBottomsheet, useStore } from "hooks";
 import {
@@ -17,18 +15,14 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
-import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ToolbarFull, ToolbarShort } from "./components";
-import { BottomSheetModal } from "components/moleculs";
 import SendModal from "screens/SendModalScreens/SendModal";
 import { RootStackParamList, RootTabParamList } from "types";
-import { COLOR } from "utils";
+import { COLOR, InputHandler } from "utils";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
-import FullscreenOverlay from "components/atoms/FullscreenOverlay";
-import { autorun, runInAction } from "mobx";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
