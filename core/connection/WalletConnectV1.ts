@@ -57,6 +57,7 @@ export class WalletConnectCosmosClientV1 {
 			let data
 			let accept:anonymousHandler = () => null
 			let reject:anonymousHandler = () => connector.rejectRequest({
+				id: payload.id,
 				error: {
 					code: 1,
 					message: "Rejected",
