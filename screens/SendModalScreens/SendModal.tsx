@@ -23,6 +23,8 @@ import {
   SelectReceiver,
   SelectCoin,
 } from "./components/templates";
+import { Text } from "components/Themed";
+import { COLOR } from "utils";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
@@ -40,19 +42,22 @@ export default observer<Props>(function SendModal({
 }) {
   const store = useStore();
 
+  const hasCoins = store.coin.coins.length > 0
+
   const controller = useMemo(
-    () => new SendController(store.coin.coins[0]),
+    () => hasCoins ? new SendController(store.coin.coins[0]) : undefined,
     [store]
   );
-  const { steps, creater } = controller;
+  const steps = controller ? controller.steps : {title: "No available assets", goBack: close, active: 0, goTo: () => {}}
+  const creater = controller ? controller.creater : {coin: undefined, addressInput: undefined, amount: undefined}
 
   const goBack = useCallback(
     () => (steps.title === "Insert Import" ? close() : steps.goBack()),
     [steps, close]
   );
   const send = () => {
-    const { coin, addressInput, amount } = controller.creater;
-    if (coin) {
+    const { coin, addressInput, amount } = creater;
+    if (coin && addressInput && amount) {
       navigation.push("Loader", {
         // @ts-ignore
         header: BottomTabHeader,
@@ -75,13 +80,15 @@ export default observer<Props>(function SendModal({
 
   const onPressScanner = useCallback(
     () =>
-      navigation.push("ScannerQR", {
+    {
+      if(creater.addressInput) navigation.push("ScannerQR", {
         onBarCodeScanned: creater.addressInput.set,
-      }),
+      })
+    },
     [navigation, creater]
   );
   // --------- Header --------------
-  const isShowHeader = steps.title !== "Select coin";
+  const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets";
 
   const title = useMemo(
     () => (steps.title === "Send Recap" ? steps.title : "Send"),
@@ -104,33 +111,41 @@ export default observer<Props>(function SendModal({
             style={styles.header}
           />
         )}
-
-        {steps.title === "Insert Import" && (
-          <InsertImport
-            controller={controller}
-            onPressNext={() => steps.goTo("Select Receiver")}
-            onPressBack={close}
-            onPressSelectCoin={() => steps.goTo("Select coin")}
-          />
-        )}
-        {steps.title === "Select Receiver" && (
-          <SelectReceiver
-            controller={controller}
-            onPressBack={goBack}
-            onPressRecap={() => steps.goTo("Send Recap")}
-            onPressScanner={onPressScanner}
-          />
-        )}
-        {steps.title === "Send Recap" && (
-          <SendRecap
-            controller={controller}
-            onPressBack={goBack}
-            onPressSend={send}
-          />
-        )}
-        {steps.title === "Select coin" && (
-          <SelectCoin controller={controller} onBack={goBack} />
-        )}
+        {controller && hasCoins && 
+          <>
+            {steps.title === "Insert Import" && (
+              <InsertImport
+                controller={controller}
+                onPressNext={() => steps.goTo("Select Receiver")}
+                onPressBack={close}
+                onPressSelectCoin={() => steps.goTo("Select coin")}
+              />
+            )}
+            {steps.title === "Select Receiver" && (
+              <SelectReceiver
+                controller={controller}
+                onPressBack={goBack}
+                onPressRecap={() => steps.goTo("Send Recap")}
+                onPressScanner={onPressScanner}
+              />
+            )}
+            {steps.title === "Send Recap" && (
+              <SendRecap
+                controller={controller}
+                onPressBack={goBack}
+                onPressSend={send}
+              />
+            )}
+            {steps.title === "Select coin" && (
+              <SelectCoin controller={controller} onBack={goBack} />
+            )}
+          </>
+        }
+        {!hasCoins &&
+          <View style={styles.verticallyCentered}>
+            <Text style={{color: COLOR.White}}>No assets available to send</Text>
+           </View>
+        }
       </View>
     </BottomSheetView>
   );
@@ -141,6 +156,12 @@ const styles = StyleSheet.create({
   wrapper: {
     marginHorizontal: 30,
     flex: 1,
+  },
+  verticallyCentered: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
   header: { marginTop: 10 },
 });
