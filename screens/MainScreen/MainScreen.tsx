@@ -84,7 +84,17 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const closeSend = useCallback(() => globalBottomsheet.close(), []);
 
   const openScanner = useCallback(
-    () => navigation.navigate("ScannerQR", { onBarCodeScanned: dapp.connect }),
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: (uri) =>
+      {
+        try
+        {
+          dapp.connect(uri)
+        }
+        catch(e)
+        {
+          console.log(e)
+        }
+      }}),
     []
   );
 
