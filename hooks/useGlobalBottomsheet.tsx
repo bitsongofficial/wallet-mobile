@@ -1,6 +1,6 @@
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { createRef } from "react";
 import { WithSpringConfig, WithTimingConfig } from "react-native-reanimated";
 
@@ -21,6 +21,15 @@ class GlobalBottomSheet implements BottomSheetMethods {
   }
 
   setProps(props?: Partial<BottomSheetProps>) {
+    if(props)
+    {
+      const onClose = props.onClose
+      props.onClose = () =>
+      {
+        if(onClose) onClose()
+        this.props = this.defaultProps
+      }
+    }
     this.props = props || {};
   }
 
