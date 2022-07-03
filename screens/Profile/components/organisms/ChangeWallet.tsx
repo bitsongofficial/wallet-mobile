@@ -86,7 +86,7 @@ export default observer<Props>(
 
     const [selectedWallet, setSelectedWallet] = useState(wallet.activeWallet);
 
-    const keyExtractor = ({ wallets }: ProfileWallets) => wallets.btsg.Address();
+    const keyExtractor = ({ profile }: ProfileWallets) => profile.name;
     const renderWallets = useCallback(
       ({ item }) => (
         <View style={{ marginBottom: 13 }}>
