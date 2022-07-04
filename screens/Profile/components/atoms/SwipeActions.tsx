@@ -3,12 +3,12 @@ import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { Button, Icon2 } from "components/atoms";
 import { COLOR, hexAlpha } from "utils";
-import { StoreWallet } from "stores/WalletStore";
+import { ProfileWallets } from "stores/WalletStore";
 
 type Props = {
-  wallet: StoreWallet;
-  onPressEdit?(wallet: StoreWallet): void;
-  onPressTrash(wallet: StoreWallet): void;
+  wallet: ProfileWallets;
+  onPressEdit?(wallet: ProfileWallets): void;
+  onPressTrash(wallet: ProfileWallets): void;
   style?: StyleProp<ViewStyle>;
   edited?: boolean;
 };

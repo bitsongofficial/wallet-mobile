@@ -72,7 +72,7 @@ export default function StakingScreen() {
           />
 
           <View style={styles.coins}>
-            {wallet.coins.map((coin) => (
+            {coin.coins.map((coin) => (
               <CoinStat
                 coin={coin}
                 key={coin.info._id}

@@ -19,8 +19,8 @@ export default ({ onPress, wallet, style }: Props) => {
   {
     (async () =>
     {
-      const address = await wallet?.wallets.btsg.Address()
-      setAddress(trimAddress(address))
+      const a = await wallet?.wallets.btsg.Address()
+      setAddress(trimAddress(a))
     })()
   })
   return (

@@ -84,9 +84,9 @@ export default observer<Props>(
       []
     );
 
-    const [selectedWallet, setSelectedWallet] = useState(wallet.activeProfile);
+    const [selectedWallet, setSelectedWallet] = useState(wallet.activeWallet);
 
-    const keyExtractor = ({ wallets }: ProfileWallets) => wallets.btsg.Address();
+    const keyExtractor = ({ profile }: ProfileWallets) => profile.name;
     const renderWallets = useCallback(
       ({ item }) => (
         <View style={{ marginBottom: 13 }}>
@@ -125,7 +125,7 @@ export default observer<Props>(
       onClose && onClose();
       removeEdited();
       mapItemsRef.forEach((ref) => ref.current?.close());
-      setSelectedWallet(wallet.activeProfile);
+      setSelectedWallet(wallet.activeWallet);
     }, [onClose]);
 
     useBottomSheetBackButton(isOpen, handleClose);
@@ -160,10 +160,10 @@ export default observer<Props>(
                   />
                 </View>
 
-                <View style={[styles.switchContainer, styles.wrapper]}>
+                {/* <View style={[styles.switchContainer, styles.wrapper]}>
                   <Text style={styles.switchTitle}>Tutti</Text>
                   <Switch gradient />
-                </View>
+                </View> */}
 
                 <BottomSheetFlatList
                   data={filtred}

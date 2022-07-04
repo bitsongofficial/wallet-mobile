@@ -8,8 +8,6 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { Coin } from "classes";
-import { Button } from "components/atoms";
 import { CoinStat, Tabs } from "components/organisms";
 import { useGlobalBottomsheet, useStore } from "hooks";
 import {
@@ -17,18 +15,14 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
-import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ToolbarFull, ToolbarShort } from "./components";
-import { BottomSheetModal } from "components/moleculs";
 import SendModal from "screens/SendModalScreens/SendModal";
 import { RootStackParamList, RootTabParamList } from "types";
-import { COLOR } from "utils";
+import { COLOR, InputHandler } from "utils";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
-import FullscreenOverlay from "components/atoms/FullscreenOverlay";
-import { autorun, runInAction } from "mobx";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -50,8 +44,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
   // ------------- bottom sheet -----------
   const globalBottomsheet = useGlobalBottomsheet();
 
-  const openToolbar = useCallback(() => {
-    globalBottomsheet.setProps({
+  const openToolbar = useCallback(async () => {
+    await globalBottomsheet.setProps({
       snapPoints: ["70%"],
       children: (
         <ToolbarFull
@@ -70,11 +64,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.snapToIndex(0);
+    globalBottomsheet.expand();
   }, []);
 
-  const openSend = useCallback(() => {
-    globalBottomsheet.setProps({
+  const openSend = useCallback(async () => {
+    await globalBottomsheet.setProps({
       snapPoints: ["85%"],
       children: (
         <SendModal
@@ -84,13 +78,23 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.snapToIndex(0);
+    globalBottomsheet.expand();
   }, []);
 
   const closeSend = useCallback(() => globalBottomsheet.close(), []);
 
   const openScanner = useCallback(
-    () => navigation.navigate("ScannerQR", { onBarCodeScanned: dapp.connect }),
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: (uri) =>
+      {
+        try
+        {
+          dapp.connect(uri)
+        }
+        catch(e)
+        {
+          console.log(e)
+        }
+      }}),
     []
   );
 
@@ -133,7 +137,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
           />
 
           <View style={styles.coins}>
-            {coin.coins.map((coin) => (
+            {coin.coins.filter(c => c.balance > 0).map((coin) => (
               <TouchableOpacity key={coin.info._id} disabled={true}>
                 <CoinStat coin={coin} style={{ marginBottom: 9 }} />
               </TouchableOpacity>

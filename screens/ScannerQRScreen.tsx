@@ -72,7 +72,7 @@ export default observer<Props>(({ navigation, route }) => {
           </View>}
         </View>
 
-        <View style={styles.bottomContainer}>
+        {/* <View style={styles.bottomContainer}>
           <Button
             textStyle={styles.buttonText}
             contentContainerStyle={styles.buttonSize}
@@ -80,7 +80,7 @@ export default observer<Props>(({ navigation, route }) => {
           >
             Scan QR Code
           </Button>
-        </View>
+        </View> */}
       </SafeAreaView>
     </>
   );
