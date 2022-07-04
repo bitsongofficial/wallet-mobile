@@ -1,5 +1,5 @@
 import TransactionCreater from "classes/Transaction/Creater";
-import { useGlobalBottomsheet } from "hooks";
+import useGlobalBottomsheet from "hooks/useGlobalBottomsheet";
 import { InputHandler } from "utils";
 import { Footer } from "./components/atoms";
 import { Recap } from "./components/organisms";
@@ -20,7 +20,7 @@ const styles = {
 	}
 }
 
-export function openSendRecap (creater: TransactionCreater, accept: Function, reject: Function)
+export async function openSendRecap (creater: TransactionCreater, accept: Function, reject: Function)
 {
   const flags = {
     accepted: false
@@ -39,7 +39,7 @@ export function openSendRecap (creater: TransactionCreater, accept: Function, re
       globalBottomsheet.close()
     }
     const memo = new InputHandler()
-    globalBottomsheet.setProps({
+    await globalBottomsheet.setProps({
       snapPoints: ["85%"],
       onClose: () => {
         if(!flags.accepted)

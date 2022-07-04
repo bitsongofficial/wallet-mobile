@@ -44,8 +44,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
   // ------------- bottom sheet -----------
   const globalBottomsheet = useGlobalBottomsheet();
 
-  const openToolbar = useCallback(() => {
-    globalBottomsheet.setProps({
+  const openToolbar = useCallback(async () => {
+    await globalBottomsheet.setProps({
       snapPoints: ["70%"],
       children: (
         <ToolbarFull
@@ -64,11 +64,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.snapToIndex(0);
+    globalBottomsheet.expand();
   }, []);
 
-  const openSend = useCallback(() => {
-    globalBottomsheet.setProps({
+  const openSend = useCallback(async () => {
+    await globalBottomsheet.setProps({
       snapPoints: ["85%"],
       children: (
         <SendModal
@@ -78,7 +78,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.snapToIndex(0);
+    globalBottomsheet.expand();
   }, []);
 
   const closeSend = useCallback(() => globalBottomsheet.close(), []);
@@ -137,7 +137,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
           />
 
           <View style={styles.coins}>
-            {coin.coins.map((coin) => (
+            {coin.coins.filter(c => c.balance > 0).map((coin) => (
               <TouchableOpacity key={coin.info._id} disabled={true}>
                 <CoinStat coin={coin} style={{ marginBottom: 9 }} />
               </TouchableOpacity>
