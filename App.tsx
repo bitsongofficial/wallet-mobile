@@ -31,7 +31,6 @@ const App = observer(() => {
     if (Platform.OS === "android") {
       NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
     }
-    setUpPushNotificationsEvents();
   }, []);
 
   const theme = useTheme();

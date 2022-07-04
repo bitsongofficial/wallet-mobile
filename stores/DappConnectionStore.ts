@@ -2,7 +2,7 @@ import { Transaction } from "classes";
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 import { fromAmountToDollars } from "core/utils/Coin";
 import { makeAutoObservable } from "mobx";
-import { navigate } from "navigation/utils";
+import { openSendRecap } from "screens/SendModalScreens/OpenSendRecap";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
 
@@ -52,13 +52,7 @@ export default class DappConnectionStore {
 				creater.setAmount(fromAmountToDollars(data.amount, this.remoteConfigsStore.prices).toFixed(2))
 				creater.addressInput.set(data.to)
 
-				const params = {
-					creater,
-					accept: handler.accept,
-					reject: handler.reject
-				}
-
-				navigate("SendRecap", params)
+				openSendRecap(creater, handler.accept, handler.reject)
 				break
 		}
 	}

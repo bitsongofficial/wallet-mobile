@@ -11,13 +11,14 @@ import { observer } from "mobx-react-lite";
 import { ToolbarFull, ToolbarShort } from "./components";
 import SendModal from "screens/SendModalScreens/SendModal";
 import { RootStackParamList, RootTabParamList } from "types";
-import { COLOR } from "utils";
+import { COLOR, InputHandler } from "utils";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal";
 import { useEffect } from "react";
+
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -77,11 +78,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.snapToIndex(0);
+    globalBottomsheet.expand();
   }, []);
 
-  const openSend = useCallback(() => {
-    globalBottomsheet.setProps({
+  const openSend = useCallback(async () => {
+    await globalBottomsheet.setProps({
       snapPoints: ["85%"],
       children: (
         <SendModal
@@ -91,11 +92,21 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.snapToIndex(0);
+    globalBottomsheet.expand();
   }, []);
 
   const openScanner = useCallback(
-    () => navigation.navigate("ScannerQR", { onBarCodeScanned: dapp.connect }),
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: (uri) =>
+      {
+        try
+        {
+          dapp.connect(uri)
+        }
+        catch(e)
+        {
+          console.log(e)
+        }
+      }}),
     []
   );
 
@@ -138,7 +149,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
           />
 
           <View style={styles.coins}>
-            {coin.coins.map((coin) => (
+            {coin.coins.filter(c => c.balance > 0).map((coin) => (
               <TouchableOpacity key={coin.info._id} disabled={true}>
                 <CoinStat coin={coin} style={{ marginBottom: 9 }} />
               </TouchableOpacity>

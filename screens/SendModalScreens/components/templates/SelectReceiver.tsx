@@ -54,6 +54,7 @@ export default observer(function SelectReceiver({
       <Footer
         onPressBack={onPressBack}
         onPressCenter={onPressRecap}
+        isShowCenter={addressInput.value != ""}
         centerTitle="Preview Send"
       />
     </>
