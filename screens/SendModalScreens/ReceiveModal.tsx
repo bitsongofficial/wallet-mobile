@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react";
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { RectButton } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
 import * as Clipboard from "expo-clipboard";
 import QRCode from "react-native-qrcode-svg";
@@ -11,6 +10,7 @@ import { Button, Icon2 } from "components/atoms";
 import { Header } from "./components/atoms";
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
 import { useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Props = {
   style: StyleProp<ViewStyle>;
@@ -20,6 +20,8 @@ type Props = {
 export default observer(function ReceiveModal({ style, close }: Props) {
   const { user } = useStore();
   const { screen } = useDimensions();
+
+  const insets = useSafeAreaInsets();
 
   const [isCopied, setCopied] = useState(false);
 
@@ -60,7 +62,7 @@ export default observer(function ReceiveModal({ style, close }: Props) {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { marginBottom: insets.bottom }]}>
         <Button
           text="Close"
           onPress={close}
