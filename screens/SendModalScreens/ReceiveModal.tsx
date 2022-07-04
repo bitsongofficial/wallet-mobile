@@ -6,9 +6,11 @@ import * as Clipboard from "expo-clipboard";
 import QRCode from "react-native-qrcode-svg";
 import { useDimensions } from "@react-native-community/hooks";
 import { useStore } from "hooks";
-import { COLOR, hexAlpha } from "utils";
+import { COLOR, hexAlpha, wait } from "utils";
 import { Button, Icon2 } from "components/atoms";
 import { Header } from "./components/atoms";
+import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import { useState } from "react";
 
 type Props = {
   style: StyleProp<ViewStyle>;
@@ -19,13 +21,20 @@ export default observer(function ReceiveModal({ style, close }: Props) {
   const { user } = useStore();
   const { screen } = useDimensions();
 
+  const [isCopied, setCopied] = useState(false);
+
   const shortAddress = useMemo(() => {
     const text = user?.data.address;
     return text ? `${text.substring(0, 16)}..${text.slice(-7)}` : undefined;
   }, [user?.data.address]);
 
-  const copyToClipboard = useCallback(() => {
-    if (user?.data.address) Clipboard.setString(user?.data.address);
+  const copyToClipboard = useCallback(async () => {
+    if (user?.data.address) {
+      Clipboard.setString(user?.data.address);
+      setCopied(true);
+      await wait(3000);
+      setCopied(false);
+    }
   }, [user?.data.address]);
 
   return (
@@ -43,10 +52,12 @@ export default observer(function ReceiveModal({ style, close }: Props) {
       <Text style={styles.subtitle}>Copy address</Text>
 
       <View style={styles.card}>
-        <Text style={styles.address}>{shortAddress}</Text>
-        <RectButton style={styles.buttonCopy} onPress={copyToClipboard}>
+        <Text style={styles.address}>
+          {isCopied ? "Address Copied!" : shortAddress}
+        </Text>
+        <TouchableOpacity style={styles.buttonCopy} onPress={copyToClipboard}>
           <Icon2 name="copy" stroke={hexAlpha(COLOR.White, 30)} size={17} />
-        </RectButton>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.footer}>
