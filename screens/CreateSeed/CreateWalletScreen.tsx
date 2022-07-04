@@ -57,7 +57,7 @@ export default observer<Props>(({ navigation }) => {
   };
 
   const toggleHidden = useCallback(
-    () => checkBio().then(() => setHidden((value) => !value)),
+    () => /* checkBio().then( */() => setHidden((value) => !value)/*)*/,
     []
   );
 
