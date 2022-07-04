@@ -160,10 +160,10 @@ export default observer<Props>(
                   />
                 </View>
 
-                <View style={[styles.switchContainer, styles.wrapper]}>
+                {/* <View style={[styles.switchContainer, styles.wrapper]}>
                   <Text style={styles.switchTitle}>Tutti</Text>
                   <Switch gradient />
-                </View>
+                </View> */}
 
                 <BottomSheetFlatList
                   data={filtred}
