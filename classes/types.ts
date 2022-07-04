@@ -15,6 +15,7 @@ export type IPerson = {
   avatar: any;
   firstName: string;
   lastName: string;
+  address: string; // TODO: may be alternative for _id
 };
 
 // WIP
