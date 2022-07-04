@@ -1,15 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  FlatList,
-  ListRenderItem,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { Coin } from "classes";
-import { Button } from "components/atoms";
 import { CoinStat, Tabs } from "components/organisms";
 import { useGlobalBottomsheet, useStore } from "hooks";
 import {
@@ -17,9 +8,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
-import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ToolbarFull, ToolbarShort } from "./components";
-import { BottomSheetModal } from "components/moleculs";
 import SendModal from "screens/SendModalScreens/SendModal";
 import { RootStackParamList, RootTabParamList } from "types";
 import { COLOR } from "utils";
@@ -27,8 +16,8 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
-import FullscreenOverlay from "components/atoms/FullscreenOverlay";
-import { autorun, runInAction } from "mobx";
+import ReceiveModal from "screens/SendModalScreens/ReceiveModal";
+import { useEffect } from "react";
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -50,6 +39,24 @@ export default observer<Props>(function MainScreen({ navigation }) {
   // ------------- bottom sheet -----------
   const globalBottomsheet = useGlobalBottomsheet();
 
+  const closeGlobalBottomSheet = useCallback(
+    () => globalBottomsheet.close(),
+    []
+  );
+
+  const openReceive = useCallback(() => {
+    globalBottomsheet.setProps({
+      snapPoints: ["85%"],
+      children: (
+        <ReceiveModal
+          style={sendCoinContainerStyle}
+          close={closeGlobalBottomSheet}
+        />
+      ),
+    });
+    globalBottomsheet.snapToIndex(0);
+  }, []);
+
   const openToolbar = useCallback(() => {
     globalBottomsheet.setProps({
       snapPoints: ["70%"],
@@ -57,7 +64,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
         <ToolbarFull
           style={styles.toolbar_full}
           onPressSend={openSend}
-          onPressReceive={callback}
+          onPressReceive={openReceive}
           onPressInquire={callback}
           onPressScan={callback}
           onPressClaim={callback}
@@ -79,15 +86,13 @@ export default observer<Props>(function MainScreen({ navigation }) {
       children: (
         <SendModal
           style={sendCoinContainerStyle}
-          close={closeSend}
+          close={closeGlobalBottomSheet}
           navigation={navigation}
         />
       ),
     });
     globalBottomsheet.snapToIndex(0);
   }, []);
-
-  const closeSend = useCallback(() => globalBottomsheet.close(), []);
 
   const openScanner = useCallback(
     () => navigation.navigate("ScannerQR", { onBarCodeScanned: dapp.connect }),
@@ -119,7 +124,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
             style={styles.toolbar_short}
             onPressAll={openToolbar}
             onPressInquire={callback}
-            onPressReceive={callback}
+            onPressReceive={openReceive}
             onPressScan={openScanner}
             onPressSend={openSend}
           />
