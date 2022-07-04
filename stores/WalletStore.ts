@@ -303,12 +303,22 @@ export default class WalletStore {
               cosmosWallets[chain] = wallet
               addressesWaitings.push(wallet.Address())
             }
-            await Promise.all(addressesWaitings)
+            try
+            {
+              await Promise.all(addressesWaitings)
+              wallets.push({
+                profile,
+                wallets: cosmosWallets
+              })
+            }
+            catch(e)
+            {
+              runInAction(async () =>
+              {
+                this.profiles.splice(this.profiles.indexOf(profile), 1)
+              })
+            }
             store.Lock()
-            wallets.push({
-              profile,
-              wallets: cosmosWallets
-            })
             break
         }
       }))
