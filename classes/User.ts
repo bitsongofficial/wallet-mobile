@@ -1,11 +1,12 @@
 import { ImageSourcePropType } from "react-native";
 import { makeAutoObservable } from "mobx";
+import { IPerson } from "./types";
 
 export default class User {
   photo: string | null = ""; // require("assets/images/mock/avatar_2.png");
   nick: string = "";
 
-  constructor() {
+  constructor(public data: IPerson) {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
