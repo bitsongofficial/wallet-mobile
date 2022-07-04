@@ -74,7 +74,6 @@ export default class CoinStore {
 		{
 			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
 				{
-					console.log(r)
 					if(r.status == "fulfilled") return r.value
 					return 0
 				})
@@ -82,13 +81,22 @@ export default class CoinStore {
 			{
 				if(balance)
 				{
-					balance.forEach(asset => {
-						infos[i].balance = fromAmountToCoin(asset)
-						coins.push(new Coin(infos[i], fromDenomToPrice(asset.denom, this.remoteConfigs.prices)))
+					if(balance.length > 0) balance.forEach(asset => {
+						const currentInfo = Object.assign({}, infos[i])
+						currentInfo.balance = fromAmountToCoin(asset)
+						coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.remoteConfigs.prices)))
 					})
+					else
+					{
+						const currentInfo = Object.assign({}, infos[i])
+						currentInfo.balance = 0
+						coins.push(new Coin(currentInfo, 1))
+					}
 				}
 				else
 				{
+					infos[i].balance = 0
+					coins.push(new Coin(infos[i], 1))					
 					errors = true
 				}
 			})
