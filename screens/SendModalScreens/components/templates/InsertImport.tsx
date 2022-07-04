@@ -10,6 +10,7 @@ import { Numpad } from "components/moleculs";
 import { SendController } from "../../classes";
 import { CardSelectCoin } from "../moleculs";
 import { Footer } from "../atoms";
+import { useState } from "react";
 
 type Props = {
   controller: SendController;
@@ -26,24 +27,13 @@ export default observer<Props>(function InsertImport({
 }) {
   const theme = useTheme();
   const creater = controller.creater;
-
-  const tokenBalance = useMemo(() => {
-    if (creater.coin?.rate) {
-      const value = Coin.culcTokenBalance(
-        parseFloat(creater.amount),
-        creater.coin.rate
-      );
-      if (value) {
-        return round(value);
-      }
-    }
-  }, [creater.amount, creater.coin?.rate]);
+  const [inverted, setInverted] = useState(false)
 
   return (
     <>
       <View style={styles.row}>
         <Text style={[styles.usd, theme.text.primary]}>
-          {creater.amount || 0} $
+          {(inverted ? controller.balance : creater.amount) || 0} {inverted ? creater.coin?.info.coinName : "$"}
         </Text>
         <View>
           <Button
@@ -57,25 +47,26 @@ export default observer<Props>(function InsertImport({
       {creater.coin && (
         <View style={styles.coin}>
           <Text style={styles.coinBalance}>
-            {tokenBalance || 0} {creater.coin?.info.coinName}
+            {(inverted ? creater.amount : controller.balance) || 0} {inverted ? "$" : creater.coin?.info.coinName }
           </Text>
-          <Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} />
+          <Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} onPress={() => {setInverted(!inverted)}}/>
         </View>
       )}
 
       <TouchableOpacity onPress={onPressSelectCoin}>
         <CardSelectCoin coin={creater.coin} style={styles.select} />
       </TouchableOpacity>
-
+      
       <Numpad
-        onPress={controller.addAmountNumber}
-        onPressRemove={controller.removeAmountNumber}
+        onPress={inverted ? controller.addBalanceNumber : controller.addAmountNumber}
+        onPressRemove={inverted ? controller.removeBalanceNumber : controller.removeAmountNumber}
         style={styles.numpad}
       />
 
       <Footer
         onPressCenter={onPressNext}
         onPressBack={onPressBack}
+        isShowCenter={Number(creater.amount) < (creater.coin ? creater.coin.balance : 0) && Number(creater.amount) > 0}
         centerTitle="Continue"
       />
     </>
