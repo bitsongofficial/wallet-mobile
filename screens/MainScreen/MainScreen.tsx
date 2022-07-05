@@ -76,6 +76,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const openSend = useCallback(() => {
     globalBottomsheet.setProps({
       snapPoints: ["85%"],
+      $modal: true,
+      keyboardBehavior: "fillParent",
       children: (
         <SendModal
           style={sendCoinContainerStyle}
