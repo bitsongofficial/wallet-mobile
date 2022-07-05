@@ -96,10 +96,10 @@ export default observer<Props>(function SendModal({
             {
               creater.addressInput.set(data.substring(prefix.length))
             }
-            bottomSheet.expand()
+            bottomSheet.openSoft()
           },
         })
-        bottomSheet.collapse()
+        bottomSheet.closeSoft()
       }
     },
     [navigation, creater]

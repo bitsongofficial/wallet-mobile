@@ -84,8 +84,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const openSend = useCallback(async () => {
     await globalBottomsheet.setProps({
-      snapPoints: ["15%", "85%"],
-      index: 1,
+      snapPoints: ["85%"],
       children: (
         <SendModal
           style={sendCoinContainerStyle}
@@ -94,6 +93,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
+    globalBottomsheet.expand()
   }, []);
 
   const openScanner = useCallback(

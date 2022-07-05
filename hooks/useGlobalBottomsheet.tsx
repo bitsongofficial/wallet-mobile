@@ -1,13 +1,13 @@
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable, set, toJS } from "mobx";
 import { createRef } from "react";
 import { WithSpringConfig, WithTimingConfig } from "react-native-reanimated";
 
 class GlobalBottomSheet implements BottomSheetMethods {
   readonly defaultProps: BottomSheetProps = {
     enablePanDownToClose: true,
-    snapPoints: ["15%", "50%", "85%"],
+    snapPoints: ["85%"],
     android_keyboardInputMode: "adjustResize",
     index: -1,
     children: <></>,
@@ -15,6 +15,8 @@ class GlobalBottomSheet implements BottomSheetMethods {
 
   ref = createRef<BottomSheetMethods>();
   props: BottomSheetProps | {} = {};
+  savedProps: BottomSheetProps | {} = {};
+  tmpClose = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -27,10 +29,10 @@ class GlobalBottomSheet implements BottomSheetMethods {
       props.onClose = () =>
       {
         if(onClose) onClose()
-        this.props = this.defaultProps
+        if(!this.tmpClose) set(this.props, this.defaultProps)
       }
     }
-    this.props = props || {};
+    set(this.props, props || {});
   }
 
   async openDefault(children: JSX.Element) {
@@ -46,18 +48,31 @@ class GlobalBottomSheet implements BottomSheetMethods {
   close() {
     this.ref.current?.close();
   }
+  closeSoft() {
+    this.tmpClose = true
+    this.close()
+  }
+
+  openSoft() {
+    this.tmpClose = false
+    this.expand()
+  }
+
   expand() {
     this.ref.current?.expand();
   }
+
   forceClose() {
     this.ref.current?.forceClose();
   }
+
   snapToIndex(
     index: number,
     animationConfigs?: WithSpringConfig | WithTimingConfig
   ) {
     this.ref.current?.snapToIndex(index, animationConfigs);
   }
+
   snapToPosition(
     position: number | string,
     animationConfigs?: WithSpringConfig | WithTimingConfig
