@@ -15,6 +15,11 @@ export function isValidAddress(address: string, requiredPrefix?: string): boolea
 	}
 }
 
+export function separateAddress(address: string)
+{
+	return Bech32.decode(address)
+}
+
 export function getPrefixFromAddress(address: string)
 {
 	return Bech32.decode(address).prefix

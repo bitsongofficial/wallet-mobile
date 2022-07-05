@@ -5,6 +5,7 @@ import { useTheme } from "hooks";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { COLOR, InputHandler } from "utils";
 import { useMemo } from "react";
+import { trimAddress } from "utils/string";
 
 type Props = {
   input: InputHandler;
@@ -21,7 +22,7 @@ export default observer<Props>(function CardWallet({
   const value = useMemo(() => {
     const text = input.value;
     if (input.isFocused || text.length < 25) return text;
-    return `${text.substring(0, 16)}..${text.slice(-7)}`;
+    return trimAddress(text);
   }, [input.isFocused, input.value]);
 
   return (
