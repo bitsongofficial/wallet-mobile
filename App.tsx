@@ -32,6 +32,8 @@ const App = observer(() => {
       NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
     }
   }, []);
+  const bottomSheetProps = Object.assign({}, toJS(bottomsheet.defaultProps))
+  Object.assign(bottomSheetProps, toJS(bottomsheet.props))
 
   const theme = useTheme();
 
@@ -53,8 +55,7 @@ const App = observer(() => {
           </FullscreenOverlay>
 
           <BottomSheet
-            {...toJS(bottomsheet.defaultProps)}
-            {...toJS(bottomsheet.props)}
+            {...bottomSheetProps}
             ref={bottomsheet.ref}
           />
         </SafeAreaProvider>
