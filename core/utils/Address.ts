@@ -1,6 +1,7 @@
 import { Bech32 } from "@cosmjs-rn/encoding"
 
-export const isValidAddress = (address: string, requiredPrefix?: string): boolean => {
+export function isValidAddress(address: string, requiredPrefix?: string): boolean
+{
 	try {
 	  const { prefix, data } = Bech32.decode(address);
   
@@ -12,4 +13,9 @@ export const isValidAddress = (address: string, requiredPrefix?: string): boolea
 	} catch {
 	  return false;
 	}
-  }
+}
+
+export function getPrefixFromAddress(address: string)
+{
+	return Bech32.decode(address).prefix
+}

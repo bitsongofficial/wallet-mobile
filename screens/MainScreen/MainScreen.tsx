@@ -65,10 +65,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
       children: (
         <ToolbarFull
           style={styles.toolbar_full}
-          onPressSend={openSend}
+          onPressSend={coin.CanSend ? openSend : undefined}
           onPressReceive={openReceive}
           onPressInquire={callback}
-          onPressScan={callback}
+          onPressScan={coin.CanSend ? callback : undefined}
           onPressClaim={callback}
           onPressStake={callback}
           onPressUnstake={callback}
@@ -140,8 +140,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
             onPressAll={openToolbar}
             onPressInquire={callback}
             onPressReceive={openReceive}
-            onPressScan={openScanner}
-            onPressSend={openSend}
+            onPressScan={coin.CanSend ? openScanner : undefined}
+            onPressSend={coin.CanSend ? openSend : undefined}
           />
 
           <Tabs

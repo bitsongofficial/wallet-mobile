@@ -8,9 +8,9 @@ import { CoinClasses } from "core/types/coin/Dictionaries";
 import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
 import { Amount } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
-import { WalletData } from "core/types/storing/Generic";
+import { WalletData, WalletTypes } from "core/types/storing/Generic";
 import { fromAmountToCoin, fromDenomToPrice, fromDollarsToAmount } from "core/utils/Coin";
-import { autorun, makeAutoObservable, runInAction, values } from "mobx";
+import { autorun, makeAutoObservable, runInAction, toJS, values } from "mobx";
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore, { ProfileWallets } from "./WalletStore";
@@ -123,6 +123,11 @@ export default class CoinStore {
 	  )
 	}
 
+	get CanSend()
+	{
+		return this.walletStore.activeProfile?.type != WalletTypes.WATCH
+	}
+
 	async send(coin: SupportedCoins, address: string, dollar:number)
 	{
 		runInAction(() =>
@@ -132,18 +137,18 @@ export default class CoinStore {
 		})
 		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
 		const coinClass = CoinClasses[coin]
+		const wallet = this.walletStore.activeWallet.wallets[coin]
+		if(!(wallet instanceof CosmosWallet) || !this.CanSend)
+		{
+			runInAction(() =>
+			{
+				this.loading.send = false
+				this.results.send = false
+			})
+			throw {error: "operation not permitted"}
+		}
 		try
 		{
-			const wallet = this.walletStore.activeWallet.wallets[coin]
-			if(!(wallet instanceof CosmosWallet))
-			{
-				runInAction(() =>
-				{
-					this.loading.send = false
-					this.results.send = false
-				})
-				return
-			}
 			const data: FromToAmount = {
 				from:  wallet as CosmosWallet,
 				to: new PublicWallet(address),

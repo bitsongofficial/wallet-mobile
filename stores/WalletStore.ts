@@ -1,6 +1,6 @@
 import {autorun, flow, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CosmosWalletGenerator } from "core/storing/Wallet";
+import { CosmosWalletGenerator, prefixToCoin } from "core/storing/Wallet";
 import { Wallet, WalletTypes } from "core/types/storing/Generic";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import { PermissionsAndroid } from "react-native";
@@ -12,6 +12,8 @@ import { SupportedCoinsMap } from "constants/Coins";
 import uuid from 'react-native-uuid';
 import { argon2Encode, argon2Verify } from "utils/argon";
 import { askPin } from "navigation/AskPin";
+import { getPrefixFromAddress } from "core/utils/Address";
+import { PublicWallet } from "core/storing/Generic";
 
 const stored_wallets_path = "stored_wallets"
 const cosmos_mnemonic_prefix = "mnemonic_"
@@ -217,9 +219,14 @@ export default class WalletStore {
     return true
   }
 
+  profileExists(name: string)
+  {
+    return this.profiles.some(el => (el.name == name))
+  }
+
   async newCosmosWallet(name: string, mnemonic: string[], pin?:string)
   {
-    if(!this.profiles.some(el => (el.name == name)))
+    if(!this.profileExists(name))
     {
       const mnemonicString = mnemonic.join(" ")
       const mnemonicPath = cosmos_mnemonic_prefix + name
@@ -236,6 +243,23 @@ export default class WalletStore {
           type: WalletTypes.COSMOS,
           data: {
             mnemonicPath
+          }
+        })
+      })
+    }
+  }
+
+  async newWatchWallet(name: string, address: string)
+  {
+    if(!this.profileExists(name))
+    {
+      runInAction(() =>
+      {
+        this.addProfile({
+          name,
+          type: WalletTypes.WATCH,
+          data: {
+            address
           }
         })
       })
@@ -319,6 +343,19 @@ export default class WalletStore {
               })
             }
             store.Lock()
+            break
+          case WalletTypes.WATCH:
+            const prefix = getPrefixFromAddress(profile.data.address)
+            const coin = prefixToCoin(prefix)
+            if(coin)
+            {
+              const pubWallets: SupportedCoinsMap = {}
+              pubWallets[coin] = new PublicWallet(profile.data.address)
+              wallets.push({
+                profile,
+                wallets: pubWallets
+              })
+            }
             break
         }
       }))

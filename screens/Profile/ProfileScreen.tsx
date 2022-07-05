@@ -191,12 +191,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   arrow
                   style={styles.listButton}
                 />
-                {/* <ListButton
+                <ListButton
                   text="Add a Watch account"
                   onPress={openAddWatchAccount}
                   icon="eye"
                   arrow
-                /> */}
+                />
 
                 <Agreement
                   onPressPrivacy={navToPrivacy}
