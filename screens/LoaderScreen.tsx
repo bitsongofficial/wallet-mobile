@@ -33,12 +33,10 @@ export default function LoaderScreen({
     route.params
       ?.callback()
       .then((r) => {
-        console.log("R", r)
         result.current = r;
         setStatus("fulfilled");
       })
       .catch((e) => {
-        console.log("E", e)
         error.current = e;
         setStatus("rejected");
       });
