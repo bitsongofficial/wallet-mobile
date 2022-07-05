@@ -11,7 +11,7 @@ import { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useStore } from "hooks";
+import { useGlobalBottomsheet, useStore } from "hooks";
 import { RootStackParamList, RootTabParamList } from "types";
 import { Pagination } from "components/moleculs";
 import { SendController } from "./classes";
@@ -41,11 +41,16 @@ export default observer<Props>(function SendModal({
   navigation,
 }) {
   const store = useStore();
+  const bottomSheet = useGlobalBottomsheet()
 
   const hasCoins = store.coin.coins.length > 0
 
   const controller = useMemo(
-    () => hasCoins ? new SendController(store.coin.coins[0]) : undefined,
+    () =>
+    {
+      if(hasCoins) return new SendController(store.coin.coins[0])
+      return undefined
+    },
     [store]
   );
   const steps = controller ? controller.steps : {title: "No available assets", goBack: close, active: 0, goTo: () => {}}
@@ -81,9 +86,21 @@ export default observer<Props>(function SendModal({
   const onPressScanner = useCallback(
     () =>
     {
-      if(creater.addressInput) navigation.push("ScannerQR", {
-        onBarCodeScanned: creater.addressInput.set,
-      })
+      if(creater.addressInput)
+      {
+        navigation.push("ScannerQR", {
+          onBarCodeScanned: (data: string) =>
+          {
+            const prefix = "btsg/receive/"
+            if(data.startsWith(prefix))
+            {
+              creater.addressInput.set(data.substring(prefix.length))
+            }
+            bottomSheet.expand()
+          },
+        })
+        bottomSheet.collapse()
+      }
     },
     [navigation, creater]
   );

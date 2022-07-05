@@ -18,6 +18,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal";
 import { useEffect } from "react";
+import { SendController } from "screens/SendModalScreens/classes";
 
 
 type ValueTabs = "Coins" | "Fan Tokens";
@@ -83,7 +84,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const openSend = useCallback(async () => {
     await globalBottomsheet.setProps({
-      snapPoints: ["85%"],
+      snapPoints: ["15%", "85%"],
+      index: 1,
       children: (
         <SendModal
           style={sendCoinContainerStyle}
@@ -92,15 +94,17 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.expand();
   }, []);
 
   const openScanner = useCallback(
-    () => navigation.navigate("ScannerQR", { onBarCodeScanned: (uri) =>
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: (uri: string) =>
       {
         try
         {
-          dapp.connect(uri)
+          if(uri.startsWith("wc"))
+          {
+            dapp.connect(uri)
+          }
         }
         catch(e)
         {
