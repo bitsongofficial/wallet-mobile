@@ -7,7 +7,11 @@ import { IPerson } from "classes/types";
 import { Coin, Transaction } from "classes";
 import { COLOR, InputHandler } from "utils";
 import { SendController } from "screens/SendModalScreens/classes";
-import { fromAmountToCoin, fromCoinToDefaultDenom, fromDollarsToAmount } from "core/utils/Coin";
+import {
+  fromAmountToCoin,
+  fromCoinToDefaultDenom,
+  fromDollarsToAmount,
+} from "core/utils/Coin";
 
 type Props = {
   creater: SendController["creater"];
@@ -17,16 +21,22 @@ type Props = {
   bottomSheet?: boolean;
 };
 
-export default observer<Props>(function CardWallet({
+export default observer<Props>(function Recap({
   creater,
   onPress,
   style,
   memoInput,
-  bottomSheet
+  bottomSheet,
 }: Props) {
   const theme = useTheme();
-  const {configs} = useStore()
+  const { configs } = useStore();
   const { addressInput, amount, coin, receiver } = creater;
+
+  const shortAddress = `${addressInput.value.substring(
+    0,
+    10
+  )}..${addressInput.value.slice(-7)}`;
+
   return (
     <View style={[styles.container, style]}>
       <Card style={styles.card}>
@@ -41,14 +51,23 @@ export default observer<Props>(function CardWallet({
           {amount} $
         </Text>
 
-        {coin && coin.info.coin && <View style={styles.row}>
-          <Text style={[styles.text, styles.mr17, theme.text.colorText]}>
-            as
-          </Text>
-          <Text style={[styles.text, theme.text.primary]}>
-            {fromAmountToCoin(fromDollarsToAmount(parseFloat(amount), fromCoinToDefaultDenom(coin.info.coin), configs.remote.prices))} {coin.info.coinName.toUpperCase()}
-          </Text>
-        </View>}
+        {coin && coin.info.coin && (
+          <View style={styles.row}>
+            <Text style={[styles.text, styles.mr17, theme.text.colorText]}>
+              as
+            </Text>
+            <Text style={[styles.text, theme.text.primary]}>
+              {fromAmountToCoin(
+                fromDollarsToAmount(
+                  parseFloat(amount),
+                  fromCoinToDefaultDenom(coin.info.coin),
+                  configs.remote.prices
+                )
+              )}{" "}
+              {coin.info.coinName.toUpperCase()}
+            </Text>
+          </View>
+        )}
 
         <View style={styles.row}>
           <Text style={[styles.text, styles.mr17, theme.text.colorText]}>
@@ -67,9 +86,7 @@ export default observer<Props>(function CardWallet({
           <Text style={[styles.text, styles.mr40, theme.text.colorText]}>
             address
           </Text>
-          <Text style={[styles.text, theme.text.primary]}>
-            {addressInput.value}
-          </Text>
+          <Text style={[styles.text, theme.text.primary]}>{shortAddress}</Text>
         </View>
       </Card>
 

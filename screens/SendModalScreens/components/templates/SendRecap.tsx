@@ -32,7 +32,7 @@ export default observer(function SelectReceiver({
   controller,
   onPressBack,
   onPressSend,
-  isShowBack
+  isShowBack,
 }: Props) {
   const theme = useTheme();
 
@@ -56,7 +56,6 @@ export default observer(function SelectReceiver({
       <Tabs
         values={tabs}
         active={activeTab}
-        // @ts-ignore TODO: create cool types
         onPress={setActiveTab}
         style={styles.tabs}
       />
@@ -71,6 +70,7 @@ export default observer(function SelectReceiver({
             creater={controller.creater}
             onPress={() => {}}
             memoInput={memo}
+            bottomSheet
           />
         </BottomSheetScrollView>
       )}
