@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { InputHandler } from "utils";
-import { Pin, Steps, Phrase, Biometric } from "classes";
+import { Pin, Steps, Phrase } from "classes";
 
 export default class CreateWalletController {
   steps = new Steps([
@@ -12,10 +12,11 @@ export default class CreateWalletController {
   ]);
 
   phrase = new Phrase();
-  biometric = new Biometric();
   walletName = new InputHandler();
   pin = new Pin();
   confirm = new Pin();
+
+  isPhraseShown = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -28,7 +29,7 @@ export default class CreateWalletController {
   get isCanNext() {
     switch (this.steps.active) {
       case 0:
-        return true; //AAA this.biometric.access;
+        return true; //AAA this.biometric.access; or this.isPhraseShown
       case 1:
         return this.walletName.value.length > 3;
       case 2:
@@ -42,5 +43,9 @@ export default class CreateWalletController {
 
   nextStep() {
     if (this.isCanNext) this.steps.next();
+  }
+
+  setPhraseShown(value: boolean) {
+    this.isPhraseShown = value;
   }
 }

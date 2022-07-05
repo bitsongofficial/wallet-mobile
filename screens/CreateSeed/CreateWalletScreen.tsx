@@ -41,35 +41,26 @@ export default observer<Props>(({ navigation }) => {
   const [goBack, goNext] = useFooter(controller.steps);
 
   useEffect(() => {
+    controller.setPhraseShown(false);
     controller.phrase.create();
   }, []);
 
   const [isHidden, setHidden] = useState(true);
 
-  const checkBio = async () => {
-    if (!controller.biometric.access) {
-      await biometricsAuth();
-      // .catch((e) => console.error("NO", e)); // TODO: need handlers
-
-      // result && controller.biometric.setAccess(result.success);
-      controller.biometric.setAccess(true);
-    }
-  };
-
-  const toggleHidden = useCallback(
-    () => checkBio().then(() => setHidden((value) => !value)),
-    []
-  );
+  const toggleHidden = useCallback(() => {
+    controller.setPhraseShown(true);
+    setHidden((value) => !value);
+  }, []);
 
   const insets = useSafeAreaInsets();
 
   const saveWallet = async () => {
     globalLoader.open();
-    await wallet.setPin(controller.pin.value)
+    await wallet.setPin(controller.pin.value);
     await wallet.newCosmosWallet(
       controller.walletName.value,
       controller.phrase.words,
-      controller.pin.value,
+      controller.pin.value
     );
     globalLoader.close();
     goNext();
