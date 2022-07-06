@@ -34,6 +34,7 @@ import {
   ChangeLanguage,
   ChangeWallet,
 } from "./components/organisms";
+import { useDimensions } from "@react-native-community/hooks";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
@@ -50,9 +51,16 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   // ------- BottomSheet ----------
 
-  const currentPosition = useSharedValue(0);
+  const { screen } = useDimensions();
+
+  const currentPosition = useSharedValue(screen.height);
   const animStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(currentPosition.value, [0, 350], [0, 0.5]);
+    const opacity = interpolate(
+      currentPosition.value,
+      [0, screen.height],
+      [0, 1],
+      Extrapolation.EXTEND
+    );
     return {
       flex: 1,
       opacity,
@@ -69,8 +77,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const navToPrivacy = useCallback(() => {}, []);
   const navToTerms = useCallback(() => {}, []);
-  const disconnectAndRemove = useCallback(() => {
-  }, []);
+  const disconnectAndRemove = useCallback(() => {}, []);
 
   const openAddWatchaccount = useCallback(() => {}, []);
   const openSecurity = useCallback(
@@ -146,7 +153,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
       zIndex: 1000,
       top: 70,
       width: "100%",
-      // backgroundColor: "red",
     };
   });
 
@@ -156,7 +162,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
       <ThemedGradient style={styles.container} invert>
         <SafeAreaView style={styles.container}>
-          <Animated.View style={animStyle}>
+          <Animated.View style={[{ opacity: 1 }, animStyle]}>
             <Header
               onPressClose={goBack}
               style={styles.header}
@@ -204,7 +210,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   style={styles.agreement}
                 />
 
-                <View style={{opacity: 0.2}} pointerEvents={"none"}>
+                <View style={{ opacity: 0.2 }} pointerEvents={"none"}>
                   <Title style={styles.title}>Settings</Title>
 
                   <View style={styles.section}>
