@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   ListRenderItem,
+  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -22,7 +23,7 @@ import { ToolbarFull, ToolbarShort } from "./components";
 import { BottomSheetModal } from "components/moleculs";
 import SendModal from "screens/SendModalScreens/SendModal";
 import { RootStackParamList, RootTabParamList } from "types";
-import { COLOR } from "utils";
+import { COLOR, wait } from "utils";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -102,12 +103,31 @@ export default observer<Props>(function MainScreen({ navigation }) {
     [safeAreaInsets.bottom]
   );
 
+  const [isRefreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    console.log("teste refresh");
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
+
   return (
     <>
       <StatusBar style="light" />
 
       <SafeAreaView style={styles.container}>
-        <ScrollView>
+        <ScrollView
+          style={styles.scrollviewContent}
+          refreshing={isRefreshing}
+          refreshControl={
+            <RefreshControl
+              // colors={[COLOR.White]}
+              tintColor={COLOR.White}
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+            />
+          }
+        >
           <View style={styles.info}>
             <View style={styles.balance}>
               <Text style={styles.balance_title}>Total Balance</Text>
@@ -152,8 +172,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLOR.Dark3,
   },
+
+  scrollviewContent: {
+    marginTop: 40,
+    paddingTop: 40,
+  },
   info: {
-    marginTop: 80,
     marginRight: 22,
     marginLeft: 32,
     marginBottom: 60,

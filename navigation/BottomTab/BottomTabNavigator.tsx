@@ -24,10 +24,12 @@ export default () => (
       tabBar={(props) => <MainTabBar {...props} />}
       screenOptions={{
         header: (props) => <Header {...props} />,
+        headerStyle: {
+          paddingBottom: 20,
+        },
         headerTransparent: true,
         tabBarStyle: { position: "absolute" },
         tabBarShowLabel: false,
-        tabBarActiveTintColor: "red",
       }}
     >
       <BottomTab.Screen
@@ -64,7 +66,7 @@ export default () => (
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <Icon2 name="circle" size={20} stroke={getStroke(focused)}/>
+            <Icon2 name="circle" size={20} stroke={getStroke(focused)} />
           ),
         }}
       />
