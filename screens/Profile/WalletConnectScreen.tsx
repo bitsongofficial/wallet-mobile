@@ -54,6 +54,11 @@ export default observer<Props>(function WalletConnect({ navigation }) {
     []
   );
 
+  const navToScanner = useCallback(
+    () => navigation.push("ScannerQR", { onBarCodeScanned(data) {} }),
+    []
+  );
+
   const goBack = useCallback(() => navigation.goBack(), []);
 
   return (
@@ -95,10 +100,11 @@ export default observer<Props>(function WalletConnect({ navigation }) {
             )}
             <View style={styles.buttonContainer}>
               <Button
+                onPress={navToScanner}
                 textStyle={styles.buttonText}
                 contentContainerStyle={styles.buttonContent}
                 mode="fill"
-                text={"Scan QR Code"}
+                text="Scan QR Code"
               />
             </View>
           </View>

@@ -85,7 +85,6 @@ export default observer<Props>(
 
     useBottomSheetBackButton(isOpen, handleClose);
 
-    console.log("photo", photo);
     return (
       <BottomSheet
         enablePanDownToClose
