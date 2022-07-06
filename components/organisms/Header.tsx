@@ -40,11 +40,11 @@ export default function Header({ navigation, style }: Props) {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 100,
+    height: 80,
     backgroundColor: COLOR.Dark3,
+    justifyContent: "flex-end",
   },
   header: {
-    flex: 1,
     flexDirection: "row",
     paddingHorizontal: 25,
     alignItems: "center",
