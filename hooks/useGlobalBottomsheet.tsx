@@ -1,7 +1,7 @@
+import { createRef } from "react";
+import { makeAutoObservable } from "mobx";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { makeAutoObservable } from "mobx";
-import { createRef } from "react";
 import { WithSpringConfig, WithTimingConfig } from "react-native-reanimated";
 
 class GlobalBottomSheet implements BottomSheetMethods {
@@ -14,7 +14,7 @@ class GlobalBottomSheet implements BottomSheetMethods {
   };
 
   ref = createRef<BottomSheetMethods>();
-  props: BottomSheetProps | {} = {};
+  props: Partial<BottomSheetProps> = {};
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
