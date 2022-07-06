@@ -17,7 +17,7 @@ import { observer } from "mobx-react-lite";
 import { ToolbarFull, ToolbarShort } from "./components";
 import SendModal from "screens/SendModalScreens/SendModal";
 import { RootStackParamList, RootTabParamList } from "types";
-import { COLOR } from "utils";
+import { COLOR, wait } from "utils";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -136,10 +136,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
       <SafeAreaView style={styles.container}>
         <ScrollView
           style={styles.scrollviewContent}
-          refreshing={isRefreshing}
           refreshControl={
             <RefreshControl
-              // colors={[COLOR.White]}
               tintColor={COLOR.White}
               refreshing={isRefreshing}
               onRefresh={onRefresh}
