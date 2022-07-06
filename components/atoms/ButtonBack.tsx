@@ -2,6 +2,7 @@ import {
   StyleProp,
   StyleSheet,
   Text,
+  TextStyle,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -14,17 +15,19 @@ type ButtonProps = {
   onPress?(): void;
   style?: StyleProp<ViewStyle>;
   text?: string;
+  stroke?: string;
+  textStyle: StyleProp<TextStyle>;
 };
 
-export default ({ onPress, style, text }: ButtonProps) => {
+export default ({ onPress, style, text, textStyle, stroke }: ButtonProps) => {
   const theme = useTheme();
 
   return (
     <View style={[styles.container, style]}>
       <TouchableOpacity onPress={onPress}>
         <View style={styles.inner}>
-          <Icon2 name="chevron_left" size={18} stroke={COLOR.White} />
-          <Text style={[styles.text, theme.text.primary]}>
+          <Icon2 name="chevron_left" size={18} stroke={stroke || COLOR.White} />
+          <Text style={[styles.text, theme.text.primary, textStyle]}>
             {text || "Back"}
           </Text>
         </View>
