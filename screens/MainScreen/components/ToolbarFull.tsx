@@ -1,5 +1,5 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { Icon, Icon2 } from "components/atoms";
+import { Icon2 } from "components/atoms";
 import { ToolbarAction } from "components/organisms";
 import { useTheme } from "hooks";
 import { observer } from "mobx-react-lite";
@@ -49,6 +49,7 @@ export default observer(function ToolbarFull({
         <ToolbarAction
           backgroundStyle={styles.actionBackground}
           title="Receive"
+          onPress={onPressReceive}
           Icon={<Icon2 size={18} stroke={COLOR.White} name="arrow_down" />}
           size={65}
         />

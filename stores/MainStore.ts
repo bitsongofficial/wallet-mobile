@@ -1,4 +1,4 @@
-import { DApp, User } from "classes";
+import { User } from "classes";
 import { makeAutoObservable } from "mobx";
 import SettingsStore from "./SettingsStore";
 import WalletStore from "./WalletStore";
@@ -17,8 +17,11 @@ export default class MainStore {
   coin = new CoinStore(this.wallet, this.configs.remote);
   dapp = new DappConnectionStore(this.wallet, this.configs.remote);
 
-  user: null | User = new User(); //  null;
   contacts = new ContactsStore();
+  user: null | User = new User({
+    _id: "1234",
+    address: "bitsong16h2ry9axyvzwkftv93h6nusdqeqdn552skxxtw",
+  }); //  null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });

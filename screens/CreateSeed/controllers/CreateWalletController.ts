@@ -33,9 +33,9 @@ export default class CreateWalletController {
       case 1:
         return this.walletName.value.length > 3;
       case 2:
-        return true; //AAA this.pin.isValid;
+        return this.pin.isValid;
       case 3:
-        return true; //AAA this.confirm.isValid && this.pin.isValid && this.isConfirmEqual;
+        return this.confirm.isValid && this.pin.isValid && this.isConfirmEqual;
       default:
         return false;
     }

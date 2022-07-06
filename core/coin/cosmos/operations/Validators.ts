@@ -16,7 +16,6 @@ export class Validators extends CosmosOperation {
 				//console.log(element.operator_address)
 				element.voting_power = results[1].find((e2:any) => 
 				{
-					console.log(e2.pub_key.value, element.consensus_pubkey.value)
 					if(e2.address == element.operator_address)
 					{
 						return true

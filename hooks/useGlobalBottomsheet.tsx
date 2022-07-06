@@ -20,13 +20,20 @@ class GlobalBottomSheet implements BottomSheetMethods {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  setProps(props?: Partial<BottomSheetProps>) {
+  async setProps(props?: Partial<BottomSheetProps>): Promise<void> {
+    if (props) {
+      const onClose = props.onClose;
+      props.onClose = () => {
+        if (onClose) onClose();
+        this.props = this.defaultProps;
+      };
+    }
     this.props = props || {};
   }
 
-  openDefault(children: JSX.Element) {
-    this.setProps({ children });
-    this.snapToIndex(0);
+  async openDefault(children: JSX.Element) {
+    await this.setProps({ children });
+    this.expand();
   }
 
   // ------------ BottomSheetMethods --------------
