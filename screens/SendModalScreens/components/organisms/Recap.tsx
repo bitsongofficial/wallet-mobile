@@ -3,8 +3,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
 import { Card, Icon, Input } from "components/atoms";
 import { useStore, useTheme } from "hooks";
-import { IPerson } from "classes/types";
-import { Coin, Transaction } from "classes";
 import { COLOR, InputHandler } from "utils";
 import { SendController } from "screens/SendModalScreens/classes";
 import {
@@ -37,6 +35,10 @@ export default observer<Props>(function Recap({
     10
   )}..${addressInput.value.slice(-7)}`;
 
+  const shortFrom = coin
+    ? `${coin?.info.address.substring(0, 10)}..${coin?.info.address.slice(-7)}`
+    : "";
+
   return (
     <View style={[styles.container, style]}>
       <Card style={styles.card}>
@@ -52,21 +54,29 @@ export default observer<Props>(function Recap({
         </Text>
 
         {coin && coin.info.coin && (
-          <View style={styles.row}>
-            <Text style={[styles.text, styles.mr17, theme.text.colorText]}>
-              as
-            </Text>
-            <Text style={[styles.text, theme.text.primary]}>
-              {fromAmountToCoin(
-                fromDollarsToAmount(
-                  parseFloat(amount),
-                  fromCoinToDefaultDenom(coin.info.coin),
-                  configs.remote.prices
-                )
-              )}{" "}
-              {coin.info.coinName.toUpperCase()}
-            </Text>
-          </View>
+          <>
+            <View style={styles.row}>
+              <Text style={[styles.text, styles.mr17, theme.text.colorText]}>
+                as
+              </Text>
+              <Text style={[styles.text, theme.text.primary]}>
+                {fromAmountToCoin(
+                  fromDollarsToAmount(
+                    parseFloat(amount),
+                    fromCoinToDefaultDenom(coin.info.coin),
+                    configs.remote.prices
+                  )
+                )}{" "}
+                {coin.info.coinName.toUpperCase()}
+              </Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={[styles.text, styles.mr17, theme.text.colorText]}>
+                from
+              </Text>
+              <Text style={[styles.text, theme.text.primary]}>{shortFrom}</Text>
+            </View>
+          </>
         )}
 
         <View style={styles.row}>
