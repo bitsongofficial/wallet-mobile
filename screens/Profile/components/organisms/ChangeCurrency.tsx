@@ -1,12 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Dimensions,
-  ListRenderItem,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from "react-native";
+import { useCallback, useMemo } from "react";
+import { Dimensions, ListRenderItem, StyleSheet, View } from "react-native";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { observer } from "mobx-react-lite";
 import { useStore } from "hooks";
@@ -14,108 +7,68 @@ import { InputHandler } from "utils";
 import { Search, Title } from "../atoms";
 import { CurrencyItem } from "../moleculs";
 import currencies from "constants/currencies";
-import { BottomSheet } from "components/moleculs";
-import { SharedValue } from "react-native-reanimated";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { ICurrency } from "screens/Profile/type";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
 
 type Props = {
-  isOpen?: boolean;
-  animatedPosition?: SharedValue<number>;
-  backgroundStyle: StyleProp<
-    Omit<ViewStyle, "bottom" | "left" | "position" | "right" | "top">
-  >;
-  onClose?(): void;
+  close(): void;
 };
 
-export default observer<Props>(
-  ({ backgroundStyle, animatedPosition, isOpen, onClose }) => {
-    const { settings } = useStore();
+export default observer<Props>(({ close }) => {
+  const { settings } = useStore();
+  // --------- Search ---------
 
-    // ------ BottomSheet -------
+  const input = useMemo(() => new InputHandler(), []);
 
-    const snapPoints = useMemo(() => ["95%"], []);
-    const bottomSheet = useRef<BottomSheetMethods>(null);
+  const filtred = useMemo(() => {
+    if (input.value) {
+      const lowerCase = input.value.toLowerCase();
+      return currencies.filter(({ name }) =>
+        name.toLowerCase().includes(lowerCase)
+      );
+    } else {
+      return currencies;
+    }
+  }, [input.value]);
 
-    const close = () => bottomSheet.current?.close();
-    const open = () => bottomSheet.current?.snapToIndex(0);
+  // ------- FlatList ----------
 
-    useEffect(() => {
-      isOpen ? open() : close();
-    }, [isOpen]);
+  const setCurrency = useCallback((currency: ICurrency) => {
+    settings.setCurrency(currency);
+    close();
+  }, []);
 
-    // --------- Search ---------
+  const keyExtractor = ({ _id }: ICurrency) => _id;
+  const renderCurrencies = useCallback<ListRenderItem<ICurrency>>(
+    ({ item }) => (
+      <CurrencyItem
+        value={item}
+        key={item._id}
+        isActive={settings.currency?._id === item._id}
+        onPress={setCurrency}
+      />
+    ),
+    [settings.currency]
+  );
 
-    const input = useMemo(() => new InputHandler(), []);
-
-    const filtred = useMemo(() => {
-      if (input.value) {
-        const lowerCase = input.value.toLowerCase();
-        return currencies.filter(({ name }) =>
-          name.toLowerCase().includes(lowerCase)
-        );
-      } else {
-        return currencies;
-      }
-    }, [input.value]);
-
-    // ------- FlatList ----------
-
-    const setCurrency = useCallback((currency: ICurrency) => {
-      settings.setCurrency(currency);
-      close();
-    }, []);
-
-    const keyExtractor = ({ _id }: ICurrency) => _id;
-    const renderCurrencies = useCallback<ListRenderItem<ICurrency>>(
-      ({ item }) => (
-        <CurrencyItem
-          value={item}
-          key={item._id}
-          isActive={settings.currency?._id === item._id}
-          onPress={setCurrency}
-        />
-      ),
-      [settings.currency]
-    );
-
-    // --------- Close -----------
-
-    const handleClose = useCallback(() => onClose && onClose(), [onClose]);
-    useBottomSheetBackButton(isOpen, handleClose);
-
-    return (
-      <BottomSheet
-        enablePanDownToClose
-        snapPoints={snapPoints}
-        ref={bottomSheet}
-        backgroundStyle={backgroundStyle}
-        animatedPosition={animatedPosition}
-        onClose={handleClose}
-        index={-1}
-      >
-        <View style={styles.container}>
-          <Title style={styles.title}>Seleziona Valuta</Title>
-          <Search
-            placeholder="Cerca Valuta"
-            value={input.value}
-            onChangeText={input.set}
-            style={styles.search}
-          />
-          <BottomSheetFlatList
-            data={filtred}
-            style={styles.scroll}
-            contentContainerStyle={styles.scrollContent}
-            keyExtractor={keyExtractor}
-            renderItem={renderCurrencies}
-          />
-        </View>
-      </BottomSheet>
-    );
-  }
-);
+  return (
+    <View style={styles.container}>
+      <Title style={styles.title}>Seleziona Valuta</Title>
+      <Search
+        placeholder="Cerca Valuta"
+        value={input.value}
+        onChangeText={input.set}
+        style={styles.search}
+      />
+      <BottomSheetFlatList
+        data={filtred}
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyExtractor={keyExtractor}
+        renderItem={renderCurrencies}
+      />
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -142,23 +95,5 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingTop: 9,
     paddingBottom: 50,
-  },
-
-  // ------- Buttons ------
-
-  buttons: {
-    padding: 15,
-    flexDirection: "row",
-    justifyContent: "center",
-    position: "absolute",
-    width: "100%",
-  },
-  buttonText: {
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  buttonContent: {
-    paddingVertical: 18,
-    paddingHorizontal: 53,
   },
 });
