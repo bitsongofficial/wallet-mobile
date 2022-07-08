@@ -55,6 +55,7 @@ const App = observer(() => {
           <BottomSheet
             {...toJS(bottomsheet.defaultProps)}
             {...toJS(bottomsheet.props)}
+            children={bottomsheet.children}
             ref={bottomsheet.ref}
           />
         </SafeAreaProvider>

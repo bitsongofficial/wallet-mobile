@@ -26,25 +26,10 @@ import {
   WalletButton,
 } from "./components/atoms";
 import { Head } from "./components/moleculs";
-import {
-  AddAccount,
-  AddWatchAccount,
-  ChangeAvatar,
-  ChangeCurrency,
-  ChangeLanguage,
-  ChangeWallet,
-} from "./components/organisms";
 import { useDimensions } from "@react-native-community/hooks";
+import { useBottomSheetModals } from "./hooks";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
-
-type ModalType =
-  | "ChangeWallet"
-  | "ChangeLanguage"
-  | "ChangeCurrency"
-  | "AddAccount"
-  | "ChangeAvatar"
-  | "AddWatchAccount";
 
 export default observer<Props>(function MainScreen({ navigation }) {
   const { settings, user, dapp, wallet } = useStore();
@@ -53,10 +38,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const { screen } = useDimensions();
 
-  const currentPosition = useSharedValue(screen.height);
+  const [position, openModal, closeModal] = useBottomSheetModals();
+
   const animStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
-      currentPosition.value,
+      position.value,
       [0, screen.height],
       [0, 1],
       Extrapolation.EXTEND
@@ -107,28 +93,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
 
-  // --------- Bottom Sheets ------------
-
-  const [modal, setModal] = useState<ModalType | null>(null);
-  const closeModal = useCallback(
-    (type: ModalType | null) =>
-      setModal((value) => (value !== type && type !== null ? value : null)),
-    []
-  );
-  const openChangeWallet = useCallback(() => setModal("ChangeWallet"), []);
-  const openChangeLanguage = useCallback(() => setModal("ChangeLanguage"), []);
-  const openChangeCurrency = useCallback(() => setModal("ChangeCurrency"), []);
-  const openAddAccount = useCallback(() => setModal("AddAccount"), []);
-  const openAddWatchAccount = useCallback(
-    () => setModal("AddWatchAccount"),
-    []
-  );
-  const openChangeAvatar = useCallback(() => setModal("ChangeAvatar"), []);
-
   useEffect(() => {
-    if (inputNick.isFocused) {
-      closeModal(null);
-    }
+    if (inputNick.isFocused) closeModal();
   }, [inputNick.isFocused]);
 
   const translationY = useSharedValue(0);
@@ -172,7 +138,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
               <Head
                 style={styles.head}
                 input={inputNick}
-                onPressAvatar={openChangeAvatar}
+                onPressAvatar={openModal.changeAvatar}
                 avatar={user?.photo}
                 animtedValue={translationY}
               />
@@ -185,21 +151,21 @@ export default observer<Props>(function MainScreen({ navigation }) {
               <animated.View style={[styles.wrapper, hidden]}>
                 <Subtitle style={styles.subtitle}>Connected with</Subtitle>
                 <WalletButton
-                  onPress={openChangeWallet}
+                  onPress={openModal.changeWallet}
                   wallet={wallet.activeWallet}
                   style={{ marginBottom: 16 }}
                 />
 
                 <ListButton
                   text="Add a new account"
-                  onPress={openAddAccount}
+                  onPress={openModal.addAccount}
                   icon="wallet"
                   arrow
                   style={styles.listButton}
                 />
                 {/* <ListButton
                   text="Add a Watch account"
-                  onPress={openAddWatchAccount}
+                  onPress={openModal.addWatchAccount}
                   icon="eye"
                   arrow
                 /> */}
@@ -254,14 +220,14 @@ export default observer<Props>(function MainScreen({ navigation }) {
                     <Subtitle style={styles.subtitle}>App Preferences</Subtitle>
                     <ListButton
                       text="Language"
-                      onPress={openChangeLanguage}
+                      onPress={openModal.changeLanguage}
                       icon="translate"
                       style={styles.listButton}
                       Right={<Value text={settings.language.name} />}
                     />
                     <ListButton
                       text="Currency"
-                      onPress={openChangeCurrency}
+                      onPress={openModal.channgeCurrency}
                       icon="circle_dollar"
                       style={styles.listButton}
                       Right={
@@ -327,47 +293,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
           </Animated.View>
         </SafeAreaView>
       </ThemedGradient>
-
-      {/* --------- Bottom Sheets -----------  */}
-      <ChangeAvatar
-        isOpen={modal === "ChangeAvatar"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("ChangeAvatar")}
-      />
-
-      <AddAccount
-        isOpen={modal === "AddAccount"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("AddAccount")}
-      />
-
-      <AddWatchAccount
-        isOpen={modal === "AddWatchAccount"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("AddWatchAccount")}
-      />
-
-      <ChangeWallet
-        isOpen={modal === "ChangeWallet"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("ChangeWallet")}
-      />
-      <ChangeLanguage
-        isOpen={modal === "ChangeLanguage"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("ChangeLanguage")}
-      />
-      <ChangeCurrency
-        isOpen={modal === "ChangeCurrency"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("ChangeCurrency")}
-      />
     </>
   );
 });
@@ -398,10 +323,5 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     lineHeight: 18,
-  },
-
-  bottomSheetBackground: {
-    backgroundColor: COLOR.Dark3,
-    paddingTop: 30,
   },
 });
