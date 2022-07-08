@@ -1,5 +1,5 @@
-import React, { forwardRef, useCallback, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { forwardRef, useCallback, useEffect, useState } from "react";
+import { BackHandler, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import {
   BottomSheetModalMethods,
@@ -22,6 +22,8 @@ export const BottomSheetModal = observer(
   ) {
     const theme = useTheme();
     const [isOpen, handleAnimate] = useBackdrop(props.onAnimate);
+
+    useBottomSheetBackButton(isOpen);
 
     return (
       <>
@@ -58,6 +60,8 @@ export const BottomSheet = observer(
     const theme = useTheme();
 
     const [isOpen, handleAnimate] = useBackdrop(props.onAnimate);
+
+    useBottomSheetBackButton(isOpen);
 
     return (
       <>
@@ -101,6 +105,18 @@ function useBackdrop(onAnimate: BottomSheetProps["onAnimate"]) {
   );
 
   return [isOpen, handleAnimate] as const;
+}
+
+function useBottomSheetBackButton(isOpen: boolean | undefined) {
+  useEffect(() => {
+    if (isOpen) {
+      const handler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => true
+      );
+      return () => handler.remove();
+    }
+  }, [isOpen]);
 }
 
 const styles = StyleSheet.create({
