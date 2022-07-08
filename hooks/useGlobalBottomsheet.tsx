@@ -31,6 +31,14 @@ class GlobalBottomSheet implements BottomSheetMethods {
     this.props = props || {};
   }
 
+  updProps(props?: Partial<BottomSheetProps>) {
+    this.props = { ...this.props, ...props };
+  }
+
+  get children() {
+    return this.props.children || this.defaultProps.children;
+  }
+
   async openDefault(children: JSX.Element) {
     await this.setProps({ children });
     this.expand();
