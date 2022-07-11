@@ -13,10 +13,10 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useTheme } from "hooks";
 import { InputHandler } from "utils";
-import { Tabs } from "components/organisms";
+import { Tabs, Recap } from "components/organisms";
 import { SendController } from "../../classes";
 import { Footer } from "../atoms";
-import { Data, Details, Recap } from "../organisms";
+import { Data } from "../organisms";
 
 type ValueTabs = "Details" | "Data";
 const tabs = ["Details", "Data"];
@@ -66,11 +66,13 @@ export default observer(function SelectReceiver({
           contentContainerStyle={{ paddingTop: 30 }}
         >
           <Recap
+            bottomSheet
             style={{ marginTop: 36 }}
-            creater={controller.creater}
+            address={controller.creater.address}
+            amount={controller.creater.amount}
+            coin={controller.creater.coin?.info}
             onPress={() => {}}
             memoInput={memo}
-            bottomSheet
           />
         </BottomSheetScrollView>
       )}

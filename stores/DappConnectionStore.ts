@@ -1,5 +1,5 @@
-import { Transaction } from "classes";
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
+import { Amount } from "core/types/coin/Generic";
 import { fromAmountToDollars } from "core/utils/Coin";
 import { makeAutoObservable } from "mobx";
 import { openSendRecap } from "screens/SendModalScreens/OpenSendRecap";
@@ -43,17 +43,25 @@ export default class DappConnectionStore {
 		}
 	}
 
-	onRequest(type: string, data: any, handler: acceptRejectType)
-	{
-		switch(type)
-		{
-			case "/cosmos.bank.v1beta1.MsgSend":
-				const creater = new Transaction.Creater()
-				creater.setAmount(fromAmountToDollars(data.amount, this.remoteConfigsStore.prices).toFixed(2))
-				creater.addressInput.set(data.to)
+  async onRequest(
+    type: string,
+    data: { amount: Amount; to: string },
+    handler: acceptRejectType
+  ) {
+    switch (type) {
+      case "/cosmos.bank.v1beta1.MsgSend":
+        openSendRecap({
+          amount: fromAmountToDollars(
+            data.amount,
+            this.remoteConfigsStore.prices
+          ).toFixed(2),
+          to: data.to,
 
-				openSendRecap(creater, handler.accept, handler.reject)
-				break
-		}
-	}
+          // from: need default coin for send
+          onDone: handler.accept,
+          onReject: handler.reject,
+        });
+        break;
+    }
+  }
 }
