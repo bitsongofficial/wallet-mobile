@@ -116,7 +116,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
         },
       ],
       position: "absolute",
-      zIndex: 1000,
+      zIndex: 1,
       top: 70,
       width: "100%",
     };
@@ -302,6 +302,7 @@ const styles = StyleSheet.create({
   header: {
     marginLeft: 27.5,
     marginRight: 17,
+    zIndex: 5,
   },
 
   head: {
