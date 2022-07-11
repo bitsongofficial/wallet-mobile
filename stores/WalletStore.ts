@@ -1,7 +1,7 @@
-import {autorun, flow, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
+import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CosmosWalletGenerator, prefixToCoin } from "core/storing/Wallet";
-import { Wallet, WalletTypes } from "core/types/storing/Generic";
+import { WalletTypes } from "core/types/storing/Generic";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import { PermissionsAndroid } from "react-native";
 import { ExportKeyRingData, QRCodeSharedData, WCExportKeyRingDatasResponse } from "core/types/storing/Keplr";
@@ -9,21 +9,19 @@ import WalletConnect from "@walletconnect/client";
 import { Counter, ModeOfOperation } from "aes-js"
 import { AskPinMnemonicStore } from "core/storing/MnemonicStore";
 import { SupportedCoinsMap } from "constants/Coins";
-import uuid from 'react-native-uuid';
-import { argon2Encode, argon2Verify } from "utils/argon";
-import { askPin } from "navigation/AskPin";
 import { getPrefixFromAddress } from "core/utils/Address";
 import { PublicWallet } from "core/storing/Generic";
+import SettingsStore from "./SettingsStore";
 
-const stored_wallets_path = "stored_wallets"
 const cosmos_mnemonic_prefix = "mnemonic_"
-const pin_hash_path = "pin_hash"
 
-interface Profile {
+export interface Profile {
   name: string,
   type: WalletTypes,
   data: any,
 }
+
+type profileIndexer = number | Profile | ProfileWallets
 
 export interface ProfileWallets {
   profile: Profile,
@@ -31,8 +29,7 @@ export interface ProfileWallets {
 }
 
 export default class WalletStore {
-  private walletsHanlder: IReactionDisposer
-  private firstLoadHandler: IReactionDisposer
+  private firstLoadHandler?: IReactionDisposer = undefined
   private walletSetUpPin: string | undefined
 
   activeProfile: Profile | null = null
@@ -43,95 +40,12 @@ export default class WalletStore {
   firstLoad = false
   loadedFromMemory = false
 
-  constructor(private remoteConfigs: RemoteConfigsStore) {
+  constructor(private settings: SettingsStore, private remoteConfigs: RemoteConfigsStore) {
     makeAutoObservable(this, {}, { autoBind: true })
 
     autorun(() =>
     {
       this.setUpWallets()
-    })
-
-    this.walletsHanlder = reaction(
-      () => JSON.stringify(toJS(this.profiles)),
-      async (json) =>
-      {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-        )
-        if (granted === PermissionsAndroid.RESULTS.GRANTED)
-        {
-          AsyncStorage.setItem(stored_wallets_path, json)
-        }
-      }
-    )
-  }
-
-  async loadWallets() {
-    this.firstLoadHandler = autorun(() =>
-    {
-      if(this.remoteConfigs.firstLoad) {
-        this.loadWalletsInner()
-        this.firstLoadHandler()
-      }
-    })
-  }
-
-  async setPin(pin: string): Promise<void> {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-    )
-    if (granted === PermissionsAndroid.RESULTS.GRANTED)
-    {
-      const encodedHash = await argon2Encode(pin)
-      await AsyncStorage.setItem(pin_hash_path, encodedHash)
-    }
-  }
-
-  async verifyPin(pin: string): Promise<boolean> {
-    if(pin == "") return false
-    try
-    {
-      const storedHash = await AsyncStorage.getItem(pin_hash_path)
-      if(storedHash)
-      {
-        return await argon2Verify(pin, storedHash)
-      }
-      else
-      {
-        this.setPin(pin)
-        return true
-      }
-    }
-    catch(e)
-    {
-    }
-    return false
-  }
-
-  async loadWalletsInner()
-  {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
-    )
-    if(granted === PermissionsAndroid.RESULTS.GRANTED)
-    {
-      const serializedWalletsRaw = await AsyncStorage.getItem(stored_wallets_path)
-      if(serializedWalletsRaw != null)
-      {
-        const serializedWallets = JSON.parse(serializedWalletsRaw) as Array<Profile>
-        if(serializedWallets != null)
-        {
-          runInAction(() =>
-          {
-            this.profiles.splice(0, this.profiles.length, ...serializedWallets)
-            if(this.profiles.length > 0) this.activeProfile = this.profiles[0]
-          })
-        }
-      }
-    }
-    runInAction(() =>
-    {
-      this.loadedFromMemory = true
     })
   }
 
@@ -159,14 +73,14 @@ export default class WalletStore {
         if (connector.connected) {
           await connector.killSession();
         }
-    
+
         await new Promise<void>((resolve, reject) => {
           connector.on("session_request", (error) => {
             if (error) {
               reject(error)
             } else {
               connector.approveSession({ accounts: [], chainId: 77777 })
-      
+
               resolve()
             }
           })
@@ -199,7 +113,7 @@ export default class WalletStore {
         ) as ExportKeyRingData[]
 
         const walletsLoading: Promise<void>[] = []
-        const actualPin = pin ?? await askPin()
+        const actualPin = pin ?? await this.settings.askPin()
         exportedKeyRingDatas.forEach(keyRingData =>
           {
             // We are considering just mnemonic wallets for now because we need to focus on other tasks
@@ -230,8 +144,8 @@ export default class WalletStore {
     {
       const mnemonicString = mnemonic.join(" ")
       const mnemonicPath = cosmos_mnemonic_prefix + name
-      const mnemonicStore = new AskPinMnemonicStore(mnemonicPath, askPin)
-      const actualPin = pin ?? await askPin()
+      const mnemonicStore = new AskPinMnemonicStore(mnemonicPath, this.settings.askPin)
+      const actualPin = pin ?? await this.settings.askPin()
       mnemonicStore.Unlock(actualPin)
       await mnemonicStore.Set(mnemonicString)
       mnemonicStore.Lock()
@@ -266,7 +180,7 @@ export default class WalletStore {
     }
   }
 
-  private resolveProfile(profile: number | Profile | ProfileWallets)
+  private resolveProfile(profile: profileIndexer)
   {
     let actualProfile: Profile = profile as Profile
     const inputProfile = profile as any
@@ -275,7 +189,7 @@ export default class WalletStore {
     return actualProfile
   }
 
-  changeActive(profile: number | Profile | ProfileWallets | null)
+  changeActive(profile: profileIndexer | null)
   {
     if(profile == null) return
     this.activeProfile = this.resolveProfile(profile)
@@ -307,7 +221,7 @@ export default class WalletStore {
     if(this.profiles.length > 0)
     {
       const wallets: ProfileWallets[] = []
-      const pin = this.walletSetUpPin ?? await askPin()
+      const pin = this.walletSetUpPin ?? await this.settings.askPin()
       this.walletSetUpPin = undefined
       await Promise.all(toJS(this.profiles).map(async profile =>
       {
@@ -315,7 +229,7 @@ export default class WalletStore {
         {
           case WalletTypes.COSMOS:
             const cosmosWallets: SupportedCoinsMap = {}
-            const store = new AskPinMnemonicStore(profile.data.mnemonicPath, askPin)
+            const store = new AskPinMnemonicStore(profile.data.mnemonicPath, this.settings.askPin)
             store.Unlock(pin)
             const addressesWaitings: Promise<string>[] = []
             for(const chain of this.remoteConfigs.enabledCoins)
@@ -374,5 +288,17 @@ export default class WalletStore {
   get activeWallet()
   {
     return this.wallets.find(w => w.profile.name == this.activeProfile?.name) ?? null
+  }
+
+  changeProfileName(profile: profileIndexer, name: string)
+  {
+    const p = this.resolveProfile(profile)
+    p.name = name
+  }
+
+  changeActiveProfileName(name: string)
+  {
+    if(this.activeProfile == null) return
+    this.changeProfileName(this.activeProfile, name)
   }
 }

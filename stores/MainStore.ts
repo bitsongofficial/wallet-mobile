@@ -5,20 +5,25 @@ import WalletStore from "./WalletStore";
 import CoinStore from "./CoinStore";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import DappConnectionStore from "./DappConnectionStore";
+import LocalStorageManager from "./LocalStorageManager";
 
 export default class MainStore {
   auth = null;
   configs = {
     remote: new RemoteConfigsStore(),
   };
-  wallet = new WalletStore(this.configs.remote);
   settings = new SettingsStore();
+  wallet = new WalletStore(this.settings, this.configs.remote);
   coin = new CoinStore(this.wallet, this.configs.remote);
   dapp = new DappConnectionStore(this.wallet, this.coin, this.configs.remote);
+  localStorageManager = new LocalStorageManager(this.wallet, this.dapp, this.settings, this.configs.remote)
 
   user: null | User = new User({
     _id: "1234",
     address: "bitsong16h2ry9axyvzwkftv93h6nusdqeqdn552skxxtw",
+    avatar: null,
+    firstName: "",
+    lastName: "",
   }); //  null;
 
   constructor() {
