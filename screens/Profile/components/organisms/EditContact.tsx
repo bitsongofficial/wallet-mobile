@@ -1,190 +1,132 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { SharedValue } from "react-native-reanimated";
+import { useCallback, useMemo, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { IPerson } from "classes/types";
-import { useStore } from "hooks";
 import { COLOR, InputHandler } from "utils";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { BottomSheet } from "components/moleculs";
 import { Button, ButtonBack, Icon2 } from "components/atoms";
-import { useBottomSheetBackButton } from "../../hooks";
 import { Search, Title } from "../atoms";
 import { RectButton } from "react-native-gesture-handler";
 import { Steps } from "classes";
-import { useNavigation } from "@react-navigation/native";
 import { ButtonAvatar } from "../moleculs";
 import { runInAction } from "mobx";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "types";
 
 type Props = {
   contact: IPerson | null;
-  isOpen?: boolean;
-  animatedPosition?: SharedValue<number>;
-  backgroundStyle: StyleProp<
-    Omit<ViewStyle, "bottom" | "left" | "position" | "right" | "top">
-  >;
-  onClose?(): void;
+  steps: Steps<"Data" | "Photo">;
+  close(): void;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
-export default observer<Props>(
-  ({ backgroundStyle, animatedPosition, onClose, contact, isOpen }) => {
-    const { contacts } = useStore();
+export default observer<Props>(({ close, contact, steps, navigation }) => {
+  const goBack = useCallback(
+    () => (steps.active > 0 ? steps.goBack() : close()),
+    [steps.active]
+  );
 
-    // --------- Steps ----------
+  const inputAddress = useMemo(
+    () => new InputHandler(contact?.address),
+    [contact?.address]
+  );
+  const inputNickname = useMemo(
+    () => new InputHandler(contact?.nickname),
+    [contact?.nickname]
+  );
 
-    const steps = useMemo(() => new Steps(["Data", "Photo"]), []);
+  const navToScan = useCallback(
+    () => navigation.push("ScannerQR", { onBarCodeScanned: inputAddress.set }),
+    []
+  );
 
-    const goBack = useCallback(
-      () => (steps.active > 0 ? steps.goBack() : close()),
-      [steps.active]
-    );
+  // ------- Image ----------
 
-    // ------ BottomSheet -------
+  const [image, setImage] = useState<string | null>(null);
 
-    const snapPoints = useMemo(() => {
-      switch (steps.title) {
-        case "Data":
-          return [460];
-        case "Photo":
-        default:
-          return [375];
-      }
-    }, [steps.title]);
+  const source = useMemo(
+    () => (contact?.avatar || image ? { uri: image || contact?.avatar } : null),
+    [image]
+  );
 
-    const bottomSheet = useRef<BottomSheetMethods>(null);
+  // -------------------------
 
-    const close = () => bottomSheet.current?.close();
-    const open = (index: number) => bottomSheet.current?.snapToIndex(index);
-
-    useEffect(() => (isOpen ? open(0) : close()), [isOpen]);
-
-    const handleClose = useCallback(() => onClose && onClose(), [onClose]);
-
-    useBottomSheetBackButton(isOpen, handleClose);
-
-    // -------------------------
-
-    const inputAddress = useMemo(
-      () => new InputHandler(contact?.address),
-      [contact?.address]
-    );
-    const inputNickname = useMemo(
-      () => new InputHandler(contact?.nickname),
-      [contact?.nickname]
-    );
-
-    const navigation = useNavigation();
-    const navToScan = useCallback(
-      () =>
-        navigation.push("ScannerQR", { onBarCodeScanned: inputAddress.set }),
-      []
-    );
-
-    // ------- Image ----------
-
-    const [image, setImage] = useState<string | null>(null);
-
-    const source = useMemo(
-      () =>
-        contact?.avatar || image ? { uri: image || contact?.avatar } : null,
-      [image]
-    );
-
-    // -------------------------
-
-    const save = useCallback(() => {
-      runInAction(() => {
-        if (contact) {
-          contact.address = inputAddress.value;
-          contact.nickname = inputNickname.value;
-          if (image) {
-            contact.avatar = image;
-          }
+  const save = useCallback(() => {
+    runInAction(() => {
+      if (contact) {
+        contact.address = inputAddress.value;
+        contact.nickname = inputNickname.value;
+        if (image) {
+          contact.avatar = image;
         }
-      });
-      close();
-    }, []);
+      }
+    });
+    close();
+  }, []);
 
-    return (
-      <BottomSheet
-        enablePanDownToClose
-        snapPoints={snapPoints}
-        ref={bottomSheet}
-        backgroundStyle={backgroundStyle}
-        animatedPosition={animatedPosition}
-        onClose={handleClose}
-        index={-1}
-      >
-        <View style={styles.container}>
-          {steps.title === "Data" && (
-            <>
-              <Title style={styles.title}>Edit Contact</Title>
+  return (
+    <View style={styles.container}>
+      {steps.title === "Data" && (
+        <>
+          <Title style={styles.title}>Edit Contact</Title>
 
-              <View style={{ marginBottom: 24 }}>
-                <Text style={styles.label}>Edit address</Text>
-                <Search
-                  value={inputAddress.value}
-                  onChangeText={inputAddress.set}
-                  loupe={false}
-                  Right={
-                    <RectButton style={styles.button_qr} onPress={navToScan}>
-                      <Icon2
-                        name="qr_code"
-                        stroke={COLOR.RoyalBlue}
-                        size={22}
-                      />
-                    </RectButton>
-                  }
-                />
-              </View>
-
-              <View>
-                <Text style={styles.label}>Edit name</Text>
-                <Search
-                  value={inputNickname.value}
-                  onChangeText={inputNickname.set}
-                  loupe={false}
-                />
-              </View>
-            </>
-          )}
-
-          {steps.title === "Photo" && (
-            <>
-              <Title style={styles.title}>Edit Profile Photo</Title>
-
-              <View style={styles.avatar}>
-                <ButtonAvatar source={source} onChange={setImage} />
-              </View>
-            </>
-          )}
-
-          <View style={styles.footer}>
-            <View style={styles.buttons}>
-              <ButtonBack onPress={goBack} />
-
-              {steps.title === "Data" ? (
-                <Button
-                  text="Continue"
-                  onPress={steps.next}
-                  textStyle={styles.buttonText}
-                  contentContainerStyle={styles.buttonContent}
-                />
-              ) : (
-                <Button
-                  onPress={save}
-                  text="Save"
-                  textStyle={styles.buttonText}
-                  contentContainerStyle={styles.buttonContent}
-                />
-              )}
-            </View>
+          <View style={{ marginBottom: 24 }}>
+            <Text style={styles.label}>Edit address</Text>
+            <Search
+              value={inputAddress.value}
+              onChangeText={inputAddress.set}
+              loupe={false}
+              Right={
+                <RectButton style={styles.button_qr} onPress={navToScan}>
+                  <Icon2 name="qr_code" stroke={COLOR.RoyalBlue} size={22} />
+                </RectButton>
+              }
+            />
           </View>
+
+          <View>
+            <Text style={styles.label}>Edit name</Text>
+            <Search
+              value={inputNickname.value}
+              onChangeText={inputNickname.set}
+              loupe={false}
+            />
+          </View>
+        </>
+      )}
+
+      {steps.title === "Photo" && (
+        <>
+          <Title style={styles.title}>Edit Profile Photo</Title>
+          <View style={styles.avatar}>
+            <ButtonAvatar source={source} onChange={setImage} />
+          </View>
+        </>
+      )}
+
+      <View style={styles.footer}>
+        <View style={styles.buttons}>
+          <ButtonBack onPress={goBack} />
+
+          {steps.title === "Data" ? (
+            <Button
+              text="Continue"
+              onPress={steps.next}
+              textStyle={styles.buttonText}
+              contentContainerStyle={styles.buttonContent}
+            />
+          ) : (
+            <Button
+              onPress={save}
+              text="Save"
+              textStyle={styles.buttonText}
+              contentContainerStyle={styles.buttonContent}
+            />
+          )}
         </View>
-      </BottomSheet>
-    );
-  }
-);
+      </View>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
