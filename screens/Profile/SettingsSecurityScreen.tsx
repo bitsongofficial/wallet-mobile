@@ -19,13 +19,13 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
 
   const goBack = useCallback(() => navigation.goBack(), []);
 
-  const toggleEnablePIN = useCallback(
-    () => settings.setPin({ enable: !settings.pin.enable }),
-    []
-  );
+  // const toggleEnablePIN = useCallback(
+  //   () => settings.setPin({ enable: !settings.pin.enable }),
+  //   []
+  // );
 
   const toggleEnableBiometric = useCallback(
-    () => settings.setPin({ biometric_enable: !settings.pin.biometric_enable }),
+    () => settings.setBiometric(!settings.biometric_enable),
     []
   );
   const goToChangePin = useCallback(() => {}, []);
@@ -41,7 +41,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
             <ScrollView>
               <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>PIN settings</Subtitle>
-                <ListButton
+                {/* <ListButton
                   icon="lock_key_open"
                   text="Enable PIN code"
                   onPress={toggleEnablePIN}
@@ -52,7 +52,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
                     />
                   }
                   // Right={}
-                />
+                /> */}
                 <ListButton icon="password" text="Change PIN" arrow />
               </View>
 
@@ -69,7 +69,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
                   onPress={toggleEnableBiometric}
                   Right={
                     <Switch
-                      active={settings.pin.biometric_enable}
+                      active={settings.biometric_enable}
                       onPress={toggleEnableBiometric}
                     />
                   }

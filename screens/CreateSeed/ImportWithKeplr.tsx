@@ -16,7 +16,7 @@ import { useLoading, useStore } from "hooks";
 type Props = NativeStackScreenProps<RootStackParamList, "ImportWithKeplr">;
 
 export default observer<Props>(({ navigation, route }) => {
-  const { wallet } = useStore();
+  const { wallet, settings } = useStore();
   const controller = useImportWithKeplr();
   const [goBack, goNext] = useFooter(controller.steps);
   const globalLoader = useLoading();
@@ -26,7 +26,7 @@ export default observer<Props>(({ navigation, route }) => {
   }, [route.params.data]);
   const save = async () => {
     globalLoader.open();
-    await wallet.setPin(controller.pin.value)
+    await settings.setPin(controller.pin.value)
     await wallet.importFromKeplr("keplr", route.params.data);
     globalLoader.close();
     goNext();

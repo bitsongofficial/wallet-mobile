@@ -19,7 +19,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "ImportFromSeed">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useImportFromSeed();
-  const { wallet } = useStore();
+  const { wallet, settings } = useStore();
   const [goBack, goNext] = useFooter(controller.steps);
   const globalLoader = useLoading();
 
@@ -36,7 +36,7 @@ export default observer<Props>(({ navigation }) => {
 
   const saveWallet = async () => {
     globalLoader.open();
-    await wallet.setPin(controller.pin.value)
+    await settings.setPin(controller.pin.value)
     await wallet.newCosmosWallet(
       controller.walletName.value,
       controller.phrase.words,
