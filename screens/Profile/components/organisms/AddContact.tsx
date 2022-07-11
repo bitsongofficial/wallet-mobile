@@ -1,149 +1,137 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { SharedValue } from "react-native-reanimated";
+import { useCallback, useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { COLOR, InputHandler } from "utils";
 import * as Clipboard from "expo-clipboard";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { Steps } from "classes";
-import { BottomSheet } from "components/moleculs";
-import { useBottomSheetBackButton } from "../../hooks";
 import { Button, ButtonBack, Icon2 } from "components/atoms";
 import { Search, Subtitle, Title } from "../atoms";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { ButtonAvatar } from "../moleculs";
+import { useStore } from "hooks";
 
 type Props = {
-  isOpen?: boolean;
-  animatedPosition?: SharedValue<number>;
-  backgroundStyle: StyleProp<
-    Omit<ViewStyle, "bottom" | "left" | "position" | "right" | "top">
-  >;
-  onClose?(): void;
+  close(): void;
 };
 
-export default observer<Props>(
-  ({ backgroundStyle, animatedPosition, isOpen, onClose }) => {
-    // ----------- Input ----------
+export default observer<Props>(({ close }) => {
+  const { contacts } = useStore();
+  // ----------- Input ----------
 
-    const inputWallet = useMemo(() => new InputHandler(), []);
-    const inputName = useMemo(() => new InputHandler(), []);
+  const inputWallet = useMemo(() => new InputHandler(), []);
+  const inputName = useMemo(() => new InputHandler(), []);
 
-    const pasteFromClipboard = useCallback(
-      async () => inputWallet.set(await Clipboard.getStringAsync()),
-      []
-    );
+  const pasteFromClipboard = useCallback(
+    async () => inputWallet.set(await Clipboard.getStringAsync()),
+    []
+  );
 
-    // ------ BottomSheet -------
+  // ------- Image ----------
 
-    const [snapPoints, setSnapPoints] = useState([350]);
+  const [image, setImage] = useState<string>();
 
-    const bottomSheet = useRef<BottomSheetMethods>(null);
+  const source = useMemo(() => (image ? { uri: image } : null), [image]);
 
-    const close = () => bottomSheet.current?.close();
-    const open = (index: number) => bottomSheet.current?.snapToIndex(index);
+  // --------- Steps ------------
 
-    useEffect(() => {
-      isOpen ? open(0) : close();
-    }, [isOpen]);
+  const steps = useMemo(() => new Steps(["Add", "Name", "Avatar"]), []);
+  const goBack = useCallback(
+    () => (steps.active === -1 ? close() : steps.goBack()),
+    []
+  );
 
-    // --------- Steps ------------
-
-    const steps = useMemo(() => new Steps(["Add", "Name", "Avatar"]), []);
-
-    const openStepAdd = useCallback(() => {
-      steps.goTo("Add");
-    }, []);
-
-    const openStepName = useCallback(() => {
+  const next = useCallback(() => {
+    if (steps.title === "Add") {
       steps.goTo("Name");
-    }, []);
+    } else if (steps.title === "Name") {
+      steps.goTo("Avatar");
+    }
+  }, []);
 
-    const openAvatar = useCallback(() => {
-      steps.goTo("Name");
-    }, []);
+  const createContact = useCallback(() => {
+    contacts.add({
+      address: inputWallet.value,
+      nickname: inputName.value,
+      avatar: image, //  if skip create avatar neededr
+    });
+    close();
+  }, [image]);
 
-    // --------- Close -----------
-
-    const handleClose = useCallback(() => {
-      onClose && onClose();
-      openStepAdd();
-    }, [onClose]);
-
-    useBottomSheetBackButton(isOpen, handleClose);
-
-    return (
-      <BottomSheet
-        enablePanDownToClose
-        snapPoints={snapPoints}
-        ref={bottomSheet}
-        backgroundStyle={backgroundStyle}
-        animatedPosition={animatedPosition}
-        onClose={handleClose}
-        index={-1}
-      >
-        <View style={styles.container}>
-          {steps.title === "Add" && (
-            <>
-              <Title style={styles.title}>Add Contact</Title>
-              <Search
-                loupe={false}
-                style={styles.search}
-                placeholder="Public Address"
-                value={inputWallet.value}
-                onChangeText={inputWallet.set}
-                Right={
-                  <TouchableOpacity style={styles.iconTouchable}>
-                    <Icon2 name="qr_code" size={18} stroke={COLOR.Marengo} />
-                  </TouchableOpacity>
-                }
-              />
-            </>
-          )}
-          {steps.title === "Name" && (
-            <>
-              <Title style={styles.title}>Name your Contact</Title>
-              <Search
-                loupe={false}
-                value={inputName.value}
-                onChangeText={inputName.set}
-                style={styles.search}
-                placeholder="Write a name"
-              />
-            </>
-          )}
-
+  return (
+    <View style={styles.container}>
+      {steps.title === "Add" && (
+        <>
+          <Title style={styles.title}>Add Contact</Title>
+          <Search
+            loupe={false}
+            style={styles.search}
+            placeholder="Public Address"
+            value={inputWallet.value}
+            onChangeText={inputWallet.set}
+            Right={
+              <TouchableOpacity style={styles.iconTouchable}>
+                <Icon2 name="qr_code" size={18} stroke={COLOR.RoyalBlue} />
+              </TouchableOpacity>
+            }
+          />
           <Subtitle style={styles.subtitle}>
             Access VIP experiences, exclusive previews,{"\n"}
             finance your own and have your say.
           </Subtitle>
+        </>
+      )}
 
-          <View style={styles.footer}>
-            {steps.title === "Add" ? (
-              <View style={styles.footer_1}>
-                <Button
-                  text="Continue"
-                  onPress={openStepName}
-                  contentContainerStyle={styles.buttonContent}
-                  textStyle={styles.buttonText}
-                />
-              </View>
-            ) : (
-              <View style={styles.footer_2}>
-                <ButtonBack onPress={steps.goBack} />
-                <Button
-                  text="Continue"
-                  onPress={close}
-                  contentContainerStyle={styles.buttonContent}
-                  textStyle={styles.buttonText}
-                />
-              </View>
-            )}
+      {steps.title === "Name" && (
+        <>
+          <Title style={styles.title}>Name your Contact</Title>
+          <Search
+            loupe={false}
+            value={inputName.value}
+            onChangeText={inputName.set}
+            style={styles.search}
+            placeholder="Write a name"
+          />
+          <Subtitle style={styles.subtitle}>
+            Access VIP experiences, exclusive previews,{"\n"}
+            finance your own and have your say.
+          </Subtitle>
+        </>
+      )}
+
+      {steps.title === "Avatar" && (
+        <>
+          <Title style={styles.title}>Edit Profile Photo</Title>
+
+          <View style={styles.avatar}>
+            <ButtonAvatar source={source} onChange={setImage} />
           </View>
+        </>
+      )}
+
+      <View style={styles.footer}>
+        <View style={styles.footer_2}>
+          <ButtonBack onPress={goBack} />
+          {steps.title !== "Avatar" ? (
+            <Button
+              text="Continue"
+              disable={steps.title === "Name" && inputName.value.length < 4}
+              onPress={next}
+              contentContainerStyle={styles.buttonContent}
+              textStyle={styles.buttonText}
+            />
+          ) : (
+            <Button
+              text={image ? "Save" : "Skip"}
+              onPress={createContact}
+              contentContainerStyle={styles.buttonContent}
+              textStyle={styles.buttonText}
+            />
+          )}
         </View>
-      </BottomSheet>
-    );
-  }
-);
+      </View>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -168,6 +156,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
 
     marginBottom: 18,
+  },
+
+  avatar: {
+    alignItems: "center",
   },
 
   search: {
