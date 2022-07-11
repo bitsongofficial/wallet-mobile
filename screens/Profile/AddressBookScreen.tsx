@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   ListRenderItem,
   SectionList,
@@ -20,33 +20,28 @@ import { observer } from "mobx-react-lite";
 import { observable } from "mobx";
 import { RootStackParamList } from "types";
 import { useStore } from "hooks";
-import { COLOR, hexAlpha, InputHandler } from "utils";
+import { COLOR, hexAlpha } from "utils";
 import { Button, Icon2, ThemedGradient } from "components/atoms";
 import { Circles, Search, Subtitle, Title } from "./components/atoms";
 import { ContactItem } from "./components/moleculs";
-import { AddContact, EditContact, RemoveContact } from "./components/organisms";
 import Animated, {
   interpolate,
   useAnimatedStyle,
-  useSharedValue,
 } from "react-native-reanimated";
 import { IPerson } from "classes/types";
+import { useBottomSheetModals } from "./hooks";
 
 type Props = NativeStackScreenProps<RootStackParamList, "AddressBook">;
 
-type ModalType = "Edit" | "Add" | "Remove";
-
 export default observer<Props>(function AddressBookScreen({ navigation }) {
   const { contacts } = useStore();
+  const [position, openModal] = useBottomSheetModals();
 
   // ------- Wallets ------
   const mapItemsRef = useMemo(
     () => observable.map<IPerson, React.RefObject<Swipeable>>(),
     []
   );
-
-  const [removed, setRemoved] = useState<IPerson | null>(null);
-  const [edited, setEdited] = useState<IPerson | null>(null);
 
   const renderContact = useCallback<ListRenderItem<IPerson>>(
     ({ item }) => (
@@ -55,8 +50,8 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
           value={item}
           onPress={() => {}}
           onPressStar={contacts.addToFavorites}
-          onPressDelete={setRemoved}
-          onPressEdit={setEdited}
+          onPressDelete={openModal.removeContact}
+          onPressEdit={openModal.editContact}
           mapItemsRef={mapItemsRef}
         />
       </View>
@@ -77,35 +72,13 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 
   const goBack = useCallback(() => navigation.goBack(), []);
 
-  // ------- BottomSheet ----------
-
-  const currentPosition = useSharedValue(0);
   const animStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(currentPosition.value, [0, 350], [0, 0.5]);
+    const opacity = interpolate(position.value, [0, 350], [0, 0.5]);
     return {
       flex: 1,
       opacity,
     };
   });
-
-  const [modal, setModal] = useState<ModalType | null>(null);
-  const closeModal = useCallback((type: ModalType | null) => {
-    setModal((value) => (value !== type && type !== null ? value : null));
-    setRemoved(null);
-    setEdited(null);
-  }, []);
-
-  const openAdd = useCallback(() => setModal("Add"), []);
-  const openEdit = useCallback(() => setModal("Edit"), []);
-  const openRemove = useCallback(() => setModal("Remove"), []);
-
-  useEffect(() => {
-    removed && openRemove();
-  }, [removed]);
-
-  useEffect(() => {
-    edited && openEdit();
-  }, [edited]);
 
   useEffect(() => contacts.inputSearch.clear, []);
 
@@ -120,7 +93,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
               onPressBack={goBack}
               style={[styles.header, styles.wrapper]}
               title="Address Book"
-              onPressPlus={openAdd}
+              onPressPlus={openModal.addContact}
             />
             <View style={[styles.wrapper]}>
               <Search
@@ -165,7 +138,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
             <View style={styles.buttonContainer}>
               <Button
                 text="Add Contact"
-                onPress={openAdd}
+                onPress={openModal.addContact}
                 textStyle={styles.buttonText}
                 contentContainerStyle={styles.buttonContent}
                 mode="fill"
@@ -174,29 +147,6 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
           </Animated.View>
         </SafeAreaView>
       </ThemedGradient>
-
-      <AddContact
-        isOpen={modal === "Add"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("Add")}
-      />
-
-      <RemoveContact
-        contact={removed}
-        isOpen={modal === "Remove"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("Remove")}
-      />
-
-      <EditContact
-        contact={edited}
-        isOpen={modal === "Edit"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("Edit")}
-      />
     </>
   );
 });
