@@ -16,7 +16,7 @@ type ButtonProps = {
   style?: StyleProp<ViewStyle>;
   text?: string;
   stroke?: string;
-  textStyle: StyleProp<TextStyle>;
+  textStyle?: StyleProp<TextStyle>;
 };
 
 export default ({ onPress, style, text, textStyle, stroke }: ButtonProps) => {

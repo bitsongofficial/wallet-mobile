@@ -1,10 +1,8 @@
-import TransactionCreater from "classes/Transaction/Creater";
 import useGlobalBottomsheet from "hooks/useGlobalBottomsheet";
 import { InputHandler } from "utils";
 import { Footer } from "./components/atoms";
 import { StyleSheet, View } from "react-native";
 import Recap from "components/organisms/Recap";
-import { store } from "stores/Store";
 import { ICoin } from "classes/types";
 
 type SendRecapConfig = {
@@ -22,12 +20,10 @@ export async function openSendRecap({
   onDone,
   onReject,
 }: SendRecapConfig) {
-  const flags = {
-    accepted: false,
-  };
+  const flags = { accepted: false };
 
-  const { coin } = store;
-  const globalBottomsheet = useGlobalBottomsheet();
+  const gbs = useGlobalBottomsheet();
+
   const send = () => {
     try {
       flags.accepted = true;
@@ -35,23 +31,25 @@ export async function openSendRecap({
     } catch (e) {
       console.log(e);
     }
-    globalBottomsheet.close();
+    gbs.close();
+  };
+
+  const handleClose = () => {
+    if (!flags.accepted) {
+      try {
+        onReject();
+      } catch (e) {
+        console.log(e);
+      }
+    }
   };
 
   const memo = new InputHandler();
 
-  await globalBottomsheet.setProps({
+  gbs.setProps({
     snapPoints: [500],
-    onClose: () => {
-      if (!flags.accepted) {
-        try {
-          onReject();
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    },
-    children: (
+    onClose: handleClose,
+    children: () => (
       <View style={styles.wrapper}>
         <View style={styles.spacer}>
           <Recap
@@ -68,7 +66,7 @@ export async function openSendRecap({
       </View>
     ),
   });
-  globalBottomsheet.expand();
+  gbs.expand();
 }
 
 const styles = StyleSheet.create({

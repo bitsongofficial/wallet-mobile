@@ -1,9 +1,7 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Input } from "components/atoms";
 import { COLOR, InputHandler } from "utils";
-import { Coin } from "classes";
 import { CardWillSend } from "components/moleculs";
-import { createContext, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { ICoin } from "classes/types";
 
@@ -29,7 +27,6 @@ export default observer(function Recap({
   memoInput,
   bottomSheet,
 }: Props) {
-  console.log("coin", coin);
   return (
     <View style={[styles.container, style]}>
       <CardWillSend
@@ -51,18 +48,6 @@ export default observer(function Recap({
     </View>
   );
 });
-
-// Example by
-
-const testContext = createContext<Props>({}); //it's example. context != Props, just include data
-
-export function withAnyContext(
-  Component: React.Component | React.FunctionComponent
-) {
-  const { ...props } = useContext(testContext);
-
-  return <Component {...props} />;
-}
 
 const styles = StyleSheet.create({
   container: {},

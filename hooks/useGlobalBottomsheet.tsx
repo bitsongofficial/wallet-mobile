@@ -35,6 +35,11 @@ class GlobalBottomSheet implements BottomSheetMethods {
     this.props = { ...this.props, ...props };
   }
 
+  clear() {
+    this.props = {};
+    this.snapToIndex(-1);
+  }
+
   get children() {
     return this.props.children || this.defaultProps.children;
   }

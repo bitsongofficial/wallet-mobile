@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { CoinStat, Tabs } from "components/organisms";
@@ -42,55 +43,29 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const callback = useCallback(() => {}, []);
 
   // ------------- bottom sheet -----------
-  const globalBottomsheet = useGlobalBottomsheet();
+  const gbs = useGlobalBottomsheet();
 
-  const closeGlobalBottomSheet = useCallback(
-    () => globalBottomsheet.close(),
-    []
-  );
+  const closeGlobalBottomSheet = useCallback(() => gbs.close(), []);
 
   const openReceive = useCallback(() => {
-    globalBottomsheet.setProps({
+    gbs.setProps({
       snapPoints: ["85%"],
-      children: (
+      children: () => (
         <ReceiveModal
           style={sendCoinContainerStyle}
           close={closeGlobalBottomSheet}
         />
       ),
     });
-    globalBottomsheet.snapToIndex(0);
-  }, []);
-
-  const openToolbar = useCallback(() => {
-    globalBottomsheet.setProps({
-      snapPoints: ["70%"],
-      children: (
-        <ToolbarFull
-          style={styles.toolbar_full}
-          onPressSend={openSend}
-          onPressReceive={openReceive}
-          onPressInquire={callback}
-          onPressScan={callback}
-          onPressClaim={callback}
-          onPressStake={callback}
-          onPressUnstake={callback}
-          onPressRestake={callback}
-          onPressIssue={callback}
-          onPressMint={callback}
-          onPressBurn={callback}
-        />
-      ),
-    });
-    globalBottomsheet.expand();
+    gbs.snapToIndex(0);
   }, []);
 
   const openSend = useCallback(async () => {
-    await globalBottomsheet.setProps({
+    await gbs.setProps({
       snapPoints: ["85%"],
       $modal: true,
       keyboardBehavior: "fillParent",
-      children: (
+      children: () => (
         <SendModal
           style={sendCoinContainerStyle}
           close={closeGlobalBottomSheet}
@@ -98,22 +73,44 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.expand();
+    gbs.expand();
   }, []);
 
   const openScanner = useCallback(
     () =>
       navigation.navigate("ScannerQR", {
-        onBarCodeScanned: (uri) => {
-          try {
-            dapp.connect(uri);
-          } catch (e) {
-            console.log(e);
-          }
-        },
+        onBarCodeScanned: (uri) => dapp.connect(uri).catch(console.log),
       }),
     []
   );
+
+  const openToolbar = useCallback(() => {
+    const onPressScann = () => {
+      openScanner();
+      Platform.OS === "android" && gbs.close();
+    };
+
+    gbs.setProps({
+      snapPoints: ["70%"],
+      children: () => (
+        <ToolbarFull
+          style={styles.toolbar_full}
+          onPressSend={openSend}
+          onPressReceive={openReceive}
+          onPressInquire={undefined}
+          onPressScan={onPressScann}
+          onPressClaim={undefined}
+          onPressStake={undefined}
+          onPressUnstake={undefined}
+          onPressRestake={undefined}
+          onPressIssue={undefined}
+          onPressMint={undefined}
+          onPressBurn={undefined}
+        />
+      ),
+    });
+    gbs.expand();
+  }, []);
 
   const safeAreaInsets = useSafeAreaInsets();
   const sendCoinContainerStyle = useMemo(
@@ -123,10 +120,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const [isRefreshing, setRefreshing] = useState(false);
 
-  const onRefresh = useCallback(() => {
-    console.log("teste refresh");
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    wait(2000).then(() => setRefreshing(false));
+    await wait(2000);
+    setRefreshing(false);
   }, []);
 
   return (
@@ -156,7 +153,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
           <ToolbarShort
             style={styles.toolbar_short}
             onPressAll={openToolbar}
-            onPressInquire={callback}
+            onPressInquire={undefined}
             onPressReceive={openReceive}
             onPressScan={openScanner}
             onPressSend={openSend}
