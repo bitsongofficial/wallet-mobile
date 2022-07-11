@@ -18,6 +18,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal";
 import { useEffect } from "react";
+import { SendController } from "screens/SendModalScreens/classes";
 
 
 type ValueTabs = "Coins" | "Fan Tokens";
@@ -64,10 +65,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
       children: (
         <ToolbarFull
           style={styles.toolbar_full}
-          onPressSend={openSend}
+          onPressSend={coin.CanSend ? openSend : undefined}
           onPressReceive={openReceive}
           onPressInquire={callback}
-          onPressScan={callback}
+          onPressScan={coin.CanSend ? callback : undefined}
           onPressClaim={callback}
           onPressStake={callback}
           onPressUnstake={callback}
@@ -92,15 +93,18 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.expand();
+    globalBottomsheet.expand()
   }, []);
 
   const openScanner = useCallback(
-    () => navigation.navigate("ScannerQR", { onBarCodeScanned: (uri) =>
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: (uri: string) =>
       {
         try
         {
-          dapp.connect(uri)
+          if(uri.startsWith("wc"))
+          {
+            dapp.connect(uri)
+          }
         }
         catch(e)
         {
@@ -136,8 +140,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
             onPressAll={openToolbar}
             onPressInquire={callback}
             onPressReceive={openReceive}
-            onPressScan={openScanner}
-            onPressSend={openSend}
+            onPressScan={coin.CanSend ? openScanner : undefined}
+            onPressSend={coin.CanSend ? openSend : undefined}
           />
 
           <Tabs

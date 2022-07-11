@@ -8,9 +8,12 @@ import { useStore } from "hooks";
 import { COLOR, hexAlpha, wait } from "utils";
 import { Button, Icon2 } from "components/atoms";
 import { Header } from "./components/atoms";
-import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import { BottomSheetScrollView, TouchableOpacity } from "@gorhom/bottom-sheet";
 import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useEffect } from "react";
+import { trimAddress } from "utils/string";
+import { ScrollView } from "react-native-gesture-handler";
 
 type Props = {
   style: StyleProp<ViewStyle>;
@@ -18,29 +21,38 @@ type Props = {
 };
 
 export default observer(function ReceiveModal({ style, close }: Props) {
-  const { user } = useStore();
+  const { wallet } = useStore();
   const { screen } = useDimensions();
+  const [address, setAddress] = useState("")
 
   const insets = useSafeAreaInsets();
 
   const [isCopied, setCopied] = useState(false);
 
   const shortAddress = useMemo(() => {
-    const text = user?.data.address;
-    return text ? `${text.substring(0, 16)}..${text.slice(-7)}` : undefined;
-  }, [user?.data.address]);
+    if(address)
+    {
+      return address ? trimAddress(address) : undefined;
+    }
+    return ""
+  }, [address]);
 
   const copyToClipboard = useCallback(async () => {
-    if (user?.data.address) {
-      Clipboard.setString(user?.data.address);
+    if (address) {
+      Clipboard.setString(address);
       setCopied(true);
       await wait(3000);
       setCopied(false);
     }
-  }, [user?.data.address]);
+  }, [address]);
+
+  useEffect(() =>
+  {
+    if(wallet.activeWallet && wallet.activeWallet.wallets.btsg) (async() => setAddress(await wallet.activeWallet?.wallets.btsg?.Address()))()
+  }, [wallet.activeWallet, wallet.activeWallet?.wallets, wallet.activeWallet?.wallets.btsg])
 
   return (
-    <View style={[styles.wrapper, style]}>
+    <BottomSheetScrollView style={[styles.wrapper, style]}>
       <Header
         title="Qr Code"
         subtitle="Scan to receive import"
@@ -48,7 +60,7 @@ export default observer(function ReceiveModal({ style, close }: Props) {
       />
 
       <View style={styles.qr_code}>
-        <QRCode value={user?.data.address} size={screen.width * 0.7} />
+        <QRCode value={"btsg/receive/" + address} size={screen.width * 0.7} />
       </View>
 
       <Text style={styles.subtitle}>Copy address</Text>
@@ -70,7 +82,7 @@ export default observer(function ReceiveModal({ style, close }: Props) {
           textStyle={styles.buttonText}
         />
       </View>
-    </View>
+    </BottomSheetScrollView>
   );
 });
 

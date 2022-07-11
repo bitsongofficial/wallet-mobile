@@ -10,6 +10,7 @@ import { BottomSheet } from "components/moleculs";
 import { useBottomSheetBackButton } from "../../hooks";
 import { Button } from "components/atoms";
 import { Search, Subtitle, Title } from "../atoms";
+import { useLoading, useStore } from "hooks";
 
 type Props = {
   isOpen?: boolean;
@@ -22,6 +23,9 @@ type Props = {
 
 export default observer<Props>(
   ({ backgroundStyle, animatedPosition, isOpen, onClose }) => {
+
+    const {wallet, settings} = useStore()
+    const loading = useLoading()
     // ----------- Input ----------
 
     const inputWallet = useMemo(() => new InputHandler(), []);
@@ -39,7 +43,13 @@ export default observer<Props>(
 
     const close = () => bottomSheet.current?.close();
     const open = (index: number) => bottomSheet.current?.snapToIndex(index);
-
+    const saveWallet = async () =>
+    {
+      loading.open()
+      await wallet.newWatchWallet(inputName.value, inputWallet.value)
+      loading.close()
+      close()
+    }
     useEffect(() => {
       isOpen ? open(0) : close();
     }, [isOpen]);
@@ -123,10 +133,10 @@ export default observer<Props>(
                 textStyle={styles.buttonText}
               />
             )}
-            {steps.title === "Name" && (
+            {steps.title === "Name" && inputName.value.length > 3 && (
               <Button
                 text="Add Account"
-                onPress={close}
+                onPress={saveWallet}
                 contentContainerStyle={styles.buttonContent}
                 textStyle={styles.buttonText}
               />

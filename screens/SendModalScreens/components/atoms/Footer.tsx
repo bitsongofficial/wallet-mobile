@@ -3,7 +3,7 @@ import { Button, ButtonBack } from "components/atoms";
 
 type Props = {
   isShowBack?: boolean;
-  isShowCenter?: boolean;
+  isActiveCenter?: boolean;
   onPressBack?(): void;
   centerTitle?: string;
   onPressCenter?(): void;
@@ -15,7 +15,7 @@ export default function Footer({
   onPressCenter,
   centerTitle,
   isShowBack = true,
-  isShowCenter = true,
+  isActiveCenter = true,
   style,
 }: Props) {
   return (
@@ -25,12 +25,13 @@ export default function Footer({
           {isShowBack && <ButtonBack onPress={onPressBack} />}
         </View>
         <View style={styles.flex2}>
-          {isShowCenter && <Button
+          <Button
             text={centerTitle}
             contentContainerStyle={styles.buttonContent}
             textStyle={styles.buttonText}
             onPress={onPressCenter}
-          />}
+            disable={!isActiveCenter}
+          />
         </View>
         <View style={styles.flex1} />
       </View>

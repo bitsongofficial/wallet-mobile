@@ -3,6 +3,7 @@ import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 import { fromAmountToDollars } from "core/utils/Coin";
 import { makeAutoObservable } from "mobx";
 import { openSendRecap } from "screens/SendModalScreens/OpenSendRecap";
+import CoinStore from "./CoinStore";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
 
@@ -17,7 +18,7 @@ export default class DappConnectionStore {
 	  return true;
 	}
 
-	constructor(private walletStore: WalletStore, private remoteConfigsStore: RemoteConfigsStore) {
+	constructor(private walletStore: WalletStore, private coinStore: CoinStore, private remoteConfigsStore: RemoteConfigsStore) {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
@@ -52,7 +53,11 @@ export default class DappConnectionStore {
 				creater.setAmount(fromAmountToDollars(data.amount, this.remoteConfigsStore.prices).toFixed(2))
 				creater.addressInput.set(data.to)
 
-				openSendRecap(creater, handler.accept, handler.reject)
+				openSendRecap(creater, async () =>
+				{
+					await handler.accept()
+					this.coinStore.updateBalances()
+				}, handler.reject)
 				break
 		}
 	}

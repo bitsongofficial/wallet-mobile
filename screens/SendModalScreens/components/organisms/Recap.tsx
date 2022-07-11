@@ -8,6 +8,7 @@ import { Coin, Transaction } from "classes";
 import { COLOR, InputHandler } from "utils";
 import { SendController } from "screens/SendModalScreens/classes";
 import { fromAmountToCoin, fromCoinToDefaultDenom, fromDollarsToAmount } from "core/utils/Coin";
+import { trimAddress } from "utils/string";
 
 type Props = {
   creater: SendController["creater"];
@@ -68,7 +69,7 @@ export default observer<Props>(function CardWallet({
             address
           </Text>
           <Text style={[styles.text, theme.text.primary]}>
-            {addressInput.value}
+            {trimAddress(addressInput.value, 10)}
           </Text>
         </View>
       </Card>
