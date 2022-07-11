@@ -13,10 +13,16 @@ import {
   ChangeLanguage,
   ChangeWallet,
   AddAccount,
+  AddContact,
+  EditContact,
+  RemoveContact,
 } from "../components/organisms";
+import { IPerson } from "classes/types";
+import { useNavigation } from "@react-navigation/native";
 
 export default function useBottomSheetModals() {
   const gbs = useGlobalBottomsheet();
+  const navigation = useNavigation();
 
   const { screen } = useDimensions();
   const animatedPosition = useSharedValue(screen.height);
@@ -25,7 +31,6 @@ export default function useBottomSheetModals() {
 
   const changeAvatar = useCallback(() => {
     gbs.setProps({
-      enablePanDownToClose: true,
       snapPoints: [350],
       animatedPosition,
       backgroundStyle: styles.background,
@@ -37,49 +42,102 @@ export default function useBottomSheetModals() {
 
   const addWatchAccount = useCallback(() => {
     gbs.setProps({
-      enablePanDownToClose: true,
       snapPoints: [350],
       animatedPosition,
       backgroundStyle: styles.background,
-      android_keyboardInputMode: "adjustResize",
-      children: () => <AddWatchAccount close={close} />,
+
+      children: <AddWatchAccount close={close} />,
     });
     gbs.snapToIndex(0);
   }, []);
 
   const changeWallet = useCallback(() => {
     gbs.setProps({
-      enablePanDownToClose: true,
       snapPoints: ["95%"],
       animatedPosition,
       backgroundStyle: styles.background,
-      android_keyboardInputMode: "adjustResize",
-      children: () => <ChangeWallet close={close} />,
+
+      children: <ChangeWallet close={close} />,
     });
     gbs.snapToIndex(0);
   }, []);
 
   const changeLanguage = useCallback(() => {
     gbs.setProps({
-      enablePanDownToClose: true,
       snapPoints: ["95%"],
       animatedPosition,
       backgroundStyle: styles.background,
-      android_keyboardInputMode: "adjustResize",
-      children: () => <ChangeLanguage close={close} />,
+
+      children: <ChangeLanguage close={close} />,
     });
     gbs.snapToIndex(0);
   }, []);
 
   const channgeCurrency = useCallback(() => {
     gbs.setProps({
-      enablePanDownToClose: true,
       snapPoints: ["95%"],
       animatedPosition,
       backgroundStyle: styles.background,
-      android_keyboardInputMode: "adjustResize",
-      children: () => <ChangeCurrency close={close} />,
+
+      children: <ChangeCurrency close={close} />,
     });
+    gbs.snapToIndex(0);
+  }, []);
+
+  const addContact = useCallback(() => {
+    gbs.setProps({
+      snapPoints: [350],
+      animatedPosition,
+      backgroundStyle: styles.background,
+
+      children: <AddContact close={close} />,
+    });
+    gbs.snapToIndex(0);
+  }, []);
+
+  const removeContact = useCallback((contact: IPerson) => {
+    gbs.setProps({
+      snapPoints: [270],
+      animatedPosition,
+      backgroundStyle: styles.background,
+
+      children: <RemoveContact close={close} contact={contact} />,
+    });
+    gbs.snapToIndex(0);
+  }, []);
+
+  const editContact = useCallback((contact: IPerson) => {
+    const steps = new Steps(["Data", "Photo"]);
+    const disposer = reaction(
+      () => steps.title,
+      (title) => {
+        switch (title) {
+          case "Data":
+            gbs.updProps({ snapPoints: [460] });
+            break;
+          case "Photo":
+          default:
+            gbs.updProps({ snapPoints: [410] });
+            break;
+        }
+      }
+    );
+
+    gbs.setProps({
+      snapPoints: [410],
+      animatedPosition,
+      backgroundStyle: styles.background,
+      onClose: disposer,
+      children: (
+        <EditContact
+          close={close}
+          contact={contact}
+          steps={steps}
+          navigation={navigation}
+        />
+      ),
+    });
+
     gbs.snapToIndex(0);
   }, []);
 
@@ -110,11 +168,10 @@ export default function useBottomSheetModals() {
     );
 
     gbs.setProps({
-      enablePanDownToClose: true,
       snapPoints: [350],
       animatedPosition,
       backgroundStyle: styles.background,
-      android_keyboardInputMode: "adjustResize",
+
       keyboardBehavior:
         Platform.OS === "android" ? "interactive" : "fillParent",
 
@@ -139,6 +196,9 @@ export default function useBottomSheetModals() {
       changeWallet,
       changeLanguage,
       channgeCurrency,
+      addContact,
+      editContact,
+      removeContact,
     },
     close,
   ] as const;
