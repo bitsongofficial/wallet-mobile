@@ -10,15 +10,16 @@ export default function useCachedResources() {
   useEffect(() => {
     async function loadResourcesAndDataAsync() {
       try {
-        SplashScreen.preventAutoHideAsync();
-        // Load fonts
-        await Font.loadAsync({
-          ...FontAwesome.font,
-          "space-mono": require("../assets/fonts/SpaceMono-Regular.ttf"),
-          // TODO: add all suffix Weight and Style
-          CircularStd: require("../assets/fonts/CircularStd-Medium.ttf"),
-          "Courier Prime": require("../assets/fonts/CircularStd-Medium.ttf"),
-        });
+        await Promise.all([
+          SplashScreen.preventAutoHideAsync(),
+          Font.loadAsync({
+            ...FontAwesome.font,
+            "space-mono": require("../assets/fonts/SpaceMono-Regular.ttf"),
+            // TODO: add all suffix Weight and Style
+            CircularStd: require("../assets/fonts/CircularStd-Medium.ttf"),
+            "Courier Prime": require("../assets/fonts/CircularStd-Medium.ttf"),
+          }),
+        ]);
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);
