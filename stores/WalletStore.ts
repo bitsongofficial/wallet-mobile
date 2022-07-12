@@ -12,8 +12,10 @@ import { SupportedCoinsMap } from "constants/Coins";
 import { getPrefixFromAddress } from "core/utils/Address";
 import { PublicWallet } from "core/storing/Generic";
 import SettingsStore from "./SettingsStore";
+import LocalStorageManager from "./LocalStorageManager";
+import { askPin } from "navigation/AskPin";
 
-const cosmos_mnemonic_prefix = "mnemonic_"
+export const cosmos_mnemonic_prefix = "mnemonic_"
 
 export interface Profile {
   name: string,
@@ -29,7 +31,8 @@ export interface ProfileWallets {
 }
 
 export default class WalletStore {
-  private firstLoadHandler?: IReactionDisposer = undefined
+	localStorageManager?: LocalStorageManager
+
   private walletSetUpPin: string | undefined
 
   activeProfile: Profile | null = null
@@ -113,7 +116,7 @@ export default class WalletStore {
         ) as ExportKeyRingData[]
 
         const walletsLoading: Promise<void>[] = []
-        const actualPin = pin ?? await this.settings.askPin()
+        const actualPin = pin ?? await askPin()
         exportedKeyRingDatas.forEach(keyRingData =>
           {
             // We are considering just mnemonic wallets for now because we need to focus on other tasks
@@ -144,8 +147,8 @@ export default class WalletStore {
     {
       const mnemonicString = mnemonic.join(" ")
       const mnemonicPath = cosmos_mnemonic_prefix + name
-      const mnemonicStore = new AskPinMnemonicStore(mnemonicPath, this.settings.askPin)
-      const actualPin = pin ?? await this.settings.askPin()
+      const mnemonicStore = new AskPinMnemonicStore(mnemonicPath, askPin)
+      const actualPin = pin ?? await askPin()
       mnemonicStore.Unlock(actualPin)
       await mnemonicStore.Set(mnemonicString)
       mnemonicStore.Lock()
@@ -210,6 +213,11 @@ export default class WalletStore {
     if(this.profiles.length == 1) this.changeActive(0)
   }
 
+  setSetUpsPin(pin: string)
+  {
+    if(this.localStorageManager && this.localStorageManager.verifyPin(pin)) this.walletSetUpPin = pin
+  }
+
   async setUpWallets()
   {
     if(!this.loadedFromMemory) return
@@ -221,7 +229,7 @@ export default class WalletStore {
     if(this.profiles.length > 0)
     {
       const wallets: ProfileWallets[] = []
-      const pin = this.walletSetUpPin ?? await this.settings.askPin()
+      const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
       await Promise.all(toJS(this.profiles).map(async profile =>
       {
@@ -229,7 +237,7 @@ export default class WalletStore {
         {
           case WalletTypes.COSMOS:
             const cosmosWallets: SupportedCoinsMap = {}
-            const store = new AskPinMnemonicStore(profile.data.mnemonicPath, this.settings.askPin)
+            const store = new AskPinMnemonicStore(profile.data.mnemonicPath, askPin)
             store.Unlock(pin)
             const addressesWaitings: Promise<string>[] = []
             for(const chain of this.remoteConfigs.enabledCoins)
