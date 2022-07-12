@@ -6,16 +6,18 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
-import { useStore } from "hooks";
+import { useLoading, useStore } from "hooks";
 import { Icon2, Switch, ThemedGradient } from "components/atoms";
 // import { Header } from "./components/atoms";
 import { COLOR, InputHandler } from "utils";
 import { ListButton, Subtitle } from "./components/atoms";
+import { askPin } from "navigation/AskPin";
 
 type Props = NativeStackScreenProps<RootStackParamList, "SettingsSecurity">;
 
 export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
-  const { settings, user, dapp } = useStore();
+  const { settings, localStorageManager } = useStore();
+  const loading = useLoading()
 
   const goBack = useCallback(() => navigation.goBack(), []);
 
@@ -28,7 +30,13 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
     () => settings.setBiometric(!settings.biometric_enable),
     []
   );
-  const goToChangePin = useCallback(() => {}, []);
+  const goToChangePin = useCallback(async () => {
+    const pin = await askPin()
+    const newPin = await askPin({disableVerification: true})
+    loading.open()
+    await localStorageManager.changePin(newPin, pin)
+    loading.close()
+  }, []);
 
   return (
     <>
@@ -53,7 +61,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
                   }
                   // Right={}
                 /> */}
-                <ListButton icon="password" text="Change PIN" arrow />
+                <ListButton icon="password" text="Change PIN" arrow onPress={goToChangePin} />
               </View>
 
               <View style={styles.section}>

@@ -31,7 +31,7 @@ const TIME = 200;
 const EASING = Easing.elastic(1.5);
 
 export default observer<Props>(({ navigation, route }) => {
-  const { callback, title = "Confirm with PIN", errorMax = 3 } = route.params;
+  const { callback, title = "Confirm with PIN", errorMax = 3, disableVerification = false } = route.params;
 
   const goBack = useCallback(() => navigation.goBack(), []);
 
@@ -46,12 +46,12 @@ export default observer<Props>(({ navigation, route }) => {
   console.log("countError :>> ", countError);
 
   // --------- Check -------------
-  const { settings } = useStore();
+  const { localStorageManager } = useStore();
 
   useEffect(() => {
     if (pin.isValid) {
       (async () => {
-        const isConfirm = await settings.verifyPin(pin.value);
+        const isConfirm = await localStorageManager.verifyPin(pin.value) || disableVerification;
         setConfirm(isConfirm);
         // setConfirm(true);
         if (isConfirm) {

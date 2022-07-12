@@ -204,7 +204,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   style={styles.agreement}
                 />
 
-                <View style={{opacity: 0.2}} pointerEvents={"none"}>
+                <View>
                   <Title style={styles.title}>Settings</Title>
 
                   <View style={styles.section}>

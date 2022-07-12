@@ -4,7 +4,7 @@
 import { RootStackParamList } from "types";
 import { navigate } from "./utils";
 
-type OptionsAskPin = Omit<RootStackParamList["PinRequest"], "callback">;
+export type OptionsAskPin = Omit<RootStackParamList["PinRequest"], "callback">;
 
 export function askPin(options?: OptionsAskPin) {
   const defaultOptions: OptionsAskPin = {
