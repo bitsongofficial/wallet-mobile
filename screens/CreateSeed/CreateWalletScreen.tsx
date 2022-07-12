@@ -29,7 +29,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useCreateWallet();
-  const { wallet, settings } = useStore();
+  const { wallet, settings, localStorageManager } = useStore();
   const globalLoader = useLoading();
 
   // ------- check auth types ------------
@@ -65,7 +65,7 @@ export default observer<Props>(({ navigation }) => {
 
   const saveWallet = async () => {
     globalLoader.open();
-    await settings.setPin(controller.pin.value)
+    await localStorageManager.setPin(controller.pin.value)
     await wallet.newCosmosWallet(
       controller.walletName.value,
       controller.phrase.words,
