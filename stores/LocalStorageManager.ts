@@ -65,6 +65,7 @@ export default class LocalStorageManager
 		}),
 		(raw) =>
 		{
+			console.log(raw)
 			AsyncStorageLib.setItem(settings_location, raw)
 		})
 	}
@@ -75,7 +76,7 @@ export default class LocalStorageManager
 		if(raw)
 		{
 			const settings = JSON.parse(raw)
-			this.settings.setBiometric(settings.biometric_enabled)
+			this.settings.setBiometricInternal(settings.biometric_enable)
 			this.settings.setCheckMethod(settings.checkMethod)
 			this.settings.setCurrency(settings.currency)
 			this.settings.setTheme(settings.theme)
