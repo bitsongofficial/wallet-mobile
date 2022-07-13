@@ -4,6 +4,8 @@ import languages from "constants/languages";
 import currencies from "constants/currencies";
 import { CheckMethod, NotifSettings } from "./type";
 import LocalStorageManager from "./LocalStorageManager";
+import { clearPin, isPinSaved, savePin } from "utils/biometrics";
+import { askPin } from "navigation/AskPin";
 
 export default class SettingsStore {
 	localStorageManager?: LocalStorageManager
@@ -48,8 +50,22 @@ export default class SettingsStore {
     this.checkMethod = checkMethod;
   }
 
-  setBiometric(biometric_enable: boolean)
+  async setBiometric(biometric_enable: boolean)
   {
-    this.biometric_enable = biometric_enable
+    if(!this.biometric_enable && biometric_enable && !(await isPinSaved()))
+    {
+      const pin = await askPin()
+      if(pin != "")
+      {
+        await savePin(pin)
+        this.biometric_enable = biometric_enable
+      }
+    }
+    if(this.biometric_enable && !biometric_enable)
+    {
+      const res = await clearPin()
+      if(res) 
+      this.biometric_enable = biometric_enable
+    }
   }
 }
