@@ -64,10 +64,10 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
                 <ListButton icon="password" text="Change PIN" arrow onPress={goToChangePin} />
               </View>
 
-              <View style={styles.section}>
+              {/* <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>Account</Subtitle>
                 <ListButton icon="key" text="View Mnemonics" arrow />
-              </View>
+              </View> */}
 
               <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>Account</Subtitle>
