@@ -35,7 +35,7 @@ export function fromAmountToFIAT(amount: Amount, prices:any)
 	return fromAmountToCoin(amount) * fromDenomToPrice(amount.denom, prices)
 }
 
-export function fromFIATtoAmount(fiat: number, denom: Denom, prices:any): Amount
+export function fromFIATToAmount(fiat: number, denom: Denom, prices:any): Amount
 {
 	return {
 		amount: Math.round(fiat / fromDenomToPrice(denom, prices) * convertRateFromDenom(denom)).toString(),
