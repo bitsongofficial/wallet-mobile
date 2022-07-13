@@ -1,6 +1,5 @@
 import { Transaction } from "classes";
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
-import { fromAmountToDollars } from "core/utils/Coin";
 import { makeAutoObservable } from "mobx";
 import { openSendRecap } from "screens/SendModalScreens/OpenSendRecap";
 import CoinStore from "./CoinStore";
@@ -8,6 +7,7 @@ import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
 import { IWalletConnectSession } from "@walletconnect/types"
 import LocalStorageManager from "./LocalStorageManager";
+import SettingsStore from "./SettingsStore";
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
@@ -21,7 +21,7 @@ export default class DappConnectionStore {
 	  return true;
 	}
 
-	constructor(private walletStore: WalletStore, private coinStore: CoinStore, private remoteConfigsStore: RemoteConfigsStore)
+	constructor(private walletStore: WalletStore, private coinStore: CoinStore, private remoteConfigsStore: RemoteConfigsStore, private settingsStore: SettingsStore)
 	{
 		makeAutoObservable(this, {}, { autoBind: true })
 		// AsyncStorageLib.removeItem(session_location)
@@ -42,7 +42,7 @@ export default class DappConnectionStore {
 					uri: pairString,
 					session,
 					wallets: [this.walletStore.activeWallet.wallets.btsg],
-					fcmToken: this.remoteConfigsStore.pushNotificationToken,
+					fcmToken: this.settingsStore.notifications.enable ? this.remoteConfigsStore.pushNotificationToken : undefined,
 					onRequest: this.onRequest,
 					onConnect: this.onConnect,
 					onDisconnect: this.onDisconnect,
@@ -65,7 +65,7 @@ export default class DappConnectionStore {
 		{
 			case "/cosmos.bank.v1beta1.MsgSend":
 				const creater = new Transaction.Creater()
-				creater.setAmount(fromAmountToDollars(data.amount, this.remoteConfigsStore.prices).toFixed(2))
+				creater.setAmount(this.coinStore.fromAmountToFiat(data.amount).toFixed(2))
 				creater.addressInput.set(data.to)
 
 				openSendRecap(creater, async () =>

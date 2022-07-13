@@ -7,8 +7,8 @@ import { IPerson } from "classes/types";
 import { Coin, Transaction } from "classes";
 import { COLOR, InputHandler } from "utils";
 import { SendController } from "screens/SendModalScreens/classes";
-import { fromAmountToCoin, fromCoinToDefaultDenom, fromDollarsToAmount } from "core/utils/Coin";
 import { trimAddress } from "utils/string";
+import { fromFIATToAmount } from "core/utils/Coin";
 
 type Props = {
   creater: SendController["creater"];
@@ -26,7 +26,7 @@ export default observer<Props>(function CardWallet({
   bottomSheet
 }: Props) {
   const theme = useTheme();
-  const {configs} = useStore()
+  const {configs, coin: coinStore} = useStore()
   const { addressInput, amount, coin, receiver } = creater;
   return (
     <View style={[styles.container, style]}>
@@ -47,7 +47,7 @@ export default observer<Props>(function CardWallet({
             as
           </Text>
           <Text style={[styles.text, theme.text.primary]}>
-            {fromAmountToCoin(fromDollarsToAmount(parseFloat(amount), fromCoinToDefaultDenom(coin.info.coin), configs.remote.prices))} {coin.info.coinName.toUpperCase()}
+            {coinStore.fromFIATToAssetAmount(parseFloat(amount), coin.info.coin)} {coin.info.coinName.toUpperCase()}
           </Text>
         </View>}
 
