@@ -17,7 +17,7 @@ export class WalletConnectCosmosClientV1 {
 		uri?: string,
 		session?: IWalletConnectSession,
 		wallets: Wallet[],
-		fcmToken: string,
+		fcmToken?: string,
 		onRequest?: (type:string, data:any, handler: acceptRejectType) => void,
 		onConnect?: (connection: WalletConnectCosmosClientV1) => void,
 		onDisconnect?: (connection: WalletConnectCosmosClientV1) => void,
@@ -38,7 +38,7 @@ export class WalletConnectCosmosClientV1 {
 		}
 		if(options.uri) wcOptions.uri = options.uri
 		else if (options.session) wcOptions.session = options.session
-		const connector = new WalletConnect(
+		const connector = options.fcmToken ? new WalletConnect(
 			wcOptions,
 			{
 			   url: Config.PUSH_NOTIFICATION_SERVER_URL,
@@ -47,7 +47,7 @@ export class WalletConnectCosmosClientV1 {
 			   peerMeta: true,
 			   language: 'it',
 			}
-		);
+		) : new WalletConnect(wcOptions)
 		connector.on("session_request", async (error, payload) => {
 			if (error) {
 				throw error;

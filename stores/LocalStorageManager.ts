@@ -62,6 +62,7 @@ export default class LocalStorageManager
 			biometric_enable: this.settings.biometric_enable,
 			checkMethod: this.settings.checkMethod,
 			theme: this.settings.theme,
+			notification_enable: this.settings.notifications.enable,
 		}),
 		(raw) =>
 		{
@@ -81,6 +82,10 @@ export default class LocalStorageManager
 			this.settings.setCurrency(settings.currency)
 			this.settings.setTheme(settings.theme)
 			this.settings.setLanguage(settings.language)
+			this.settings.setNotifications({
+				enable: settings.notification_enable,
+				history: 10,
+			})
 		}
 	}
 
