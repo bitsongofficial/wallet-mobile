@@ -1,28 +1,28 @@
-import { IPerson } from "classes/types";
+import { IPerson } from "classes/types"
 
 export const users: IPerson[] = [
-  {
-    _id: "1",
-    avatar: "",
-    firstName: "A",
-    lastName: "Delogu",
-  },
-  {
-    _id: "2",
-    avatar: "",
-    firstName: "M",
-    lastName: "Vacchi",
-  },
-  {
-    _id: "3",
-    avatar: "",
-    firstName: "L",
-    lastName: "Aleandri",
-  },
-  {
-    _id: "4",
-    avatar: "",
-    firstName: "A",
-    lastName: "Rossi",
-  },
-];
+	{
+		_id: "1",
+		avatar: "",
+		firstName: "A",
+		lastName: "Delogu",
+	},
+	{
+		_id: "2",
+		avatar: "",
+		firstName: "M",
+		lastName: "Vacchi",
+	},
+	{
+		_id: "3",
+		avatar: "",
+		firstName: "L",
+		lastName: "Aleandri",
+	},
+	{
+		_id: "4",
+		avatar: "",
+		firstName: "A",
+		lastName: "Rossi",
+	},
+]

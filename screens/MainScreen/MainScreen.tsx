@@ -1,12 +1,5 @@
 import { useCallback, useMemo, useState } from "react"
-import {
-	RefreshControl,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-	Platform,
-} from "react-native"
+import { RefreshControl, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { CoinStat, Tabs } from "components/organisms"
 import { useGlobalBottomsheet, useStore } from "hooks"
@@ -37,8 +30,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 	const [activeTab, setActiveTab] = useState<ValueTabs>("Coins")
 
-	const callback = useCallback(() => {}, [])
-
 	// ------------- bottom sheet -----------
 	const gbs = useGlobalBottomsheet()
 
@@ -48,10 +39,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		gbs.setProps({
 			snapPoints: ["85%"],
 			children: () => (
-				<ReceiveModal
-					style={sendCoinContainerStyle}
-					close={closeGlobalBottomSheet}
-				/>
+				<ReceiveModal style={sendCoinContainerStyle} close={closeGlobalBottomSheet} />
 			),
 		})
 		gbs.snapToIndex(0)
