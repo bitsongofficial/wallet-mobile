@@ -6,16 +6,18 @@ import WalletStore, { Profile } from "./WalletStore"
 import { IWalletConnectSession } from "@walletconnect/types"
 import { PermissionsAndroid } from "react-native"
 import RemoteConfigsStore from "./RemoteConfigsStore"
-import { SupportedCoins } from "constants/Coins"
 import { AskPinMnemonicStore } from "core/storing/MnemonicStore"
 import { WalletTypes } from "core/types/storing/Generic"
 import { argon2Encode, argon2Verify } from "utils/argon"
 import { askPin } from "navigation/AskPin"
+import { contact } from "stores/ContactsStore"
+import ContactsStore from "./ContactsStore"
 
 const pin_hash_path = "pin_hash"
 const settings_location = "settings"
 const session_location = "wc_sessions"
 const stored_wallets_path = "stored_wallets"
+const contacts_location = "contacts"
 
 export default class LocalStorageManager
 {
@@ -26,6 +28,7 @@ export default class LocalStorageManager
 		private dappConnection: DappConnectionStore,
 		private settings: SettingsStore,
 		private remoteConfigs: RemoteConfigsStore,
+		private contacts: ContactsStore,
 	)
 	{
 		this.setUpStores()
@@ -51,6 +54,9 @@ export default class LocalStorageManager
 			}
 		})
 		this.saveWallets()
+
+		this.loadContacts()
+		this.saveContacts()
 	}
 
 	saveSettings()
@@ -188,6 +194,19 @@ export default class LocalStorageManager
 		)
 	}
 
+	removeProfileData(profile: Profile)
+	{
+		try
+		{
+			switch(profile.type)
+			{
+				case WalletTypes.COSMOS:
+					AsyncStorageLib.clear(profile.data.mnemonicPath)
+			}
+		}
+		catch {}
+	}
+
 	async updatePinData(pin: string, newPin: string)
 	{
 		const mnemonics: {
@@ -295,4 +314,31 @@ export default class LocalStorageManager
 		}
 		return false
 	}
+
+	saveContacts()
+	{
+		reaction(
+			() => (JSON.stringify(toJS(this.contacts.contacts))),
+			raw => AsyncStorageLib.setItem(contacts_location, raw)
+		)
+	}
+
+	async loadContacts()
+	{
+		const raw = await AsyncStorageLib.getItem(contacts_location)
+		if(raw)
+		{
+			try
+			{
+				const contacts:contact[] = JSON.parse(raw)
+				contacts.forEach(c => {
+					this.contacts.addContact(c)	
+				})
+			}
+			catch
+			{
+
+			}			
+		}
+	} 
 }
