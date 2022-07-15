@@ -9,9 +9,5 @@ sed -i '/android {/a\
     targetCompatibility JavaVersion.VERSION_1_8 \
   }' "$PWD/node_modules/react-native-keychain/android/build.gradle"
 npx rn-nodeify --install --hack
-if [[ $OSTYPE == 'darwin'* ]]; then
-	find ${PWD}/node_modules/*/ -name "build.gradle" -type f | xargs sed -i "s/[[:<:]]compile[[:>:]]/implementation/g"
-else
-	find ${PWD}/node_modules/*/ -name "build.gradle" -type f | xargs sed -i 's/\bcompile\b/implementation/g'
-fi
+find ${PWD}/node_modules/*/ -name "build.gradle" -type f | xargs perl -pi -e 's/\bcompile\b/implementation/g;'
 jetify

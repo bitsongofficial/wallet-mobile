@@ -6,6 +6,7 @@ import CoinStore from "./CoinStore";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import DappConnectionStore from "./DappConnectionStore";
 import LocalStorageManager from "./LocalStorageManager";
+import ContactsStore from "./ContactsStore";
 
 export default class MainStore {
   auth = null;
@@ -16,7 +17,8 @@ export default class MainStore {
   wallet = new WalletStore(this.settings, this.configs.remote);
   coin = new CoinStore(this.wallet, this.configs.remote, this.settings);
   dapp = new DappConnectionStore(this.wallet, this.coin, this.configs.remote, this.settings);
-  localStorageManager = new LocalStorageManager(this.wallet, this.dapp, this.settings, this.configs.remote)
+  contacts = new ContactsStore()
+  localStorageManager = new LocalStorageManager(this.wallet, this.dapp, this.settings, this.configs.remote, this.contacts)
 
   user: null | User = new User({
     _id: "1234",
