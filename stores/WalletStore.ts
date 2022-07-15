@@ -1,9 +1,7 @@
-import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS } from "mobx";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {autorun, makeAutoObservable, runInAction, toJS } from "mobx";
 import { CosmosWalletGenerator, prefixToCoin } from "core/storing/Wallet";
 import { WalletTypes } from "core/types/storing/Generic";
 import RemoteConfigsStore from "./RemoteConfigsStore";
-import { PermissionsAndroid } from "react-native";
 import { ExportKeyRingData, QRCodeSharedData, WCExportKeyRingDatasResponse } from "core/types/storing/Keplr";
 import WalletConnect from "@walletconnect/client";
 import { Counter, ModeOfOperation } from "aes-js"
@@ -21,6 +19,7 @@ export interface Profile {
   name: string,
   type: WalletTypes,
   data: any,
+  avatar?: string,
 }
 
 type profileIndexer = number | Profile | ProfileWallets
@@ -198,15 +197,6 @@ export default class WalletStore {
     this.activeProfile = this.resolveProfile(profile)
   }
 
-  deleteProfile(profile: ProfileWallets | Profile)
-  {
-    const actualProfile = this.resolveProfile(profile)
-    this.profiles.splice(
-      this.profiles.findIndex((item) => item.name === actualProfile.name),
-      1
-    )
-  }
-
   addProfile(profile: Profile)
   {
     this.profiles.push(profile)
@@ -259,10 +249,7 @@ export default class WalletStore {
             }
             catch(e)
             {
-              runInAction(async () =>
-              {
-                this.profiles.splice(this.profiles.indexOf(profile), 1)
-              })
+              this.deleteProfile(profile)
             }
             store.Lock()
             break
@@ -308,5 +295,24 @@ export default class WalletStore {
   {
     if(this.activeProfile == null) return
     this.changeProfileName(this.activeProfile, name)
+  }
+
+  changeProfileAvatar(profile: profileIndexer, uri: string)
+  {
+    const p = this.resolveProfile(profile)
+    p.avatar = uri
+  }
+
+  changeActiveProfileAvatar(uri: string)
+  {
+    if(this.activeProfile == null) return
+    this.changeProfileAvatar(this.activeProfile, uri)
+  }
+
+  deleteProfile(profile: profileIndexer)
+  {
+    const p = this.resolveProfile(profile)
+    this.localStorageManager?.removeProfileData(p)
+    this.profiles.splice(this.profiles.indexOf(p), 1)
   }
 }

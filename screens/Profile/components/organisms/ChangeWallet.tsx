@@ -73,7 +73,7 @@ export default observer<Props>(
     const removeEdited = useCallback(() => setEdited(undefined), []);
 
     const saveEdited = useCallback(
-      () => { if(edited) edited.profile.name = inputWalletName.value },
+      () => { if(edited) wallet.changeProfileName(edited, inputWalletName.value) },
       [edited, inputWalletName]
     );
 
@@ -206,12 +206,12 @@ export default observer<Props>(
                       text="View Mnemonics"
                       arrow
                     />
-                    <ListButton
+                    {/* <ListButton
                       style={styles.listButton}
                       icon="key"
                       text="Eliminate Mnemonics"
                       arrow
-                    />
+                    /> */}
                     <ListButton
                       style={styles.listButton}
                       icon="power"
