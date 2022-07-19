@@ -59,6 +59,7 @@ export type RootStackParamList = {
 		isHiddenCode?: boolean
 	}
 	Validator: { validator: IValidator }
+	NewProposal: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -69,7 +70,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 export type RootTabParamList = {
 	MainTab: undefined
 	StackingTab: undefined
-	Tab1: undefined
+	Proposal: undefined
 	Tab2: undefined
 }
 
