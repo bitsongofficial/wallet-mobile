@@ -19,6 +19,7 @@ enum COLOR {
 	Silver = "#C4C4C4",
 
 	GreenCrayola = "#12A481",
+	BlueCrayola = "#9B9BC1",
 	Pink = "#DC004F",
 
 	LightGreyBlue = "#67BAB0",
