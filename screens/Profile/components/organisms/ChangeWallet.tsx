@@ -208,6 +208,7 @@ export default observer<Props>(
                       icon="eye"
                       text="View Mnemonics"
                       arrow
+                      onPress={async () => (console.log(await edited.wallets.btsg.Mnemonic()))}
                     />
                     {/* <ListButton
                       style={styles.listButton}
