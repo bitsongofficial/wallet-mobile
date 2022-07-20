@@ -23,7 +23,7 @@ export interface Profile {
   avatar?: string,
 }
 
-interface ProfileInner extends Profile {
+export interface ProfileInner extends Profile {
   id: string,
 }
 
@@ -222,6 +222,7 @@ export default class WalletStore {
 
   async setUpWallets()
   {
+    console.log(this.loadedFromMemory, this.remoteConfigs.firstLoad)
     if(!this.loadedFromMemory) return
     if(!this.remoteConfigs.firstLoad) return
     runInAction(() =>

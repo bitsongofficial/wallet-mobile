@@ -73,7 +73,10 @@ export default observer<Props>(
     const removeEdited = useCallback(() => setEdited(undefined), []);
 
     const saveEdited = useCallback(
-      () => { if(edited) wallet.changeProfileName(edited, inputWalletName.value) },
+      () => {
+        if(edited) wallet.changeProfileName(edited, inputWalletName.value)
+        close()
+      },
       [edited, inputWalletName]
     );
 
