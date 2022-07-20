@@ -17,7 +17,6 @@ export const clearPin = async () => {
 	{
 		return false
 	}
-	return false
 }
 
 export const savePin = async (pin: string) => {
@@ -29,7 +28,7 @@ export const savePin = async (pin: string) => {
 
 		if(res) return true
 	}
-	catch
+	catch(e)
 	{
 		return false
 	}
@@ -48,7 +47,7 @@ export const getPin = async () => {
 			return credentials.password
 		}
 	}
-	catch
+	catch(e)
 	{
 		return false
 	}

@@ -1,11 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import { ICurrency, ILang } from "screens/Profile/type";
-import languages from "constants/languages";
-import currencies from "constants/currencies";
-import { CheckMethod, NotifSettings } from "./type";
-import LocalStorageManager from "./LocalStorageManager";
-import { clearPin, getPin, isPinSaved, savePin } from "utils/biometrics";
-import { askPin } from "navigation/AskPin";
 
 export type contact = {
 	name: string,

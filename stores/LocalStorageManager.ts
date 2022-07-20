@@ -166,18 +166,8 @@ export default class LocalStorageManager
 					})
 				}
 			}
-			else
-			{
-				runInAction(() =>
-				{
-					this.wallet.firstLoad = true
-				})
-			}
 		}
-		runInAction(() =>
-		{
-			this.wallet.loadedFromMemory = true
-		})
+		this.wallet.setLoadedFromMemory(true)
 	}
 
 	async saveWallets()

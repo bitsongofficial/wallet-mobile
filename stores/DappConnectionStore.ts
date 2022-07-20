@@ -45,7 +45,6 @@ export default class DappConnectionStore {
 			}
 			catch(e)
 			{
-				console.log("A", e)
 				throw e
 			}
 		}

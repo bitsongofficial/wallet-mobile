@@ -1,4 +1,4 @@
-import {autorun, makeAutoObservable, reaction, runInAction, set, toJS } from "mobx";
+import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, set, toJS } from "mobx";
 import { CosmosWalletGenerator, prefixToCoin } from "core/storing/Wallet";
 import { WalletTypes } from "core/types/storing/Generic";
 import RemoteConfigsStore from "./RemoteConfigsStore";
@@ -47,18 +47,31 @@ export default class WalletStore {
   firstLoad = false
   loadedFromMemory = false
 
+  private setUpWalletsHandler?: IReactionDisposer
+
   constructor(private settings: SettingsStore, private remoteConfigs: RemoteConfigsStore) {
     makeAutoObservable(this, {}, { autoBind: true })
 
-    reaction(
-    () => this.profiles.map(p => ({
-      type: p.type,
-      data: p.data,
-    })),
-    () =>
-    {
-      this.setUpWallets()
-    })
+    this.setUpWalletsHandler = reaction(
+      () => (
+        {
+          profiles: this.profiles.map(p => (
+            {
+              type: p.type,
+              data: p.data,
+            })),
+          loaded: this.remoteConfigs.firstLoad && this.loadedFromMemory,
+        }),
+      () =>
+      {
+        this.setUpWallets()
+      })
+    // autorun(() => this.setUpWallets())
+  }
+
+  setLoadedFromMemory(loaded: boolean)
+  {
+    this.loadedFromMemory = loaded
   }
 
   async importFromKeplr(name: string, keplrQRData: string, pin?: string)
@@ -222,7 +235,6 @@ export default class WalletStore {
 
   async setUpWallets()
   {
-    console.log(this.loadedFromMemory, this.remoteConfigs.firstLoad)
     if(!this.loadedFromMemory) return
     if(!this.remoteConfigs.firstLoad) return
     runInAction(() =>
