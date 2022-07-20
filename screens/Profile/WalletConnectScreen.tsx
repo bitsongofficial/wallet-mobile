@@ -25,6 +25,7 @@ import { Circles, Subtitle, Title } from "./components/atoms";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
 import { ProfileWallets } from "stores/WalletStore";
+import { SwipeableItem } from "components/organisms";
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">;
@@ -35,19 +36,20 @@ export default observer<Props>(function WalletConnect({ navigation }) {
   // ------- Wallets ------
   const connections = dapp.connections;
   const mapItemsRef = useMemo(
-    () => observable.map<ProfileWallets, React.RefObject<Swipeable>>(),
+    () => observable.map<string, React.RefObject<Swipeable>>(),
     []
   );
 
-  const renderWallet = useCallback<ListRenderItem<WalletConnectCosmosClientV1>>(
+  const renderWallet = useCallback<ListRenderItem<ProfileWallets>>(
     ({ item, index }) => (
-      <View key={index} style={{ marginBottom: 13 }}>
-        <WalletItem
-          value={item}
+      <View key={item.connector.session} style={{ marginBottom: 13 }}>
+        <SwipeableItem
+          id={item.connector.session} // need a unique key
+          date="Apr 12, 10:34 AM"
+          mapItemsRef={mapItemsRef} // for this
+          onPressDelete={() => dapp.disconnect(item)} // and that
+          name={item.name}
           onPress={() => {}}
-          onPressDelete={() => dapp.disconnect(item)}
-          // onPressEdit={setEdited}
-          mapItemsRef={mapItemsRef}
         />
       </View>
     ),
