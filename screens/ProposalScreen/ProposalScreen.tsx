@@ -24,6 +24,8 @@ export default observer<Props>(function Stacking({ navigation }) {
 
 	const [activeTab, setActiveTab] = useState<ITab>("All")
 
+	const navToNew = useCallback(() => navigation.push("NewProposal"), [])
+
 	return (
 		<>
 			<StatusBar style="light" />
@@ -33,7 +35,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 					<View style={styles.wrapper}>
 						<View style={styles.head}>
 							<Text style={styles.title}>Proposals</Text>
-							<TouchableOpacity style={styles.buttonPlus}>
+							<TouchableOpacity style={styles.buttonPlus} onPress={navToNew}>
 								<Icon2 name="plus" stroke={COLOR.White} size={18} />
 							</TouchableOpacity>
 						</View>

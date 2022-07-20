@@ -20,7 +20,6 @@ function getStroke(focused: boolean) {
 export default () => (
 	<BottomSheetModalProvider>
 		<BottomTab.Navigator
-			initialRouteName="Proposal"
 			tabBar={(props) => <MainTabBar {...props} />}
 			screenOptions={{
 				header: (props) => <Header {...props} />,

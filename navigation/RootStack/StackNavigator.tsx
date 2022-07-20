@@ -11,7 +11,10 @@ import { Header } from "components/organisms"
  */
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
-const WithHeaderOption = { header: (props: NativeStackHeaderProps) => <Header {...props} /> }
+const WithHeaderOption = {
+	headerShown: true,
+	header: (props: NativeStackHeaderProps) => <Header {...props} />,
+}
 
 export default () => (
 	<BottomSheetModalProvider>

@@ -10,32 +10,35 @@ import { COLOR } from "utils"
 import { Validator } from "components/organisms"
 import { useGlobalBottomsheet } from "hooks"
 import { Title, Toolbar } from "./components"
+import { IValidator } from "classes/types"
+import { TouchableOpacity } from "react-native-gesture-handler"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
 	BottomTabScreenProps<RootTabParamList, "StackingTab">
 >
 
-type Validator = {
-	_id: string // address
-	name: string
-	logo: string
-	apr: number
-	voting_power: number
-}
-
-const data: Validator[] = [
+const data: IValidator[] = [
 	{
-		_id: "1",
-		logo: "",
-		name: "",
-		apr: 33.83,
-		voting_power: 10.64,
+		_id: "123",
+		name: "Forbole",
+		logo: "123451234",
+		claim: 234.78,
+		apr: 29.6,
+		voting_power: 10.6,
+		total: 4500000,
+		address_operation: "bitsongval00000000000000000za9ssklclsd",
+		address_account: "bitsongval00000000000000000za9ssklclsd",
+		uptime: 100,
+		maxConvertionRate: 100,
+		currentCommissionRate: 12.5,
+		lastCommissionChange: "Sun Oct 31 2021 00:00:00 GMT+0300",
 	},
 ]
 
 export default observer<Props>(function Stacking({ navigation }) {
 	const gbs = useGlobalBottomsheet()
+
 	const openBottomSheet = useCallback(async (item) => {
 		await gbs.setProps({
 			snapPoints: [254],
@@ -51,8 +54,18 @@ export default observer<Props>(function Stacking({ navigation }) {
 		})
 		gbs.snapToIndex(0)
 	}, [])
-	const renderValidators = useCallback<ListRenderItem<Validator>>(
-		({ item }) => <Validator item={item} onPressKebab={openBottomSheet} />,
+
+	const navToValidator = useCallback(
+		(validator: IValidator) => navigation.push("Validator", { validator }),
+		[],
+	)
+
+	const renderValidators = useCallback<ListRenderItem<IValidator>>(
+		({ item }) => (
+			<TouchableOpacity onPress={() => navToValidator(item)}>
+				<Validator item={item} onPressKebab={openBottomSheet} />
+			</TouchableOpacity>
+		),
 		[],
 	)
 
