@@ -12,6 +12,7 @@ import moment from "moment"
 import { ButtonBack } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Stat } from "./components/atoms"
+import { useModalDelegateImport } from "./hooks"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Validator">
 
@@ -38,6 +39,8 @@ type IData = {
 
 export default observer<Props>(function Stacking({ navigation, route }) {
 	const validator = mock // route.params.validator
+
+	const [openDelegateImport, closeDelegateImport] = useModalDelegateImport()
 
 	const data = useMemo<IData[]>(
 		() => [
@@ -84,7 +87,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 							</View>
 						</View>
 
-						<CardClaim style={styles.claim} />
+						<CardClaim style={styles.claim} onPressClaim={openDelegateImport} />
 
 						<CardDelegation
 							style={styles.delegation}
