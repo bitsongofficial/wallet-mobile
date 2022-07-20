@@ -42,7 +42,7 @@ export default ({
     mode === "gradient" || mode === "gradient_border" ? ThemedGradient : View;
 
   return (
-    <TouchableOpacity onPress={!disable ? onPress : undefined}>
+    <TouchableOpacity onPress={!disable ? onPress : undefined} disabled={disable}>
       <View style={[styles.container, style, disable && styles.disable]}>
         <Background style={mode === "gradient_border" && styles.border}>
           <View style={[styles.content, contentContainerStyle]}>

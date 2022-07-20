@@ -71,6 +71,7 @@ export type RootStackParamList = {
     title?: string;
     isRandomKeyboard?: boolean;
     isHiddenCode?: boolean;
+    disableVerification?: boolean;
   };
 };
 

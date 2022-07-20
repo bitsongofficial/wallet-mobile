@@ -6,12 +6,14 @@ import { COLOR } from "utils";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useCallback } from "react";
 import { StyleProp } from "react-native";
+import { useStore } from "hooks";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
 } & (BottomTabHeaderProps | NativeStackHeaderProps);
 
 export default function Header({ navigation, style }: Props) {
+  const { wallet } = useStore()
   const openProfile = useCallback(() => navigation?.push("Profile"), []);
 
   return (
@@ -27,7 +29,7 @@ export default function Header({ navigation, style }: Props) {
           <Icon name="bell" size={15} fill="#202020" />
           <TouchableOpacity onPress={openProfile}>
             <Image
-              source={require("assets/images/mock/avatar.png")}
+              source={(wallet.activeProfile && wallet.activeProfile.avatar) ? {uri: wallet.activeProfile.avatar} : require("assets/images/mock/avatar.png")}
               style={styles.avatar}
             />
           </TouchableOpacity>
@@ -62,6 +64,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     width: 35,
     height: 35,
+    borderRadius: 25,
   },
   title: {
     fontFamily: "CircularStd",

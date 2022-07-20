@@ -1,5 +1,5 @@
 import useGlobalBottomsheet from "hooks/useGlobalBottomsheet";
-import { InputHandler } from "utils";
+import { COLOR, InputHandler } from "utils";
 import { Footer } from "./components/atoms";
 import { StyleSheet, View } from "react-native";
 import Recap from "components/organisms/Recap";

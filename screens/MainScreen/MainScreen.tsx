@@ -73,14 +73,24 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    gbs.expand();
+    gbs.expand()
   }, []);
 
   const openScanner = useCallback(
-    () =>
-      navigation.navigate("ScannerQR", {
-        onBarCodeScanned: (uri) => dapp.connect(uri).catch(console.log),
-      }),
+    () => navigation.navigate("ScannerQR", { onBarCodeScanned: (uri: string) =>
+      {
+        try
+        {
+          if(uri.startsWith("wc"))
+          {
+            dapp.connect(uri)
+          }
+        }
+        catch(e)
+        {
+          console.log(e)
+        }
+      }}),
     []
   );
 
@@ -155,8 +165,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
             onPressAll={openToolbar}
             onPressInquire={undefined}
             onPressReceive={openReceive}
-            onPressScan={openScanner}
-            onPressSend={openSend}
+            onPressScan={coin.CanSend ? openScanner : undefined}
+            onPressSend={coin.CanSend ? openSend : undefined}
           />
 
           <Tabs

@@ -1,6 +1,6 @@
 import { SupportedCoins } from "constants/Coins";
 import { getCoinGeckoPrices } from "core/rest/coingecko";
-import { CoingeckoPrices } from "core/types/rest/coingecko";
+import { CoingeckoPrice, CoingeckoPrices } from "core/types/rest/coingecko";
 import { makeAutoObservable, runInAction } from "mobx";
 import BackgroundTimer from "react-native-background-timer";
 
@@ -40,7 +40,7 @@ export default class RemoteConfigsStore {
 	firstLoad = false
 	loading = true
 	prices: {
-		[key in SupportedCoins]?: number
+		[key in SupportedCoins]?: CoingeckoPrice
 	} = {}
 	enabledCoins: SupportedCoins[] = []
 	pushNotificationToken = ""
@@ -50,10 +50,18 @@ export default class RemoteConfigsStore {
 
 		for(const sc of Object.values(SupportedCoins))
 		{
-			this.prices[sc] = 1
+			this.prices[sc] = {
+				usd: 1,
+				eur: 1,
+			}
 		}
 		BackgroundTimer.runBackgroundTimer(this.requestData, 1000 * 60 * 60)
 		this.requestData()
+	}
+
+	async requestPrices()
+	{
+
 	}
 
 	async requestData()
@@ -78,7 +86,10 @@ export default class RemoteConfigsStore {
 			{
 				for(const sc of Object.values(SupportedCoins))
 				{
-					this.prices[sc] = coingeckoPrices[sc].usd ?? 1
+					this.prices[sc] = coingeckoPrices[sc] ?? {
+						usd: 1,
+						eur: 1,
+					}
 				}
 				// this.prices.bitsong = bitsongPrice
 				this.enabledCoins.splice(1, this.enabledCoins.length, ...(enabledCoins ?? []))

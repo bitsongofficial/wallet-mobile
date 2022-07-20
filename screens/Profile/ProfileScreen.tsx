@@ -32,7 +32,7 @@ import { useBottomSheetModals } from "./hooks";
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { settings, user, dapp, wallet } = useStore();
+  const { settings, wallet } = useStore();
 
   // ------- BottomSheet ----------
 
@@ -53,7 +53,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
     };
   });
 
-  const inputNick = useMemo(() => new InputHandler(user?.nick), [user]);
+  const inputNick = useMemo(() => new InputHandler(wallet.activeProfile?.name), [wallet, wallet.activeProfile, wallet.activeProfile?.name]);
   const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 });
 
   /// ---------------
@@ -80,8 +80,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
 
-  const [isNight, setIsNight] = useState(false);
-  const toggleNightMode = useCallback(() => setIsNight((v) => !v), []);
+  const toggleNightMode = useCallback(() =>
+  {
+    if(settings.theme == "light") settings.setTheme("dark")
+    else settings.setTheme("light")
+  }, []);
 
   const openCurrencyApp = useCallback(() => {}, []);
   const openFAQ = useCallback(() => {}, []);
@@ -92,6 +95,13 @@ export default observer<Props>(function MainScreen({ navigation }) {
     () => settings.setNotifications({ enable: !settings.notifications.enable }),
     []
   );
+
+  const onChangeNick = useCallback(() => {
+    if(!wallet.profileExists(inputNick.value))
+    {
+      wallet.changeActiveProfileName(inputNick.value)
+    }
+  }, [inputNick])
 
   useEffect(() => {
     if (inputNick.isFocused) closeModal();
@@ -139,7 +149,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
                 style={styles.head}
                 input={inputNick}
                 onPressAvatar={openModal.changeAvatar}
-                avatar={user?.photo}
+                onNickEdited={onChangeNick}
+                avatar={wallet.activeProfile?.avatar}
                 animtedValue={translationY}
               />
             </Animated.View>
@@ -163,12 +174,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   arrow
                   style={styles.listButton}
                 />
-                {/* <ListButton
+                <ListButton
                   text="Add a Watch account"
                   onPress={openModal.addWatchAccount}
                   icon="eye"
                   arrow
-                /> */}
+                />
 
                 <Agreement
                   onPressPrivacy={navToPrivacy}
@@ -231,7 +242,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                       icon="circle_dollar"
                       style={styles.listButton}
                       Right={
-                        settings.currency && (
+                        settings.currency != null && (
                           <Value text={settings.currency?.name} />
                         )
                       }
@@ -242,7 +253,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                       icon="moon"
                       style={styles.listButton}
                       Right={
-                        <Switch active={isNight} onPress={toggleNightMode} />
+                        <Switch active={settings.theme == "dark"} onPress={toggleNightMode} />
                       }
                     />
                   </View>

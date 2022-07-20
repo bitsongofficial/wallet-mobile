@@ -6,6 +6,7 @@ import { InputHandler } from "utils";
 import { Steps } from "classes";
 import { Button } from "components/atoms";
 import { Search, Subtitle, Title } from "../atoms";
+import { useLoading, useStore } from "hooks";
 
 type Props = {
   close(): void;

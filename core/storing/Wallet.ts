@@ -65,13 +65,29 @@ function chainToDerivationPath(chain: SupportedCoins)
 	}
 }
 
-function chainToPrefix(chain: SupportedCoins)
+const chainPrefixMapping = {
+	[SupportedCoins.BITSONG]: "bitsong",
+}
+
+export function coinToPrefix(chain: SupportedCoins)
 {
-	switch(chain)
+	return chainPrefixMapping[chain]
+}
+
+export function prefixToCoin(prefix: string)
+{
+	try
 	{
-		default:
-			return 'bitsong'
+		for(const k in chainPrefixMapping)
+		{
+			if(chainPrefixMapping[k as SupportedCoins] == prefix)
+			{
+				return k as SupportedCoins
+			}
+		}
 	}
+	catch(e) {}
+	return null
 }
 
 const fromCosmosChain = function(chain: SupportedCoins) : HDWalletDataToWallet
@@ -82,7 +98,7 @@ const fromCosmosChain = function(chain: SupportedCoins) : HDWalletDataToWallet
 	const trailing = accountIndex + "/" + walletIndex
 	switch(chain) {
 		default:
-			chainSpecificDeriver = new MnemonicToHdWalletData(chainToPrefix(chain), chainToDerivationPath(chain) + trailing)
+			chainSpecificDeriver = new MnemonicToHdWalletData(coinToPrefix(chain), chainToDerivationPath(chain) + trailing)
 	}
 
 	return new HDWalletDataToWallet(chainSpecificDeriver)
@@ -108,6 +124,10 @@ export class CosmosWallet implements Wallet {
 	{
 		return (await this.Keys()).private
 	}
+	async Mnemonic()
+	{
+		return (await this.mnemonicStore.Get())
+	}
 
 	private async Keys()
 	{
@@ -116,7 +136,7 @@ export class CosmosWallet implements Wallet {
 
 	async Signer()
 	{
-		return await this.accountDeriver.Derive(await this.mnemonicStore.Get())
+		return await this.accountDeriver.Derive(await this.Mnemonic())
 	}
 }
 

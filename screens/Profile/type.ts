@@ -1,3 +1,5 @@
+import { SupportedFiats } from "core/utils/Coin";
+
 export type IWallet = {
   address: string;
   name: string;
@@ -12,6 +14,6 @@ export type ILang = {
 
 export type ICurrency = {
   _id: string;
-  name: string;
+  name: SupportedFiats;
   title: string;
 };

@@ -17,3 +17,14 @@ module.exports = (() => {
 
   return config;
 })();
+
+// module.exports = {
+//   transformer: {
+//     getTransformOptions: async () => ({
+//       transform: {
+//         experimentalImportSupport: false,
+//         inlineRequires: true,
+//       },
+//     }),
+//   },
+// }
