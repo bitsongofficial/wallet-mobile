@@ -65,7 +65,11 @@ export default observer<Props>(({ close }) => {
           value={item}
           isActive={selectedWallet === item}
           onPress={setSelectedWallet}
-          onPressDelete={wallet.deleteProfile}
+          onPressDelete={(w) =>
+            {
+              close()
+              wallet.deleteProfile(w)
+            }}
           onPressEdit={setEdited}
           mapItemsRef={mapItemsRef}
         />
