@@ -59,7 +59,7 @@ export default class DappConnectionStore {
 		}
 	}
 
-	onRequest(type: string, data: any, handler: acceptRejectType)
+	private onRequest(type: string, data: any, handler: acceptRejectType)
 	{
 		switch(type)
 		{
@@ -77,14 +77,19 @@ export default class DappConnectionStore {
 		}
 	}
 
-	onConnect(connection: WalletConnectCosmosClientV1)
+	private onConnect(connection: WalletConnectCosmosClientV1)
 	{
 		if(this.localStorageManager) this.localStorageManager.saveConnections()
 	}
 
-	onDisconnect(connection: WalletConnectCosmosClientV1)
+	disconnect(connection: WalletConnectCosmosClientV1)
 	{
 		this.connections.splice(this.connections.indexOf(connection), 1)
 		if(this.localStorageManager) this.localStorageManager.saveConnections()
+	}
+
+	private onDisconnect(connection: WalletConnectCosmosClientV1)
+	{
+		this.disconnect(connection)
 	}
 }

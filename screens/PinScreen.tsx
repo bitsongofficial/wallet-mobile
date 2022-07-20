@@ -43,8 +43,6 @@ export default observer<Props>(({ navigation, route }) => {
   const isError = isConfirm !== null && !isConfirm;
   const isBlocked = countError === errorMax;
 
-  console.log("countError :>> ", countError);
-
   // --------- Check -------------
   const { localStorageManager } = useStore();
 

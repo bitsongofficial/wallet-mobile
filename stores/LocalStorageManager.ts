@@ -72,7 +72,6 @@ export default class LocalStorageManager
 		}),
 		(raw) =>
 		{
-			console.log(raw)
 			AsyncStorageLib.setItem(settings_location, raw)
 		})
 	}
@@ -182,7 +181,6 @@ export default class LocalStorageManager
 			() => JSON.stringify(toJS(this.wallet.profiles)),
 			async (json) =>
 			{
-				console.log(json)
 				const granted = await PermissionsAndroid.request(
 					PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
 				)
@@ -251,7 +249,7 @@ export default class LocalStorageManager
 					newStore.Unlock(pin)
 					newStore.Set(m.mnemonic)
 				}))
-			this.wallet.setSetUpsPin(pin)
+			await this.wallet.setSetUpsPin(pin)
 			return false
 		}
 		return false
@@ -273,7 +271,7 @@ export default class LocalStorageManager
 	{
 		const actualPin = pin ?? await askPin()
 		const actualNewPin = newPin ?? await askPin({disableVerification: true})
-		if(this.verifyPin(actualPin))
+		if(await this.verifyPin(actualPin))
 		{
 			const result = await this.updatePinData(actualPin, actualNewPin)
 			try
@@ -281,7 +279,7 @@ export default class LocalStorageManager
 				if(result)
 				{
 					this.setPin(actualNewPin)
-					this.wallet.setSetUpsPin(actualNewPin)
+					await this.wallet.setSetUpsPin(actualNewPin)
 				}
 			}
 			catch

@@ -46,7 +46,7 @@ type ModalType =
   | "AddWatchAccount";
 
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { settings, user, dapp, wallet } = useStore();
+  const { settings, wallet } = useStore();
 
   // ------- BottomSheet ----------
 
@@ -59,7 +59,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
     };
   });
 
-  const inputNick = useMemo(() => new InputHandler(user?.nick), [user]);
+  const inputNick = useMemo(() => new InputHandler(wallet.activeProfile?.name), [wallet, wallet.activeProfile, wallet.activeProfile?.name]);
   const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 });
 
   /// ---------------
@@ -120,6 +120,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
   const openChangeAvatar = useCallback(() => setModal("ChangeAvatar"), []);
+  const onChangeNick = useCallback(() => {
+    if(!wallet.profileExists(inputNick.value))
+    {
+      wallet.changeActiveProfileName(inputNick.value)
+    }
+  }, [inputNick])
 
   useEffect(() => {
     if (inputNick.isFocused) {
@@ -170,7 +176,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
                 style={styles.head}
                 input={inputNick}
                 onPressAvatar={openChangeAvatar}
-                avatar={user?.photo}
+                onNickEdited={onChangeNick}
+                avatar={wallet.activeProfile?.avatar}
                 animtedValue={translationY}
               />
             </Animated.View>

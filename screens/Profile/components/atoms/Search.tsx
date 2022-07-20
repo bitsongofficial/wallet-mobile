@@ -20,7 +20,6 @@ export default ({
   ...props
 }: SearchProps) => {
   const Input = bottomsheet ? BottomSheetTextInput : TextInput;
-  console.log("isFocus", isFocus);
 
   return (
     <View

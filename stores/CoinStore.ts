@@ -37,7 +37,6 @@ export default class CoinStore {
 	get Prices()
 	{
 		const prices: SupportedCoinsMap = {}
-		console.log(toJS(this.remoteConfigs.prices))
 		for(const k of keys(this.remoteConfigs.prices))
 		{
 			const realKey = k as SupportedCoins
@@ -55,7 +54,6 @@ export default class CoinStore {
 
 	async updateBalances()
 	{
-		console.log(toJS(this.Prices))
 		runInAction(() =>
 		{
 			this.loading.balance = true

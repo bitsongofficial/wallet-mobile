@@ -20,39 +20,44 @@ import { RootStackParamList } from "types";
 import { useStore } from "hooks";
 import { Button, Icon2, ThemedGradient } from "components/atoms";
 // import { Header } from "./components/atoms";
-import { COLOR, hexAlpha } from "utils";
-import { Circles, ListButton, Subtitle, Title } from "./components/atoms";
-import { Wallet } from "classes";
+import { COLOR } from "utils";
+import { Circles, Subtitle, Title } from "./components/atoms";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
 import { ProfileWallets } from "stores/WalletStore";
 import { SwipeableItem } from "components/organisms";
+import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">;
 
 export default observer<Props>(function WalletConnect({ navigation }) {
-  const { wallet } = useStore();
+  const { dapp } = useStore();
 
   // ------- Wallets ------
-  const wallets = wallet.wallets;
+  const connections = dapp.connections;
   const mapItemsRef = useMemo(
     () => observable.map<string, React.RefObject<Swipeable>>(),
     []
   );
 
   const renderWallet = useCallback<ListRenderItem<ProfileWallets>>(
-    ({ item }) => (
-      <View key={item.profile.name} style={{ marginBottom: 13 }}>
+    ({ item, index }) => (
+      <View key={item.connector.session} style={{ marginBottom: 13 }}>
         <SwipeableItem
-          id={item.profile.name} // need a unique key
+          id={item.connector.session} // need a unique key
           date="Apr 12, 10:34 AM"
           mapItemsRef={mapItemsRef} // for this
-          onPressDelete={wallet.deleteProfile} // and that
-          name={item.profile.name}
+          onPressDelete={() => dapp.disconnect(item)} // and that
+          name={item.name}
           onPress={() => {}}
         />
       </View>
     ),
+    []
+  );
+
+  const navToScanner = useCallback(
+    () => navigation.push("ScannerQR", { onBarCodeScanned(data) {} }),
     []
   );
 
@@ -97,10 +102,11 @@ export default observer<Props>(function WalletConnect({ navigation }) {
             )}
             <View style={styles.buttonContainer}>
               <Button
+                onPress={navToScanner}
                 textStyle={styles.buttonText}
                 contentContainerStyle={styles.buttonContent}
                 mode="fill"
-                text={"Scan QR Code"}
+                text="Scan QR Code"
               />
             </View>
           </View>

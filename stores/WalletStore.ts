@@ -1,4 +1,4 @@
-import {autorun, makeAutoObservable, runInAction, toJS } from "mobx";
+import {autorun, makeAutoObservable, reaction, runInAction, set, toJS } from "mobx";
 import { CosmosWalletGenerator, prefixToCoin } from "core/storing/Wallet";
 import { WalletTypes } from "core/types/storing/Generic";
 import RemoteConfigsStore from "./RemoteConfigsStore";
@@ -12,6 +12,7 @@ import { PublicWallet } from "core/storing/Generic";
 import SettingsStore from "./SettingsStore";
 import LocalStorageManager from "./LocalStorageManager";
 import { askPin } from "navigation/AskPin";
+import uuid from 'react-native-uuid';
 
 export const cosmos_mnemonic_prefix = "mnemonic_"
 
@@ -22,10 +23,14 @@ export interface Profile {
   avatar?: string,
 }
 
-type profileIndexer = number | Profile | ProfileWallets
+interface ProfileInner extends Profile {
+  id: string,
+}
+
+type profileIndexer = number | ProfileInner | Profile | ProfileWallets
 
 export interface ProfileWallets {
-  profile: Profile,
+  profile: ProfileInner,
   wallets: SupportedCoinsMap
 }
 
@@ -34,9 +39,9 @@ export default class WalletStore {
 
   private walletSetUpPin: string | undefined
 
-  activeProfile: Profile | null = null
+  activeProfile?: ProfileInner
 
-  profiles: Profile[] = []
+  profiles: ProfileInner[] = []
   wallets: ProfileWallets[] = []
   loading = false
   firstLoad = false
@@ -45,7 +50,12 @@ export default class WalletStore {
   constructor(private settings: SettingsStore, private remoteConfigs: RemoteConfigsStore) {
     makeAutoObservable(this, {}, { autoBind: true })
 
-    autorun(() =>
+    reaction(
+    () => this.profiles.map(p => ({
+      type: p.type,
+      data: p.data,
+    })),
+    () =>
     {
       this.setUpWallets()
     })
@@ -184,11 +194,12 @@ export default class WalletStore {
 
   private resolveProfile(profile: profileIndexer)
   {
-    let actualProfile: Profile = profile as Profile
     const inputProfile = profile as any
-    if(typeof profile == "number") actualProfile = this.profiles[profile]
-    else if(inputProfile.profile) actualProfile = inputProfile.profile
-    return actualProfile
+    if(inputProfile.id) return this.profiles.find(p => p.id == inputProfile.id)
+    if(typeof profile == "number") return this.profiles[profile]
+    let targetProfile = inputProfile
+    if(inputProfile.profile) targetProfile = inputProfile.profile
+    return this.profiles.find(p => p.name == targetProfile.name)
   }
 
   changeActive(profile: profileIndexer | null)
@@ -199,13 +210,14 @@ export default class WalletStore {
 
   addProfile(profile: Profile)
   {
-    this.profiles.push(profile)
+    const actualProfile = Object.assign({id: uuid.v4().toString()}, profile) 
+    this.profiles.push(actualProfile)
     if(this.profiles.length == 1) this.changeActive(0)
   }
 
-  setSetUpsPin(pin: string)
+  async setSetUpsPin(pin: string)
   {
-    if(this.localStorageManager && this.localStorageManager.verifyPin(pin)) this.walletSetUpPin = pin
+    if(this.localStorageManager && await this.localStorageManager.verifyPin(pin)) this.walletSetUpPin = pin
   }
 
   async setUpWallets()
@@ -221,7 +233,7 @@ export default class WalletStore {
       const wallets: ProfileWallets[] = []
       const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
-      await Promise.all(toJS(this.profiles).map(async profile =>
+      await Promise.all(toJS(this.profiles).map(async (profile, index) =>
       {
         switch(profile.type)
         {
@@ -243,7 +255,7 @@ export default class WalletStore {
             {
               await Promise.all(addressesWaitings)
               wallets.push({
-                profile,
+                profile: this.profiles[index],
                 wallets: cosmosWallets
               })
             }
@@ -261,7 +273,7 @@ export default class WalletStore {
               const pubWallets: SupportedCoinsMap = {}
               pubWallets[coin] = new PublicWallet(profile.data.address)
               wallets.push({
-                profile,
+                profile: this.profiles[index],
                 wallets: pubWallets
               })
             }
@@ -282,13 +294,15 @@ export default class WalletStore {
 
   get activeWallet()
   {
-    return this.wallets.find(w => w.profile.name == this.activeProfile?.name) ?? null
+    return this.wallets.find(w => w.profile.id == this.activeProfile?.id) ?? null
   }
 
   changeProfileName(profile: profileIndexer, name: string)
   {
     const p = this.resolveProfile(profile)
-    p.name = name
+    if(p) set(p, {
+      name,
+    })
   }
 
   changeActiveProfileName(name: string)
@@ -300,7 +314,9 @@ export default class WalletStore {
   changeProfileAvatar(profile: profileIndexer, uri: string)
   {
     const p = this.resolveProfile(profile)
-    p.avatar = uri
+    if(p) set(p, {
+      avatar: uri
+    })
   }
 
   changeActiveProfileAvatar(uri: string)
@@ -309,11 +325,11 @@ export default class WalletStore {
     this.changeProfileAvatar(this.activeProfile, uri)
   }
 
-  deleteProfile(
-    profile: profileIndexer // need fix by id
-  ) {
-    const p = this.resolveProfile(profile);
-    this.localStorageManager?.removeProfileData(p);
-    this.profiles.splice(this.profiles.indexOf(p), 1);
+  deleteProfile(profile: profileIndexer)
+  {
+    const p = this.resolveProfile(profile)
+    if(p == undefined) return
+    this.localStorageManager?.removeProfileData(p)
+    this.profiles.splice(this.profiles.indexOf(p), 1)
   }
 }
