@@ -309,10 +309,11 @@ export default class WalletStore {
     this.changeProfileAvatar(this.activeProfile, uri)
   }
 
-  deleteProfile(profile: profileIndexer)
-  {
-    const p = this.resolveProfile(profile)
-    this.localStorageManager?.removeProfileData(p)
-    this.profiles.splice(this.profiles.indexOf(p), 1)
+  deleteProfile(
+    profile: profileIndexer // need fix by id
+  ) {
+    const p = this.resolveProfile(profile);
+    this.localStorageManager?.removeProfileData(p);
+    this.profiles.splice(this.profiles.indexOf(p), 1);
   }
 }

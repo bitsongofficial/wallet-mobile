@@ -26,6 +26,7 @@ import { Wallet } from "classes";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
 import { ProfileWallets } from "stores/WalletStore";
+import { SwipeableItem } from "components/organisms";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">;
 
@@ -35,19 +36,20 @@ export default observer<Props>(function WalletConnect({ navigation }) {
   // ------- Wallets ------
   const wallets = wallet.wallets;
   const mapItemsRef = useMemo(
-    () => observable.map<ProfileWallets, React.RefObject<Swipeable>>(),
+    () => observable.map<string, React.RefObject<Swipeable>>(),
     []
   );
 
   const renderWallet = useCallback<ListRenderItem<ProfileWallets>>(
     ({ item }) => (
       <View key={item.profile.name} style={{ marginBottom: 13 }}>
-        <WalletItem
-          value={item}
+        <SwipeableItem
+          id={item.profile.name} // need a unique key
+          date="Apr 12, 10:34 AM"
+          mapItemsRef={mapItemsRef} // for this
+          onPressDelete={wallet.deleteProfile} // and that
+          name={item.profile.name}
           onPress={() => {}}
-          onPressDelete={wallet.deleteProfile}
-          // onPressEdit={setEdited}
-          mapItemsRef={mapItemsRef}
         />
       </View>
     ),
