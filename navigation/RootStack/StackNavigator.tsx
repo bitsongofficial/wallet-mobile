@@ -15,7 +15,7 @@ const WithHeaderOption = { header: (props: NativeStackHeaderProps) => <Header {.
 
 export default () => (
 	<BottomSheetModalProvider>
-		<Stack.Navigator defaultScreenOptions={{ headerShown: false }}>
+		<Stack.Navigator screenOptions={{ headerShown: false }}>
 			{/* not auth */}
 			<Stack.Screen name="Splash" component={Screens.Splash} />
 			<Stack.Screen name="Start" component={Screens.Start} />
