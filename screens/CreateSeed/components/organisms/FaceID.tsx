@@ -6,17 +6,21 @@ import { Subtitle, Title } from "../atoms";
 import { AuthenticationType } from "expo-local-authentication";
 import { useMemo } from "react";
 import { CheckMethod } from "stores/type";
+import { useStore } from "hooks";
 
 type Props = {
   onDone(method: CheckMethod | null): void;
   authTypes: AuthenticationType[];
+  pin?: string;
 };
 
-export default ({ onDone, authTypes }: Props) => {
+export default ({ onDone, authTypes, pin }: Props) => {
   const isAnableFaceID = useMemo(
     () => authTypes.includes(AuthenticationType.FACIAL_RECOGNITION),
     [authTypes]
   );
+
+  const { settings } = useStore()
 
   const [method, setMethod] = useState<CheckMethod>(() =>
     isAnableFaceID ? "FaceID" : "TouchID"
@@ -27,7 +31,10 @@ export default ({ onDone, authTypes }: Props) => {
     []
   );
 
-  const activate = useCallback(() => onDone(method), [onDone]);
+  const activate = useCallback(async () => {
+    await settings.setBiometric(true, pin)
+    onDone(method)
+  }, [onDone]);
   const skip = useCallback(() => onDone(null), [onDone]);
 
   return (

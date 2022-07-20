@@ -62,10 +62,12 @@ export default observer<Props>(({ navigation }) => {
   );
 
   const insets = useSafeAreaInsets();
-
+  const savePin = async () => {
+    await localStorageManager.setPin(controller.pin.value);
+    goNext();
+  }
   const saveWallet = async () => {
     globalLoader.open();
-    await localStorageManager.setPin(controller.pin.value)
     await wallet.newCosmosWallet(
       controller.walletName.value,
       controller.phrase.words,
@@ -102,7 +104,7 @@ export default observer<Props>(({ navigation }) => {
             Center={<Icon2 name="logo" size={56} />}
           />
           {controller.steps.title === "Choice Auth Method" && authTypes ? (
-            <FaceID authTypes={authTypes} onDone={setCheckMethod} />
+            <FaceID authTypes={authTypes} onDone={setCheckMethod} pin={controller.pin.value} />
           ) : (
             <>
               <View>
@@ -146,9 +148,12 @@ export default observer<Props>(({ navigation }) => {
               <Footer
                 onPressBack={goBack}
                 onPressNext={
-                  controller.steps.active === 3 && controller.isCanNext
+                  controller.steps.active === 2 && controller.isCanNext
+                    ? savePin
+                    :
+                  (controller.steps.active === 3 && controller.isCanNext
                     ? saveWallet
-                    : goNext
+                    : goNext)
                 }
                 nextButtonText="Continue"
                 isDisableNext={!controller.isCanNext}
