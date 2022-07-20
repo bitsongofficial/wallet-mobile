@@ -20,37 +20,42 @@ import { RootStackParamList } from "types";
 import { useStore } from "hooks";
 import { Button, Icon2, ThemedGradient } from "components/atoms";
 // import { Header } from "./components/atoms";
-import { COLOR, hexAlpha } from "utils";
-import { Circles, ListButton, Subtitle, Title } from "./components/atoms";
-import { Wallet } from "classes";
+import { COLOR } from "utils";
+import { Circles, Subtitle, Title } from "./components/atoms";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
 import { ProfileWallets } from "stores/WalletStore";
+import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">;
 
 export default observer<Props>(function WalletConnect({ navigation }) {
-  const { wallet } = useStore();
+  const { dapp } = useStore();
 
   // ------- Wallets ------
-  const wallets = wallet.wallets;
+  const connections = dapp.connections;
   const mapItemsRef = useMemo(
     () => observable.map<ProfileWallets, React.RefObject<Swipeable>>(),
     []
   );
 
-  const renderWallet = useCallback<ListRenderItem<ProfileWallets>>(
-    ({ item }) => (
-      <View key={item.profile.name} style={{ marginBottom: 13 }}>
+  const renderWallet = useCallback<ListRenderItem<WalletConnectCosmosClientV1>>(
+    ({ item, index }) => (
+      <View key={index} style={{ marginBottom: 13 }}>
         <WalletItem
           value={item}
           onPress={() => {}}
-          onPressDelete={wallet.deleteProfile}
+          onPressDelete={() => dapp.disconnect(item)}
           // onPressEdit={setEdited}
           mapItemsRef={mapItemsRef}
         />
       </View>
     ),
+    []
+  );
+
+  const navToScanner = useCallback(
+    () => navigation.push("ScannerQR", { onBarCodeScanned(data) {} }),
     []
   );
 
@@ -95,10 +100,11 @@ export default observer<Props>(function WalletConnect({ navigation }) {
             )}
             <View style={styles.buttonContainer}>
               <Button
+                onPress={navToScanner}
                 textStyle={styles.buttonText}
                 contentContainerStyle={styles.buttonContent}
                 mode="fill"
-                text={"Scan QR Code"}
+                text="Scan QR Code"
               />
             </View>
           </View>
