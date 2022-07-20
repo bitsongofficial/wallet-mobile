@@ -27,13 +27,8 @@ export default class DappConnectionStore {
 		// AsyncStorageLib.removeItem(session_location)
 	}
 
-	async connect(pairString?: string, session?: IWalletConnectSession)
+	async connect(pairString?: string, session?: IWalletConnectSession, name?: string, date?: Date)
 	{
-		// See if it can be checked between pair string and session
-		// if(!this.uris.find(u => u == pairString)) runInAction(() =>
-		// {
-		// 	this.uris.push(pairString)
-		// })
 		if(this.walletStore.activeWallet)
 		{
 			try
@@ -50,6 +45,7 @@ export default class DappConnectionStore {
 			}
 			catch(e)
 			{
+				console.log("A", e)
 				throw e
 			}
 		}
@@ -82,10 +78,19 @@ export default class DappConnectionStore {
 		if(this.localStorageManager) this.localStorageManager.saveConnections()
 	}
 
-	disconnect(connection: WalletConnectCosmosClientV1)
+	async disconnect(connection: WalletConnectCosmosClientV1)
 	{
-		this.connections.splice(this.connections.indexOf(connection), 1)
-		if(this.localStorageManager) this.localStorageManager.saveConnections()
+		try
+		{
+			await connection.connector?.killSession()
+		}
+		catch(e){}
+		const connectionIndex = this.connections.indexOf(connection)
+		if(connectionIndex >= 0)
+		{
+			this.connections.splice(connectionIndex, 1)
+			if(this.localStorageManager) this.localStorageManager.saveConnections()
+		}
 	}
 
 	private onDisconnect(connection: WalletConnectCosmosClientV1)

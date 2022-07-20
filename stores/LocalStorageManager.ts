@@ -2,7 +2,7 @@ import AsyncStorageLib from "@react-native-async-storage/async-storage"
 import { autorun, IReactionDisposer, reaction, runInAction, toJS } from "mobx"
 import DappConnectionStore from "./DappConnectionStore"
 import SettingsStore from "./SettingsStore"
-import WalletStore, { Profile } from "./WalletStore"
+import WalletStore, { ProfileInner } from "./WalletStore"
 import { IWalletConnectSession } from "@walletconnect/types"
 import { PermissionsAndroid } from "react-native"
 import RemoteConfigsStore from "./RemoteConfigsStore"
@@ -15,9 +15,15 @@ import ContactsStore from "./ContactsStore"
 
 const pin_hash_path = "pin_hash"
 const settings_location = "settings"
-const session_location = "wc_sessions"
+const connections_location = "wc_sessions"
 const stored_wallets_path = "stored_wallets"
 const contacts_location = "contacts"
+
+type connectionRaw = {
+	session: IWalletConnectSession,
+	name: string,
+	date: Date,
+}
 
 export default class LocalStorageManager
 {
@@ -96,9 +102,14 @@ export default class LocalStorageManager
 
 	saveConnections()
 	{
-		const raw = JSON.stringify(this.dappConnection.connections.filter(c => c.connector != null).map(c => c.connector?.session))
+		const raw = JSON.stringify(this.dappConnection.connections.filter(c => c.connector != null).map(c => (
+		{
+			session: c.connector?.session,
+			date: c.date?.getTime(),
+			name: c.name,
+		})))
 		try {
-			AsyncStorageLib.setItem(session_location, raw)
+			AsyncStorageLib.setItem(connections_location, raw)
 		}
 		catch(e)
 		{
@@ -110,12 +121,12 @@ export default class LocalStorageManager
 	{
 		try
 		{
-			const storedSessions = await AsyncStorageLib.getItem(session_location)
-			if(storedSessions)
+			const storedConnections = await AsyncStorageLib.getItem(connections_location)
+			if(storedConnections)
 			{
-				const sessions = JSON.parse(storedSessions) as IWalletConnectSession[]
-				sessions.forEach(session => {
-					this.dappConnection.connect(undefined, session)
+				const connections = JSON.parse(storedConnections) as connectionRaw[]
+				connections.forEach(c => {
+					this.dappConnection.connect(undefined, c.session, c.name, new Date(c.date))
 				})
 			}
 		}
@@ -123,19 +134,6 @@ export default class LocalStorageManager
 		{
 			console.log("load to large", e)
 		}
-		reaction(
-			() => JSON.stringify(this.dappConnection.connections.filter(c => c.connector != undefined).map(c => c.connector?.session)),
-			(raw) =>
-			{
-				try {
-					AsyncStorageLib.setItem(session_location, raw)
-				}
-				catch(e)
-				{
-					console.log("save to large", e)
-				}
-			}
-		)
 	}
 
 	setUpStores()
@@ -158,7 +156,7 @@ export default class LocalStorageManager
 			const serializedWalletsRaw = await AsyncStorageLib.getItem(stored_wallets_path)
 			if(serializedWalletsRaw != null)
 			{
-				const serializedWallets = JSON.parse(serializedWalletsRaw) as Array<Profile>
+				const serializedWallets = JSON.parse(serializedWalletsRaw) as Array<ProfileInner>
 				if(serializedWallets != null)
 				{
 					runInAction(() =>
@@ -167,6 +165,13 @@ export default class LocalStorageManager
 						if(this.wallet.profiles.length > 0) this.wallet.activeProfile = this.wallet.profiles[0]
 					})
 				}
+			}
+			else
+			{
+				runInAction(() =>
+				{
+					this.wallet.firstLoad = true
+				})
 			}
 		}
 		runInAction(() =>
@@ -192,7 +197,7 @@ export default class LocalStorageManager
 		)
 	}
 
-	removeProfileData(profile: Profile)
+	removeProfileData(profile: ProfileInner)
 	{
 		try
 		{

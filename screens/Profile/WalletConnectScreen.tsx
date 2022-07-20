@@ -40,24 +40,26 @@ export default observer<Props>(function WalletConnect({ navigation }) {
     []
   );
 
-  const renderWallet = useCallback<ListRenderItem<ProfileWallets>>(
-    ({ item, index }) => (
-      <View key={item.connector.session} style={{ marginBottom: 13 }}>
+  const renderWallet = useCallback<ListRenderItem<WalletConnectCosmosClientV1>>(
+    ({ item, index }) => item && item.connector ? (
+      <View key={item.connector.session.key} style={{ marginBottom: 13 }}>
         <SwipeableItem
-          id={item.connector.session} // need a unique key
-          date="Apr 12, 10:34 AM"
+          id={item.connector.session.key} // need a unique key
+          date={item.date ? item.date.toLocaleString() : ""}
           mapItemsRef={mapItemsRef} // for this
           onPressDelete={() => dapp.disconnect(item)} // and that
-          name={item.name}
+          name={item.name ?? "Unknown"}
           onPress={() => {}}
         />
       </View>
-    ),
+    ) : (null),
     []
   );
 
   const navToScanner = useCallback(
-    () => navigation.push("ScannerQR", { onBarCodeScanned(data) {} }),
+    () => navigation.push("ScannerQR", { onBarCodeScanned(data) {
+      dapp.connect(data)
+    } }),
     []
   );
 
@@ -75,16 +77,16 @@ export default observer<Props>(function WalletConnect({ navigation }) {
             title="Wallet Connect"
             onPressScan={() => {}}
           />
-          {wallets.length > 0 && (
+          {connections.length > 0 && (
             <>
               <Subtitle style={[{ marginBottom: 23 }, styles.wrapper]}>
                 Connessioni attive
               </Subtitle>
-              <FlatList data={wallets} renderItem={renderWallet} />
+              <FlatList data={connections} renderItem={renderWallet} />
             </>
           )}
           <View style={[styles.wrapper, { flex: 1 }]}>
-            {wallets.length === 0 && (
+            {connections.length === 0 && (
               <View style={{ alignItems: "center" }}>
                 <View style={{ marginVertical: 40 }}>
                   <Circles>

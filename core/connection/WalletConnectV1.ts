@@ -4,11 +4,14 @@ import { Bitsong } from "core/coin/bitsong/Bitsong";
 import { PublicWallet } from "core/storing/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
+import { makeAutoObservable } from "mobx";
 import Config from "react-native-config";
 
 export class WalletConnectCosmosClientV1 {
 	connector: WalletConnect | null = null
 	wallets
+	name?: string
+	date?: Date
 	pendingAction: (() => void) | null = null
 	confirmationExtraData: any
 	onConnect?: (connection: WalletConnectCosmosClientV1) => void
@@ -59,10 +62,12 @@ export class WalletConnectCosmosClientV1 {
 				accounts,
 				chainId: 1                  // required
 			})
+			this.name = payload.params.peerMeta ? payload.params.peerMeta.name : undefined
 		})
 		connector.on("connect", async () =>
 		{
 			console.log("connected")
+			this.setDate(new Date())
 			if(this.onConnect) this.onConnect(this)
 		})
 		connector.on("call_request", async (error, payload) => {
@@ -126,10 +131,12 @@ export class WalletConnectCosmosClientV1 {
 			console.log("disconnected")
 			if(this.onDisconnect) this.onDisconnect(this)
 			if (error) {
-			  throw error;
+			  	throw error
 			}
 		})
 		this.connector = connector
+
+		makeAutoObservable(this)
 	}
 
 	async getAccounts()
@@ -145,5 +152,10 @@ export class WalletConnectCosmosClientV1 {
 		})
 		await Promise.all(accountRequests)
 		return accounts
+	}
+
+	setDate(date: Date)
+	{
+		this.date = date
 	}
 }

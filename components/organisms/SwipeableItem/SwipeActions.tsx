@@ -17,7 +17,7 @@ type Props = {
 export default memo(
   ({ onPressEdit, onPressTrash, id, style, edited = true }: Props) => (
     <View style={[styles.container, style]}>
-      {edited && (
+      {edited && onPressEdit && (
         <Button
           text="Edit"
           mode="fill"
