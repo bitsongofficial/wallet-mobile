@@ -168,7 +168,8 @@ export default class WalletStore {
     if(!this.profileExists(name))
     {
       const mnemonicString = mnemonic.join(" ")
-      const mnemonicPath = cosmos_mnemonic_prefix + name
+      const id = uuid.v4().toString()
+      const mnemonicPath = cosmos_mnemonic_prefix + id
       const mnemonicStore = new AskPinMnemonicStore(mnemonicPath, askPin)
       const actualPin = pin ?? await askPin()
       mnemonicStore.Unlock(actualPin)
@@ -180,6 +181,7 @@ export default class WalletStore {
         this.addProfile({
           name,
           type: WalletTypes.COSMOS,
+          id,
           data: {
             mnemonicPath
           }
@@ -197,6 +199,7 @@ export default class WalletStore {
         this.addProfile({
           name,
           type: WalletTypes.WATCH,
+          id: uuid.v4().toString(),
           data: {
             address
           }
@@ -221,10 +224,9 @@ export default class WalletStore {
     this.activeProfile = this.resolveProfile(profile)
   }
 
-  addProfile(profile: Profile)
+  private addProfile(profile: ProfileInner)
   {
-    const actualProfile = Object.assign({id: uuid.v4().toString()}, profile) 
-    this.profiles.push(actualProfile)
+    this.profiles.push(profile)
     if(this.profiles.length == 1) this.changeActive(0)
   }
 
@@ -340,8 +342,10 @@ export default class WalletStore {
 
   deleteProfile(profile: profileIndexer)
   {
+    console.log(profile)
     const p = this.resolveProfile(profile)
     if(p == undefined) return
+    console.log(p)
     this.localStorageManager?.removeProfileData(p)
     this.profiles.splice(this.profiles.indexOf(p), 1)
   }

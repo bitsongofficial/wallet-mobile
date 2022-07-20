@@ -45,6 +45,7 @@ export default observer<Props>(({ close }) => {
   const removeEdited = useCallback(() => setEdited(undefined), []);
   const saveEdited = useCallback(() => {
     if (edited) edited.profile.name = inputWalletName.value;
+    close()
   }, [edited, inputWalletName]);
 
   // ------- FlatList ----------
@@ -140,18 +141,20 @@ export default observer<Props>(({ close }) => {
                 icon="eye"
                 text="View Mnemonics"
                 arrow
+                onPress={async () => (console.log(await wallet.activeWallet?.wallets.btsg.Mnemonic()))}
               />
-              <ListButton
+              {/* <ListButton
                 style={styles.listButton}
                 icon="key"
                 text="Eliminate Mnemonics"
                 arrow
-              />
+              /> */}
               <ListButton
                 style={styles.listButton}
                 icon="power"
                 text="Disconnect Wallet"
                 arrow
+                onPress={() => wallet.deleteProfile(edited)}
               />
             </View>
 

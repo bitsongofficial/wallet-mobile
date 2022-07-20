@@ -63,11 +63,6 @@ export default observer<Props>(function WalletConnect({ navigation }) {
     []
   );
 
-  const navToScanner = useCallback(
-    () => navigation.push("ScannerQR", { onBarCodeScanned(data) {} }),
-    []
-  );
-
   const goBack = useCallback(() => navigation.goBack(), []);
 
   return (
