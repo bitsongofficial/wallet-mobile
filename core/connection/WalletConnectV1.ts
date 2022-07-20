@@ -26,6 +26,7 @@ export class WalletConnectCosmosClientV1 {
 		onDisconnect?: (connection: WalletConnectCosmosClientV1) => void,
 	})
 	{
+		makeAutoObservable(this, {}, { autoBind: true })
 		this.wallets = options.wallets
 		this.onConnect = options.onConnect
 		this.onDisconnect = options.onDisconnect
@@ -135,8 +136,6 @@ export class WalletConnectCosmosClientV1 {
 			}
 		})
 		this.connector = connector
-
-		makeAutoObservable(this)
 	}
 
 	async getAccounts()
