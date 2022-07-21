@@ -39,7 +39,7 @@ export default class WalletStore {
 
   private walletSetUpPin: string | undefined
 
-  activeProfile?: ProfileInner
+  activeProfile: ProfileInner | null = null
 
   profiles: ProfileInner[] = []
   wallets: ProfileWallets[] = []
@@ -211,11 +211,11 @@ export default class WalletStore {
   private resolveProfile(profile: profileIndexer)
   {
     const inputProfile = profile as any
-    if(inputProfile.id) return this.profiles.find(p => p.id == inputProfile.id)
+    if(inputProfile.id) return this.profiles.find(p => p.id == inputProfile.id) ?? null
     if(typeof profile == "number") return this.profiles[profile]
     let targetProfile = inputProfile
     if(inputProfile.profile) targetProfile = inputProfile.profile
-    return this.profiles.find(p => p.name == targetProfile.name)
+    return this.profiles.find(p => p.name == targetProfile.name) ?? null
   }
 
   changeActive(profile: profileIndexer | null)

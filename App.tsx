@@ -17,6 +17,7 @@ import { useGlobalBottomsheet, useLoading, useTheme } from "hooks";
 import { setUpPushNotificationsEvents } from "utils/pushNotifications";
 import { observer } from "mobx-react-lite";
 import { BottomSheet } from "components/moleculs";
+import { test } from "core/Test";
 
 configure({ useProxies: "ifavailable" });
 

@@ -5,6 +5,7 @@ import { COLOR } from "utils";
 import { Button } from "components/atoms";
 import { PhraseHorisontal } from "components/moleculs";
 import { Title } from "../../atoms";
+import { useStore } from "hooks";
 
 type CreateStepProps = {
   onPressPaste(): void;
