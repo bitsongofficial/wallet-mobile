@@ -13,6 +13,7 @@ import { Denom } from "./types/coin/Generic"
 import { CoinOperationEnum } from "./types/coin/OperationTypes"
 import { Wallet } from "./types/storing/Generic"
 import { argon2Encode, argon2Verify } from "utils/argon"
+import Config from "react-native-config"
 
 const amount = {
 	denom: Denom.UBTSG,
@@ -122,6 +123,7 @@ export async function test()
 		}
 		
 		try {
+			console.log("RPC", Config.BITSONG_RPC)
 			// const bin2String = (array: number[]) =>
 			// {
 			// 	const result = String.fromCharCode(...array)

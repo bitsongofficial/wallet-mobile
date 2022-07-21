@@ -1,4 +1,3 @@
-import { Transaction } from "classes";
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 import { makeAutoObservable } from "mobx";
 import { openSendRecap } from "screens/SendModalScreens/OpenSendRecap";
@@ -59,15 +58,17 @@ export default class DappConnectionStore {
 		switch(type)
 		{
 			case "/cosmos.bank.v1beta1.MsgSend":
-				const creater = new Transaction.Creater()
-				creater.setAmount(this.coinStore.fromAmountToFiat(data.amount).toFixed(2))
-				creater.addressInput.set(data.to)
-
-				openSendRecap(creater, async () =>
-				{
-					await handler.accept()
-					this.coinStore.updateBalances()
-				}, handler.reject)
+				openSendRecap({
+					to: data.to,
+					from: data.from,
+					amount: this.coinStore.fromAmountToFiat(data.amount).toFixed(2),
+					onDone: async () =>
+					{
+						await handler.accept()
+						this.coinStore.updateBalances()
+					},
+					onReject: () => {handler.reject()},
+				})
 				break
 		}
 	}

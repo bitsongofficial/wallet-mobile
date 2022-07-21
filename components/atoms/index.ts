@@ -12,3 +12,4 @@ export { default as Header } from "./Header";
 export { default as GradientText } from "./GradientText";
 export { default as Switch } from "./Switch";
 export { default as Loader } from "./Loader";
+export { default as Backdrop } from "./Backdrop";

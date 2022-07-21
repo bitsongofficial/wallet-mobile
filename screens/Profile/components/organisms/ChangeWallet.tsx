@@ -1,261 +1,195 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  StyleProp,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { RectButton, Swipeable } from "react-native-gesture-handler";
-import { SharedValue } from "react-native-reanimated";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { observable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useStore } from "hooks";
 import { COLOR, hexAlpha, InputHandler } from "utils";
-import { Button, Icon2, Switch } from "components/atoms";
-import { BottomSheet } from "components/moleculs";
+import { Button, Icon2 } from "components/atoms";
 import { ListButton, Search, Title } from "../atoms";
 import { WalletItemEdited } from "../moleculs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
 import { ProfileWallets } from "stores/WalletStore";
 
 type Props = {
-  isOpen?: boolean;
-  animatedPosition?: SharedValue<number>;
-  backgroundStyle: StyleProp<
-    Omit<ViewStyle, "bottom" | "left" | "position" | "right" | "top">
-  >;
-  onClose?(): void;
+  close(): void;
 };
 
-export default observer<Props>(
-  ({ animatedPosition, isOpen, onClose, backgroundStyle }) => {
-    const { settings, wallet } = useStore();
+export default observer<Props>(({ close }) => {
+  const { settings, wallet } = useStore();
+  const insent = useSafeAreaInsets();
 
-    // ------ BottomSheet -------
+  // ------- Search -----------
+  const inputSearch = useMemo(() => new InputHandler(), []);
 
-    const snapPoints = useMemo(() => ["95%"], []);
-    const bottomSheet = useRef<BottomSheetMethods>(null);
+  const filtred = useMemo(() => {
+    if (inputSearch.value) {
+      const lowerCase = inputSearch.value.toLowerCase();
+      return wallet.wallets.filter(({ profile }) =>
+        profile.name?.toLowerCase().includes(lowerCase)
+      );
+    } else {
+      return wallet.wallets;
+    }
+  }, [inputSearch.value, wallet.wallets]);
 
-    const close = () => bottomSheet.current?.close();
-    const open = () => bottomSheet.current?.snapToIndex(0);
+  // ---------- Edit -----------
+  const [edited, setEdited] = useState<ProfileWallets>(); // need store
 
-    useEffect(() => (isOpen ? open() : close()), [isOpen]);
+  const inputWalletName = useMemo(
+    () => new InputHandler(edited?.profile.name),
+    [edited]
+  );
 
-    // ------- Search -----------
-    const inputSearch = useMemo(() => new InputHandler(), []);
+  const removeEdited = useCallback(() => setEdited(undefined), []);
+  const saveEdited = useCallback(() => {
+    if (edited) edited.profile.name = inputWalletName.value;
+    close()
+  }, [edited, inputWalletName]);
 
-    const filtred = useMemo(() => {
-      if (inputSearch.value) {
-        const lowerCase = inputSearch.value.toLowerCase();
-        return wallet.wallets.filter(({ profile }) =>
-          profile.name?.toLowerCase().includes(lowerCase)
-        );
-      } else {
-        return wallet.wallets;
-      }
-    }, [inputSearch.value, wallet.wallets]);
+  // ------- FlatList ----------
 
-    // ---------- Edit -----------
-    const [edited, setEdited] = useState<ProfileWallets>(); // need store
+  const mapItemsRef = useMemo(
+    () => observable.map<ProfileWallets, React.RefObject<Swipeable>>(),
+    []
+  );
 
-    const inputWalletName = useMemo(
-      () => new InputHandler(edited?.profile.name),
-      [edited]
-    );
+  const [selectedWallet, setSelectedWallet] = useState(wallet.activeWallet);
 
-    const removeEdited = useCallback(() => setEdited(undefined), []);
+  const keyExtractor = ({ profile }: ProfileWallets) => profile.name;
+  const renderWallets = useCallback(
+    ({ item }) => (
+      <View style={{ marginBottom: 13 }}>
+        <WalletItemEdited
+          value={item}
+          isActive={selectedWallet === item}
+          onPress={setSelectedWallet}
+          onPressDelete={(w) =>
+            {
+              close()
+              wallet.deleteProfile(w)
+            }}
+          onPressEdit={setEdited}
+          mapItemsRef={mapItemsRef}
+        />
+      </View>
+    ),
+    [selectedWallet]
+  );
 
-    const saveEdited = useCallback(
-      () => {
-        if(edited) wallet.changeProfileName(edited, inputWalletName.value)
-        close()
-      },
-      [edited, inputWalletName]
-    );
+  // -------- Done ---------
 
-    // ------- FlatList ----------
+  const setWallet = useCallback(() => {
+    wallet.changeActive(selectedWallet);
+    close();
+  }, [selectedWallet]);
 
-    const mapItemsRef = useMemo(
-      () => observable.map<ProfileWallets, React.RefObject<Swipeable>>(),
-      []
-    );
+  return (
+    <View style={styles.container}>
+      {!edited ? (
+        <>
+          <View style={styles.wrapper}>
+            <View style={styles.header}>
+              <View style={styles.headerCenter}>
+                <Title style={styles.title}>Seleziona Wallet</Title>
+              </View>
+            </View>
+            <Search
+              placeholder="Cerca Wallet"
+              style={styles.search}
+              value={inputSearch.value}
+              onChangeText={inputSearch.set}
+            />
+          </View>
 
-    const [selectedWallet, setSelectedWallet] = useState(wallet.activeWallet);
-
-    const keyExtractor = ({ profile }: ProfileWallets) => profile.name;
-    const renderWallets = useCallback(
-      ({ item }) => (
-        <View style={{ marginBottom: 13 }}>
-          <WalletItemEdited
-            value={item}
-            isActive={selectedWallet === item}
-            onPress={setSelectedWallet}
-            onPressDelete={wallet.deleteProfile}
-            onPressEdit={setEdited}
-            mapItemsRef={mapItemsRef}
-          />
-        </View>
-      ),
-      [selectedWallet]
-    );
-
-    // --------- Buttons ----------
-
-    const insent = useSafeAreaInsets();
-
-    const [isShowButton, setIsShowButton] = useState(false);
-    const toggleButtonShow = useCallback((index: number) => {
-      setIsShowButton(index >= 0);
-    }, []);
-
-    // -------- Done ---------
-
-    const setWallet = useCallback(() => {
-      wallet.changeActive(selectedWallet);
-      close();
-    }, [selectedWallet]);
-
-    // --------- Close -----------
-
-    const handleClose = useCallback(() => {
-      onClose && onClose();
-      removeEdited();
-      mapItemsRef.forEach((ref) => ref.current?.close());
-      setSelectedWallet(wallet.activeWallet);
-    }, [onClose]);
-
-    useBottomSheetBackButton(isOpen, handleClose);
-
-    // console.log("isShowButton :>> ", isShowButton);
-    return (
-      <>
-        <BottomSheet
-          enablePanDownToClose
-          snapPoints={snapPoints}
-          ref={bottomSheet}
-          backgroundStyle={backgroundStyle}
-          animatedPosition={animatedPosition}
-          onChange={toggleButtonShow}
-          onClose={handleClose}
-          index={-1}
-        >
-          <View style={styles.container}>
-            {!edited ? (
-              <>
-                <View style={styles.wrapper}>
-                  <View style={styles.header}>
-                    <View style={styles.headerCenter}>
-                      <Title style={styles.title}>Seleziona Wallet</Title>
-                    </View>
-                  </View>
-                  <Search
-                    placeholder="Cerca Wallet"
-                    style={styles.search}
-                    value={inputSearch.value}
-                    onChangeText={inputSearch.set}
-                  />
-                </View>
-
-                {/* <View style={[styles.switchContainer, styles.wrapper]}>
+          {/* <View style={[styles.switchContainer, styles.wrapper]}>
                   <Text style={styles.switchTitle}>Tutti</Text>
                   <Switch gradient />
                 </View> */}
 
-                <BottomSheetFlatList
-                  data={filtred}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderWallets}
-                  style={styles.scroll}
-                  contentContainerStyle={styles.scrollContent}
-                />
-              </>
-            ) : (
-              <View style={styles.wrapper}>
-                <View style={styles.header}>
-                  <View style={styles.headerLeft}>
-                    <RectButton
-                      style={styles.buttonBack}
-                      onPress={removeEdited}
-                    >
-                      <Icon2 size={24} name="arrow_left" stroke={COLOR.White} />
-                    </RectButton>
-                  </View>
+          <BottomSheetFlatList
+            data={filtred}
+            keyExtractor={keyExtractor}
+            renderItem={renderWallets}
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+          />
+        </>
+      ) : (
+        <View style={styles.wrapper}>
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <RectButton style={styles.buttonBack} onPress={removeEdited}>
+                <Icon2 size={24} name="arrow_left" stroke={COLOR.White} />
+              </RectButton>
+            </View>
 
-                  <View style={styles.headerCenter}>
-                    <Title style={styles.title}>Edit Wallet</Title>
-                  </View>
-                  <View style={styles.headerRight} />
-                </View>
-                <Search
-                  placeholder="Cerca Wallet"
-                  style={styles.search}
-                  value={inputWalletName.value}
-                  onChangeText={inputWalletName.set}
-                  loupe={false}
-                />
-                <View style={styles.editMenu}>
-                  <Text style={styles.editTitle}>Safety</Text>
-                  <View style={styles.buttons_list}>
-                    <ListButton
-                      style={styles.listButton}
-                      icon="eye"
-                      text="View Mnemonics"
-                      arrow
-                      onPress={async () => (console.log(await edited.wallets.btsg.Mnemonic()))}
-                    />
-                    {/* <ListButton
-                      style={styles.listButton}
-                      icon="key"
-                      text="Eliminate Mnemonics"
-                      arrow
-                    /> */}
-                    <ListButton
-                      style={styles.listButton}
-                      icon="power"
-                      text="Disconnect Wallet"
-                      arrow
-                    />
-                  </View>
+            <View style={styles.headerCenter}>
+              <Title style={styles.title}>Edit Wallet</Title>
+            </View>
+            <View style={styles.headerRight} />
+          </View>
+          <Search
+            placeholder="Cerca Wallet"
+            style={styles.search}
+            value={inputWalletName.value}
+            onChangeText={inputWalletName.set}
+            loupe={false}
+          />
+          <View style={styles.editMenu}>
+            <Text style={styles.editTitle}>Safety</Text>
+            <View style={styles.buttons_list}>
+              <ListButton
+                style={styles.listButton}
+                icon="eye"
+                text="View Mnemonics"
+                arrow
+                onPress={async () => (console.log(await wallet.activeWallet?.wallets.btsg.Mnemonic()))}
+              />
+              {/* <ListButton
+                style={styles.listButton}
+                icon="key"
+                text="Eliminate Mnemonics"
+                arrow
+              /> */}
+              <ListButton
+                style={styles.listButton}
+                icon="power"
+                text="Disconnect Wallet"
+                arrow
+                onPress={() => wallet.deleteProfile(edited)}
+              />
+            </View>
 
-                  <Text style={styles.caption}>
-                    Access VIP experiences, exclusive previews,{"\n"}
-                    finance your own and have your say.
-                  </Text>
-                </View>
-              </View>
-            )}
+            <Text style={styles.caption}>
+              Access VIP experiences, exclusive previews,{"\n"}
+              finance your own and have your say.
+            </Text>
           </View>
-        </BottomSheet>
-        {isShowButton && (
-          <View style={[styles.buttons, { bottom: insent.bottom }]}>
-            {!edited ? (
-              <Button
-                text="Select"
-                onPress={setWallet}
-                textStyle={styles.buttonText}
-                contentContainerStyle={styles.buttonContent}
-              />
-            ) : (
-              <Button
-                text="Save"
-                onPress={saveEdited}
-                textStyle={styles.buttonText}
-                contentContainerStyle={styles.buttonContent}
-              />
-            )}
-          </View>
+        </View>
+      )}
+
+      <View style={[styles.buttons, { bottom: insent.bottom }]}>
+        {!edited ? (
+          <Button
+            text="Select"
+            onPress={setWallet}
+            textStyle={styles.buttonText}
+            contentContainerStyle={styles.buttonContent}
+          />
+        ) : (
+          <Button
+            text="Save"
+            onPress={saveEdited}
+            textStyle={styles.buttonText}
+            contentContainerStyle={styles.buttonContent}
+          />
         )}
-      </>
-    );
-  }
-);
+      </View>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

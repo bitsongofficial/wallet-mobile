@@ -15,6 +15,7 @@ import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore, { ProfileWallets } from "./WalletStore";
 import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, SupportedFiats } from "core/utils/Coin";
 import SettingsStore from "./SettingsStore";
+import Config from "react-native-config";
 
 export default class CoinStore {
 	coins: Coin[] = []
@@ -88,7 +89,7 @@ export default class CoinStore {
 			}
 		}
 		let errors = false
-		await Promise.allSettled(waitings)
+		const a = await Promise.allSettled(waitings)
 		try
 		{
 			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
@@ -101,9 +102,14 @@ export default class CoinStore {
 				if(balance)
 				{
 					if(balance.length > 0) balance.forEach(asset => {
-						const currentInfo = Object.assign({}, infos[i])
-						currentInfo.balance = fromAmountToCoin(asset)
-						coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices)))
+						if(asset.denom != "ubtsg") return
+						try
+						{
+							const currentInfo = Object.assign({}, infos[i])
+							currentInfo.balance = fromAmountToCoin(asset)
+							coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices)))
+						}
+						catch{}
 					})
 					else
 					{

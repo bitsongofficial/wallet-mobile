@@ -20,14 +20,6 @@ export default class MainStore {
   contacts = new ContactsStore()
   localStorageManager = new LocalStorageManager(this.wallet, this.dapp, this.settings, this.configs.remote, this.contacts)
 
-  user: null | User = new User({
-    _id: "1234",
-    address: "bitsong16h2ry9axyvzwkftv93h6nusdqeqdn552skxxtw",
-    avatar: null,
-    firstName: "",
-    lastName: "",
-  }); //  null;
-
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
