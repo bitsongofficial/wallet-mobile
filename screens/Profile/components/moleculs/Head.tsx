@@ -27,10 +27,11 @@ type Props = {
   onPressAvatar?(): void;
   avatar?: string;
   animtedValue: SharedValue<number>;
+  onNickEdited?(): void;
 };
 
 export default observer<Props>(
-  ({ style, input, onPressAvatar, avatar, animtedValue }) => {
+  ({ style, input, onPressAvatar, avatar, animtedValue, onNickEdited }) => {
     const inputRef = useRef<TextInput>(null);
     const { dapp, user } = useStore();
 
@@ -103,11 +104,12 @@ export default observer<Props>(
                 onFocus={input.focusON}
                 onBlur={input.focusOFF}
                 focusable={false}
+                onEndEditing={onNickEdited}
               />
             </Animated.View>
           </View>
         </View>
-        {/* {!input.isFocused && (
+        {!input.isFocused && (
           <Animated.View style={buttonStyle}>
             <Button
               text={!input.value ? "Set nick" : "Edit"}
@@ -118,7 +120,7 @@ export default observer<Props>(
               mode="fill"
             />
           </Animated.View>
-        )} */}
+        )}
       </View>
     );
   }

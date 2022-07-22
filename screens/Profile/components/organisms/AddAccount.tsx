@@ -112,7 +112,17 @@ export default observer<Props>(({ close, phrase, steps }) => {
       )}
 
       {steps.title === "Import" && (
-        <ImportStep onPressPaste={paste} phrase={phrase} />
+        <>
+          <ImportStep onPressPaste={paste} phrase={phrase} />
+          <View style={[styles.footer, { bottom: insets.bottom }]}>
+            <Button
+              text="Continue"
+              contentContainerStyle={styles.buttonContinueContent}
+              textStyle={styles.buttonContinueText}
+              onPress={openName}
+            />
+          </View>
+        </>
       )}
     </>
   );

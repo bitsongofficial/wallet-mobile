@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react-lite";
-import { IPerson } from "classes/types";
 import { COLOR, InputHandler } from "utils";
 import { Button, ButtonBack, Icon2 } from "components/atoms";
 import { Search, Title } from "../atoms";
@@ -11,15 +10,19 @@ import { ButtonAvatar } from "../moleculs";
 import { runInAction } from "mobx";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
+import { Contact } from "stores/ContactsStore";
+import { useGlobalBottomsheet, useStore } from "hooks";
 
 type Props = {
-  contact: IPerson | null;
+  contact: Contact | null;
   steps: Steps<"Data" | "Photo">;
   close(): void;
   navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
 export default observer<Props>(({ close, contact, steps, navigation }) => {
+  const { contacts } = useStore()
+  const gbs = useGlobalBottomsheet()
   const goBack = useCallback(
     () => (steps.active > 0 ? steps.goBack() : close()),
     [steps.active]
@@ -30,13 +33,22 @@ export default observer<Props>(({ close, contact, steps, navigation }) => {
     [contact?.address]
   );
   const inputNickname = useMemo(
-    () => new InputHandler(contact?.nickname),
-    [contact?.nickname]
+    () => new InputHandler(contact?.name),
+    [contact?.name]
   );
 
   const navToScan = useCallback(
-    () => navigation.push("ScannerQR", { onBarCodeScanned: inputAddress.set }),
-    []
+    () =>
+    {
+      gbs.closeSoft()
+      navigation.push("ScannerQR", { onBarCodeScanned: (data) =>
+        {
+          inputAddress.set(data)
+          gbs.openSoft()
+        }
+      })
+    },
+    [gbs]
   );
 
   // ------- Image ----------
@@ -51,17 +63,17 @@ export default observer<Props>(({ close, contact, steps, navigation }) => {
   // -------------------------
 
   const save = useCallback(() => {
-    runInAction(() => {
-      if (contact) {
-        contact.address = inputAddress.value;
-        contact.nickname = inputNickname.value;
-        if (image) {
-          contact.avatar = image;
-        }
+    if (contact)
+    {
+      contacts.editAddress(contact, inputAddress.value)
+      contacts.editName(contact, inputNickname.value)
+      if (image)
+      {
+        contacts.editAvatar(contact, image)
       }
-    });
-    close();
-  }, []);
+    }
+    close()
+  }, [image])
 
   return (
     <View style={styles.container}>

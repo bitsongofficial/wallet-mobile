@@ -13,7 +13,7 @@ import { StatusBar } from "expo-status-bar"
 type Props = NativeStackScreenProps<RootStackParamList, "Splash">
 
 export default observer<Props>(function SplashScreen({ navigation }) {
-	const { wallet } = useStore()
+	const {localStorageManager, wallet} = useStore()
 
 	const mainScreen = useCallback(() => navigation.replace("Root"), [])
 	const start = useCallback(() => navigation.replace("Start"), [])
@@ -23,9 +23,11 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 			if (wallet.firstLoad) {
 				if (wallet.wallets.length > 0) mainScreen()
 				else start()
-				if (dismiss) dismiss()
-			} else {
-				wallet.loadWallets()
+				if(dismiss) dismiss()
+			}
+			else
+			{
+				localStorageManager.loadWallets()
 			}
 		})
 

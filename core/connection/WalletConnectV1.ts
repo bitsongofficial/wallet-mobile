@@ -1,42 +1,57 @@
 import WalletConnect from "@walletconnect/client"
-import { Transaction } from "classes";
+import { IWalletConnectSession, IWalletConnectOptions } from "@walletconnect/types"
 import { Bitsong } from "core/coin/bitsong/Bitsong";
 import { PublicWallet } from "core/storing/Generic";
-import { Amount } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
-import { fromAmountToDollars } from "core/utils/Coin";
+import { makeAutoObservable } from "mobx";
 import Config from "react-native-config";
-import { store } from "stores/Store";
 
 export class WalletConnectCosmosClientV1 {
 	connector: WalletConnect | null = null
 	wallets
+	name?: string
+	date?: Date
 	pendingAction: (() => void) | null = null
 	confirmationExtraData: any
-	constructor(uri: string, wallets: Wallet[], fcmToken: string, onRequest: (type:string, data:any, handler: acceptRejectType) => void)
+	onConnect?: (connection: WalletConnectCosmosClientV1) => void
+	onDisconnect?: (connection: WalletConnectCosmosClientV1) => void
+	constructor(options: {
+		uri?: string,
+		session?: IWalletConnectSession,
+		wallets: Wallet[],
+		fcmToken?: string,
+		onRequest?: (type:string, data:any, handler: acceptRejectType) => void,
+		onConnect?: (connection: WalletConnectCosmosClientV1) => void,
+		onDisconnect?: (connection: WalletConnectCosmosClientV1) => void,
+	})
 	{
-		this.wallets = wallets
-		const connector = new WalletConnect(
-			{
-				// Required
-				uri,
-				// Required
-				clientMeta: {
-					description: "WalletConnect Developer App",
-					url: "https://walletconnect.org",
-					icons: ["https://walletconnect.org/walletconnect-logo.png"],
-					name: "WalletConnect",
-				},
+		makeAutoObservable(this, {}, { autoBind: true })
+		this.wallets = options.wallets
+		this.onConnect = options.onConnect
+		this.onDisconnect = options.onDisconnect
+		const wcOptions: IWalletConnectOptions = 
+		{
+			// Required
+			clientMeta: {
+				description: "WalletConnect Developer App",
+				url: "https://walletconnect.org",
+				icons: ["https://walletconnect.org/walletconnect-logo.png"],
+				name: "WalletConnect",
 			},
+		}
+		if(options.uri) wcOptions.uri = options.uri
+		else if (options.session) wcOptions.session = options.session
+		const connector = options.fcmToken ? new WalletConnect(
+			wcOptions,
 			{
 			   url: Config.PUSH_NOTIFICATION_SERVER_URL,
 			   type: 'fcm',
-			   token: fcmToken,
+			   token: options.fcmToken,
 			   peerMeta: true,
 			   language: 'it',
 			}
-		);
+		) : new WalletConnect(wcOptions)
 		connector.on("session_request", async (error, payload) => {
 			if (error) {
 				throw error;
@@ -48,6 +63,13 @@ export class WalletConnectCosmosClientV1 {
 				accounts,
 				chainId: 1                  // required
 			})
+			this.name = payload.params.peerMeta ? payload.params.peerMeta.name : undefined
+		})
+		connector.on("connect", async () =>
+		{
+			console.log("connected")
+			this.setDate(new Date())
+			if(this.onConnect) this.onConnect(this)
 		})
 		connector.on("call_request", async (error, payload) => {
 			if (error) {
@@ -101,15 +123,16 @@ export class WalletConnectCosmosClientV1 {
 					}
 					break
 			}
-
-			onRequest(params.typeUrl, data, {
+			if(options.onRequest) options.onRequest(params.typeUrl, data, {
 				accept,
 				reject
 			})
 		})
 		connector.on("disconnect", (error, payload) => {
+			console.log("disconnected")
+			if(this.onDisconnect) this.onDisconnect(this)
 			if (error) {
-			  throw error;
+			  	throw error
 			}
 		})
 		this.connector = connector
@@ -130,9 +153,8 @@ export class WalletConnectCosmosClientV1 {
 		return accounts
 	}
 
-	connect()
+	setDate(date: Date)
 	{
-		console.log("connect...")
-		this.connector?.connect()
+		this.date = date
 	}
 }

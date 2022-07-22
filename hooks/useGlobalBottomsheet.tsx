@@ -44,8 +44,8 @@ class GlobalBottomSheet implements BottomSheetMethods {
     return this.props.children || this.defaultProps.children;
   }
 
-  async openDefault(children: JSX.Element) {
-    await this.setProps({ children });
+  openDefault(children: JSX.Element) {
+    this.setProps({ children });
     this.expand();
   }
 

@@ -48,7 +48,6 @@ export default observer<Props>(function SendModal({ style, close, navigation }) 
 		if (coin && addressInput && amount) {
 			navigation.push("Loader", {
 				// @ts-ignore
-				header: BottomTabHeader,
 				callback: async () => {
 					// await wait(2000); // for example
 					await store.coin.send(coin.info.coin, addressInput.value, parseFloat(amount))
@@ -66,14 +65,26 @@ export default observer<Props>(function SendModal({ style, close, navigation }) 
 		return () => handler.remove()
 	}, [goBack])
 
-	const onPressScanner = useCallback(() => {
-		if (creater.addressInput)
-			navigation.push("ScannerQR", {
-				onBarCodeScanned: creater.addressInput.set,
-			})
-	}, [navigation, creater])
-	// --------- Header --------------
-	const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets"
+  const onPressScanner = useCallback(
+    () =>
+    {
+      if(creater.addressInput)
+      {
+        navigation.push("ScannerQR", {
+          onBarCodeScanned: (data: string) =>
+          {
+            creater.addressInput.set(data)
+            console.log(data)
+            // bottomSheet.openSoft()
+          },
+        })
+        // bottomSheet.closeSoft()
+      }
+    },
+    [navigation, creater]
+  );
+  // --------- Header --------------
+  const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets";
 
 	const title = useMemo(() => (steps.title === "Send Recap" ? steps.title : "Send"), [steps.title])
 	const subtitle = useMemo(

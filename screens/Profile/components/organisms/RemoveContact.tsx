@@ -6,9 +6,10 @@ import { useStore } from "hooks";
 import { COLOR } from "utils";
 import { Button } from "components/atoms";
 import { Title } from "../atoms";
+import { Contact } from "stores/ContactsStore";
 
 type Props = {
-  contact: IPerson | null;
+  contact: Contact | null;
   close(): void;
 };
 
@@ -17,7 +18,7 @@ export default observer<Props>(({ contact, close }) => {
   // -------------------------
 
   const remove = useCallback(() => {
-    contact && contacts.delete(contact);
+    contact && contacts.removeContact(contact);
     close();
   }, [contact]);
 
@@ -25,7 +26,7 @@ export default observer<Props>(({ contact, close }) => {
     <View style={styles.container}>
       <Title style={styles.title}>
         Do you want remove{"\n"}
-        {contact?.nickname}?
+        {contact?.name}?
       </Title>
 
       <Button

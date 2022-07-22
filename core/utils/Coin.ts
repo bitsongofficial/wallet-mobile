@@ -2,6 +2,11 @@ import { SupportedCoins } from "constants/Coins"
 import { CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 
+export enum SupportedFiats {
+	USD = "usd",
+	EUR = "eur",
+}
+
 export function convertRateFromDenom(denom: Denom)
 {
 	switch(denom)
@@ -25,15 +30,15 @@ export function fromDenomToPrice(denom: Denom, prices:any): number
 	}
 }
 
-export function fromAmountToDollars(amount: Amount, prices:any)
+export function fromAmountToFIAT(amount: Amount, prices:any)
 {
 	return fromAmountToCoin(amount) * fromDenomToPrice(amount.denom, prices)
 }
 
-export function fromDollarsToAmount(dollars: number, denom: Denom, prices:any): Amount
+export function fromFIATToAmount(fiat: number, denom: Denom, prices:any): Amount
 {
 	return {
-		amount: Math.round(dollars / fromDenomToPrice(denom, prices) * convertRateFromDenom(denom)).toString(),
+		amount: Math.round(fiat / fromDenomToPrice(denom, prices) * convertRateFromDenom(denom)).toString(),
 		denom,
 	}
 }
