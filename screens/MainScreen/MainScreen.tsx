@@ -1,5 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Platform,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { CoinStat, Tabs } from "components/organisms";
 import { useGlobalBottomsheet, useStore } from "hooks";
@@ -11,15 +18,12 @@ import { observer } from "mobx-react-lite";
 import { ToolbarFull, ToolbarShort } from "./components";
 import SendModal from "screens/SendModalScreens/SendModal";
 import { RootStackParamList, RootTabParamList } from "types";
-import { COLOR, InputHandler } from "utils";
+import { COLOR, wait } from "utils";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ScrollView } from "react-native-gesture-handler";
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal";
-import { useEffect } from "react";
-import { SendController } from "screens/SendModalScreens/classes";
-
 
 type ValueTabs = "Coins" | "Fan Tokens";
 
@@ -39,53 +43,29 @@ export default observer<Props>(function MainScreen({ navigation }) {
   const callback = useCallback(() => {}, []);
 
   // ------------- bottom sheet -----------
-  const globalBottomsheet = useGlobalBottomsheet();
+  const gbs = useGlobalBottomsheet();
 
-  const closeGlobalBottomSheet = useCallback(
-    () => globalBottomsheet.close(),
-    []
-  );
+  const closeGlobalBottomSheet = useCallback(() => gbs.close(), []);
 
   const openReceive = useCallback(() => {
-    globalBottomsheet.setProps({
+    gbs.setProps({
       snapPoints: ["85%"],
-      children: (
+      children: () => (
         <ReceiveModal
           style={sendCoinContainerStyle}
           close={closeGlobalBottomSheet}
         />
       ),
     });
-    globalBottomsheet.snapToIndex(0);
-  }, []);
-
-  const openToolbar = useCallback(() => {
-    globalBottomsheet.setProps({
-      snapPoints: ["70%"],
-      children: (
-        <ToolbarFull
-          style={styles.toolbar_full}
-          onPressSend={coin.CanSend ? openSend : undefined}
-          onPressReceive={openReceive}
-          onPressInquire={callback}
-          onPressScan={coin.CanSend ? callback : undefined}
-          onPressClaim={callback}
-          onPressStake={callback}
-          onPressUnstake={callback}
-          onPressRestake={callback}
-          onPressIssue={callback}
-          onPressMint={callback}
-          onPressBurn={callback}
-        />
-      ),
-    });
-    globalBottomsheet.expand();
+    gbs.snapToIndex(0);
   }, []);
 
   const openSend = useCallback(async () => {
-    await globalBottomsheet.setProps({
+    await gbs.setProps({
       snapPoints: ["85%"],
-      children: (
+      $modal: true,
+      keyboardBehavior: "fillParent",
+      children: () => (
         <SendModal
           style={sendCoinContainerStyle}
           close={closeGlobalBottomSheet}
@@ -93,7 +73,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
         />
       ),
     });
-    globalBottomsheet.expand()
+    gbs.expand()
   }, []);
 
   const openScanner = useCallback(
@@ -114,18 +94,63 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
 
+  const openToolbar = useCallback(() => {
+    const onPressScann = () => {
+      openScanner();
+      Platform.OS === "android" && gbs.close();
+    };
+
+    gbs.setProps({
+      snapPoints: ["70%"],
+      children: () => (
+        <ToolbarFull
+          style={styles.toolbar_full}
+          onPressSend={openSend}
+          onPressReceive={openReceive}
+          onPressInquire={undefined}
+          onPressScan={onPressScann}
+          onPressClaim={undefined}
+          onPressStake={undefined}
+          onPressUnstake={undefined}
+          onPressRestake={undefined}
+          onPressIssue={undefined}
+          onPressMint={undefined}
+          onPressBurn={undefined}
+        />
+      ),
+    });
+    gbs.expand();
+  }, []);
+
   const safeAreaInsets = useSafeAreaInsets();
   const sendCoinContainerStyle = useMemo(
     () => ({ paddingBottom: safeAreaInsets.bottom }),
     [safeAreaInsets.bottom]
   );
 
+  const [isRefreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await coin.updateBalances()
+    setRefreshing(false);
+  }, []);
+
   return (
     <>
       <StatusBar style="light" />
 
       <SafeAreaView style={styles.container}>
-        <ScrollView>
+        <ScrollView
+          style={styles.scrollviewContent}
+          refreshControl={
+            <RefreshControl
+              tintColor={COLOR.White}
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+            />
+          }
+        >
           <View style={styles.info}>
             <View style={styles.balance}>
               <Text style={styles.balance_title}>Total Balance</Text>
@@ -138,7 +163,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
           <ToolbarShort
             style={styles.toolbar_short}
             onPressAll={openToolbar}
-            onPressInquire={callback}
+            onPressInquire={undefined}
             onPressReceive={openReceive}
             onPressScan={coin.CanSend ? openScanner : undefined}
             onPressSend={coin.CanSend ? openSend : undefined}
@@ -153,11 +178,13 @@ export default observer<Props>(function MainScreen({ navigation }) {
           />
 
           <View style={styles.coins}>
-            {coin.coins.filter(c => c.balance > 0).map((coin) => (
-              <TouchableOpacity key={coin.info._id} disabled={true}>
-                <CoinStat coin={coin} style={{ marginBottom: 9 }} />
-              </TouchableOpacity>
-            ))}
+            {coin.coins
+              .filter((c) => c.balance > 0)
+              .map((coin) => (
+                <TouchableOpacity key={coin.info._id} disabled={true}>
+                  <CoinStat coin={coin} style={{ marginBottom: 9 }} />
+                </TouchableOpacity>
+              ))}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -170,8 +197,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLOR.Dark3,
   },
+
+  scrollviewContent: {
+    marginTop: 40,
+    paddingTop: 40,
+  },
   info: {
-    marginTop: 80,
     marginRight: 22,
     marginLeft: 32,
     marginBottom: 60,

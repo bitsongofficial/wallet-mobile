@@ -1,7 +1,7 @@
+import { createRef } from "react";
+import { makeAutoObservable } from "mobx";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { makeAutoObservable, set, toJS } from "mobx";
-import { createRef } from "react";
 import { WithSpringConfig, WithTimingConfig } from "react-native-reanimated";
 
 class GlobalBottomSheet implements BottomSheetMethods {
@@ -14,29 +14,40 @@ class GlobalBottomSheet implements BottomSheetMethods {
   };
 
   ref = createRef<BottomSheetMethods>();
-  props: BottomSheetProps | {} = {};
-  savedProps: BottomSheetProps | {} = {};
-  tmpClose = false;
+  props: Partial<BottomSheetProps> = {};
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  async setProps(props?: Partial<BottomSheetProps>): Promise<void> {
-    if(props)
-    {
-      const onClose = props.onClose
-      props.onClose = () =>
-      {
-        if(onClose) onClose()
-        if(!this.tmpClose) set(this.props, this.defaultProps)
-      }
+  tmpClose?: () => void
+
+  setProps(props?: Partial<BottomSheetProps>): void {
+    if (props) {
+      const onClose = props.onClose;
+      props.onClose = () => {
+        if (onClose) onClose();
+        this.props = this.defaultProps;
+      };
     }
-    set(this.props, props || {});
+    this.props = props || {};
   }
 
-  async openDefault(children: JSX.Element) {
-    await this.setProps({ children });
+  updProps(props?: Partial<BottomSheetProps>) {
+    this.props = { ...this.props, ...props };
+  }
+
+  clear() {
+    this.props = {};
+    this.snapToIndex(-1);
+  }
+
+  get children() {
+    return this.props.children || this.defaultProps.children;
+  }
+
+  openDefault(children: JSX.Element) {
+    this.setProps({ children });
     this.expand();
   }
 
@@ -49,12 +60,17 @@ class GlobalBottomSheet implements BottomSheetMethods {
     this.ref.current?.close();
   }
   closeSoft() {
-    this.tmpClose = true
+    this.tmpClose = this.props.onClose 
+    this.updProps({
+      onClose: undefined
+    })
     this.close()
   }
 
   openSoft() {
-    this.tmpClose = false
+    this.updProps({
+      onClose: this.tmpClose
+    })
     this.expand()
   }
 

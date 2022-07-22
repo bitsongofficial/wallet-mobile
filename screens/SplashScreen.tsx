@@ -20,7 +20,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Splash">;
 const points = [270];
 
 export default observer<Props>(function SplashScreen({ navigation }) {
-	const {wallet} = useStore()
+	const {localStorageManager, wallet} = useStore()
 
 	const mainScreen = useCallback(
 		() => navigation.replace("Root"),
@@ -43,7 +43,7 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 			}
 			else
 			{
-				wallet.loadWallets()
+				localStorageManager.loadWallets()
 			}
 		})
 

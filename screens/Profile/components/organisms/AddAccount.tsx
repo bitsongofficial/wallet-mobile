@@ -1,199 +1,95 @@
-import {
-  Platform,
-  StyleProp,
-  StyleSheet,
-  TextInputProps,
-  View,
-  ViewStyle,
-} from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { StyleSheet, TextInputProps, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
+import * as Clipboard from "expo-clipboard";
 import { useStore } from "hooks";
 import { COLOR, hexAlpha, InputHandler } from "utils";
-import { SharedValue } from "react-native-reanimated";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { BottomSheet, InputWord } from "components/moleculs";
 import { Phrase, Steps } from "classes";
 import { Button } from "components/atoms";
+import { InputWord } from "components/moleculs";
 import {
   BottomSheetFooter,
   BottomSheetFooterProps,
 } from "@gorhom/bottom-sheet";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useBottomSheetBackButton from "screens/Profile/hooks/useBottomSheetBackButton";
 import {
   ChooseStep,
   CreateStep,
   ImportStep,
   InputNameStep,
 } from "../moleculs/AddAccount";
-import * as Clipboard from "expo-clipboard";
 
 type Props = {
-  isOpen?: boolean;
-  animatedPosition?: SharedValue<number>;
-  backgroundStyle: StyleProp<
-    Omit<ViewStyle, "bottom" | "left" | "position" | "right" | "top">
-  >;
-  onClose?(): void;
+  steps: Steps<"Choose" | "Create" | "Name" | "Import">;
+  phrase: Phrase;
+  close(): void;
 };
 
-export default observer<Props>(
-  ({ backgroundStyle, animatedPosition, isOpen, onClose }) => {
-    const { wallet } = useStore();
-    // ------ BottomSheet -------
-    const snapPoints = useMemo(() => [350, "95%"], []);
-    const bottomSheet = useRef<BottomSheetMethods>(null);
+export default observer<Props>(({ close, phrase, steps }) => {
+  const { wallet } = useStore();
+  const insets = useSafeAreaInsets();
+  // --------- Steps ------------
+  const openCreate = useCallback(() => steps.goTo("Create"), []);
+  const openImport = useCallback(() => steps.goTo("Import"), []);
+  const openName = useCallback(() => steps.goTo("Name"), []);
 
-    const close = () => bottomSheet.current?.close();
-    const open = (index: number) => bottomSheet.current?.snapToIndex(index);
+  const goBack = useCallback(() => {
+    if (steps.active === 0) {
+      close();
+    } else {
+      steps.goBack();
+    }
+  }, []);
 
-    useEffect(() => (isOpen ? open(0) : close()), [isOpen]);
+  // --------- Phrase ----------
 
-    // --------- Steps ------------
-    const steps = useMemo(
-      () => new Steps(["Choose", "Create", "Name", "Import"]),
-      []
-    );
+  const [isHidden, setHidden] = useState(true);
+  const toggle = useCallback(() => setHidden((value) => !value), []);
 
-    const openCreate = useCallback(() => {
-      open(1);
-      phrase.create();
-      steps.goTo("Create");
-    }, []);
+  useEffect(() => setHidden(true), [steps.active]);
 
-    const openImport = useCallback(() => {
-      open(1);
-      phrase.clear();
-      steps.goTo("Import");
-    }, []);
+  const paste = useCallback(async () => {
+    const clipboard = await Clipboard.getStringAsync();
+    const words = clipboard.split(/[^a-zа-я$]+/gi, 12).filter((w) => w);
 
-    const openName = useCallback(() => {
-      open(1);
-      steps.goTo("Name");
-    }, []);
+    if (words.length === 12) {
+      phrase.setWords(words);
+      phrase.setActiveIndex(phrase.words.length - 1);
+    }
+  }, [phrase]);
 
-    const goBack = useCallback(() => {
-      if (steps.active === 0) {
-        close();
-      } else {
-        steps.goBack();
-        if (steps.title === "Choose") {
-          open(0);
-        }
-      }
-    }, []);
+  const handlePressGo = useCallback(() => {
+    phrase.inputSubmit();
+    phrase.isValid && steps.goTo("Name");
+  }, []);
 
-    // --------- Buttons ----------
+  // ---------- Name -----------
 
-    const insent = useSafeAreaInsets();
+  const input = useMemo(() => new InputHandler(), []);
 
-    // --------- Phrase ----------
+  const saveWallet = useCallback(() => {
+    if (input.value && phrase.isValid) {
+      wallet.newCosmosWallet(input.value, phrase.words);
+      close();
+    }
+  }, []);
 
-    const phrase = useMemo(() => new Phrase(), []);
+  return (
+    <>
+      {steps.title === "Choose" && (
+        <View style={[styles.wrapper]}>
+          <ChooseStep onPressCreate={openCreate} onPressImport={openImport} />
+        </View>
+      )}
 
-    const [isHidden, setHidden] = useState(true);
-    const toggle = useCallback(() => setHidden((value) => !value), []);
-
-    useEffect(() => {
-      setHidden(true);
-    }, [steps.active]);
-
-    const paste = useCallback(async () => {
-      const clipboard = await Clipboard.getStringAsync();
-      const words = clipboard.split(/[^a-zа-я$]+/gi, 12).filter((w) => w);
-
-      if (words.length === 12) {
-        phrase.setWords(words);
-        phrase.setActiveIndex(phrase.words.length - 1);
-      }
-    }, [phrase]);
-
-    const handlePressGo = useCallback(() => {
-      phrase.inputSubmit();
-      phrase.isValid && steps.goTo("Name");
-    }, []);
-
-    // ---------- Name -----------
-
-    const input = useMemo(() => new InputHandler(), []);
-
-    // --------- Close -----------
-
-    const handleClose = useCallback(() => {
-      onClose && onClose();
-      steps.goTo("Choose");
-      input.clear();
-      phrase.clear();
-    }, [onClose]);
-
-    useBottomSheetBackButton(isOpen, goBack);
-
-    const saveWallet = useCallback(() => {
-      if (input.value && phrase.isValid) {
-        wallet.newCosmosWallet(input.value, phrase.words);
-        close();
-      }
-    }, []);
-
-    return (
-      <>
-        <BottomSheet
-          enablePanDownToClose
-          snapPoints={snapPoints}
-          ref={bottomSheet}
-          backgroundStyle={[backgroundStyle]}
-          animatedPosition={animatedPosition}
-          onClose={handleClose}
-          android_keyboardInputMode="adjustResize"
-          keyboardBehavior={
-            Platform.OS === "android" ? "interactive" : "fillParent"
-          }
-          index={-1}
-          footerComponent={(props) =>
-            steps.title === "Import" && (
-              <Footer
-                {...props}
-                phrase={phrase}
-                onPressDone={openName}
-                onPressInputKeyboardSubmit={handlePressGo}
-              />
-            )
-          }
-        >
-          {steps.title === "Choose" && (
-            <View style={[styles.wrapper]}>
-              <ChooseStep
-                onPressCreate={openCreate}
-                onPressImport={openImport}
-              />
-            </View>
-          )}
-          {steps.title === "Create" && (
-            <View style={[styles.wrapper]}>
-              <CreateStep
-                isHidden={isHidden}
-                phrase={phrase}
-                onPressToggle={toggle}
-              />
-            </View>
-          )}
-          {steps.title === "Name" && (
-            <View style={[styles.wrapper]}>
-              <InputNameStep
-                input={input}
-                isAddDisable={!phrase.isValid || input.value.length < 3}
-                onPressAdd={saveWallet}
-                onPressBack={goBack}
-              />
-            </View>
-          )}
-          {steps.title === "Import" && (
-            <ImportStep onPressPaste={paste} phrase={phrase} />
-          )}
-        </BottomSheet>
-        {steps.title === "Create" && (
-          <View style={[styles.footer, { bottom: insent.bottom }]}>
+      {steps.title === "Create" && (
+        <View style={[styles.wrapper]}>
+          <CreateStep
+            isHidden={isHidden}
+            phrase={phrase}
+            onPressToggle={toggle}
+          />
+          <View style={[styles.footer, { bottom: insets.bottom }]}>
             <Button
               text="Continue"
               contentContainerStyle={styles.buttonContinueContent}
@@ -201,11 +97,49 @@ export default observer<Props>(
               onPress={openName}
             />
           </View>
-        )}
-      </>
-    );
-  }
-);
+        </View>
+      )}
+
+      {steps.title === "Name" && (
+        <View style={[styles.wrapper]}>
+          <InputNameStep
+            input={input}
+            isAddDisable={!phrase.isValid || input.value.length < 3}
+            onPressAdd={saveWallet}
+            onPressBack={goBack}
+          />
+        </View>
+      )}
+
+      {steps.title === "Import" && (
+        <>
+          <ImportStep onPressPaste={paste} phrase={phrase} />
+          <View style={[styles.footer, { bottom: insets.bottom }]}>
+            <Button
+              text="Continue"
+              contentContainerStyle={styles.buttonContinueContent}
+              textStyle={styles.buttonContinueText}
+              onPress={openName}
+            />
+          </View>
+        </>
+      )}
+    </>
+  );
+});
+
+// {
+//   steps.title === "Create" && (
+// <View style={[styles.footer, { bottom: insent.bottom }]}>
+//   <Button
+//     text="Continue"
+//     contentContainerStyle={styles.buttonContinueContent}
+//     textStyle={styles.buttonContinueText}
+//     onPress={openName}
+//   />
+// </View>
+//   );
+// }
 
 type FooterProps = BottomSheetFooterProps & {
   phrase: Phrase;

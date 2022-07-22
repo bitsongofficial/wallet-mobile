@@ -124,6 +124,10 @@ export class CosmosWallet implements Wallet {
 	{
 		return (await this.Keys()).private
 	}
+	async Mnemonic()
+	{
+		return (await this.mnemonicStore.Get())
+	}
 
 	private async Keys()
 	{
@@ -132,7 +136,7 @@ export class CosmosWallet implements Wallet {
 
 	async Signer()
 	{
-		return await this.accountDeriver.Derive(await this.mnemonicStore.Get())
+		return await this.accountDeriver.Derive(await this.Mnemonic())
 	}
 }
 

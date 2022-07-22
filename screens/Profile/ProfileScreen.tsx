@@ -26,40 +26,34 @@ import {
   WalletButton,
 } from "./components/atoms";
 import { Head } from "./components/moleculs";
-import {
-  AddAccount,
-  AddWatchAccount,
-  ChangeAvatar,
-  ChangeCurrency,
-  ChangeLanguage,
-  ChangeWallet,
-} from "./components/organisms";
+import { useDimensions } from "@react-native-community/hooks";
+import { useBottomSheetModals } from "./hooks";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
-type ModalType =
-  | "ChangeWallet"
-  | "ChangeLanguage"
-  | "ChangeCurrency"
-  | "AddAccount"
-  | "ChangeAvatar"
-  | "AddWatchAccount";
-
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { settings, user, dapp, wallet } = useStore();
+  const { settings, wallet } = useStore();
 
   // ------- BottomSheet ----------
 
-  const currentPosition = useSharedValue(0);
+  const { screen } = useDimensions();
+
+  const [position, openModal, closeModal] = useBottomSheetModals();
+
   const animStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(currentPosition.value, [0, 350], [0, 0.5]);
+    const opacity = interpolate(
+      position.value,
+      [0, screen.height],
+      [0, 1],
+      Extrapolation.EXTEND
+    );
     return {
       flex: 1,
       opacity,
     };
   });
 
-  const inputNick = useMemo(() => new InputHandler(user?.nick), [user]);
+  const inputNick = useMemo(() => new InputHandler(wallet.activeProfile?.name), [wallet, wallet.activeProfile, wallet.activeProfile?.name]);
   const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 });
 
   /// ---------------
@@ -69,8 +63,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
   const navToPrivacy = useCallback(() => {}, []);
   const navToTerms = useCallback(() => {}, []);
-  const disconnectAndRemove = useCallback(() => {
-  }, []);
+  const disconnectAndRemove = useCallback(() => {}, []);
 
   const openAddWatchaccount = useCallback(() => {}, []);
   const openSecurity = useCallback(
@@ -87,8 +80,11 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
 
-  const [isNight, setIsNight] = useState(false);
-  const toggleNightMode = useCallback(() => setIsNight((v) => !v), []);
+  const toggleNightMode = useCallback(() =>
+  {
+    if(settings.theme == "light") settings.setTheme("dark")
+    else settings.setTheme("light")
+  }, []);
 
   const openCurrencyApp = useCallback(() => {}, []);
   const openFAQ = useCallback(() => {}, []);
@@ -100,28 +96,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
     []
   );
 
-  // --------- Bottom Sheets ------------
-
-  const [modal, setModal] = useState<ModalType | null>(null);
-  const closeModal = useCallback(
-    (type: ModalType | null) =>
-      setModal((value) => (value !== type && type !== null ? value : null)),
-    []
-  );
-  const openChangeWallet = useCallback(() => setModal("ChangeWallet"), []);
-  const openChangeLanguage = useCallback(() => setModal("ChangeLanguage"), []);
-  const openChangeCurrency = useCallback(() => setModal("ChangeCurrency"), []);
-  const openAddAccount = useCallback(() => setModal("AddAccount"), []);
-  const openAddWatchAccount = useCallback(
-    () => setModal("AddWatchAccount"),
-    []
-  );
-  const openChangeAvatar = useCallback(() => setModal("ChangeAvatar"), []);
+  const onChangeNick = useCallback(() => {
+    if(!wallet.profileExists(inputNick.value))
+    {
+      wallet.changeActiveProfileName(inputNick.value)
+    }
+  }, [inputNick])
 
   useEffect(() => {
-    if (inputNick.isFocused) {
-      closeModal(null);
-    }
+    if (inputNick.isFocused) closeModal();
   }, [inputNick.isFocused]);
 
   const translationY = useSharedValue(0);
@@ -143,10 +126,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
         },
       ],
       position: "absolute",
-      zIndex: 1000,
+      zIndex: 1,
       top: 70,
       width: "100%",
-      // backgroundColor: "red",
     };
   });
 
@@ -156,7 +138,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
       <ThemedGradient style={styles.container} invert>
         <SafeAreaView style={styles.container}>
-          <Animated.View style={animStyle}>
+          <Animated.View style={[{ opacity: 1 }, animStyle]}>
             <Header
               onPressClose={goBack}
               style={styles.header}
@@ -166,8 +148,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
               <Head
                 style={styles.head}
                 input={inputNick}
-                onPressAvatar={openChangeAvatar}
-                avatar={user?.photo}
+                onPressAvatar={openModal.changeAvatar}
+                onNickEdited={onChangeNick}
+                avatar={wallet.activeProfile?.avatar}
                 animtedValue={translationY}
               />
             </Animated.View>
@@ -179,21 +162,21 @@ export default observer<Props>(function MainScreen({ navigation }) {
               <animated.View style={[styles.wrapper, hidden]}>
                 <Subtitle style={styles.subtitle}>Connected with</Subtitle>
                 <WalletButton
-                  onPress={openChangeWallet}
+                  onPress={openModal.changeWallet}
                   wallet={wallet.activeWallet}
                   style={{ marginBottom: 16 }}
                 />
 
                 <ListButton
                   text="Add a new account"
-                  onPress={openAddAccount}
+                  onPress={openModal.addAccount}
                   icon="wallet"
                   arrow
                   style={styles.listButton}
                 />
                 <ListButton
                   text="Add a Watch account"
-                  onPress={openAddWatchAccount}
+                  onPress={openModal.addWatchAccount}
                   icon="eye"
                   arrow
                 />
@@ -204,7 +187,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                   style={styles.agreement}
                 />
 
-                <View style={{opacity: 0.2}} pointerEvents={"none"}>
+                <View>
                   <Title style={styles.title}>Settings</Title>
 
                   <View style={styles.section}>
@@ -248,18 +231,18 @@ export default observer<Props>(function MainScreen({ navigation }) {
                     <Subtitle style={styles.subtitle}>App Preferences</Subtitle>
                     <ListButton
                       text="Language"
-                      onPress={openChangeLanguage}
+                      onPress={openModal.changeLanguage}
                       icon="translate"
                       style={styles.listButton}
                       Right={<Value text={settings.language.name} />}
                     />
                     <ListButton
                       text="Currency"
-                      onPress={openChangeCurrency}
+                      onPress={openModal.channgeCurrency}
                       icon="circle_dollar"
                       style={styles.listButton}
                       Right={
-                        settings.currency && (
+                        settings.currency != null && (
                           <Value text={settings.currency?.name} />
                         )
                       }
@@ -270,7 +253,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                       icon="moon"
                       style={styles.listButton}
                       Right={
-                        <Switch active={isNight} onPress={toggleNightMode} />
+                        <Switch active={settings.theme == "dark"} onPress={toggleNightMode} />
                       }
                     />
                   </View>
@@ -321,47 +304,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
           </Animated.View>
         </SafeAreaView>
       </ThemedGradient>
-
-      {/* --------- Bottom Sheets -----------  */}
-      <ChangeAvatar
-        isOpen={modal === "ChangeAvatar"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("ChangeAvatar")}
-      />
-
-      <AddAccount
-        isOpen={modal === "AddAccount"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("AddAccount")}
-      />
-
-      <AddWatchAccount
-        isOpen={modal === "AddWatchAccount"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("AddWatchAccount")}
-      />
-
-      <ChangeWallet
-        isOpen={modal === "ChangeWallet"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("ChangeWallet")}
-      />
-      <ChangeLanguage
-        isOpen={modal === "ChangeLanguage"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("ChangeLanguage")}
-      />
-      <ChangeCurrency
-        isOpen={modal === "ChangeCurrency"}
-        backgroundStyle={styles.bottomSheetBackground}
-        animatedPosition={currentPosition}
-        onClose={() => closeModal("ChangeCurrency")}
-      />
     </>
   );
 });
@@ -371,6 +313,7 @@ const styles = StyleSheet.create({
   header: {
     marginLeft: 27.5,
     marginRight: 17,
+    zIndex: 5,
   },
 
   head: {
@@ -392,10 +335,5 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     lineHeight: 18,
-  },
-
-  bottomSheetBackground: {
-    backgroundColor: COLOR.Dark3,
-    paddingTop: 30,
   },
 });

@@ -17,6 +17,7 @@ import { useGlobalBottomsheet, useLoading, useTheme } from "hooks";
 import { setUpPushNotificationsEvents } from "utils/pushNotifications";
 import { observer } from "mobx-react-lite";
 import { BottomSheet } from "components/moleculs";
+import { test } from "core/Test";
 
 configure({ useProxies: "ifavailable" });
 
@@ -32,6 +33,7 @@ const App = observer(() => {
       NavigationBar.setBackgroundColorAsync(COLOR.Dark3);
     }
   }, []);
+
   const bottomSheetProps = Object.assign({}, toJS(bottomsheet.defaultProps))
   Object.assign(bottomSheetProps, toJS(bottomsheet.props))
 
@@ -55,7 +57,9 @@ const App = observer(() => {
           </FullscreenOverlay>
 
           <BottomSheet
-            {...bottomSheetProps}
+            {...toJS(bottomsheet.defaultProps)}
+            {...toJS(bottomsheet.props)}
+            children={bottomsheet.children}
             ref={bottomsheet.ref}
           />
         </SafeAreaProvider>

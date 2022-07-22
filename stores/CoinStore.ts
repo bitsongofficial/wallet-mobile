@@ -1,7 +1,7 @@
 import { Coin } from "classes";
 import mock from "classes/mock";
 import { ICoin } from "classes/types";
-import { SupportedCoins } from "constants/Coins";
+import { SupportedCoins, SupportedCoinsMap } from "constants/Coins";
 import { PublicWallet } from "core/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
 import { CoinClasses } from "core/types/coin/Dictionaries";
@@ -9,11 +9,13 @@ import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
 import { Amount } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { WalletData, WalletTypes } from "core/types/storing/Generic";
-import { fromAmountToCoin, fromDenomToPrice, fromDollarsToAmount } from "core/utils/Coin";
-import { autorun, makeAutoObservable, runInAction, toJS, values } from "mobx";
+import { autorun, keys, makeAutoObservable, runInAction, toJS, values } from "mobx";
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore, { ProfileWallets } from "./WalletStore";
+import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, SupportedFiats } from "core/utils/Coin";
+import SettingsStore from "./SettingsStore";
+import Config from "react-native-config";
 
 export default class CoinStore {
 	coins: Coin[] = []
@@ -28,9 +30,27 @@ export default class CoinStore {
 		balance: null,
 		send: null,
 	}
-	constructor(private walletStore: WalletStore, private remoteConfigs: RemoteConfigsStore) {
+	constructor(private walletStore: WalletStore, private remoteConfigs: RemoteConfigsStore, private settingsStore: SettingsStore) {
 		makeAutoObservable(this, {}, { autoBind: true });
 		autorun(() => {this.updateBalances()})
+	}
+
+	get Prices()
+	{
+		const prices: SupportedCoinsMap = {}
+		for(const k of keys(this.remoteConfigs.prices))
+		{
+			const realKey = k as SupportedCoins
+			if(realKey)
+			{
+				const currency: SupportedFiats = this.settingsStore.currency ? this.settingsStore.currency.name : SupportedFiats.USD
+				let price: number | undefined
+				const currenciesPrices = this.remoteConfigs.prices[realKey]
+				if(currenciesPrices) price = currenciesPrices[currency]
+				prices[realKey] = price ?? 1
+			}
+		}
+		return prices
 	}
 
 	async updateBalances()
@@ -69,7 +89,7 @@ export default class CoinStore {
 			}
 		}
 		let errors = false
-		await Promise.allSettled(waitings)
+		const a = await Promise.allSettled(waitings)
 		try
 		{
 			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
@@ -82,9 +102,14 @@ export default class CoinStore {
 				if(balance)
 				{
 					if(balance.length > 0) balance.forEach(asset => {
-						const currentInfo = Object.assign({}, infos[i])
-						currentInfo.balance = fromAmountToCoin(asset)
-						coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.remoteConfigs.prices)))
+						if(asset.denom != "ubtsg") return
+						try
+						{
+							const currentInfo = Object.assign({}, infos[i])
+							currentInfo.balance = fromAmountToCoin(asset)
+							coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices)))
+						}
+						catch{}
 					})
 					else
 					{
@@ -128,7 +153,7 @@ export default class CoinStore {
 		return this.walletStore.activeProfile?.type != WalletTypes.WATCH
 	}
 
-	async send(coin: SupportedCoins, address: string, dollar:number)
+	async send(coin: SupportedCoins, address: string, fiat:number)
 	{
 		runInAction(() =>
 		{
@@ -152,7 +177,7 @@ export default class CoinStore {
 			const data: FromToAmount = {
 				from:  wallet as CosmosWallet,
 				to: new PublicWallet(address),
-				amount: fromDollarsToAmount(dollar, coinClass.coin.denom(), this.remoteConfigs.prices),
+				amount: fromFIATToAmount(fiat, coinClass.coin.denom(), this.Prices),
 			}
 			const res = await coinClass.Do(CoinOperationEnum.Send, data)
 			runInAction(() =>
@@ -166,5 +191,16 @@ export default class CoinStore {
 		{
 			console.log(e)
 		}
+	}
+
+	fromFIATToAssetAmount(fiat: number, asset: SupportedCoins)
+	{
+		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.Prices)
+		return parseFloat(assetAmount.amount) * convertRateFromDenom(assetAmount.denom)
+	}
+
+	fromAmountToFiat(amount: Amount)
+	{
+		return fromAmountToFIAT(amount, this.Prices)
 	}
 }

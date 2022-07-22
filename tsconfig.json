@@ -1,6 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "jsx": "react-native",
     "strict": true,
     "baseUrl": "./",
     "target": "ES5",
@@ -16,8 +17,8 @@
       "screens": ["./screens"],
       "classes": ["./classes"],
       "stores": ["./stores"],
-      "core": ["./core"],
+      "core": ["./core"]
     },
-    "useDefineForClassFields": true,
+    "useDefineForClassFields": true
   }
 }

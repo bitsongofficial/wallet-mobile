@@ -6,12 +6,15 @@ import { COLOR } from "utils";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useCallback } from "react";
 import { StyleProp } from "react-native";
+import { useStore } from "hooks";
+import { observer } from "mobx-react-lite";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
 } & (BottomTabHeaderProps | NativeStackHeaderProps);
 
-export default function Header({ navigation, style }: Props) {
+export default observer(function Header({ navigation, style }: Props) {
+  const { wallet } = useStore()
   const openProfile = useCallback(() => navigation?.push("Profile"), []);
 
   return (
@@ -21,13 +24,13 @@ export default function Header({ navigation, style }: Props) {
           <Icon name="cosmo" size={40} />
         </View>
         <View style={styles.center}>
-          <Text style={styles.title}>Cosmosnautico</Text>
+          <Text style={styles.title}>Cosmonautico</Text>
         </View>
         <View style={styles.left}>
           <Icon name="bell" size={15} fill="#202020" />
           <TouchableOpacity onPress={openProfile}>
             <Image
-              source={require("assets/images/mock/avatar.png")}
+              source={(wallet.activeProfile && wallet.activeProfile.avatar) ? {uri: wallet.activeProfile.avatar} : require("assets/images/mock/avatar.png")}
               style={styles.avatar}
             />
           </TouchableOpacity>
@@ -35,16 +38,16 @@ export default function Header({ navigation, style }: Props) {
       </View>
     </View>
   );
-}
+})
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 100,
+    height: 80,
     backgroundColor: COLOR.Dark3,
+    justifyContent: "flex-end",
   },
   header: {
-    flex: 1,
     flexDirection: "row",
     paddingHorizontal: 25,
     alignItems: "center",
@@ -62,6 +65,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     width: 35,
     height: 35,
+    borderRadius: 25,
   },
   title: {
     fontFamily: "CircularStd",

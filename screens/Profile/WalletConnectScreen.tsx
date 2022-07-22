@@ -20,37 +20,46 @@ import { RootStackParamList } from "types";
 import { useStore } from "hooks";
 import { Button, Icon2, ThemedGradient } from "components/atoms";
 // import { Header } from "./components/atoms";
-import { COLOR, hexAlpha } from "utils";
-import { Circles, ListButton, Subtitle, Title } from "./components/atoms";
-import { Wallet } from "classes";
+import { COLOR } from "utils";
+import { Circles, Subtitle, Title } from "./components/atoms";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
 import { ProfileWallets } from "stores/WalletStore";
+import { SwipeableItem } from "components/organisms";
+import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">;
 
 export default observer<Props>(function WalletConnect({ navigation }) {
-  const { wallet } = useStore();
+  const { dapp } = useStore();
 
   // ------- Wallets ------
-  const wallets = wallet.wallets;
+  const connections = dapp.connections;
   const mapItemsRef = useMemo(
-    () => observable.map<ProfileWallets, React.RefObject<Swipeable>>(),
+    () => observable.map<string, React.RefObject<Swipeable>>(),
     []
   );
 
-  const renderWallet = useCallback<ListRenderItem<ProfileWallets>>(
-    ({ item }) => (
-      <View key={item.profile.name} style={{ marginBottom: 13 }}>
-        <WalletItem
-          value={item}
+  const renderWallet = useCallback<ListRenderItem<WalletConnectCosmosClientV1>>(
+    ({ item, index }) => item && item.connector ? (
+      <View key={item.connector.session.key} style={{ marginBottom: 13 }}>
+        <SwipeableItem
+          id={item.connector.session.key} // need a unique key
+          date={item.date ? item.date.toLocaleString() : ""}
+          mapItemsRef={mapItemsRef} // for this
+          onPressDelete={() => dapp.disconnect(item)} // and that
+          name={item.name ?? "Unknown"}
           onPress={() => {}}
-          onPressDelete={wallet.deleteProfile}
-          // onPressEdit={setEdited}
-          mapItemsRef={mapItemsRef}
         />
       </View>
-    ),
+    ) : (null),
+    []
+  );
+
+  const navToScanner = useCallback(
+    () => navigation.push("ScannerQR", { onBarCodeScanned(data) {
+      dapp.connect(data)
+    } }),
     []
   );
 
@@ -68,16 +77,16 @@ export default observer<Props>(function WalletConnect({ navigation }) {
             title="Wallet Connect"
             onPressScan={() => {}}
           />
-          {wallets.length > 0 && (
+          {connections.length > 0 && (
             <>
               <Subtitle style={[{ marginBottom: 23 }, styles.wrapper]}>
                 Connessioni attive
               </Subtitle>
-              <FlatList data={wallets} renderItem={renderWallet} />
+              <FlatList data={connections} renderItem={renderWallet} />
             </>
           )}
           <View style={[styles.wrapper, { flex: 1 }]}>
-            {wallets.length === 0 && (
+            {connections.length === 0 && (
               <View style={{ alignItems: "center" }}>
                 <View style={{ marginVertical: 40 }}>
                   <Circles>
@@ -95,10 +104,11 @@ export default observer<Props>(function WalletConnect({ navigation }) {
             )}
             <View style={styles.buttonContainer}>
               <Button
+                onPress={navToScanner}
                 textStyle={styles.buttonText}
                 contentContainerStyle={styles.buttonContent}
                 mode="fill"
-                text={"Scan QR Code"}
+                text="Scan QR Code"
               />
             </View>
           </View>

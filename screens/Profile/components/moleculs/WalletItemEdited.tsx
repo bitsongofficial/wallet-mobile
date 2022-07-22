@@ -40,15 +40,15 @@ export default ({
   const closeOther = useCallback(
     () =>
       mapItemsRef.forEach(
-        (ref, key) =>
-          key.wallets.btsg.Address() !== value.wallets.btsg.Address() && ref.current?.close()
+        async (ref, key) =>
+          await key.wallets.btsg.Address() !== await value.wallets.btsg.Address() && ref.current?.close()
       ),
     [value, mapItemsRef]
   );
 
   const renderRightActions = () => (
     <SwipeActions
-      wallet={value}
+      item={value}
       onPressEdit={onPressEdit}
       onPressTrash={onPressDelete}
       style={styles.actions}

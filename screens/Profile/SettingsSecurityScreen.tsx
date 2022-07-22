@@ -6,29 +6,37 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { observer } from "mobx-react-lite";
 import { RootStackParamList } from "types";
-import { useStore } from "hooks";
+import { useLoading, useStore } from "hooks";
 import { Icon2, Switch, ThemedGradient } from "components/atoms";
 // import { Header } from "./components/atoms";
 import { COLOR, InputHandler } from "utils";
 import { ListButton, Subtitle } from "./components/atoms";
+import { askPin } from "navigation/AskPin";
 
 type Props = NativeStackScreenProps<RootStackParamList, "SettingsSecurity">;
 
 export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
-  const { settings, user, dapp } = useStore();
+  const { settings, localStorageManager } = useStore();
+  const loading = useLoading()
 
   const goBack = useCallback(() => navigation.goBack(), []);
 
-  const toggleEnablePIN = useCallback(
-    () => settings.setPin({ enable: !settings.pin.enable }),
-    []
-  );
+  // const toggleEnablePIN = useCallback(
+  //   () => settings.setPin({ enable: !settings.pin.enable }),
+  //   []
+  // );
 
   const toggleEnableBiometric = useCallback(
-    () => settings.setPin({ biometric_enable: !settings.pin.biometric_enable }),
+    () => settings.setBiometric(!settings.biometric_enable),
     []
   );
-  const goToChangePin = useCallback(() => {}, []);
+  const goToChangePin = useCallback(async () => {
+    const pin = await askPin()
+    const newPin = await askPin({disableVerification: true})
+    loading.open()
+    await localStorageManager.changePin(newPin, pin)
+    loading.close()
+  }, []);
 
   return (
     <>
@@ -41,7 +49,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
             <ScrollView>
               <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>PIN settings</Subtitle>
-                <ListButton
+                {/* <ListButton
                   icon="lock_key_open"
                   text="Enable PIN code"
                   onPress={toggleEnablePIN}
@@ -52,14 +60,14 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
                     />
                   }
                   // Right={}
-                />
-                <ListButton icon="password" text="Change PIN" arrow />
+                /> */}
+                <ListButton icon="password" text="Change PIN" arrow onPress={goToChangePin} />
               </View>
 
-              <View style={styles.section}>
+              {/* <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>Account</Subtitle>
                 <ListButton icon="key" text="View Mnemonics" arrow />
-              </View>
+              </View> */}
 
               <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>Account</Subtitle>
@@ -69,7 +77,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
                   onPress={toggleEnableBiometric}
                   Right={
                     <Switch
-                      active={settings.pin.biometric_enable}
+                      active={settings.biometric_enable}
                       onPress={toggleEnableBiometric}
                     />
                   }

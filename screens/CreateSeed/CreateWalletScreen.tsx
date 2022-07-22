@@ -29,7 +29,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">;
 
 export default observer<Props>(({ navigation }) => {
   const controller = useCreateWallet();
-  const { wallet, settings } = useStore();
+  const { wallet, settings, localStorageManager } = useStore();
   const globalLoader = useLoading();
 
   // ------- check auth types ------------
@@ -41,35 +41,28 @@ export default observer<Props>(({ navigation }) => {
   const [goBack, goNext] = useFooter(controller.steps);
 
   useEffect(() => {
+    controller.setPhraseShown(false);
     controller.phrase.create();
   }, []);
 
   const [isHidden, setHidden] = useState(true);
 
-  const checkBio = async () => {
-    if (!controller.biometric.access) {
-      await biometricsAuth();
-      // .catch((e) => console.error("NO", e)); // TODO: need handlers
-
-      // result && controller.biometric.setAccess(result.success);
-      controller.biometric.setAccess(true);
-    }
-  };
-
-  const toggleHidden = useCallback(
-    () => /* checkBio().then( */() => setHidden((value) => !value)/*)*/,
-    []
-  );
+  const toggleHidden = useCallback(() => {
+    controller.setPhraseShown(true);
+    setHidden((value) => !value);
+  }, []);
 
   const insets = useSafeAreaInsets();
-
+  const savePin = async () => {
+    await localStorageManager.setPin(controller.pin.value);
+    goNext();
+  }
   const saveWallet = async () => {
     globalLoader.open();
-    await wallet.setPin(controller.pin.value)
     await wallet.newCosmosWallet(
       controller.walletName.value,
       controller.phrase.words,
-      controller.pin.value,
+      controller.pin.value
     );
     globalLoader.close();
     goNext();
@@ -102,7 +95,7 @@ export default observer<Props>(({ navigation }) => {
             Center={<Icon2 name="logo" size={56} />}
           />
           {controller.steps.title === "Choice Auth Method" && authTypes ? (
-            <FaceID authTypes={authTypes} onDone={setCheckMethod} />
+            <FaceID authTypes={authTypes} onDone={setCheckMethod} pin={controller.pin.value} />
           ) : (
             <>
               <View>
@@ -146,9 +139,12 @@ export default observer<Props>(({ navigation }) => {
               <Footer
                 onPressBack={goBack}
                 onPressNext={
-                  controller.steps.active === 3 && controller.isCanNext
+                  controller.steps.active === 2 && controller.isCanNext
+                    ? savePin
+                    :
+                  (controller.steps.active === 3 && controller.isCanNext
                     ? saveWallet
-                    : goNext
+                    : goNext)
                 }
                 nextButtonText="Continue"
                 isDisableNext={!controller.isCanNext}

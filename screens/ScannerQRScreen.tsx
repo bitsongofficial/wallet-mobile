@@ -3,22 +3,18 @@ import { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { BarCodeScannedCallback } from "expo-barcode-scanner/build/BarCodeScanner";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useStore, useTheme } from "hooks";
-import { Button } from "components/atoms";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "hooks";
+import { ButtonBack } from "components/atoms";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 import { observer } from "mobx-react-lite";
-import { TextInput } from "react-native-gesture-handler";
+import { COLOR, hexAlpha } from "utils";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ScannerQR">;
 
 export default observer<Props>(({ navigation, route }) => {
   const theme = useTheme();
-  const {dapp} = useStore()
-  const test: BarCodeScannedCallback = (event) => {
-    console.log("event :>> ", event);
-  };
 
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
@@ -31,116 +27,122 @@ export default observer<Props>(({ navigation, route }) => {
     })();
   }, []);
 
+  const goBack = useCallback(() => navigation.goBack(), []);
+
   const handleBarCodeScanned = useCallback<BarCodeScannedCallback>(
     ({ data }) => {
       if (!scanned) {
         setScanned(true);
-        navigation.goBack();
+        goBack();
         route.params.onBarCodeScanned(data);
       }
     },
-    [route, scanned, navigation]
+    [route, scanned, goBack]
   );
+
+  const insets = useSafeAreaInsets();
 
   return (
     <>
       <StatusBar hidden />
-      <SafeAreaView style={styles.container}>
-        <View style={styles.center}>
-          <Text style={[styles.title, theme.text.primary]}>Scan QR Code</Text>
-          <Text style={[styles.caption]}>
-            {hasPermission === null
-              ? "Requesting for camera permission"
-              : hasPermission === false
-              ? "No access to camera"
-              : "This is the only way you will be able to recover your account. Please store it somewhere safe!"}
-          </Text>
-          {/* <TextInput
-            style={[theme.text.primary]}
-            placeholder="Public Address"
-            value={uri}
-            onChangeText={setUri}></TextInput> */}
-          {hasPermission && <View style={styles.sector}>
-            <BarCodeScanner
-              barCodeTypes={["qr"]}
-              onBarCodeScanned={handleBarCodeScanned}
-              style={{
-                flexGrow: 1,
-                transform: [{ scale: 2 }],
-              }}
-            />
-          </View>}
+      {hasPermission && <BarCodeScanner
+        barCodeTypes={["qr"]}
+        onBarCodeScanned={handleBarCodeScanned}
+        style={styles.scanner}
+      />}
+      <View style={styles.container}>
+        <View style={styles.vertical} />
+        <View>
+          <View style={styles.horizontal} />
+          <View>
+            <View style={styles.fake}></View>
+          </View>
+          <View style={styles.horizontal}>
+            <Text style={styles.text}>
+              QR code will be detected{"\n"}
+              automatically when {"\n"}
+              lorem ispum
+            </Text>
+          </View>
         </View>
+        <View style={styles.vertical} />
+      </View>
 
-        {/* <View style={styles.bottomContainer}>
-          <Button
+      <View style={[styles.footer, { marginBottom: insets.bottom }]}>
+        <View style={styles.buttonContainer}>
+          <ButtonBack
+            stroke={COLOR.Dark3}
+            style={styles.button}
             textStyle={styles.buttonText}
-            contentContainerStyle={styles.buttonSize}
-            onPress={() => {dapp.connect(uri)}}
-          >
-            Scan QR Code
-          </Button>
-        </View> */}
-      </SafeAreaView>
+            onPress={goBack}
+          />
+        </View>
+      </View>
     </>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#23283d",
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+
+    flexDirection: "row",
     flex: 1,
   },
-  center: {
-    alignItems: "center",
-    marginHorizontal: 49,
+
+  vertical: {
+    backgroundColor: hexAlpha(COLOR.Dark3, 80),
+
+    flex: 1,
   },
-  title: {
+
+  horizontal: {
+    backgroundColor: hexAlpha(COLOR.Dark3, 80),
+    flex: 1,
+  },
+
+  scanner: {
+    flexGrow: 1,
+    transform: [{ scale: 2 }],
+  },
+
+  fake: {
+    height: 260,
+    width: 260,
+    borderRadius: 30,
+    // backgroundColor: "magenta",
+  },
+
+  footer: {
+    marginHorizontal: 30,
+    position: "absolute",
+    bottom: 0,
+  },
+
+  text: {
     fontFamily: "CircularStd",
     fontStyle: "normal",
     fontWeight: "500",
-    fontSize: 21,
-    lineHeight: 27,
-    marginTop: 30,
-  },
-  caption: {
-    fontFamily: "CircularStd",
-    fontStyle: "normal",
-    fontWeight: "400",
     fontSize: 14,
     lineHeight: 18,
+    marginTop: 23,
     textAlign: "center",
-    marginTop: 39,
 
-    color: "#6B6B84", // TODO: themed this!
-    marginBottom: 80,
-  },
-  sector: {
-    width: "100%",
-    height: "50%",
-    borderRadius: 30,
-    // borderColor: "white",
-    // borderLeftColor: "white",
-    // borderLeftWidth: 3,
-    // borderRightWidth: 3,
-    overflow: "hidden",
+    color: COLOR.White,
   },
 
-  bottomContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingBottom: 8,
-  },
-  buttonSize: {
+  buttonContainer: { flexDirection: "row" },
+
+  button: {
+    backgroundColor: COLOR.White,
+    borderRadius: 50,
+    paddingHorizontal: 24,
     paddingVertical: 18,
-    paddingHorizontal: 35,
+    marginBottom: 16,
   },
   buttonText: {
-    fontFamily: "CircularStd",
-    fontStyle: "normal",
-    fontWeight: "500",
-    fontSize: 15,
-    lineHeight: 19,
+    color: COLOR.Dark3,
   },
 });

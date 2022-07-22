@@ -91,11 +91,8 @@ export default observer<Props>(function SendModal({
         navigation.push("ScannerQR", {
           onBarCodeScanned: (data: string) =>
           {
-            const prefix = "btsg/receive/"
-            if(data.startsWith(prefix))
-            {
-              creater.addressInput.set(data.substring(prefix.length))
-            }
+            creater.addressInput.set(data)
+            console.log(data)
             bottomSheet.openSoft()
           },
         })
