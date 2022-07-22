@@ -42,7 +42,7 @@ export default ({
   const renderRightActions = () => (
     <SwipeActions
       edited={false}
-      wallet={value}
+      item={value}
       onPressTrash={onPressDelete}
       style={styles.actions}
     />

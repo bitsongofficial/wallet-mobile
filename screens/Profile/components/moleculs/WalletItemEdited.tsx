@@ -48,7 +48,7 @@ export default ({
 
   const renderRightActions = () => (
     <SwipeActions
-      wallet={value}
+      item={value}
       onPressEdit={onPressEdit}
       onPressTrash={onPressDelete}
       style={styles.actions}

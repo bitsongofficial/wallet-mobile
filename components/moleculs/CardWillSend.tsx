@@ -8,6 +8,7 @@ import { ICoin, IPerson } from "classes/types";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { SupportedCoins } from "constants/Coins";
+import { Contact } from "stores/ContactsStore";
 
 type Props = {
   /** How many $ we will send */
@@ -32,8 +33,8 @@ export default observer(function CardWillSend({
   const theme = useTheme();
   const { configs, contacts, coin } = useStore();
 
-  const receiver: IPerson | undefined = useMemo(
-    () => undefined, // contacts.persons.find((person) => person.address === address),
+  const receiver: Contact | undefined = useMemo(
+    () => contacts.contacts.find((c) => c.address === address),
     [address]
   );
 

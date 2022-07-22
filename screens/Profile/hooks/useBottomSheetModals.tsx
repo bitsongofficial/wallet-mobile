@@ -17,12 +17,14 @@ import {
   EditContact,
   RemoveContact,
 } from "../components/organisms";
-import { IPerson } from "classes/types";
 import { useNavigation } from "@react-navigation/native";
+import { Contact } from "stores/ContactsStore";
+import { RootStackParamList } from "types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export default function useBottomSheetModals() {
   const gbs = useGlobalBottomsheet();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { screen } = useDimensions();
   const animatedPosition = useSharedValue(screen.height);
@@ -95,7 +97,7 @@ export default function useBottomSheetModals() {
     gbs.snapToIndex(0);
   }, []);
 
-  const removeContact = useCallback((contact: IPerson) => {
+  const removeContact = useCallback((contact: Contact) => {
     gbs.setProps({
       snapPoints: [270],
       animatedPosition,
@@ -106,7 +108,7 @@ export default function useBottomSheetModals() {
     gbs.snapToIndex(0);
   }, []);
 
-  const editContact = useCallback((contact: IPerson) => {
+  const editContact = useCallback((contact: Contact) => {
     const steps = new Steps(["Data", "Photo"]);
     const disposer = reaction(
       () => steps.title,

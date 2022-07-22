@@ -8,7 +8,10 @@ import { Button, ButtonBack, Icon2 } from "components/atoms";
 import { Search, Subtitle, Title } from "../atoms";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ButtonAvatar } from "../moleculs";
-import { useStore } from "hooks";
+import { useGlobalBottomsheet, useStore } from "hooks";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type Props = {
   close(): void;
@@ -16,6 +19,8 @@ type Props = {
 
 export default observer<Props>(({ close }) => {
   const { contacts } = useStore();
+  const gbs = useGlobalBottomsheet()
+  // const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   // ----------- Input ----------
 
   const inputWallet = useMemo(() => new InputHandler(), []);
@@ -49,13 +54,28 @@ export default observer<Props>(({ close }) => {
   }, []);
 
   const createContact = useCallback(() => {
-    contacts.add({
+    contacts.addContact({
       address: inputWallet.value,
-      nickname: inputName.value,
+      name: inputName.value,
       avatar: image, //  if skip create avatar neededr
     });
     close();
   }, [image]);
+
+  const scanContact = useCallback(
+    () =>
+    {
+      // gbs.closeSoft()
+      // navigation.push("ScannerQR", {
+      //   onBarCodeScanned: (data) =>
+      //   {
+      //     inputWallet.set(data)
+      //     gbs.openSoft()
+      //   }
+      // })
+    },
+    [gbs]
+  );
 
   return (
     <View style={styles.container}>
@@ -69,7 +89,7 @@ export default observer<Props>(({ close }) => {
             value={inputWallet.value}
             onChangeText={inputWallet.set}
             Right={
-              <TouchableOpacity style={styles.iconTouchable}>
+              <TouchableOpacity style={styles.iconTouchable} onPress={scanContact}>
                 <Icon2 name="qr_code" size={18} stroke={COLOR.RoyalBlue} />
               </TouchableOpacity>
             }

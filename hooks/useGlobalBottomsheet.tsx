@@ -20,6 +20,8 @@ class GlobalBottomSheet implements BottomSheetMethods {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
+  tmpClose?: () => void
+
   setProps(props?: Partial<BottomSheetProps>): void {
     if (props) {
       const onClose = props.onClose;
@@ -58,10 +60,17 @@ class GlobalBottomSheet implements BottomSheetMethods {
     this.ref.current?.close();
   }
   closeSoft() {
+    this.tmpClose = this.props.onClose 
+    this.updProps({
+      onClose: undefined
+    })
     this.close()
   }
 
   openSoft() {
+    this.updProps({
+      onClose: this.tmpClose
+    })
     this.expand()
   }
 

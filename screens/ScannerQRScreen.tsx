@@ -45,11 +45,11 @@ export default observer<Props>(({ navigation, route }) => {
   return (
     <>
       <StatusBar hidden />
-      <BarCodeScanner
+      {hasPermission && <BarCodeScanner
         barCodeTypes={["qr"]}
         onBarCodeScanned={handleBarCodeScanned}
         style={styles.scanner}
-      />
+      />}
       <View style={styles.container}>
         <View style={styles.vertical} />
         <View>

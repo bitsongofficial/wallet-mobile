@@ -60,7 +60,7 @@ export default observer(function ReceiveModal({ style, close }: Props) {
       />
 
       <View style={styles.qr_code}>
-        <QRCode value={"btsg/receive/" + address} size={screen.width * 0.7} />
+        {address != "" && <QRCode value={address} size={screen.width * 0.7} />}
       </View>
 
       <Text style={styles.subtitle}>Copy address</Text>

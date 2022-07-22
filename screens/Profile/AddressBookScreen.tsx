@@ -17,10 +17,10 @@ import {
 } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { observer } from "mobx-react-lite";
-import { observable } from "mobx";
+import { observable, toJS } from "mobx";
 import { RootStackParamList } from "types";
 import { useStore } from "hooks";
-import { COLOR, hexAlpha } from "utils";
+import { COLOR, hexAlpha, InputHandler } from "utils";
 import { Button, Icon2, ThemedGradient } from "components/atoms";
 import { Circles, Search, Subtitle, Title } from "./components/atoms";
 import { ContactItem } from "./components/moleculs";
@@ -28,8 +28,8 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
-import { IPerson } from "classes/types";
 import { useBottomSheetModals } from "./hooks";
+import { Contact } from "stores/ContactsStore";
 
 type Props = NativeStackScreenProps<RootStackParamList, "AddressBook">;
 
@@ -39,25 +39,22 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 
   // ------- Wallets ------
   const mapItemsRef = useMemo(
-    () => observable.map<IPerson, React.RefObject<Swipeable>>(),
+    () => observable.map<Contact, React.RefObject<Swipeable>>(),
     []
   );
 
-  const renderContact = useCallback<ListRenderItem<IPerson>>(
-    ({ item }) => (
+  const renderContact:ListRenderItem<Contact> = ({ item }) => (
       <View style={{ marginBottom: 24 }}>
         <ContactItem
           value={item}
           onPress={() => {}}
-          onPressStar={contacts.addToFavorites}
+          onPressStar={contacts.toggleStarred}
           onPressDelete={openModal.removeContact}
           onPressEdit={openModal.editContact}
           mapItemsRef={mapItemsRef}
         />
       </View>
-    ),
-    []
-  );
+    )
 
   const renderSectionHeader = useCallback(
     ({ section }) => (
@@ -80,7 +77,12 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
     };
   });
 
-  useEffect(() => contacts.inputSearch.clear, []);
+  const inputSearch = useMemo(() => new InputHandler(), [])
+  const sectionData = contacts.labelContacts(contacts.contacts, inputSearch.value)
+
+  console.log(toJS(contacts.contacts))
+
+  useEffect(() => inputSearch.clear, []);
 
   return (
     <>
@@ -97,19 +99,19 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
             />
             <View style={[styles.wrapper]}>
               <Search
-                value={contacts.inputSearch.value}
-                onChangeText={contacts.inputSearch.set}
+                value={inputSearch.value}
+                onChangeText={inputSearch.set}
                 placeholder="Search Address"
                 bottomsheet={false}
               />
             </View>
 
-            {contacts.persons.length > 0 ? (
+            {contacts.contacts.length > 0 ? (
               <SectionList
                 style={{ marginTop: 10 }}
-                keyExtractor={({ _id }) => _id}
+                keyExtractor={({ address }) => address}
                 contentContainerStyle={{ paddingTop: 30 }}
-                sections={contacts.sectionsData}
+                sections={sectionData}
                 renderItem={renderContact}
                 renderSectionHeader={renderSectionHeader}
               />
