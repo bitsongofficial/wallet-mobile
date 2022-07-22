@@ -18,6 +18,7 @@
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.17.12",
     "@cosmjs-rn/crypto": "^0.27.1",
+    "@cosmjs-rn/encoding": "^0.27.1",
     "@cosmjs-rn/math": "^0.27.1",
     "@cosmjs-rn/proto-signing": "^0.27.1",
     "@cosmjs-rn/stargate": "^0.27.1",

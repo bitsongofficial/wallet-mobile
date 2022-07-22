@@ -15,7 +15,7 @@ export default class MainStore {
   wallet = new WalletStore(this.configs.remote);
   settings = new SettingsStore();
   coin = new CoinStore(this.wallet, this.configs.remote);
-  dapp = new DappConnectionStore(this.wallet, this.configs.remote);
+  dapp = new DappConnectionStore(this.wallet, this.coin, this.configs.remote);
 
   contacts = new ContactsStore();
   user: null | User = new User({

@@ -1118,7 +1118,7 @@
     ripemd160 "^2.0.2"
     sha.js "^2.4.11"
 
-"@cosmjs-rn/encoding@0.27.1":
+"@cosmjs-rn/encoding@0.27.1", "@cosmjs-rn/encoding@^0.27.1":
   version "0.27.1"
   resolved "https://registry.yarnpkg.com/@cosmjs-rn/encoding/-/encoding-0.27.1.tgz#14b844d56e82c532445a077094747ca17fe68a4c"
   integrity sha512-pVdEFrScbtxEfGKBiG7I7Pn1/ELT19NuXTLZnvG6JjEs6WS/StUouhEOW/E8DasTW7vxv5iq3S0tNOjhNE1YKA==
@@ -4223,10 +4223,17 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
+<<<<<<< HEAD
 electron-to-chromium@^1.4.188:
   version "1.4.192"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.192.tgz#fac050058b3e0713b401a1088cc579e14c2ab165"
   integrity sha512-8nCXyIQY9An88NXAp+PuPy5h3/w5ZY7Iu2lag65Q0XREprcat5F8gKhoHsBUnQcFuCRnmevpR8yEBYRU3d2HDw==
+=======
+electron-to-chromium@^1.4.172:
+  version "1.4.178"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.178.tgz#3dae6fda486007bb54bbfed420ebd40881a3de45"
+  integrity sha512-aWuhJXkwIdoQzGR8p2QvR3N0OzdUKZSP8+P/hzuMzNQIPZoEa8HiCGM75bQBHjyz+eKT5PB9dVCzkK/tyQ4B5Q==
+>>>>>>> dev
 
 elliptic@^6.5.3:
   version "6.5.4"
@@ -8178,9 +8185,15 @@ react-native-safe-area-context@3.3.2:
   integrity sha512-yOwiiPJ1rk+/nfK13eafbpW6sKW0jOnsRem2C1LPJjM3tfTof6hlvV5eWHATye3XOpu2cJ7N+HdkUvUDGwFD2Q==
 
 react-native-screens@^3.4.0:
+<<<<<<< HEAD
   version "3.15.0"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.15.0.tgz#78e42c8df72851b1ff235ddf5434b961ae123ca5"
   integrity sha512-ezC5TibsUYyqPuuHpZoM3iEl6bRzCVBMJeGaFkn7xznuOt1VwkZVub0BvafIEYR/+AQC/RjxzMSQPs1qal0+wA==
+=======
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.14.1.tgz#9eca8ef524cc0466701779498d128d820cc06f69"
+  integrity sha512-QkaiYEx5kuAkLjfN+AmR7FC9jyzohqnc5T1PBi35oZtGiLMoyTJIzyep/g8458++WvDwm0vismIifaNHsWFyHg==
+>>>>>>> dev
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"

@@ -66,7 +66,7 @@ export default observer<Props>(function InsertImport({
       <Footer
         onPressCenter={onPressNext}
         onPressBack={onPressBack}
-        isShowCenter={Number(creater.amount) < (creater.coin ? creater.coin.balance : 0) && Number(creater.amount) > 0}
+        isActiveCenter={Number(creater.amount) < (creater.coin ? creater.coin.balance : 0) && Number(creater.amount) > 0}
         centerTitle="Continue"
       />
     </>

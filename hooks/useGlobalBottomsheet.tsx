@@ -28,7 +28,7 @@ class GlobalBottomSheet implements BottomSheetMethods {
         this.props = this.defaultProps;
       };
     }
-    this.props = props || {};
+    this.props = props || {}
   }
 
   updProps(props?: Partial<BottomSheetProps>) {
@@ -57,18 +57,22 @@ class GlobalBottomSheet implements BottomSheetMethods {
   close() {
     this.ref.current?.close();
   }
+
   expand() {
     this.ref.current?.expand();
   }
+
   forceClose() {
     this.ref.current?.forceClose();
   }
+
   snapToIndex(
     index: number,
     animationConfigs?: WithSpringConfig | WithTimingConfig
   ) {
     this.ref.current?.snapToIndex(index, animationConfigs);
   }
+
   snapToPosition(
     position: number | string,
     animationConfigs?: WithSpringConfig | WithTimingConfig
@@ -79,6 +83,6 @@ class GlobalBottomSheet implements BottomSheetMethods {
 
 const globalBottomsheet = new GlobalBottomSheet();
 
-export default function useGlobalBottomsheet() {
+export default function useGlobalBottomsheet(): GlobalBottomSheet {
   return globalBottomsheet;
 }

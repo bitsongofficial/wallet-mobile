@@ -32,7 +32,7 @@ import { useBottomSheetModals } from "./hooks"
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">
 
 export default observer<Props>(function MainScreen({ navigation }) {
-	const { settings, user, dapp, wallet } = useStore()
+	const { settings, dapp, wallet } = useStore()
 
 	// ------- BottomSheet ----------
 
@@ -53,7 +53,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		}
 	})
 
-	const inputNick = useMemo(() => new InputHandler(user?.nick), [user])
+	const inputNick = useMemo(() => new InputHandler(wallet.activeProfile?.name), [wallet.activeProfile])
 	const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 })
 
 	/// ---------------
@@ -139,7 +139,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 								style={styles.head}
 								input={inputNick}
 								onPressAvatar={openModal.changeAvatar}
-								avatar={user?.photo}
+								avatar={wallet.activeProfile?.avatar}
 								animtedValue={translationY}
 							/>
 						</Animated.View>
@@ -163,12 +163,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
 									arrow
 									style={styles.listButton}
 								/>
-								{/* <ListButton
-                  text="Add a Watch account"
-                  onPress={openModal.addWatchAccount}
-                  icon="eye"
-                  arrow
-                /> */}
+								<ListButton
+									text="Add a Watch account"
+									onPress={openModal.addWatchAccount}
+									icon="eye"
+									arrow
+								/>
 
 								<Agreement
 									onPressPrivacy={navToPrivacy}
@@ -231,7 +231,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 											icon="circle_dollar"
 											style={styles.listButton}
 											Right={
-												settings.currency && (
+												settings.currency != null && (
 													<Value text={settings.currency?.name} />
 												)
 											}

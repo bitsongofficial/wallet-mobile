@@ -107,7 +107,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 	const onRefresh = useCallback(async () => {
 		setRefreshing(true)
-		await wait(2000)
+		await coin.updateBalances()
 		setRefreshing(false)
 	}, [])
 
