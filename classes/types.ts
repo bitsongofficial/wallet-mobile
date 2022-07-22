@@ -1,10 +1,17 @@
 import { SupportedCoins } from "constants/Coins";
 
 export interface ICoin {
+	_id: string;
+	logo: any;
+	balance: number;
+	brand: string;
+	coinName: string;
+	address: string;
+	coin: SupportedCoins;
+}
+
 export type IValidator = {
-	_id: string // address
 	name: string
-	logo: string
 	claim: number
 	apr: number
 	voting_power: number
@@ -15,7 +22,6 @@ export type IValidator = {
 	maxConvertionRate: number
 	currentCommissionRate: number
 	lastCommissionChange: string // date
-}
 }
 
 export type IPerson = {
