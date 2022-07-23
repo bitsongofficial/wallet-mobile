@@ -59,6 +59,7 @@ import kebab from "./kebab.svg"
 import stake_gradient from "./stake_gradient.svg"
 import restake_gradient from "./restake_gradient.svg"
 import unstake_gradient from "./unstake_gradient.svg"
+import loupe from "./loupe.svg"
 
 export default <const>{
 	eye_closed_gradient,
@@ -121,4 +122,5 @@ export default <const>{
 	password,
 	fingerprint_simple,
 	wallet_connect,
+	loupe,
 }
