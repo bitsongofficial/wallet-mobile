@@ -55,6 +55,7 @@ export default class CoinStore {
 
 	async updateBalances()
 	{
+		console.log(toJS(this.settingsStore.currency))
 		runInAction(() =>
 		{
 			this.loading.balance = true
@@ -94,6 +95,7 @@ export default class CoinStore {
 		{
 			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
 				{
+					console.log("B", r)
 					if(r.status == "fulfilled") return r.value
 					return 0
 				})
@@ -196,10 +198,10 @@ export default class CoinStore {
 	fromFIATToAssetAmount(fiat: number, asset: SupportedCoins)
 	{
 		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.Prices)
-		return parseFloat(assetAmount.amount) * convertRateFromDenom(assetAmount.denom)
+		return parseFloat(assetAmount.amount) / convertRateFromDenom(assetAmount.denom)
 	}
 
-	fromAmountToFiat(amount: Amount)
+	fromAmountToFIAT(amount: Amount)
 	{
 		return fromAmountToFIAT(amount, this.Prices)
 	}

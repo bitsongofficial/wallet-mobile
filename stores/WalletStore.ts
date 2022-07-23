@@ -276,6 +276,7 @@ export default class WalletStore {
             }
             catch(e)
             {
+              console.log(e)
               this.deleteProfile(profile)
             }
             store.Lock()

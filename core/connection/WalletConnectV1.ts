@@ -2,6 +2,11 @@ import WalletConnect from "@walletconnect/client"
 import { IWalletConnectSession, IWalletConnectOptions } from "@walletconnect/types"
 import { Bitsong } from "core/coin/bitsong/Bitsong";
 import { PublicWallet } from "core/storing/Generic";
+import { CosmosWallet } from "core/storing/Wallet";
+import { ClaimData } from "core/types/coin/cosmos/ClaimData";
+import { DelegateData } from "core/types/coin/cosmos/DelegateData";
+import { ProposalVote } from "core/types/coin/cosmos/ProposalVote";
+import { RedelegateData } from "core/types/coin/cosmos/RedelegateData";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
 import { makeAutoObservable } from "mobx";
@@ -85,44 +90,114 @@ export class WalletConnectCosmosClientV1 {
 					message: "Rejected",
 				}
 			})
+			let fromWallet: CosmosWallet | undefined = undefined
+			for(const wallet of this.wallets)
+			{
+				const address = await wallet.Address()
+				if(address == params.value.fromAddress) fromWallet = wallet as CosmosWallet
+			}
+
+			if(fromWallet == undefined)
+			{
+				reject()
+				return
+			}
+			const actualFromWallet: CosmosWallet = fromWallet
+			const approve = (res: any) =>
+			{
+				this.connector?.approveRequest({
+					id: payload.id,
+					result: res,
+					jsonrpc: payload.method,
+				})
+			}
 			switch(params.typeUrl)
 			{
 				case "/cosmos.bank.v1beta1.MsgSend":
-					let fromWallet = null
-					for(const wallet of this.wallets)
-					{
-						const address = await wallet.Address()
-						if(address == params.value.fromAddress) fromWallet = wallet
+					const sendParams = {
+						from: actualFromWallet,
+						to: new PublicWallet(params.value.toAddress),
+						amount: params.value.amount
 					}
-					if(fromWallet)
+					
+					accept = async () =>
 					{
-						const sendParams = {
-							from: fromWallet,
-							to: new PublicWallet(params.value.toAddress),
+						const res = await Bitsong.Do(CoinOperationEnum.Send, sendParams)
+						approve(res)
+					}
+
+					data = {
+						to: params.value.toAddress,
+						amount: sendParams.amount,
+					}
+					break
+				case "/cosmos.staking.v1beta1.MsgDelegate":
+					accept = async () =>
+					{
+						const data: DelegateData = {
+							delegator: actualFromWallet,
+							validator: new PublicWallet(params.value.validatorAddress),
 							amount: params.value.amount
 						}
-						
-						accept = async () =>
-						{
-							const res = await Bitsong.Do(CoinOperationEnum.Send, sendParams)
-							this.connector?.approveRequest({
-								id: payload.id,
-								result: res,
-								jsonrpc: payload.method,
-							})
-						}
-
-						data = {
-							to: params.value.toAddress,
-							amount: sendParams.amount,
-						}
+						const res = await Bitsong.Do(CoinOperationEnum.Delegate, data)
+						approve(res)
 					}
-					else
+					break
+				case "/cosmos.staking.v1beta1.MsgBeginRedelegate":
+					accept = async () =>
 					{
-						reject()
+						const data: RedelegateData = {
+							delegator: actualFromWallet,
+							validator: new PublicWallet(params.value.validatorSrcAddress),
+							newValidator: new PublicWallet(params.value.validatorDstAddress),
+							amount: params.value.amount
+						}
+						const res = await Bitsong.Do(CoinOperationEnum.Redelegate, data)
+						approve(res)
+					}
+					break
+				case "/cosmos.staking.v1beta1.MsgUndelegate":
+					accept = async () =>
+					{
+						const data: DelegateData = {
+							delegator: actualFromWallet,
+							validator: new PublicWallet(params.value.validatorAddress),
+							amount: params.value.amount
+						}
+						const res = await Bitsong.Do(CoinOperationEnum.Undelegate, data)
+						approve(res)
+					}
+					break
+				case "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward":
+					accept = async () =>
+					{
+						const data: ClaimData = {
+							owner: actualFromWallet,
+							validators: [new PublicWallet(params.value.validatorAddress)],
+						}
+						const res = await Bitsong.Do(CoinOperationEnum.Claim, data)
+						approve(res)
+					}
+					break
+				case "/cosmos.gov.v1beta1.MsgVote":
+					accept = async () =>
+					{
+						const data: ProposalVote = {
+							voter: actualFromWallet,
+							proposal: {id: params.value.proposalId},
+							choice: params.value.option,
+						}
+						const res = await Bitsong.Do(CoinOperationEnum.Vote, data)
+						approve(res)
 					}
 					break
 			}
+
+			if(params.typeUrl != "/cosmos.bank.v1beta1.MsgSend") data = {
+				type: params.typeUrl,
+				data: params.value,
+			}			
+			
 			if(options.onRequest) options.onRequest(params.typeUrl, data, {
 				accept,
 				reject

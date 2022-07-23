@@ -16,4 +16,5 @@ export type ICurrency = {
   _id: string;
   name: SupportedFiats;
   title: string;
+  symbol: string;
 };

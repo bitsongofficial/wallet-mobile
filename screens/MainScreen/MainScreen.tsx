@@ -155,7 +155,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
             <View style={styles.balance}>
               <Text style={styles.balance_title}>Total Balance</Text>
               <Text style={styles.balance_value}>
-                {coin.totalBalance.toLocaleString("en")} $
+                {coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}
               </Text>
             </View>
           </View>

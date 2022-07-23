@@ -10,7 +10,7 @@ export default class Phrase {
   }
 
   get isValid() {
-    return this.words.length === 12;
+    return true;
   }
 
   async create() {

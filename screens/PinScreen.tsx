@@ -46,21 +46,36 @@ export default observer<Props>(({ navigation, route }) => {
   // --------- Check -------------
   const { localStorageManager } = useStore();
 
-  useEffect(() => {
-    if (pin.isValid) {
-      (async () => {
-        const isConfirm = await localStorageManager.verifyPin(pin.value) || disableVerification;
-        setConfirm(isConfirm);
-        if (isConfirm) {
-          setErrorCount(0);
-        } else {
-          setErrorCount((v) => v + 1);
-        }
-      })()
-    } else {
-      setConfirm(null);
-    }
-  }, [pin.isValid]);
+	useEffect(() => {
+		if (pin.isValid)
+		{
+			(async () => {
+				const isConfirm = await localStorageManager.verifyPin(pin.value) || disableVerification;
+				setConfirm(isConfirm);
+				if (isConfirm) {
+					setErrorCount(0);
+				}
+				else
+				{
+					setErrorCount((v) => v + 1);
+				}
+			})()
+		}
+		else
+		{
+			setConfirm(null);
+		}
+	}, [pin.isValid]);
+	// ----------- Confirm ----------
+	useEffect(() => {
+		if (isConfirm) {
+			const token = setTimeout(() => {
+				callback(pin.value)
+				goBack()
+			}, 1000)
+			return () => clearTimeout(token)
+		}
+	}, [isConfirm])
 
 	useEffect(() => {
 		const handler = BackHandler.addEventListener("hardwareBackPress", () => {

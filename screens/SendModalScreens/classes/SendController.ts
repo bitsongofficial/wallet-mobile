@@ -131,4 +131,9 @@ export default class SendController {
     if(this.balance.length > 0) this.balance = this.balance.slice(0, -1)
     this.updateAmountFromBalance()
   }
+
+  setMax() {
+    this.creater.setMax()
+    this.updateBalanceFromAmount()
+  }
 }
