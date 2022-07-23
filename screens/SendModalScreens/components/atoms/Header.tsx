@@ -5,7 +5,7 @@ import { useTheme } from "hooks";
 type Props = {
   title: string;
   subtitle?: string;
-  Pagination: JSX.Element;
+  Pagination?: JSX.Element;
   style?: StyleProp<ViewStyle>;
 };
 

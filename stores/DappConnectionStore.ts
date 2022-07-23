@@ -7,6 +7,7 @@ import WalletStore from "./WalletStore";
 import { IWalletConnectSession } from "@walletconnect/types"
 import LocalStorageManager from "./LocalStorageManager";
 import SettingsStore from "./SettingsStore";
+import { confirmTransaction } from "components/organisms/TransactionSignConfirm";
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
@@ -61,7 +62,7 @@ export default class DappConnectionStore {
 				openSendRecap({
 					to: data.to,
 					from: data.from,
-					amount: this.coinStore.fromAmountToFiat(data.amount).toFixed(2),
+					amount: this.coinStore.fromAmountToFIAT(data.amount).toFixed(2),
 					onDone: async () =>
 					{
 						await handler.accept()
@@ -69,6 +70,9 @@ export default class DappConnectionStore {
 					},
 					onReject: () => {handler.reject()},
 				})
+				break
+			default:
+				confirmTransaction(data, handler.accept, handler.reject)
 				break
 		}
 	}

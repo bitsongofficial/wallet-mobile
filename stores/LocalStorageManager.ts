@@ -10,7 +10,7 @@ import { AskPinMnemonicStore } from "core/storing/MnemonicStore"
 import { WalletTypes } from "core/types/storing/Generic"
 import { argon2Encode, argon2Verify } from "utils/argon"
 import { askPin } from "navigation/AskPin"
-import { contact } from "stores/ContactsStore"
+import { Contact } from "stores/ContactsStore"
 import ContactsStore from "./ContactsStore"
 
 const pin_hash_path = "pin_hash"
@@ -194,7 +194,7 @@ export default class LocalStorageManager
 			switch(profile.type)
 			{
 				case WalletTypes.COSMOS:
-					AsyncStorageLib.clear(profile.data.mnemonicPath)
+					AsyncStorageLib.removeItem(profile.data.mnemonicPath)
 			}
 		}
 		catch {}
@@ -323,7 +323,7 @@ export default class LocalStorageManager
 		{
 			try
 			{
-				const contacts:contact[] = JSON.parse(raw)
+				const contacts:Contact[] = JSON.parse(raw)
 				contacts.forEach(c => {
 					this.contacts.addContact(c)	
 				})

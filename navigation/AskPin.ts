@@ -21,10 +21,9 @@ export function askPin(options?: OptionsAskPin) {
     if(pin) resolve(pin)
     reject()
   })
-
   return new Promise<string>((resolve, reject) =>
     navigate("PinRequest", {
-      callback: (result: any) => (result ? resolve(result) : reject()),
+      callback: (result: any) => {(result ? resolve(result) : reject())},
       ...defaultOptions,
       ...options,
     })
