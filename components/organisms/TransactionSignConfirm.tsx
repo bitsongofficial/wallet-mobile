@@ -1,6 +1,6 @@
 import { useDimensions } from "@react-native-community/hooks";
 import { Button } from "components/atoms";
-import { useGlobalBottomsheet } from "hooks";
+import { globalBottomsheet } from "hooks/useGlobalBottomsheet";
 import { StyleSheet } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import { Data } from "screens/SendModalScreens/components/organisms";
@@ -29,16 +29,20 @@ export function TransactionSignConfirm({data, accept, reject}: Props)
 }
 
 export const confirmTransaction = (data: any, accept: () => void, reject: () => void) => {
-	const gbs = useGlobalBottomsheet()
-	const { screen } = useDimensions();
-  	const animatedPosition = useSharedValue(screen.height);
+	const gbs = globalBottomsheet;
+	const flag = {accepted: false}
     gbs.setProps({
       snapPoints: ["80%"],
-      animatedPosition,
       backgroundStyle: styles.background,
       android_keyboardInputMode: undefined,
-      onClose: reject,
-      children: <TransactionSignConfirm data={data} accept={accept} />,
+      onClose: () => {
+		if(!flag.accepted) reject()
+	  },
+      children: <TransactionSignConfirm data={data} accept={() => {
+		flag.accepted = true
+		accept()
+		gbs.close()
+	  }} />,
     });
     gbs.snapToIndex(0);
 }
