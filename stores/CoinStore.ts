@@ -95,7 +95,6 @@ export default class CoinStore {
 		{
 			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
 				{
-					console.log("B", r)
 					if(r.status == "fulfilled") return r.value
 					return 0
 				})

@@ -343,10 +343,8 @@ export default class WalletStore {
 
   deleteProfile(profile: profileIndexer)
   {
-    console.log(profile)
     const p = this.resolveProfile(profile)
     if(p == undefined) return
-    console.log(p)
     this.localStorageManager?.removeProfileData(p)
     this.profiles.splice(this.profiles.indexOf(p), 1)
   }

@@ -8,6 +8,7 @@ import { IWalletConnectSession } from "@walletconnect/types"
 import LocalStorageManager from "./LocalStorageManager";
 import SettingsStore from "./SettingsStore";
 import { confirmTransaction } from "components/organisms/TransactionSignConfirm";
+import mock from "classes/mock";
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
@@ -61,8 +62,10 @@ export default class DappConnectionStore {
 			case "/cosmos.bank.v1beta1.MsgSend":
 				openSendRecap({
 					to: data.to,
-					from: data.from,
-					amount: this.coinStore.fromAmountToFIAT(data.amount).toFixed(2),
+					from: Object.assign(mock.BitSong, {
+						address: data.from
+					}),
+					amount: this.coinStore.fromAmountToFIAT(data.amount[0]).toFixed(2),
 					onDone: async () =>
 					{
 						await handler.accept()

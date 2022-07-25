@@ -27,7 +27,7 @@ export class Vote extends CosmosOperation {
 
 		try
 		{
-			const result = await client.signAndBroadcast(walletInfos[0], [encodedMessage], "auto");
+			const result = await client.signAndBroadcast(walletInfos[0], [encodedMessage], "auto")
 			assertIsDeliverTxSuccess(result)
 				
 			return true

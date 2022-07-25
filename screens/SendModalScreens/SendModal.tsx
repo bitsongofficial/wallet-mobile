@@ -74,7 +74,6 @@ export default observer<Props>(function SendModal({ style, close, navigation }) 
           onBarCodeScanned: (data: string) =>
           {
             creater.addressInput.set(data)
-            console.log(data)
             // bottomSheet.openSoft()
           },
         })

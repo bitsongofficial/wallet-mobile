@@ -81,7 +81,7 @@ class GlobalBottomSheet implements BottomSheetMethods {
   }
 }
 
-const globalBottomsheet = new GlobalBottomSheet();
+export const globalBottomsheet = new GlobalBottomSheet();
 
 export default function useGlobalBottomsheet(): GlobalBottomSheet {
   return globalBottomsheet;

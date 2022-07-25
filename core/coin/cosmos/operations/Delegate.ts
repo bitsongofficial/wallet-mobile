@@ -17,7 +17,7 @@ export class Delegate extends CosmosOperation {
 
 		try
 		{
-			const result = await client.delegateTokens(walletInfos[0], walletInfos[2], data.amount, "auto", data.description);
+			const result = await client.delegateTokens(walletInfos[0], walletInfos[2], data.amount, "auto", data.description)
 			assertIsDeliverTxSuccess(result)
 				
 			return true
