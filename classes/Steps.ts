@@ -40,5 +40,10 @@ export default class Steps<T extends string = any> {
     this.add(this.active - 1);
   }
 
-  static equal = (title: string) => (t: string) => t === title;
+	static equal = (title: string) => (t: string) => t === title
+
+	clear() {
+		this.active = 0
+		this.history = [this.active]
+	}
 }

@@ -38,7 +38,10 @@ export default function useSendModal(style: StyleProp<ViewStyle>) {
 
 	const children = () => (
 		<SendModal
-			close={gbs.close}
+			close={() => {
+				gbs.close()
+				controller.clear()
+			}}
 			navigation={navigation}
 			controller={controller}
 			onPressScanQRReciver={scanReciver}
