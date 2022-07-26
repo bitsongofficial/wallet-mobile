@@ -131,7 +131,14 @@ export default class SendController {
     if(this.balance.length > 0) this.balance = this.balance.slice(0, -1)
     this.updateAmountFromBalance()
   }
+	clear() {
+		this.steps.clear()
+		this.balance = ""
 
+		const coin = this.creater.coin
+		this.creater = new Transaction.Creater()
+		this.creater.setCoin(coin)
+	}
   setMax() {
     this.creater.setMax()
     this.updateBalanceFromAmount()

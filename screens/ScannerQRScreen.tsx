@@ -27,7 +27,10 @@ export default observer<Props>(({ navigation, route }) => {
     })();
   }, []);
 
-  const goBack = useCallback(() => navigation.goBack(), []);
+	const goBack = useCallback(() => {
+		navigation.goBack()
+		route.params.onBarCodeScanned()
+	}, [])
 
   const handleBarCodeScanned = useCallback<BarCodeScannedCallback>(
     ({ data }) => {

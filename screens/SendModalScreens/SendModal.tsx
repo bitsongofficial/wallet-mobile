@@ -1,41 +1,38 @@
 import { useCallback, useEffect, useMemo } from "react"
-import { BackHandler, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
+import { BackHandler, StyleSheet, Text, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
-import { CompositeNavigationProp } from "@react-navigation/native"
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { useStore } from "hooks"
-import { RootStackParamList, RootTabParamList } from "types"
+import { RootStackParamList } from "types"
 import { Pagination } from "components/moleculs"
 import { SendController } from "./classes"
 import { Header } from "./components/atoms"
-import { Header as BottomTabHeader } from "components/organisms"
 import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "./components/templates"
 import { COLOR } from "utils"
 
 type Props = {
-	style?: StyleProp<ViewStyle>
 	close(): void
-	navigation: CompositeNavigationProp<
-		BottomTabNavigationProp<RootTabParamList, "MainTab">,
-		NativeStackNavigationProp<RootStackParamList>
-	>
+	navigation: NativeStackNavigationProp<RootStackParamList>
+	controller: SendController
+	onPressScanQRReciver(): void
 }
 
-export default observer<Props>(function SendModal({ style, close, navigation }) {
+export default observer<Props>(function SendModal({
+	close,
+	navigation,
+	controller,
+	onPressScanQRReciver,
+}) {
 	const store = useStore()
 
 	const hasCoins = store.coin.coins.length > 0
 
-	const controller = useMemo(
-		() => (hasCoins ? new SendController(store.coin.coins[0]) : undefined),
-		[store],
-	)
-	const steps = controller
+	const steps = hasCoins
 		? controller.steps
 		: { title: "No available assets", goBack: close, active: 0, goTo: () => {} }
-	const creater = controller
+
+	const creater = hasCoins
 		? controller.creater
 		: { coin: undefined, addressInput: undefined, amount: undefined }
 
@@ -65,26 +62,8 @@ export default observer<Props>(function SendModal({ style, close, navigation }) 
 		return () => handler.remove()
 	}, [goBack])
 
-  const onPressScanner = useCallback(
-    () =>
-    {
-      if(creater.addressInput)
-      {
-        navigation.push("ScannerQR", {
-          onBarCodeScanned: (data: string) =>
-          {
-            creater.addressInput.set(data)
-            // bottomSheet.openSoft()
-          },
-        })
-        // bottomSheet.closeSoft()
-      }
-    },
-    [navigation, creater]
-  );
-  // --------- Header --------------
-  const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets";
-
+	// --------- Header --------------
+	const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets"
 	const title = useMemo(() => (steps.title === "Send Recap" ? steps.title : "Send"), [steps.title])
 	const subtitle = useMemo(
 		() => (steps.title !== "Send Recap" ? steps.title : undefined),
@@ -103,7 +82,7 @@ export default observer<Props>(function SendModal({ style, close, navigation }) 
 						style={styles.header}
 					/>
 				)}
-				{controller && hasCoins && (
+				{hasCoins && (
 					<>
 						{steps.title === "Insert Import" && (
 							<InsertImport
@@ -118,7 +97,7 @@ export default observer<Props>(function SendModal({ style, close, navigation }) 
 								controller={controller}
 								onPressBack={goBack}
 								onPressRecap={() => steps.goTo("Send Recap")}
-								onPressScanner={onPressScanner}
+								onPressScanner={onPressScanQRReciver}
 							/>
 						)}
 						{steps.title === "Send Recap" && (

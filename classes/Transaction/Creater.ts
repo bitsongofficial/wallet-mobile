@@ -14,9 +14,9 @@ export default class TransactionCreater {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  setCoin(coin: Coin) {
-    this.coin = coin;
-  }
+	setCoin(coin: Coin | null) {
+		this.coin = coin
+	}
   setAmount(amount: string) {
     this.amount = amount;
   }
