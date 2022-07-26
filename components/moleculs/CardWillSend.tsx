@@ -33,16 +33,13 @@ export default observer(function CardWillSend({
   const theme = useTheme();
   const { configs, contacts, coin } = useStore();
 
-  const receiver: Contact | undefined = useMemo(
-    () => contacts.contacts.find((c) => c.address === address),
-    [address]
-  );
+  const receiver: Contact | undefined = contacts.contacts.find((c) => c.address === address)
 
   const addContact = useCallback(() => {
-    async () => {
-      // TODO: need get person data by address. May be loader needed?
-      // contacts.add(await DApp.getPersonByAddress(address));
-    };
+    contacts.addContact({
+      name: "New contact",
+      address,
+    })
   }, [address]);
 
   const coinsValue = useMemo(
@@ -93,7 +90,7 @@ export default observer(function CardWillSend({
             <View style={styles.avatar} />
             {/* <Image style={styles.avatar} source={{ uri: receiver.avatar }} /> */}
             <Text style={[styles.text, theme.text.primary]}>
-              {receiver.nickname}
+              {receiver.name}
             </Text>
           </>
         ) : (

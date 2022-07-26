@@ -3,9 +3,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { animated, useSpring } from "@react-spring/native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useTheme } from "hooks";
+import { useStore, useTheme } from "hooks";
 import { SendController } from "../../classes";
-import { users } from "../../mock";
 import { CardAddress, CardAdressSelf } from "../moleculs";
 import { Footer, User } from "../atoms";
 import { isValidAddress } from "core/utils/Address";
@@ -23,6 +22,7 @@ export default observer(function SelectReceiver({
   onPressRecap,
   onPressScanner,
 }: Props) {
+  const { contacts } = useStore()
   const theme = useTheme();
   const { creater } = controller;
   const { addressInput } = creater;
@@ -40,14 +40,21 @@ export default observer(function SelectReceiver({
         />
 
         <animated.View style={hidden}>
-          <Text style={[styles.subtitle, theme.text.primary]}>Prefered</Text>
+          {contacts.starred.length > 0 && <>
+            <Text style={[styles.subtitle, theme.text.primary]}>Prefered</Text>
 
+            <View style={styles.users}>
+              {contacts.starred.map((c) => (
+                <User user={c} key={c.address} />
+              ))}
+            </View>
+          </>}
+          <Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
           <View style={styles.users}>
-            {users.map((user) => (
-              <User user={user} key={user._id} />
+            {contacts.starred.map((c) => (
+              <User user={c} key={c.address} />
             ))}
           </View>
-          <Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
 
           <CardAdressSelf coin={creater.coin} style={styles.self} />
         </animated.View>

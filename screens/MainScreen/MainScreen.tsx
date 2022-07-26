@@ -126,10 +126,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
 					<View style={styles.info}>
 						<View style={styles.balance}>
 							<Text style={styles.balance_title}>Total Balance</Text>
-							<Text style={styles.balance_value}>{coin.totalBalance.toLocaleString("en")} $</Text>
+							<Text style={styles.balance_value}>{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}</Text>
 						</View>
 					</View>
-
 					<ToolbarShort
 						style={styles.toolbar_short}
 						onPressAll={openToolbar}
@@ -138,7 +137,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						onPressScan={coin.CanSend ? openScanner : undefined}
 						onPressSend={coin.CanSend ? openSend : undefined}
 					/>
-
 					<Tabs
 						values={tabs}
 						active={activeTab}

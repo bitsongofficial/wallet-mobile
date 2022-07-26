@@ -1,13 +1,15 @@
 import { Icon2, ThemedGradient } from "components/atoms"
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
+import { RectButton } from "react-native-gesture-handler"
 import { COLOR } from "utils"
 import { Caption, Card, Count } from "../atoms"
 
 type Props = {
 	style: StyleProp<ViewStyle>
+	onPressClaim(): void
 }
 
-export default ({ style }: Props) => {
+export default ({ style, onPressClaim }: Props) => {
 	return (
 		<Card style={[styles.container, style]}>
 			<View>
@@ -15,11 +17,13 @@ export default ({ style }: Props) => {
 				<Count value="234.78" coinName="BTSG" />
 			</View>
 			<View>
-				<View style={styles.circle}>
-					<ThemedGradient style={styles.gradient}>
-						<Icon2 size={22} stroke={COLOR.White} name="claim" />
-					</ThemedGradient>
-				</View>
+				<RectButton onPress={onPressClaim}>
+					<View style={styles.circle}>
+						<ThemedGradient style={styles.gradient}>
+							<Icon2 size={22} stroke={COLOR.White} name="claim" />
+						</ThemedGradient>
+					</View>
+				</RectButton>
 			</View>
 		</Card>
 	)

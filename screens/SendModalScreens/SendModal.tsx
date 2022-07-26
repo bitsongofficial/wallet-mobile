@@ -64,7 +64,6 @@ export default observer<Props>(function SendModal({
 
 	// --------- Header --------------
 	const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets"
-
 	const title = useMemo(() => (steps.title === "Send Recap" ? steps.title : "Send"), [steps.title])
 	const subtitle = useMemo(
 		() => (steps.title !== "Send Recap" ? steps.title : undefined),

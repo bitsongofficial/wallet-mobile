@@ -14,7 +14,6 @@ import * as NavigationBar from "expo-navigation-bar"
 import FullscreenOverlay from "components/atoms/FullscreenOverlay"
 import { Loader } from "components/atoms"
 import { useGlobalBottomsheet, useLoading, useTheme } from "hooks"
-import { setUpPushNotificationsEvents } from "utils/pushNotifications"
 import { observer } from "mobx-react-lite"
 import { BottomSheet } from "components/moleculs"
 

@@ -139,4 +139,8 @@ export default class SendController {
 		this.creater = new Transaction.Creater()
 		this.creater.setCoin(coin)
 	}
+  setMax() {
+    this.creater.setMax()
+    this.updateBalanceFromAmount()
+  }
 }

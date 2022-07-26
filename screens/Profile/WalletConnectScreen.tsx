@@ -25,8 +25,8 @@ import { Circles, Subtitle, Title } from "./components/atoms";
 import { observable } from "mobx";
 import { WalletItem } from "./components/moleculs";
 import { ProfileWallets } from "stores/WalletStore";
-import { SwipeableItem } from "components/organisms";
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
+import SwipeableItem from "components/organisms/SwipeableItem";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">;
 

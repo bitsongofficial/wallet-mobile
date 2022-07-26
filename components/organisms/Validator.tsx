@@ -3,11 +3,11 @@ import { StyleSheet, Text, View } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import { COLOR } from "utils"
 import { Icon2 } from "components/atoms"
-import { Validator } from "classes/types"
+import { IValidator } from "classes/types"
 
 type ValidatorProps = {
-	item: Validator
-	onPressKebab(item: Validator): void
+	item: IValidator
+	onPressKebab(item: IValidator): void
 }
 
 export default ({ item, onPressKebab }: ValidatorProps) => {
