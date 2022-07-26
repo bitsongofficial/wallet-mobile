@@ -29,7 +29,7 @@ export class Claim extends CosmosOperation {
 
 		try
 		{
-			const result = await client.signAndBroadcast(ownerAddress, encodedMessages, "auto");
+			const result = await client.signAndBroadcast(ownerAddress, encodedMessages, "auto")
 			assertIsDeliverTxSuccess(result)
 			
 			return true

@@ -38,7 +38,7 @@ export default observer<Props>(function InsertImport({
         <View>
           <Button
             text="MAX"
-            onPress={creater.setMax}
+            onPress={controller.setMax}
             contentContainerStyle={styles.maxButtonContent}
           />
         </View>

@@ -2,8 +2,8 @@ import { SupportedFiats } from "core/utils/Coin";
 import { ICurrency } from "screens/Profile/type";
 
 export default <ICurrency[]>[
-  { name: SupportedFiats.USD, title: "Dollaro statunitense", _id: "1" },
-  { name: SupportedFiats.EUR, title: "Euro", _id: "2" },
+  { name: SupportedFiats.USD, title: "Dollaro statunitense", _id: "1", symbol: "$" },
+  { name: SupportedFiats.EUR, title: "Euro", _id: "2", symbol: "€" },
   // { name: "JPY", title: "Yen giapponese", _id: "3" },
   // { name: "GBP", title: "Sterlina inglese", _id: "4" },
   // { name: "AUD", title: "Dollaro australiano", _id: "5" },

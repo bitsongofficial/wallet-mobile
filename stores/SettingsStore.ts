@@ -57,7 +57,6 @@ export default class SettingsStore {
 
   async setBiometric(biometric_enable: boolean, pin?: string)
   {
-    console.log(this.biometric_enable, biometric_enable, pin)
     if(!this.biometric_enable && biometric_enable)
     {
       const actualPin = pin ?? await askPin()

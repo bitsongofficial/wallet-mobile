@@ -1,6 +1,6 @@
 type anonymousHandler = () => void
 
 type acceptRejectType = {
-	accept: Function,
-	reject: Function
+	accept: (...args: any[]) => any,
+	reject: (...args: any[]) => any,
 }
