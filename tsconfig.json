@@ -1,24 +1,25 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "jsx": "react-native",
-    "strict": true,
-    "baseUrl": "./",
-    "target": "ES5",
-    "paths": {
-      "assets": ["./assets"],
-      "components": ["./components"],
-      "utils": ["./utils"],
-      "src": ["./src"],
-      "api": ["./api"],
-      "constants": ["./constants"],
-      "hooks": ["./hooks"],
-      "navigation": ["./navigation"],
-      "screens": ["./screens"],
-      "classes": ["./classes"],
-      "stores": ["./stores"],
-      "core": ["./core"]
-    },
-    "useDefineForClassFields": true
-  }
+	"extends": "expo/tsconfig.base",
+	"compilerOptions": {
+		"jsx": "react-native",
+		"strict": true,
+		"baseUrl": "./",
+		"target": "ES5",
+		"paths": {
+			"assets": ["./assets"],
+			"components": ["./components"],
+			"utils": ["./utils"],
+			"src": ["./src"],
+			"api": ["./api"],
+			"constants": ["./constants"],
+			"hooks": ["./hooks"],
+			"navigation": ["./navigation"],
+			"screens": ["./screens"],
+			"classes": ["./classes"],
+			"stores": ["./stores"],
+			"core": ["./core"],
+			"modals": ["./modals"]
+		},
+		"useDefineForClassFields": true
+	}
 }
