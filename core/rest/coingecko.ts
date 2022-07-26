@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { SupportedCoins } from 'constants/Coins';
 import { CoingeckoPrice, CoingeckoPrices } from 'core/types/rest/coingecko';
+import { SupportedFiats } from 'core/utils/Coin';
 import Config from "react-native-config"
 
 export const coinGeckoApi = axios.create({
@@ -34,10 +35,17 @@ function fromCoingeckoNameToCoin(name: string): SupportedCoins
 
 export async function getCoinGeckoPrices(coins: SupportedCoins[])
 {
+	let currencies = ""
+	let c: keyof typeof SupportedFiats
+	for(c in SupportedFiats)
+	{
+		currencies += SupportedFiats[c] + ","
+	}
+	currencies = currencies.slice(0, currencies.length-1)
 	const data = (await coinGeckoApi.get<CoingeckoPrices>(`simple/price`, {
 		params: {
 			ids: coins.map(coin => coingeckoCoinName(coin)).join(","),
-			vs_currencies:"usd",
+			vs_currencies: currencies,
 		}
 	})).data
 	const formattedData: {

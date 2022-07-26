@@ -30,7 +30,7 @@ const TIME = 200
 const EASING = Easing.elastic(1.5)
 
 export default observer<Props>(({ navigation, route }) => {
-	const { callback, title = "Confirm with PIN", errorMax = 3 } = route.params
+	const { callback, title = "Confirm with PIN", errorMax = 3, disableVerification = false } = route.params
 	const { wallet } = useStore()
 
 	const goBack = useCallback(() => navigation.goBack(), [])
@@ -43,35 +43,24 @@ export default observer<Props>(({ navigation, route }) => {
 	const isError = isConfirm !== null && !isConfirm
 	const isBlocked = countError === errorMax
 
-	// --------- Check -------------
+  // --------- Check -------------
+  const { localStorageManager } = useStore();
 
-	useEffect(() => {
-		if (pin.isValid) {
-			;(async () => {
-				const isConfirm = await wallet.verifyPin(pin.value)
-				setConfirm(isConfirm)
-				// setConfirm(true);
-				if (isConfirm) {
-					setErrorCount(0)
-				} else {
-					setErrorCount((v) => v + 1)
-				}
-			})()
-		} else {
-			setConfirm(null)
-		}
-	}, [pin.isValid])
-
-	// ----------- Confirm ----------
-	useEffect(() => {
-		if (isConfirm) {
-			const token = setTimeout(() => {
-				callback(pin.value)
-				goBack()
-			}, 1000)
-			return () => clearTimeout(token)
-		}
-	}, [isConfirm])
+  useEffect(() => {
+    if (pin.isValid) {
+      (async () => {
+        const isConfirm = await localStorageManager.verifyPin(pin.value) || disableVerification;
+        setConfirm(isConfirm);
+        if (isConfirm) {
+          setErrorCount(0);
+        } else {
+          setErrorCount((v) => v + 1);
+        }
+      })()
+    } else {
+      setConfirm(null);
+    }
+  }, [pin.isValid]);
 
 	useEffect(() => {
 		const handler = BackHandler.addEventListener("hardwareBackPress", () => {

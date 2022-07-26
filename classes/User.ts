@@ -15,7 +15,6 @@ export default class User {
 	}
 
 	setPhoto(photo: string) {
-		console.log("photo", photo)
 		this.photo = photo
 	}
 }

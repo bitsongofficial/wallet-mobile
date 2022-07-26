@@ -4,14 +4,11 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button, Icon2 } from "components/atoms";
 import { useStore, useTheme } from "hooks";
 import { COLOR } from "utils";
-import {
-  fromAmountToCoin,
-  fromCoinToDefaultDenom,
-  fromDollarsToAmount,
-} from "core/utils/Coin";
-import { ICoin } from "classes/types";
+import { ICoin, IPerson } from "classes/types";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
+import { SupportedCoins } from "constants/Coins";
+import { Contact } from "stores/ContactsStore";
 
 type Props = {
   /** How many $ we will send */
@@ -34,10 +31,10 @@ export default observer(function CardWillSend({
   style,
 }: Props) {
   const theme = useTheme();
-  const { configs, contacts } = useStore();
+  const { configs, contacts, coin } = useStore();
 
-  const receiver = useMemo(
-    () => contacts.persons.find((person) => person.address === address),
+  const receiver: Contact | undefined = useMemo(
+    () => contacts.contacts.find((c) => c.address === address),
     [address]
   );
 
@@ -50,14 +47,8 @@ export default observer(function CardWillSend({
 
   const coinsValue = useMemo(
     () =>
-      fromAmountToCoin(
-        fromDollarsToAmount(
-          parseFloat(amount),
-          fromCoinToDefaultDenom(coinData.coin),
-          configs.remote.prices
-        )
-      ),
-    [amount, coinData.coin, configs.remote.prices]
+      coin.fromFIATToAssetAmount(parseFloat(amount), SupportedCoins.BITSONG),
+    [amount]
   );
 
   const shortAddress = `${address.substring(0, 10)}..${address.slice(-7)}`;

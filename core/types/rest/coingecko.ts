@@ -1,6 +1,7 @@
-export interface CoingeckoPrice {
-	eur?: number,
-	usd?: number,
+import { SupportedFiats } from "core/utils/Coin";
+
+export type CoingeckoPrice = {
+	[key in SupportedFiats]? : number
 }
 
 export interface CoingeckoPrices {

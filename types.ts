@@ -57,6 +57,7 @@ export type RootStackParamList = {
 		title?: string
 		isRandomKeyboard?: boolean
 		isHiddenCode?: boolean
+		disableVerification?: boolean
 	}
 	Validator: { validator: IValidator }
 	NewProposal: undefined

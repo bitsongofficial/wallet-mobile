@@ -46,25 +46,23 @@ export default class SendController {
 
   fromBalanceToAmount(balance: string)
   {
-    let v
     if (this.creater.coin?.rate) {
       const value = Coin.culcFiatBalance(
         parseFloat(balance),
         this.creater.coin.rate
       );
       if (value) {
-        v = round(value);
+        return round(value).toString();
       }
       else
       {
-        v = 0
+        return ""
       }
     }
     else
     {
-      v = 0
+      return ""
     }
-    return v.toString()
   }
 
   updateAmountFromBalance()
@@ -81,6 +79,10 @@ export default class SendController {
       );
       if (value) {
         this.balance = (round(value).toString());
+      }
+      else
+      {
+        this.balance = ""
       }
     }
   }

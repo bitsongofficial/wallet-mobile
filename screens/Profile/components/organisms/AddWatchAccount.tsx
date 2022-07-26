@@ -6,6 +6,7 @@ import { InputHandler } from "utils";
 import { Steps } from "classes";
 import { Button } from "components/atoms";
 import { Search, Subtitle, Title } from "../atoms";
+import { useLoading, useStore } from "hooks";
 
 type Props = {
   close(): void;
@@ -16,6 +17,9 @@ export default observer<Props>(({ close }) => {
 
   const inputWallet = useMemo(() => new InputHandler(), []);
   const inputName = useMemo(() => new InputHandler(), []);
+  
+  const {wallet, settings} = useStore()
+  const loading = useLoading()
 
   const pasteFromClipboard = useCallback(
     async () => inputWallet.set(await Clipboard.getStringAsync()),
@@ -27,6 +31,14 @@ export default observer<Props>(({ close }) => {
   const steps = useMemo(() => new Steps(["Add", "Name"]), []);
 
   const openStepName = useCallback(() => steps.goTo("Name"), []);
+
+  const saveWallet = async () =>
+  {
+    loading.open()
+    await wallet.newWatchWallet(inputName.value, inputWallet.value)
+    loading.close()
+    close()
+  }
 
   return (
     <View style={styles.container}>
@@ -80,7 +92,7 @@ export default observer<Props>(({ close }) => {
         {steps.title === "Name" && (
           <Button
             text="Add Account"
-            onPress={close}
+            onPress={saveWallet}
             contentContainerStyle={styles.buttonContent}
             textStyle={styles.buttonText}
           />

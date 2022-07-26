@@ -24,6 +24,7 @@ export class Validators extends CosmosOperation {
 				}).voting_power
 			});
 			const validators = results[0]
+			return validators
 			//console.log("B", validators)
 		}
 		catch(e)

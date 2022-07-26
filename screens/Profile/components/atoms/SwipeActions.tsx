@@ -6,26 +6,26 @@ import { COLOR, hexAlpha } from "utils";
 import { ProfileWallets } from "stores/WalletStore";
 
 type Props = {
-  wallet: ProfileWallets;
-  onPressEdit?(wallet: ProfileWallets): void;
-  onPressTrash(wallet: ProfileWallets): void;
+  item: any;
+  onPressEdit?(item: any): void;
+  onPressTrash(item: any): void;
   style?: StyleProp<ViewStyle>;
   edited?: boolean;
 };
 
 export default memo(
-  ({ onPressEdit, onPressTrash, wallet, style, edited = true }: Props) => (
+  ({ onPressEdit, onPressTrash, item, style, edited = true }: Props) => (
     <View style={[styles.container, style]}>
       {edited && (
         <Button
           text="Edit"
           mode="fill"
           style={styles.button}
-          onPress={() => onPressEdit && onPressEdit(wallet)}
+          onPress={() => onPressEdit && onPressEdit(item)}
           contentContainerStyle={styles.buttonContent}
         />
       )}
-      <RectButton onPress={() => onPressTrash(wallet)}>
+      <RectButton onPress={() => onPressTrash(item)}>
         <Icon2 size={24} name="trash" stroke={hexAlpha(COLOR.White, 30)} />
       </RectButton>
     </View>

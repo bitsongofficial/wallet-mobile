@@ -8,6 +8,7 @@ import { SendController } from "../../classes";
 import { users } from "../../mock";
 import { CardAddress, CardAdressSelf } from "../moleculs";
 import { Footer, User } from "../atoms";
+import { isValidAddress } from "core/utils/Address";
 
 type Props = {
   controller: SendController;
@@ -54,7 +55,7 @@ export default observer(function SelectReceiver({
       <Footer
         onPressBack={onPressBack}
         onPressCenter={onPressRecap}
-        isShowCenter={addressInput.value != ""}
+        isActiveCenter={addressInput.value != "" && isValidAddress(addressInput.value)}
         centerTitle="Preview Send"
       />
     </>

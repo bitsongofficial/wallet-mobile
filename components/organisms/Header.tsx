@@ -1,40 +1,46 @@
 import { Image, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs"
-import { NativeStackHeaderProps } from "@react-navigation/native-stack"
+import { NativeStackHeaderProps, NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { Icon } from "components/atoms"
 import { COLOR } from "utils"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { useCallback } from "react"
 import { StyleProp } from "react-native"
+import { useStore } from "hooks"
+import { RootStackParamList } from "types"
+import { observer } from "mobx-react-lite"
 
 type Props = {
 	style?: StyleProp<ViewStyle>
+	navigation: NativeStackNavigationProp<RootStackParamList>
 } & (BottomTabHeaderProps | NativeStackHeaderProps)
 
-export default function Header({ navigation, style }: Props) {
-	const openProfile = useCallback(() => navigation?.push("Profile"), [])
+export default observer(function Header({ navigation, style }: Props) {
+  const { wallet } = useStore()
+  const openProfile = useCallback(() => navigation?.push("Profile"), []);
 
-	return (
-		<View style={[styles.container, style]}>
-			<View style={styles.header}>
-				<View style={styles.right}>
-					<Icon name="cosmo" size={40} />
-				</View>
-				<View style={styles.center}>
-					<View>
-						<Text style={styles.title}>Cosmosnautico</Text>
-					</View>
-					<Icon name="bell" size={15} fill="#202020" style={styles.icon} />
-				</View>
-				<View style={styles.left}>
-					<TouchableOpacity onPress={openProfile}>
-						<Image source={require("assets/images/mock/avatar.png")} style={styles.avatar} />
-					</TouchableOpacity>
-				</View>
-			</View>
-		</View>
-	)
-}
+  return (
+    <View style={[styles.container, style]}>
+      <View style={styles.header}>
+        <View style={styles.right}>
+          <Icon name="cosmo" size={40} />
+        </View>
+        <View style={styles.center}>
+          <Text style={styles.title}>Cosmonautico</Text>
+        </View>
+        <View style={styles.left}>
+          <Icon name="bell" size={15} fill="#202020" />
+          <TouchableOpacity onPress={openProfile}>
+            <Image
+              source={(wallet.activeProfile && wallet.activeProfile.avatar) ? {uri: wallet.activeProfile.avatar} : require("assets/images/mock/avatar.png")}
+              style={styles.avatar}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+})
 
 const styles = StyleSheet.create({
 	container: {

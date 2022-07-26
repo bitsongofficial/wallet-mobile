@@ -1,111 +1,123 @@
-import { IPerson } from "classes/types"
-import { makeAutoObservable } from "mobx"
-import { InputHandler } from "utils"
+import { makeAutoObservable, set } from "mobx";
+
+export type Contact = {
+	name: string,
+	address: string,
+	avatar?: string,
+	starred?: boolean,
+}
+
+type contactIndexer = Contact | number | string
 
 export default class ContactsStore {
-	persons: IPerson[] = [
-		{
-			_id: "1",
-			avatar: "",
-			firstName: "A",
-			lastName: "Delogu",
-			nickname: "Delogu",
-			address: "1234567fdghjlkj5678",
-		},
-		{
-			_id: "2",
-			avatar: "",
-			firstName: "M",
-			lastName: "Vacchi",
-			nickname: "Vacchi",
-			address: "1234567fdghjlkj5678",
-		},
-		{
-			_id: "3",
-			avatar: "",
-			firstName: "L",
-			lastName: "Aleandri",
-			nickname: "Aleandri",
-			address: "1234567fdghjlkj5678",
-		},
-		{
-			_id: "4",
-			avatar: "",
-			firstName: "A",
-			lastName: "Rossi",
-			nickname: "Rossi",
-			address: "1234567fdghjlkj5678",
-		},
-	]
-
-	favorites = new Set<IPerson["_id"]>()
-	inputSearch = new InputHandler()
+	contacts: Contact[] = []
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
-	private get filterdPersons() {
-		const { inputSearch, persons } = this
-		if (inputSearch.value) {
-			const lowerCase = inputSearch.value.toLowerCase()
-			return persons.filter(({ nickname }) =>
-				nickname.toLowerCase().includes(lowerCase),
-			)
+	addContact(contact: Contact)
+	{
+		const actualContact = Object.assign({starred: false}, contact)
+		if(!this.contacts.find(c => c.address == actualContact.address)) this.contacts.push(actualContact)
+	}
+
+	private resolveContact(indexer: contactIndexer)
+	{
+		if(typeof indexer == "string") return this.contacts.find(c => c.address == indexer)
+		if(typeof indexer == "number") return this.contacts[indexer]
+		return this.contacts.find(c => c == indexer)
+	}
+
+	removeContact(contact: contactIndexer)
+	{
+		const actualContact = this.resolveContact(contact)
+		if(actualContact) this.contacts.splice(this.contacts.indexOf(actualContact), 1)		
+	}
+
+	editName(contact: contactIndexer, name:string)
+	{
+		const actualContact = this.resolveContact(contact)
+		if(actualContact) set(actualContact, {name})
+	}
+
+	editAddress(contact: contactIndexer, address:string)
+	{
+		const actualContact = this.resolveContact(contact)
+		if(actualContact) set(actualContact, {address})
+	}
+
+	editAvatar(contact: contactIndexer, uri:string)
+	{
+		const actualContact = this.resolveContact(contact)
+		if(actualContact) set(actualContact, {avatar: uri})
+	}
+
+	toggleStarred(contact: contactIndexer)
+	{
+		const actualContact = this.resolveContact(contact)
+		if(actualContact) set(actualContact, {starred: !actualContact.starred})
+	}
+
+	get starred() {
+		return this.contacts.filter(c => c.starred)
+	}
+
+	filterContacts(filter?: string) {
+		const { contacts } = this;
+		if (filter)
+		{
+			const lowerCase = filter.toLowerCase();
+			return contacts.filter(({ name }) =>
+				name.toLowerCase().includes(lowerCase)
+			);
 		} else {
-			return persons
+			return contacts;
 		}
 	}
 
-	get sectionsData() {
+	labelContacts(contacts: Contact[], filter?: string)
+	{
 		type ContactsSection = {
-			label: string
-			data: IPerson[]
+			label: string,
+			data: Contact[],
 		}
 
-		const { filterdPersons, favorites } = this
+		const { starred } = this
+
+		const filterdPersons = this.filterContacts(filter)
 
 		const favoritesData: ContactsSection = {
 			label: "Favorite",
-			data: filterdPersons.filter((person) => favorites.has(person._id)),
+			data: filterdPersons.filter((person) => starred.find(s => s.address == person.address)),
 		}
 
-		const records = filterdPersons.reduce((records, person) => {
-			const key = person.nickname[0].toUpperCase()
+		const records = filterdPersons.reduce((records, person) =>
+		{
+			const key = person.name[0].toUpperCase()
 
-			if (records[key]) {
+			if (records[key])
+			{
 				records[key].push(person)
-			} else {
+			}
+			else
+			{
 				records[key] = [person]
 			}
 
 			return records
-		}, {} as { [key: string]: IPerson[] })
+		}, {} as { [key: string]: Contact[] })
 
 		const allData: ContactsSection[] = Object.keys(records)
-			.sort()
-			.map((key) => ({
-				label: key,
-				data: records[key],
-			}))
+		.sort()
+		.map((key) => (
+		{
+			label: key,
+			data: records[key],
+		}))
 
-		return favoritesData.data.length > 0 ? [favoritesData, ...allData] : allData
-	}
-
-	add(person: IPerson) {
-		this.persons.push(person)
-	}
-
-	delete(person: IPerson) {
-		const index = this.persons.findIndex(({ _id }) => person._id === _id)
-
-		if (index >= 0) {
-			this.persons.splice(index, 1)
-			this.favorites.delete(person._id)
-		}
-	}
-
-	addToFavorites(person: IPerson) {
-		this.favorites.add(person._id)
+		return favoritesData.data.length > 0
+		? [favoritesData, ...allData]
+		: allData
 	}
 }

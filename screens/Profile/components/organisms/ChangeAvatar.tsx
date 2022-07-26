@@ -1,6 +1,7 @@
 import {
   Image,
   ImageSourcePropType,
+  ImageURISource,
   StyleSheet,
   Text,
   View,
@@ -21,13 +22,13 @@ type Props = {
 
 export default observer<Props>(({ close }) => {
   const theme = useTheme();
-  const { user } = useStore();
+  const { wallet } = useStore()
 
   // -------- Image -----------
   const [image, setImage] = useState<string | null>(null);
 
-  const photo = useMemo<ImageSourcePropType | undefined | null>(
-    () => ({ uri: image || user?.photo }),
+  const photo = useMemo<ImageURISource | undefined | null>(
+    () => ({ uri: image ??  wallet.activeProfile?.avatar}),
     [image]
   );
 
@@ -50,9 +51,9 @@ export default observer<Props>(({ close }) => {
   // --------- Close -----------
 
   const save = useCallback(() => {
-    if (photo) user?.setPhoto(photo.uri);
+    if (photo && photo.uri) wallet.changeActiveProfileAvatar(photo.uri);
     close();
-  }, [user, photo]);
+  }, [wallet, wallet.activeProfile, photo]);
 
   return (
     <View style={styles.container}>
