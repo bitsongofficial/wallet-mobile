@@ -10,7 +10,7 @@ import { ValidatorListItem } from "../moleculs"
 
 type Props = {
 	onPressValidator(validator: IValidator): void
-	activeValidator?: IValidator
+	activeValidator?: IValidator | null
 }
 
 export default observer<Props>(({ onPressValidator, activeValidator }) => {
