@@ -11,8 +11,15 @@ import { IValidator } from "classes/types"
 import moment from "moment"
 import { ButtonBack } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Stat } from "./components/atoms"
-import { useModalDelegate, useModalRedelegate, useModalUndelegate } from "./hooks"
+import { Stat } from "./components/atoms
+import {
+	openDelegate,
+	openRedelegate,
+	openUndelegate,
+	DelegateController,
+	RedelegateController,
+	UndelegateController,
+} from "modals/validator"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Validator">
 
@@ -40,9 +47,42 @@ type IData = {
 export default observer<Props>(function Stacking({ navigation, route }) {
 	const validator = mock // route.params.validator
 
-	const [openDelegate, closeDelegate] = useModalDelegate()
-	const [openRedelegate, closeRedelegate] = useModalRedelegate()
-	const [openUndelegate, closeUndelegate] = useModalUndelegate()
+	// --------- Modals --------------
+
+	const openDelegateModal = useCallback(() => {
+		openDelegate({
+			controller: new DelegateController(),
+			onDone() {
+				// nav to check pin with callback
+			},
+		})
+	}, [])
+
+	const openRedelegateModal = useCallback(() => {
+		const controller = new RedelegateController()
+		controller.setFrom(validator)
+
+		openRedelegate({
+			controller,
+			onDone() {
+				// nav to check pin with callback
+			},
+		})
+	}, [])
+
+	const openUndelegateModal = useCallback(() => {
+		const controller = new UndelegateController()
+		controller.setFrom(validator)
+
+		openUndelegate({
+			controller,
+			onDone() {
+				// nav to check pin with callback
+			},
+		})
+	}, [])
+
+	// =======================================
 
 	const data = useMemo<IData[]>(
 		() => [
@@ -89,13 +129,13 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 							</View>
 						</View>
 
-						<CardClaim style={styles.claim} onPressClaim={openDelegate} />
+						<CardClaim style={styles.claim} onPressClaim={openDelegateModal} />
 
 						<CardDelegation
 							style={styles.delegation}
-							onPressStake={openDelegate}
-							onPressUnstake={openUndelegate}
-							onPressRestake={openRedelegate}
+							onPressStake={openDelegateModal}
+							onPressUnstake={openUndelegateModal}
+							onPressRestake={openRedelegateModal}
 						/>
 
 						<Text style={styles.titleList}>Validator Info</Text>

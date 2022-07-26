@@ -204,4 +204,6 @@ export default class CoinStore {
 	{
 		return fromAmountToFIAT(amount, this.Prices)
 	}
+
+	defaultCoin = new Coin(mock.BitSong, 1000) // mock
 }
