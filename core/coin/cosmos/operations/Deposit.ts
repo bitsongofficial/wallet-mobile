@@ -24,8 +24,6 @@ export class Deposit extends CosmosOperation {
 			}
 		}
 
-		console.log(message)
-
 		try
 		{
 			const result = await client.signAndBroadcast(walletInfos[0], [message], "auto", data.description)

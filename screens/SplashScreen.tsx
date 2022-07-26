@@ -27,7 +27,7 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 			}
 			else
 			{
-				localStorageManager.loadWallets()
+				localStorageManager.initialLoad()
 			}
 		})
 

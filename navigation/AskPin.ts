@@ -18,8 +18,13 @@ export function askPin(options?: OptionsAskPin) {
   if(settings.biometric_enable) return new Promise<string>(async (resolve, reject) =>
   {
     const pin = await getPin()
-    if(pin) resolve(pin)
+    if(pin)
+    {
+      resolve(pin)
+      return
+    }
     reject()
+    return
   })
   return new Promise<string>((resolve, reject) =>
     navigate("PinRequest", {

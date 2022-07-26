@@ -27,8 +27,8 @@ type connectionRaw = {
 
 export default class LocalStorageManager
 {
-	private connectionsLoadHandler: IReactionDisposer
-	private walletsLoadHandler: IReactionDisposer
+	private connectionsLoadHandler?: IReactionDisposer
+	private walletsLoadHandler?: IReactionDisposer
 	constructor(
 		private wallet: WalletStore,
 		private dappConnection: DappConnectionStore,
@@ -37,32 +37,39 @@ export default class LocalStorageManager
 		private contacts: ContactsStore,
 	)
 	{
-		this.setUpStores()
 
-		this.loadSettings()
-		this.saveSettings()
+	}
+
+	async initialLoad()
+	{
+		const loadings: Promise<any>[] = []
+		this.setUpStores()
+		await this.loadSettings()
+		this.loadContacts()
 
 		this.connectionsLoadHandler = autorun(() =>
 		{
 			if(this.wallet.activeWallet)
 			{
 				this.loadConnections()
-				this.connectionsLoadHandler()
+				if(this.connectionsLoadHandler) this.connectionsLoadHandler()
 			}
 		})
-		this.saveConnections()
 
 		this.walletsLoadHandler = autorun(() =>
 		{
 			if(this.remoteConfigs.firstLoad) {
 				this.loadWallets()
-				this.walletsLoadHandler()
+				if(this.walletsLoadHandler) this.walletsLoadHandler()
 			}
 		})
-		this.saveWallets()
 
-		this.loadContacts()
 		this.saveContacts()
+		this.saveSettings()
+		this.saveWallets()
+		this.saveConnections()
+		console.log("X")
+		return true
 	}
 
 	saveSettings()
