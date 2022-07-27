@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { observer } from "mobx-react-lite";
@@ -28,6 +28,7 @@ import {
 import { Head } from "./components/moleculs";
 import { useDimensions } from "@react-native-community/hooks";
 import { useBottomSheetModals } from "./hooks";
+import { FAQ_URL, PRIVACY_POLICY_URL, TERMS_AND_CONDITIONS_URL } from "constants/Links";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
@@ -87,9 +88,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
   }, []);
 
   const openCurrencyApp = useCallback(() => {}, []);
-  const openFAQ = useCallback(() => {}, []);
-  const openTermsAndConditions = useCallback(() => {}, []);
-  const openPrivacyPolicy = useCallback(() => {}, []);
+  const openFAQ = useCallback(() => {
+    Linking.openURL(FAQ_URL)
+  }, []);
+  const openTermsAndConditions = useCallback(() => {
+    Linking.openURL(TERMS_AND_CONDITIONS_URL)
+  }, []);
+  const openPrivacyPolicy = useCallback(() => {
+    Linking.openURL(PRIVACY_POLICY_URL)
+  }, []);
 
   const toggleNotification = useCallback(
     () => settings.setNotifications({ enable: !settings.notifications.enable }),
@@ -252,8 +259,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
                       onPress={toggleNightMode}
                       icon="moon"
                       style={styles.listButton}
+                      disabled={true}
                       Right={
-                        <Switch active={settings.theme == "dark"} onPress={toggleNightMode} />
+                        <Switch active={settings.theme == "dark"} onPress={toggleNightMode} disabled={true} />
                       }
                     />
                   </View>
@@ -266,6 +274,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
                       icon="star"
                       arrow
                       style={styles.listButton}
+                      disabled={true}
                     />
                     <ListButton
                       text="FAQ"
