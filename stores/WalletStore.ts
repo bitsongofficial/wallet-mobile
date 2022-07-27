@@ -27,7 +27,7 @@ export interface ProfileInner extends Profile {
   id: string,
 }
 
-type profileIndexer = number | ProfileInner | Profile | ProfileWallets
+type profileIndexer = number | string | ProfileInner | Profile | ProfileWallets
 
 export interface ProfileWallets {
   profile: ProfileInner,
@@ -213,6 +213,7 @@ export default class WalletStore {
     const inputProfile = profile as any
     if(inputProfile.id) return this.profiles.find(p => p.id == inputProfile.id) ?? null
     if(typeof profile == "number") return this.profiles[profile]
+    if(typeof profile == "string") return this.profiles.find(p => p.id == profile) ?? null
     let targetProfile = inputProfile
     if(inputProfile.profile) targetProfile = inputProfile.profile
     return this.profiles.find(p => p.name == targetProfile.name) ?? null

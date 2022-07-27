@@ -18,6 +18,7 @@ const settings_location = "settings"
 const connections_location = "wc_sessions"
 const stored_wallets_path = "stored_wallets"
 const contacts_location = "contacts"
+const active_wallet_id = "active_wallet"
 
 type connectionRaw = {
 	session: IWalletConnectSession,
@@ -165,10 +166,12 @@ export default class LocalStorageManager
 				const serializedWallets = JSON.parse(serializedWalletsRaw) as Array<ProfileInner>
 				if(serializedWallets != null)
 				{
+					const activeId = await AsyncStorageLib.getItem(active_wallet_id)
 					runInAction(() =>
 					{
 						this.wallet.profiles.splice(0, this.wallet.profiles.length, ...serializedWallets)
 						if(this.wallet.profiles.length > 0) this.wallet.activeProfile = this.wallet.profiles[0]
+						if(activeId != "") this.wallet.changeActive(activeId)
 					})
 				}
 			}
@@ -189,6 +192,13 @@ export default class LocalStorageManager
 				{
 					AsyncStorageLib.setItem(stored_wallets_path, json)
 				}
+			}
+		)
+
+		reaction(
+			() => this.wallet.activeWallet?.profile.id ?? "",
+			(id) => {
+				AsyncStorageLib.setItem(active_wallet_id, id)
 			}
 		)
 	}
