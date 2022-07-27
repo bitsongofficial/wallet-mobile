@@ -201,7 +201,7 @@ export default class WalletStore {
           type: WalletTypes.WATCH,
           id: uuid.v4().toString(),
           data: {
-            address
+            address: address.trim(),
           }
         })
       })
@@ -282,16 +282,23 @@ export default class WalletStore {
             store.Lock()
             break
           case WalletTypes.WATCH:
-            const prefix = getPrefixFromAddress(profile.data.address)
-            const coin = prefixToCoin(prefix)
-            if(coin)
+            try
             {
-              const pubWallets: SupportedCoinsMap = {}
-              pubWallets[coin] = new PublicWallet(profile.data.address)
-              wallets.push({
-                profile: this.profiles[index],
-                wallets: pubWallets
-              })
+              const prefix = getPrefixFromAddress(profile.data.address)
+              const coin = prefixToCoin(prefix)
+              if(coin)
+              {
+                const pubWallets: SupportedCoinsMap = {}
+                pubWallets[coin] = new PublicWallet(profile.data.address)
+                wallets.push({
+                  profile: this.profiles[index],
+                  wallets: pubWallets
+                })
+              }
+            }
+            catch (e)
+            {
+              this.deleteProfile(profile)
             }
             break
         }
@@ -347,5 +354,6 @@ export default class WalletStore {
     if(p == undefined) return
     this.localStorageManager?.removeProfileData(p)
     this.profiles.splice(this.profiles.indexOf(p), 1)
+    if(p == this.activeProfile) this.activeProfile = this.profiles[0]
   }
 }

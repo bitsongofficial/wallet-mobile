@@ -214,7 +214,7 @@ export default class LocalStorageManager
 		}[] = []
 		try
 		{
-			await Promise.all(this.wallet.wallets.map(async (w) =>
+			await Promise.all(this.wallet.wallets.filter(w => w.profile.type != WalletTypes.WATCH).map(async (w) =>
 				{
 					let path
 					switch(w.profile.type)
