@@ -10,7 +10,6 @@ type Props = {
 
 export default observer<Props>(({ controller }) => {
 	const { amountInput, steps, from, to, setTo } = controller
-	console.log("from", from)
 	return (
 		<View style={styles.container}>
 			<BottomSheetHeader
