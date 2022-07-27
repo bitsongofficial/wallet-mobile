@@ -28,7 +28,7 @@ export default function useSendModal(style: StyleProp<ViewStyle>) {
 
 	const scanReciver = async () => {
 		await gbs.close()
-		navigation.push("ScannerQR", {
+		navigation.navigate("ScannerQR", {
 			onBarCodeScanned: async (result) => {
 				open()
 				result && controller.creater.addressInput.set(result)

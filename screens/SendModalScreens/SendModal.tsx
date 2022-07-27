@@ -43,7 +43,7 @@ export default observer<Props>(function SendModal({
 	const send = () => {
 		const { coin, addressInput, amount } = creater
 		if (coin && addressInput && amount) {
-			navigation.push("Loader", {
+			navigation.navigate("Loader", {
 				// @ts-ignore
 				callback: async () => {
 					// await wait(2000); // for example

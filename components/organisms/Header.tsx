@@ -17,7 +17,7 @@ type Props = {
 
 export default observer(function Header({ navigation, style }: Props) {
 	const { wallet } = useStore()
-	const openProfile = useCallback(() => navigation?.push("Profile"), [])
+	const openProfile = useCallback(() => navigation?.navigate("Profile"), [])
 
 	return (
 		<View style={[styles.container, style]}>

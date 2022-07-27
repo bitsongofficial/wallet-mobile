@@ -45,7 +45,7 @@ export default observer<Props>(function WalletConnect({ navigation }) {
 
 	const navToScanner = useCallback(
 		() =>
-			navigation.push("ScannerQR", {
+			navigation.navigate("ScannerQR", {
 				onBarCodeScanned(data) {
 					dapp.connect(data)
 				},

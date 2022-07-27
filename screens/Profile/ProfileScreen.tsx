@@ -64,10 +64,10 @@ export default observer<Props>(function MainScreen({ navigation }) {
 	const disconnectAndRemove = useCallback(() => {}, [])
 
 	const openAddWatchaccount = useCallback(() => {}, [])
-	const openSecurity = useCallback(() => navigation.push("SettingsSecurity"), [])
-	const openAddressBook = useCallback(() => navigation.push("AddressBook"), [])
-	const openNotifications = useCallback(() => navigation.push("SettingsNotifications"), [])
-	const openWalletConnect = useCallback(() => navigation.push("WalletConnect"), [])
+	const openSecurity = useCallback(() => navigation.navigate("SettingsSecurity"), [])
+	const openAddressBook = useCallback(() => navigation.navigate("AddressBook"), [])
+	const openNotifications = useCallback(() => navigation.navigate("SettingsNotifications"), [])
+	const openWalletConnect = useCallback(() => navigation.navigate("WalletConnect"), [])
 
 	const toggleNightMode = useCallback(() => {
 		if (settings.theme == "light") settings.setTheme("dark")

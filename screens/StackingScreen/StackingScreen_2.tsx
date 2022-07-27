@@ -56,7 +56,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 	}, [])
 
 	const navToValidator = useCallback(
-		(validator: IValidator) => navigation.push("Validator", { validator }),
+		(validator: IValidator) => navigation.navigate("Validator", { validator }),
 		[],
 	)
 
