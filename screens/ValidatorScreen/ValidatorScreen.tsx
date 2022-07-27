@@ -11,7 +11,7 @@ import { IValidator } from "classes/types"
 import moment from "moment"
 import { ButtonBack } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Stat } from "./components/atoms
+import { Stat } from "./components/atoms"
 import {
 	openDelegate,
 	openRedelegate,
