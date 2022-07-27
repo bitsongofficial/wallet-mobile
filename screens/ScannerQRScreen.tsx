@@ -14,24 +14,18 @@ import { COLOR, hexAlpha } from "utils"
 type Props = NativeStackScreenProps<RootStackParamList, "ScannerQR">
 
 export default observer<Props>(({ navigation, route }) => {
-	const theme = useTheme()
-
 	const [hasPermission, setHasPermission] = useState<boolean | null>(null)
 	const [scanned, setScanned] = useState(false)
-	const [uri, setUri] = useState("")
 
 	useEffect(() => {
-		;(async () => {
-			const { status } = await BarCodeScanner.requestPermissionsAsync()
-			setHasPermission(status === "granted")
-		})()
+		BarCodeScanner.requestPermissionsAsync()
+			//
+			.then(({ status }) => setHasPermission(status === "granted"))
 	}, [])
 
 	useEffect(() => route.params.onClose, [])
 
-	const goBack = useCallback(() => {
-		navigation.goBack()
-	}, [])
+	const goBack = useCallback(() => navigation.goBack(), [])
 
 	const handleBarCodeScanned = useCallback<BarCodeScannedCallback>(
 		({ data }) => {
