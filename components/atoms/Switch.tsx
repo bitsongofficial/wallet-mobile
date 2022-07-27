@@ -9,9 +9,11 @@ type SwitchProps = {
   active?: boolean;
   onPress?(): void;
   gradient?: boolean;
+  disabled?: boolean;
 };
 
-export default ({ onPress, active = false, gradient }: SwitchProps) => {
+export default ({ onPress, active = false, gradient, disabled = false }: SwitchProps) => {
+  console.log(disabled)
   const activeStyle = useSpring({ left: active ? 31 : 4 });
 
   const Background = gradient ? ThemedGradient : View;
@@ -20,7 +22,7 @@ export default ({ onPress, active = false, gradient }: SwitchProps) => {
 
   // TODO:Check on phisic IOS
   return (
-    <BaseButton onPress={onPress}>
+    <BaseButton onPress={onPress} enabled={!disabled}>
       <View style={[styles.container, !gradient && styles.background]}>
         <Background style={{ flex: 1 }}>
           <animated.View style={[styles.dot, activeStyle]}>

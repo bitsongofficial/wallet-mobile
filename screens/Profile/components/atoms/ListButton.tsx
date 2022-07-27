@@ -12,6 +12,7 @@ type Props = {
   children?: string;
   text?: string;
   Right?: JSX.Element | boolean;
+  disabled?: boolean;
 };
 
 export default ({
@@ -21,11 +22,12 @@ export default ({
   text,
   arrow,
   Right,
+  disabled = false,
   onPress,
 }: Props) => {
   const theme = useTheme();
   return (
-    <RectButton onPress={onPress} style={style}>
+    <RectButton onPress={onPress} style={[style, disabled ? {opacity: 0.4} : undefined]} enabled={!disabled}>
       <View style={styles.container}>
         <View style={styles.left}>
           <Icon2
