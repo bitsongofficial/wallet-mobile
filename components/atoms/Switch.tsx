@@ -13,7 +13,6 @@ type SwitchProps = {
 };
 
 export default ({ onPress, active = false, gradient, disabled = false }: SwitchProps) => {
-  console.log(disabled)
   const activeStyle = useSpring({ left: active ? 31 : 4 });
 
   const Background = gradient ? ThemedGradient : View;

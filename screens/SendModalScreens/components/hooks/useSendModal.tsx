@@ -1,6 +1,8 @@
 import { BottomSheetProps } from "@gorhom/bottom-sheet"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { SupportedCoins } from "constants/Coins"
+import { CoinClasses } from "core/types/coin/Dictionaries"
 import { useGlobalBottomsheet, useStore } from "hooks"
 import { toJS } from "mobx"
 import { useCallback, useMemo } from "react"
@@ -29,7 +31,8 @@ export default function useSendModal(style: StyleProp<ViewStyle>) {
 		}
 	
 		const controller = new SendController()
-		controller.creater.setCoin(coin.coins[0])
+		coin.coins.find(c => c.info.denom == CoinClasses[SupportedCoins.BITSONG].denom()) ?? coin.coins[0]
+		controller.creater.setCoin(coin.coins.find(c => c.info.denom == CoinClasses[SupportedCoins.BITSONG].denom()) ?? coin.coins[0])
 	
 		const scanReciver = async () => {
 			await gbs.close()

@@ -8,6 +8,7 @@ export interface ICoin {
 	coinName: string;
 	address: string;
 	coin: SupportedCoins;
+	denom: string;
 }
 
 export type IValidator = {

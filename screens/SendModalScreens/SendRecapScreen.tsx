@@ -15,12 +15,12 @@ import { toJS } from "mobx"
 type Props = NativeStackScreenProps<RootStackParamList, "SendRecap">
 
 export default observer<Props>(function SendRecapScreen({ navigation, route }) {
-	const store = useStore()
+	const { coin } = useStore()
 	const controller = useMemo(
 		() => new SendController(),
 		[],
 	)
-	route.params.creater.setCoin(store.coin.coins[0])
+	route.params.creater.setCoin(coin.coins.find(c => c.info.denom == CoinClasses[SupportedCoins.BITSONG].denom()) ?? coin.coins[0])
 	controller.setCreater(route.params.creater)
 	
 	const { steps } = controller
@@ -48,7 +48,7 @@ export default observer<Props>(function SendRecapScreen({ navigation, route }) {
 					bottomSheet={false}
 					style={{ marginTop: 100 }}
 					address={controller.creater.address}
-					amount={store.coin.fromCoinBalanceToFiat(controller.creater.balance ?? 0, controller.creater.coin?.info.coin || SupportedCoins.BITSONG).toString()}
+					amount={coin.fromCoinBalanceToFiat(controller.creater.balance ?? 0, controller.creater.coin?.info.coin || SupportedCoins.BITSONG).toString()}
 					coin={controller.creater.coin?.info}
 					onPress={() => {}}
 					memoInput={memo}

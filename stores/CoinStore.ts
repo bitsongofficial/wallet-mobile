@@ -78,6 +78,8 @@ export default class CoinStore {
 					{
 						const profile = this.walletStore.activeWallet
 						info.address = await profile?.wallets[chain].Address()
+						info._id = coin.denom()
+						info.denom = coin.denom()
 						balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
 							wallet: new PublicWallet(info.address)
 						}))
@@ -104,10 +106,11 @@ export default class CoinStore {
 				if(balance)
 				{
 					if(balance.length > 0) balance.forEach(asset => {
-						if(asset.denom != "ubtsg") return
 						try
 						{
 							const currentInfo = Object.assign({}, infos[i])
+							currentInfo.denom = asset.denom
+							currentInfo._id = asset.denom
 							currentInfo.balance = fromAmountToCoin(asset)
 							coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices)))
 						}
@@ -219,7 +222,7 @@ export default class CoinStore {
 	fromFIATToCoin(fiat: number, asset: SupportedCoins)
 	{
 		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.Prices)
-		return parseFloat(assetAmount.amount) / convertRateFromDenom(assetAmount.denom)
+		return parseFloat(assetAmount.amount) / (convertRateFromDenom(assetAmount.denom) ?? 1)
 	}
 
 	fromAmountToFIAT(amount: Amount)

@@ -8,6 +8,7 @@ import { COLOR } from "utils"
 import { RootStackParamList } from "types"
 import { Button, ButtonBack } from "components/atoms"
 import { ChooseCoinValues } from "./components/moleculs"
+import { SupportedCoins } from "constants/Coins"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ScannerQR">
 
@@ -21,7 +22,7 @@ export default observer<Props>(function SendDetails({ navigation }: Props) {
 	const goBack = useCallback(() => navigation.goBack(), [navigation])
 
 	// ---- MOCK -------
-	const firstCoin = coin.coins[0]
+	const firstCoin = coin.coins.find(c => c.info.denom == CoinClasses[SupportedCoins.BITSONG].denom()) ?? coin.coins[0]
 	const amount = 123
 
 	return (
