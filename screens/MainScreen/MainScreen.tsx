@@ -15,6 +15,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { ScrollView } from "react-native-gesture-handler"
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal"
 import { useSendModal } from "screens/SendModalScreens/components/hooks"
+import { SupportedCoins } from "constants/Coins"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -42,7 +43,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		[safeAreaInsets.bottom],
 	)
 
-	const openSend = useSendModal(sendCoinContainerStyle)
+	const openSendInner = useSendModal(sendCoinContainerStyle)
+	const openSend = coin.CanSend ? openSendInner : undefined
 	const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
 	const openReceive = useCallback(() => {
@@ -55,27 +57,25 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const openScanner = useCallback(
-		() =>
-			navigation.navigate("ScannerQR", {
-				onBarCodeScanned: (uri: string) => {
-					try {
-						if (uri.startsWith("wc")) {
-							dapp.connect(uri)
-						}
-					} catch (e) {
-						console.error("Catched", e)
-					}
-				},
-			}),
-		[],
-	)
+	const openScannerMemorized = useCallback(() => (navigation.navigate("ScannerQR", {
+		onBarCodeScanned: (uri: string) => {
+			try {
+				if (uri.startsWith("wc")) {
+					dapp.connect(uri)
+				}
+			} catch (e) {
+				console.error("Catched", e)
+			}
+		},
+	})), [])
+
+	const openScanner = coin.CanSend ? openScannerMemorized : undefined
 
 	const openToolbar = useCallback(() => {
-		const onPressScann = () => {
-			openScanner()
+		const onPressScann = coin.CanSend ? () => {
+			openScannerMemorized()
 			Platform.OS === "android" && gbs.close()
-		}
+		} : undefined
 
 		gbs.setProps({
 			snapPoints: ["70%"],
@@ -97,7 +97,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 			),
 		})
 		gbs.expand()
-	}, [])
+	}, [coin.CanSend])
 
 	const [isRefreshing, setRefreshing] = useState(false)
 
@@ -133,8 +133,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						onPressAll={openToolbar}
 						onPressInquire={undefined}
 						onPressReceive={openReceive}
-						onPressScan={coin.CanSend ? openScanner : undefined}
-						onPressSend={coin.CanSend ? openSend : undefined}
+						onPressScan={openScanner}
+						onPressSend={openSend}
 					/>
 					<Tabs
 						values={tabs}
@@ -146,7 +146,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 					<View style={styles.coins}>
 						{coin.coins
-							.filter((c) => c.balance > 0)
+							.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
 							.map((coin) => (
 								<TouchableOpacity key={coin.info._id} disabled={true}>
 									<CoinStat coin={coin} style={{ marginBottom: 9 }} />
