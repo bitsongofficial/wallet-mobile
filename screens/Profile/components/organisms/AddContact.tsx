@@ -12,6 +12,7 @@ import { useGlobalBottomsheet, useStore } from "hooks";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { isValidAddress } from "core/utils/Address";
 
 type Props = {
   close(): void;
@@ -134,7 +135,7 @@ export default observer<Props>(({ close }) => {
           {steps.title !== "Avatar" ? (
             <Button
               text="Continue"
-              disable={steps.title === "Name" && inputName.value.length < 4}
+              disable={(steps.title === "Name" && inputName.value.length < 4) || (steps.title === "Add" && !isValidAddress(inputWallet.value))}
               onPress={next}
               contentContainerStyle={styles.buttonContent}
               textStyle={styles.buttonText}
