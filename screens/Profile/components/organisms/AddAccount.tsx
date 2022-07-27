@@ -50,9 +50,9 @@ export default observer<Props>(({ close, phrase, steps }) => {
 
   const paste = useCallback(async () => {
     const clipboard = await Clipboard.getStringAsync();
-    const words = clipboard.split(/[^a-zа-я$]+/gi, 12).filter((w) => w);
+    const words = clipboard.split(/[^a-zа-я$]+/gi).filter((w) => w);
 
-    if (words.length === 12) {
+    if (words.length) {
       phrase.setWords(words);
       phrase.setActiveIndex(phrase.words.length - 1);
     }

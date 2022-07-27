@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
 import { COLOR, hexAlpha } from "utils";
 import { useTheme } from "hooks";
-import { IPerson } from "classes/types";
+import { Contact } from "stores/ContactsStore";
 
 type Props = {
-  user: IPerson;
+  user: Contact;
 };
 
 export default function User({ user }: Props) {
@@ -16,7 +15,7 @@ export default function User({ user }: Props) {
         <View style={styles.placeholder} />
       </View>
       <Text style={[styles.name, theme.text.primary]}>
-        {user.firstName}. {user.lastName}
+        {user.name}
       </Text>
     </View>
   );
