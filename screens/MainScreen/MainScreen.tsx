@@ -14,7 +14,6 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { ScrollView } from "react-native-gesture-handler"
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal"
-import { SendController } from "screens/SendModalScreens/classes"
 import { useSendModal } from "screens/SendModalScreens/components/hooks"
 
 type ValueTabs = "Coins" | "Fan Tokens"
@@ -65,7 +64,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 							dapp.connect(uri)
 						}
 					} catch (e) {
-						console.log(e)
+						console.error("Catched", e)
 					}
 				},
 			}),

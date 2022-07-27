@@ -21,6 +21,15 @@ export function fromAmountToCoin(amount: Amount)
 	return Number(amount.amount) / convertRateFromDenom(amount.denom)
 }
 
+export function fromCoinToAmount(balance: number, coin: SupportedCoins)
+{
+	const denom = CoinClasses[coin].denom()
+	return {
+		amount: (balance * convertRateFromDenom(denom)).toString(),
+		denom,
+	}
+}
+
 export function fromDenomToPrice(denom: Denom, prices:any): number
 {
 	switch(denom)
@@ -45,5 +54,5 @@ export function fromFIATToAmount(fiat: number, denom: Denom, prices:any): Amount
 
 export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
 {
-	return CoinClasses[coin].coin.denom()
+	return CoinClasses[coin].denom()
 }

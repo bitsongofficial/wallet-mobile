@@ -4,13 +4,15 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
 import { Coin } from "classes";
 import { COLOR, round } from "utils";
-import { useTheme } from "hooks";
+import { useStore, useTheme } from "hooks";
 import { Button, Icon2 } from "components/atoms";
 import { Numpad } from "components/moleculs";
 import { SendController } from "../../classes";
 import { CardSelectCoin } from "../moleculs";
 import { Footer } from "../atoms";
 import { useState } from "react";
+import { TransactionCreater } from "classes/Transaction";
+import { toJS } from "mobx";
 
 type Props = {
   controller: SendController;
@@ -26,14 +28,15 @@ export default observer<Props>(function InsertImport({
   onPressBack,
 }) {
   const theme = useTheme();
-  const creater = controller.creater;
-  const [inverted, setInverted] = useState(false)
+  const { settings } = useStore()
+  const creater: TransactionCreater = controller.creater;
+  const fiatSymbol = settings.currency?.symbol
 
   return (
     <>
       <View style={styles.row}>
         <Text style={[styles.usd, theme.text.primary]}>
-          {(inverted ? controller.balance : creater.amount) || 0} {inverted ? creater.coin?.info.coinName : "$"}
+          {controller.readableInput} {controller.inverted ? fiatSymbol : creater.coin?.info.coinName}
         </Text>
         <View>
           <Button
@@ -47,9 +50,9 @@ export default observer<Props>(function InsertImport({
       {creater.coin && (
         <View style={styles.coin}>
           <Text style={styles.coinBalance}>
-            {(inverted ? creater.amount : controller.balance) || 0} {inverted ? "$" : creater.coin?.info.coinName }
+            {(controller.inverted ? controller.balance : controller.fiat) || 0} {controller.inverted ? creater.coin?.info.coinName : fiatSymbol }
           </Text>
-          <Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} onPress={() => {setInverted(!inverted)}}/>
+          <Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} onPress={() => {controller.invert()}}/>
         </View>
       )}
 
@@ -58,15 +61,15 @@ export default observer<Props>(function InsertImport({
       </TouchableOpacity>
       
       <Numpad
-        onPress={inverted ? controller.addBalanceNumber : controller.addAmountNumber}
-        onPressRemove={inverted ? controller.removeBalanceNumber : controller.removeAmountNumber}
+        onPress={controller.addNumber}
+        onPressRemove={controller.removeNumber}
         style={styles.numpad}
       />
 
       <Footer
         onPressCenter={onPressNext}
         onPressBack={onPressBack}
-        isActiveCenter={Number(creater.amount) < (creater.coin ? creater.coin.balance : 0) && Number(creater.amount) > 0}
+        isActiveCenter={Number(creater.balance) < (creater.coin ? creater.coin.balance : 0) && Number(creater.balance) > 0}
         centerTitle="Continue"
       />
     </>
