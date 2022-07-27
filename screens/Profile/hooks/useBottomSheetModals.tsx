@@ -31,8 +31,8 @@ export default function useBottomSheetModals() {
 
 	const close = useCallback(() => gbs.close(), [])
 
-	const changeAvatar = useCallback(() => {
-		gbs.setProps({
+	const changeAvatar = useCallback(async () => {
+		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
@@ -42,8 +42,8 @@ export default function useBottomSheetModals() {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const addWatchAccount = useCallback(() => {
-		gbs.setProps({
+	const addWatchAccount = useCallback(async () => {
+		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
@@ -53,8 +53,8 @@ export default function useBottomSheetModals() {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const changeWallet = useCallback(() => {
-		gbs.setProps({
+	const changeWallet = useCallback(async () => {
+		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
@@ -64,8 +64,8 @@ export default function useBottomSheetModals() {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const changeLanguage = useCallback(() => {
-		gbs.setProps({
+	const changeLanguage = useCallback(async () => {
+		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
@@ -75,8 +75,8 @@ export default function useBottomSheetModals() {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const channgeCurrency = useCallback(() => {
-		gbs.setProps({
+	const channgeCurrency = useCallback(async () => {
+		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
@@ -86,8 +86,8 @@ export default function useBottomSheetModals() {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const addContact = useCallback(() => {
-		gbs.setProps({
+	const addContact = useCallback(async () => {
+		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
@@ -97,8 +97,8 @@ export default function useBottomSheetModals() {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const removeContact = useCallback((contact: Contact) => {
-		gbs.setProps({
+	const removeContact = useCallback(async (contact: Contact) => {
+		await gbs.setProps({
 			snapPoints: [270],
 			animatedPosition,
 			backgroundStyle: styles.background,
@@ -108,7 +108,7 @@ export default function useBottomSheetModals() {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const editContact = useCallback((contact: Contact) => {
+	const editContact = useCallback(async (contact: Contact) => {
 		const steps = new Steps(["Data", "Photo"])
 		const disposer = reaction(
 			() => steps.title,
@@ -125,7 +125,7 @@ export default function useBottomSheetModals() {
 			},
 		)
 
-		gbs.setProps({
+		await gbs.setProps({
 			snapPoints: [410],
 			animatedPosition,
 			backgroundStyle: styles.background,
@@ -138,7 +138,7 @@ export default function useBottomSheetModals() {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const addAccount = useCallback(() => {
+	const addAccount = useCallback(async () => {
 		const steps = new Steps(["Choose", "Create", "Name", "Import"])
 		const phrase = new Phrase()
 
@@ -164,7 +164,7 @@ export default function useBottomSheetModals() {
 			},
 		)
 
-		gbs.setProps({
+		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
