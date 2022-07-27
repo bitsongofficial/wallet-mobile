@@ -27,9 +27,10 @@ export default observer<Props>(({ navigation, route }) => {
 		})()
 	}, [])
 
+	useEffect(() => route.params.onClose, [])
+
 	const goBack = useCallback(() => {
 		navigation.goBack()
-		route.params.onBarCodeScanned()
 	}, [])
 
 	const handleBarCodeScanned = useCallback<BarCodeScannedCallback>(

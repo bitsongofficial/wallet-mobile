@@ -37,7 +37,10 @@ export type RootStackParamList = {
 	}
 
 	// Common
-	ScannerQR: { onBarCodeScanned(data?: string): void }
+	ScannerQR: {
+		onBarCodeScanned(data: string): void
+		onClose?(): void
+	}
 
 	// After Auth
 	Root: NavigatorScreenParams<RootTabParamList> | undefined
