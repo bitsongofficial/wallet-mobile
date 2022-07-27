@@ -24,7 +24,7 @@ export class Delegate extends CosmosOperation {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 		return false
 	}

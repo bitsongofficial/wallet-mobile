@@ -68,7 +68,6 @@ export default class LocalStorageManager
 		this.saveSettings()
 		this.saveWallets()
 		this.saveConnections()
-		console.log("X")
 		return true
 	}
 

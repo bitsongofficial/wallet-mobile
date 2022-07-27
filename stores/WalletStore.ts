@@ -153,7 +153,7 @@ export default class WalletStore {
     }
     catch(e)
     {
-      console.log(e)
+      console.error("Catched", e)
     }
     return true
   }
@@ -276,7 +276,7 @@ export default class WalletStore {
             }
             catch(e)
             {
-              console.log(e)
+              console.error("Catched", e)
               this.deleteProfile(profile)
             }
             store.Lock()
