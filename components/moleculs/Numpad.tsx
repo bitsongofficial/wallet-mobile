@@ -59,11 +59,11 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 	},
 	num: {
-		width: 35,
-		height: 35,
+		width: 60,
+		height: 60,
 		alignItems: "center",
 		justifyContent: "center",
-		borderRadius: 35,
+		borderRadius: 60,
 	},
 	text: {
 		fontFamily: "CircularStd",
