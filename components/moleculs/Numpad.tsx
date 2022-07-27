@@ -1,75 +1,75 @@
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { useTheme } from "hooks";
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import { useTheme } from "hooks"
 
 const defaultNumpad = [
-  ["1", "2", "3"],
-  ["4", "5", "6"],
-  ["7", "8", "9"],
-  [".", "0", "C"],
-];
+	["1", "2", "3"],
+	["4", "5", "6"],
+	["7", "8", "9"],
+	[".", "0", "C"],
+]
 
 type NumpadProps = {
-  onPress(num: string): void;
-  onPressRemove(): void;
-  style?: StyleProp<ViewStyle>;
-  numpad?: (string | undefined)[][];
-};
+	onPress(num: string): void
+	onPressRemove(): void
+	style?: StyleProp<ViewStyle>
+	numpad?: (string | undefined)[][]
+}
 
 export default function Numpad({
-  onPress,
-  style,
-  onPressRemove,
-  numpad = defaultNumpad,
+	onPress,
+	style,
+	onPressRemove,
+	numpad = defaultNumpad,
 }: NumpadProps) {
-  const theme = useTheme();
+	const theme = useTheme()
 
-  const handleTouch = (num?: string) => {
-    if (num) {
-      num === "C" ? onPressRemove() : onPress(num);
-    }
-  };
+	const handleTouch = (num?: string) => {
+		if (num) {
+			num === "C" ? onPressRemove() : onPress(num)
+		}
+	}
 
-  return (
-    <View style={[styles.container, style]}>
-      {numpad.map((row, index) => (
-        <View key={index} style={styles.row}>
-          {row.map((num, index) => (
-            <TouchableOpacity
-              key={num?.toString() || "key" + index}
-              onPress={() => handleTouch(num)}
-            >
-              <View style={styles.num}>
-                <Text style={[styles.text, theme.text.primary]}>{num}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      ))}
-    </View>
-  );
+	return (
+		<View style={[styles.container, style]}>
+			{numpad.map((row, index) => (
+				<View key={index} style={styles.row}>
+					{row.map((num, index) => (
+						<TouchableOpacity
+							key={num?.toString() || "key" + index}
+							onPress={() => handleTouch(num)}
+						>
+							<View style={styles.num}>
+								<Text style={[styles.text, theme.text.primary]}>{num}</Text>
+							</View>
+						</TouchableOpacity>
+					))}
+				</View>
+			))}
+		</View>
+	)
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // justifyContent: "space-around",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  num: {
-    width: 35,
-    height: 35,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 35,
-  },
-  text: {
-    fontFamily: "CircularStd",
-    fontStyle: "normal",
-    fontWeight: "500",
-    fontSize: 24,
-    lineHeight: 27,
-  },
-});
+	container: {
+		// justifyContent: "space-around",
+	},
+	row: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	num: {
+		width: 35,
+		height: 35,
+		alignItems: "center",
+		justifyContent: "center",
+		borderRadius: 35,
+	},
+	text: {
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "500",
+		fontSize: 24,
+		lineHeight: 27,
+	},
+})
