@@ -9,26 +9,17 @@ const defaultNumpad = [
 	[".", "0", "C"],
 ]
 
-type NumpadProps = {
+type Props = {
 	onPress(num: string): void
 	onPressRemove(): void
 	style?: StyleProp<ViewStyle>
 	numpad?: (string | undefined)[][]
 }
 
-export default function Numpad({
-	onPress,
-	style,
-	onPressRemove,
-	numpad = defaultNumpad,
-}: NumpadProps) {
+export default function Numpad({ onPress, style, onPressRemove, numpad = defaultNumpad }: Props) {
 	const theme = useTheme()
 
-	const handleTouch = (num?: string) => {
-		if (num) {
-			num === "C" ? onPressRemove() : onPress(num)
-		}
-	}
+	const handleTouch = (num?: string) => num && (num === "C" ? onPressRemove() : onPress(num))
 
 	return (
 		<View style={[styles.container, style]}>
