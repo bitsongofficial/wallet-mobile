@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
 		marginLeft: 20,
 		width: 35,
 		height: 35,
+		borderRadius: 40,
 	},
 	title: {
 		fontFamily: "CircularStd",
