@@ -1,12 +1,19 @@
 import { useCallback, useMemo, useState } from "react"
-import { RefreshControl, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native"
+import {
+	RefreshControl,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+	Platform,
+	BackHandler,
+} from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { CoinStat, Tabs } from "components/organisms"
 import { useGlobalBottomsheet, useStore } from "hooks"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
 import { ToolbarFull, ToolbarShort } from "./components"
-import SendModal from "screens/SendModalScreens/SendModal"
 import { RootStackParamList, RootTabParamList } from "types"
 import { COLOR, wait } from "utils"
 import { CompositeScreenProps } from "@react-navigation/native"
@@ -14,7 +21,6 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { ScrollView } from "react-native-gesture-handler"
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal"
-import { SendController } from "screens/SendModalScreens/classes"
 import { useSendModal } from "screens/SendModalScreens/components/hooks"
 
 type ValueTabs = "Coins" | "Fan Tokens"
@@ -47,8 +53,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
 	const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
 	const openReceive = useCallback(async () => {
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			gbs.close()
+			return true
+		})
 		await gbs.setProps({
 			snapPoints: ["85%"],
+			onClose: () => {
+				backHandler.remove()
+			},
 			children: () => (
 				<ReceiveModal style={sendCoinContainerStyle} close={closeGlobalBottomSheet} />
 			),

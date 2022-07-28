@@ -5,7 +5,7 @@ import { useDimensions } from "@react-native-community/hooks"
 import { reaction } from "mobx"
 import { Phrase, Steps } from "classes"
 import { useGlobalBottomsheet } from "hooks"
-import { COLOR } from "utils"
+import { COLOR, InputHandler } from "utils"
 import {
 	AddWatchAccount,
 	ChangeAvatar,
@@ -21,6 +21,7 @@ import { useNavigation } from "@react-navigation/native"
 import { Contact } from "stores/ContactsStore"
 import { RootStackParamList } from "types"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { Keyboard } from "react-native"
 
 export default function useBottomSheetModals() {
 	const gbs = useGlobalBottomsheet()
@@ -29,7 +30,10 @@ export default function useBottomSheetModals() {
 	const { screen } = useDimensions()
 	const animatedPosition = useSharedValue(screen.height)
 
-	const close = useCallback(() => gbs.close(), [])
+	const close = useCallback(() => {
+		Keyboard.dismiss()
+		gbs.close()
+	}, [])
 
 	const changeAvatar = useCallback(async () => {
 		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -50,18 +54,19 @@ export default function useBottomSheetModals() {
 	}, [])
 
 	const addWatchAccount = useCallback(async () => {
+		const steps = new Steps(["Add", "Name"])
+		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
+
 		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			close()
+			goBack()
 			return true
 		})
 		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
-			onClose: () => {
-				backHandler.remove()
-			},
-			children: () => <AddWatchAccount close={close} />,
+			onClose: () => backHandler.remove(),
+			children: () => <AddWatchAccount close={close} steps={steps} />,
 		})
 		requestAnimationFrame(() => gbs.expand())
 	}, [])
@@ -92,9 +97,7 @@ export default function useBottomSheetModals() {
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
-			onClose: () => {
-				backHandler.remove()
-			},
+			onClose: () => backHandler.remove(),
 			children: () => <ChangeLanguage close={close} />,
 		})
 		requestAnimationFrame(() => gbs.expand())
