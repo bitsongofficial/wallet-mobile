@@ -46,8 +46,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 	const openSend = useSendModal(sendCoinContainerStyle)
 	const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
-	const openReceive = useCallback(() => {
-		gbs.setProps({
+	const openReceive = useCallback(async () => {
+		await gbs.setProps({
 			snapPoints: ["85%"],
 			children: () => (
 				<ReceiveModal style={sendCoinContainerStyle} close={closeGlobalBottomSheet} />
@@ -72,13 +72,13 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		[],
 	)
 
-	const openToolbar = useCallback(() => {
+	const openToolbar = useCallback(async () => {
 		const onPressScann = () => {
 			openScanner()
 			Platform.OS === "android" && gbs.close()
 		}
 
-		gbs.setProps({
+		await gbs.setProps({
 			snapPoints: ["70%"],
 			children: () => (
 				<ToolbarFull
@@ -126,7 +126,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
 					<View style={styles.info}>
 						<View style={styles.balance}>
 							<Text style={styles.balance_title}>Total Balance</Text>
-							<Text style={styles.balance_value}>{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}</Text>
+							<Text style={styles.balance_value}>
+								{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}
+							</Text>
 						</View>
 					</View>
 					<ToolbarShort
