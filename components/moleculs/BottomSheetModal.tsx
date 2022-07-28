@@ -55,8 +55,6 @@ export const BottomSheet = observer(
 
 		const [isOpen, handleAnimate] = useBackdrop(props.onAnimate)
 
-		useBottomSheetBackButton(isOpen)
-
 		return (
 			<>
 				{isOpen && <Backdrop />}

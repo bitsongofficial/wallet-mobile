@@ -16,6 +16,7 @@ import {
 	openDelegate,
 	openRedelegate,
 	openUndelegate,
+	openClaim,
 	DelegateController,
 	RedelegateController,
 	UndelegateController,
@@ -48,6 +49,13 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 	const validator = mock // route.params.validator
 
 	// --------- Modals --------------
+
+	const openClaimModal = useCallback(() => {
+		openClaim({
+			amount: 12345,
+			coinName: "BTSG",
+		})
+	}, [])
 
 	const openDelegateModal = useCallback(() => {
 		openDelegate({
@@ -129,7 +137,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 							</View>
 						</View>
 
-						<CardClaim style={styles.claim} onPressClaim={openDelegateModal} />
+						<CardClaim style={styles.claim} onPressClaim={openClaimModal} />
 
 						<CardDelegation
 							style={styles.delegation}

@@ -1,3 +1,4 @@
+export { default as FooterClaim } from "./FooterClaim"
 export { default as FooterDelegate } from "./FooterDelegate"
 export { default as FooterRedelegate } from "./FooterRedelegate"
 export { default as FooterUndelegate } from "./FooterUndelegate"
