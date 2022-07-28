@@ -12,8 +12,10 @@ export interface ICoin {
 }
 
 export type IValidator = {
+	_id: string
 	name: string
 	claim: number
+	logo: string
 	apr: number
 	voting_power: number
 	total: number
