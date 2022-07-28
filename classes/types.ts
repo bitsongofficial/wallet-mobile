@@ -8,6 +8,7 @@ export interface ICoin {
 	coinName: string;
 	address: string;
 	coin: SupportedCoins;
+	denom: string;
 }
 
 export type IValidator = {
@@ -36,7 +37,7 @@ export type IPerson = {
 // WIP
 export type ITransaction = {
   coin: ICoin;
-  amount: string;
+  balance: number;
   address: string;
   receiver: IPerson;
 };

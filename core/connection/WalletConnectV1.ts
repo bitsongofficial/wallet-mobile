@@ -10,6 +10,7 @@ import { DepositData } from "core/types/coin/cosmos/DepositData";
 import { ProposalVote } from "core/types/coin/cosmos/ProposalVote";
 import { RedelegateData } from "core/types/coin/cosmos/RedelegateData";
 import { SubmitProposalData } from "core/types/coin/cosmos/SubmitProposalData";
+import { CoinClasses } from "core/types/coin/Dictionaries";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
@@ -35,6 +36,7 @@ export class WalletConnectCosmosClientV1 {
 		onDisconnect?: (connection: WalletConnectCosmosClientV1) => void,
 	})
 	{
+		const Bitsong = CoinClasses.btsg
 		makeAutoObservable(this, {}, { autoBind: true })
 		this.wallets = options.wallets
 		this.onConnect = options.onConnect
