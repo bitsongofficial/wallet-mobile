@@ -17,7 +17,7 @@ export default class Steps<T extends string = any> {
 		return this.titles[this.active]
 	}
 
-	private setActive(index?: number) {
+	setActive(index?: number) {
 		if (index !== undefined) this.active = index
 	}
 
