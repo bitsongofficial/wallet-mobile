@@ -20,14 +20,7 @@ export default class GlobalBottomSheet implements BottomSheetMethods {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
-	async setProps(props?: Partial<BottomSheetProps>): Promise<void> {
-		if (props) {
-			const onClose = props.onClose
-			props.onClose = () => {
-				if (onClose) onClose()
-				this.props = this.defaultProps
-			}
-		}
+	async setProps(props?: Partial<BottomSheetProps>) {
 		this.props = props || {}
 	}
 
@@ -44,8 +37,8 @@ export default class GlobalBottomSheet implements BottomSheetMethods {
 		return this.props.children || this.defaultProps.children
 	}
 
-	openDefault(children: JSX.Element) {
-		this.setProps({ children })
+	async openDefault(children: JSX.Element) {
+		await this.setProps({ children })
 		this.expand()
 	}
 

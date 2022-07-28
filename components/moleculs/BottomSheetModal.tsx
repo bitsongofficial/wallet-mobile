@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useState } from "react"
+import { forwardRef, useCallback, useEffect, useState } from "react"
 import { BackHandler, StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import {
@@ -54,8 +54,6 @@ export const BottomSheet = observer(
 		const theme = useTheme()
 
 		const [isOpen, handleAnimate] = useBackdrop(props.onAnimate)
-
-		useBottomSheetBackButton(isOpen)
 
 		return (
 			<>
