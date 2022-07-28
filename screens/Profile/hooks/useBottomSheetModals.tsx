@@ -39,7 +39,7 @@ export default function useBottomSheetModals() {
 			android_keyboardInputMode: undefined,
 			children: <ChangeAvatar close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const addWatchAccount = useCallback(async () => {
@@ -50,7 +50,7 @@ export default function useBottomSheetModals() {
 
 			children: <AddWatchAccount close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const changeWallet = useCallback(async () => {
@@ -61,7 +61,7 @@ export default function useBottomSheetModals() {
 
 			children: <ChangeWallet close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const changeLanguage = useCallback(async () => {
@@ -72,7 +72,7 @@ export default function useBottomSheetModals() {
 
 			children: <ChangeLanguage close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const channgeCurrency = useCallback(async () => {
@@ -83,7 +83,7 @@ export default function useBottomSheetModals() {
 
 			children: <ChangeCurrency close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const addContact = useCallback(async () => {
@@ -94,7 +94,7 @@ export default function useBottomSheetModals() {
 
 			children: <AddContact close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const removeContact = useCallback(async (contact: Contact) => {
@@ -105,7 +105,7 @@ export default function useBottomSheetModals() {
 
 			children: <RemoveContact close={close} contact={contact} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const editContact = useCallback(async (contact: Contact) => {
@@ -134,8 +134,7 @@ export default function useBottomSheetModals() {
 				<EditContact close={close} contact={contact} steps={steps} navigation={navigation} />
 			),
 		})
-
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const addAccount = useCallback(async () => {
@@ -177,8 +176,7 @@ export default function useBottomSheetModals() {
 
 			children: () => <AddAccount steps={steps} phrase={phrase} close={close} />,
 		})
-
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	return [

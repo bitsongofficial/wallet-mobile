@@ -47,5 +47,5 @@ export default async function openUndelegate({ controller, onClose, onDone }: Op
 		),
 		children: () => <Undelegate controller={controller} />,
 	})
-	gbs.snapToIndex(0)
+	requestAnimationFrame(() => gbs.expand())
 }

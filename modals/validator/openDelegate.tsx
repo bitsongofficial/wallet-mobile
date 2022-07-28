@@ -46,5 +46,5 @@ export default async function openDelegate({ onDone, onClose, controller }: Opti
 		),
 		children: () => <Delegate controller={controller} />,
 	})
-	gbs.snapToIndex(0)
+	requestAnimationFrame(() => gbs.expand())
 }

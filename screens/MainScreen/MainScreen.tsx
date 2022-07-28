@@ -53,7 +53,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 				<ReceiveModal style={sendCoinContainerStyle} close={closeGlobalBottomSheet} />
 			),
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const openScanner = useCallback(
@@ -97,7 +97,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 				/>
 			),
 		})
-		gbs.expand()
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const [isRefreshing, setRefreshing] = useState(false)
