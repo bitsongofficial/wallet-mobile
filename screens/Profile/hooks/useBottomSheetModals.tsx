@@ -121,20 +121,52 @@ export default function useBottomSheetModals() {
 	}, [])
 
 	const addContact = useCallback(async () => {
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+		const steps = new Steps(["Add", "Name", "Avatar"])
+		const inputWallet = new InputHandler()
+		const inputName = new InputHandler()
+
+		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
+
+		const getBackHandler = () =>
+			BackHandler.addEventListener("hardwareBackPress", () => {
+				goBack()
+				return true
+			})
+
+		const scan = () => {
 			close()
-			return true
-		})
-		await gbs.setProps({
-			snapPoints: [350],
-			animatedPosition,
-			backgroundStyle: styles.background,
-			onClose: () => {
-				backHandler.remove()
-			},
-			children: () => <AddContact close={close} />,
-		})
-		requestAnimationFrame(() => gbs.expand())
+			navigation.navigate("ScannerQR", {
+				onBarCodeScanned: inputWallet.set,
+				onClose: open,
+			})
+		}
+
+		const children = () => (
+			<AddContact
+				inputWallet={inputWallet}
+				inputName={inputName}
+				onPressScan={scan}
+				close={close}
+				steps={steps}
+				onPressBack={goBack}
+			/>
+		)
+
+		const open = () => {
+			const backHandler = getBackHandler()
+			gbs.setProps({
+				snapPoints: [350],
+				animatedPosition,
+				backgroundStyle: styles.background,
+				onClose: () => {
+					backHandler.remove()
+				},
+				children,
+			})
+			requestAnimationFrame(() => gbs.expand())
+		}
+
+		open()
 	}, [])
 
 	const removeContact = useCallback(async (contact: Contact) => {
