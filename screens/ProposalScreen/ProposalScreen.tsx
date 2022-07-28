@@ -24,7 +24,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 
 	const [activeTab, setActiveTab] = useState<ITab>("All")
 
-	const navToNew = useCallback(() => navigation.push("NewProposal"), [])
+	const navToNew = useCallback(() => navigation.navigate("NewProposal"), [])
 
 	return (
 		<>

@@ -16,30 +16,34 @@ type Props = {
 } & (BottomTabHeaderProps | NativeStackHeaderProps)
 
 export default observer(function Header({ navigation, style }: Props) {
-  const { wallet } = useStore()
-  const openProfile = useCallback(() => navigation?.push("Profile"), []);
+	const { wallet } = useStore()
+	const openProfile = useCallback(() => navigation?.navigate("Profile"), [])
 
-  return (
-    <View style={[styles.container, style]}>
-      <View style={styles.header}>
-        <View style={styles.right}>
-          <Icon name="cosmo" size={40} />
-        </View>
-        <View style={styles.center}>
-          <Text style={styles.title}>Cosmonautico</Text>
-        </View>
-        <View style={styles.left}>
-          <Icon name="bell" size={15} fill="#202020" />
-          <TouchableOpacity onPress={openProfile}>
-            <Image
-              source={(wallet.activeProfile && wallet.activeProfile.avatar) ? {uri: wallet.activeProfile.avatar} : require("assets/images/mock/avatar.png")}
-              style={styles.avatar}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
+	return (
+		<View style={[styles.container, style]}>
+			<View style={styles.header}>
+				<View style={styles.right}>
+					<Icon name="cosmo" size={40} />
+				</View>
+				<View style={styles.center}>
+					<Text style={styles.title}>Cosmonautico</Text>
+				</View>
+				<View style={styles.left}>
+					<Icon name="bell" size={15} fill="#202020" />
+					<TouchableOpacity onPress={openProfile}>
+						<Image
+							source={
+								wallet.activeProfile && wallet.activeProfile.avatar
+									? { uri: wallet.activeProfile.avatar }
+									: require("assets/images/mock/avatar.png")
+							}
+							style={styles.avatar}
+						/>
+					</TouchableOpacity>
+				</View>
+			</View>
+		</View>
+	)
 })
 
 const styles = StyleSheet.create({

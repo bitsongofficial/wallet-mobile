@@ -31,12 +31,12 @@ export default observer<Props>(function StartScreen({ navigation }) {
 	const openBottomSheet = useCallback(() => bottomSheet.current?.present(), [])
 
 	// ---------- Navigation -----------
-	const createCreateWallet = useCallback(() => navigation.push("CreateWallet"), [])
-	const importFromSeed = useCallback(() => navigation.push("ImportFromSeed"), [])
+	const createCreateWallet = useCallback(() => navigation.navigate("CreateWallet"), [])
+	const importFromSeed = useCallback(() => navigation.navigate("ImportFromSeed"), [])
 	const importWithKeplr = useCallback(
 		() =>
-			navigation.push("ScannerQR", {
-				onBarCodeScanned: (data) => navigation.push("ImportWithKeplr", { data }),
+			navigation.navigate("ScannerQR", {
+				onBarCodeScanned: (data) => navigation.navigate("ImportWithKeplr", { data }),
 			}),
 		[],
 	)

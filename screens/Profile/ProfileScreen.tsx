@@ -1,21 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Linking, StyleSheet, View } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { observer } from "mobx-react-lite";
-import { RootStackParamList } from "types";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useStore, useTheme } from "hooks";
-import { Button, Switch, ThemedGradient } from "components/atoms";
-import { COLOR, InputHandler } from "utils";
-import { animated, useSpring } from "@react-spring/native";
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { Linking, StyleSheet, View } from "react-native"
+import { StatusBar } from "expo-status-bar"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { observer } from "mobx-react-lite"
+import { RootStackParamList } from "types"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { useStore, useTheme } from "hooks"
+import { Button, Switch, ThemedGradient } from "components/atoms"
+import { COLOR, InputHandler } from "utils"
+import { animated, useSpring } from "@react-spring/native"
 import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-} from "react-native-reanimated";
+	Extrapolation,
+	interpolate,
+	useAnimatedScrollHandler,
+	useAnimatedStyle,
+	useSharedValue,
+} from "react-native-reanimated"
 import {
   Agreement,
   Header,
@@ -30,62 +30,51 @@ import { useDimensions } from "@react-native-community/hooks";
 import { useBottomSheetModals } from "./hooks";
 import { FAQ_URL, PRIVACY_POLICY_URL, TERMS_AND_CONDITIONS_URL } from "constants/Links";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
+type Props = NativeStackScreenProps<RootStackParamList, "Profile">
 
 export default observer<Props>(function MainScreen({ navigation }) {
-  const { settings, wallet } = useStore();
+	const { settings, wallet } = useStore()
 
-  // ------- BottomSheet ----------
+	// ------- BottomSheet ----------
 
-  const { screen } = useDimensions();
+	const { screen } = useDimensions()
 
-  const [position, openModal, closeModal] = useBottomSheetModals();
+	const [position, openModal, closeModal] = useBottomSheetModals()
 
-  const animStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      position.value,
-      [0, screen.height],
-      [0, 1],
-      Extrapolation.EXTEND
-    );
-    return {
-      flex: 1,
-      opacity,
-    };
-  });
+	const animStyle = useAnimatedStyle(() => {
+		const opacity = interpolate(position.value, [0, screen.height], [0, 1], Extrapolation.EXTEND)
+		return {
+			flex: 1,
+			opacity,
+		}
+	})
 
-  const inputNick = useMemo(() => new InputHandler(wallet.activeProfile?.name), [wallet, wallet.activeProfile, wallet.activeProfile?.name]);
-  const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 });
+	const inputNick = useMemo(
+		() => new InputHandler(wallet.activeProfile?.name),
+		[wallet, wallet.activeProfile, wallet.activeProfile?.name],
+	)
+	const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 })
 
-  /// ---------------
-  const theme = useTheme();
+	/// ---------------
+	const theme = useTheme()
 
-  const goBack = useCallback(() => navigation.goBack(), []);
+	const goBack = useCallback(() => navigation.goBack(), [])
 
-  const navToPrivacy = useCallback(() => {}, []);
-  const navToTerms = useCallback(() => {}, []);
-  const disconnectAndRemove = useCallback(() => {}, []);
+	const navToPrivacy = useCallback(() => {}, [])
+	const navToTerms = useCallback(() => {}, [])
+	const disconnectAndRemove = useCallback(() => {}, [])
 
-  const openAddWatchaccount = useCallback(() => {}, []);
-  const openSecurity = useCallback(
-    () => navigation.push("SettingsSecurity"),
-    []
-  );
-  const openAddressBook = useCallback(() => navigation.push("AddressBook"), []);
-  const openNotifications = useCallback(
-    () => navigation.push("SettingsNotifications"),
-    []
-  );
-  const openWalletConnect = useCallback(
-    () => navigation.push("WalletConnect"),
-    []
-  );
+	const openAddWatchaccount = useCallback(() => {}, [])
+	const openSecurity = useCallback(() => navigation.navigate("SettingsSecurity"), [])
+	const openAddressBook = useCallback(() => navigation.navigate("AddressBook"), [])
+	const openNotifications = useCallback(() => navigation.navigate("SettingsNotifications"), [])
+	const openWalletConnect = useCallback(() => navigation.navigate("WalletConnect"), [])
 
-  const toggleNightMode = useCallback(() =>
-  {
-    if(settings.theme == "light") settings.setTheme("dark")
-    else settings.setTheme("light")
-  }, []);
+	const toggleNightMode = useCallback(() => {
+		if (settings.theme == "light") settings.setTheme("dark")
+		else settings.setTheme("light")
+	}, [])
+
 
   const openCurrencyApp = useCallback(() => {}, []);
   const openFAQ = useCallback(() => {
@@ -98,142 +87,131 @@ export default observer<Props>(function MainScreen({ navigation }) {
     Linking.openURL(PRIVACY_POLICY_URL)
   }, []);
 
-  const toggleNotification = useCallback(
-    () => settings.setNotifications({ enable: !settings.notifications.enable }),
-    []
-  );
+	const toggleNotification = useCallback(
+		() => settings.setNotifications({ enable: !settings.notifications.enable }),
+		[],
+	)
 
-  const onChangeNick = useCallback(() => {
-    if(!wallet.profileExists(inputNick.value))
-    {
-      wallet.changeActiveProfileName(inputNick.value)
-    }
-  }, [inputNick])
+	const onChangeNick = useCallback(() => {
+		if (!wallet.profileExists(inputNick.value)) {
+			wallet.changeActiveProfileName(inputNick.value)
+		}
+	}, [inputNick])
 
-  useEffect(() => {
-    if (inputNick.isFocused) closeModal();
-  }, [inputNick.isFocused]);
+	useEffect(() => {
+		if (inputNick.isFocused) closeModal()
+	}, [inputNick.isFocused])
 
-  const translationY = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (e) => {
-      translationY.value = e.contentOffset.y;
-    },
-  });
-  const headerContainerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            translationY.value,
-            [0, 64],
-            [0, -64],
-            Extrapolation.CLAMP
-          ),
-        },
-      ],
-      position: "absolute",
-      zIndex: 1,
-      top: 70,
-      width: "100%",
-    };
-  });
+	const translationY = useSharedValue(0)
+	const scrollHandler = useAnimatedScrollHandler({
+		onScroll: (e) => {
+			translationY.value = e.contentOffset.y
+		},
+	})
+	const headerContainerAnimatedStyle = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{
+					translateY: interpolate(translationY.value, [0, 64], [0, -64], Extrapolation.CLAMP),
+				},
+			],
+			position: "absolute",
+			zIndex: 1,
+			top: 70,
+			width: "100%",
+		}
+	})
 
-  return (
-    <>
-      <StatusBar style="inverted" />
+	return (
+		<>
+			<StatusBar style="inverted" />
 
-      <ThemedGradient style={styles.container} invert>
-        <SafeAreaView style={styles.container}>
-          <Animated.View style={[{ opacity: 1 }, animStyle]}>
-            <Header
-              onPressClose={goBack}
-              style={styles.header}
-              animtedValue={translationY}
-            />
-            <Animated.View style={headerContainerAnimatedStyle}>
-              <Head
-                style={styles.head}
-                input={inputNick}
-                onPressAvatar={openModal.changeAvatar}
-                onNickEdited={onChangeNick}
-                avatar={wallet.activeProfile?.avatar}
-                animtedValue={translationY}
-              />
-            </Animated.View>
-            <Animated.ScrollView
-              onScroll={scrollHandler}
-              contentContainerStyle={{ paddingTop: 100 }}
-              scrollEventThrottle={1}
-            >
-              <animated.View style={[styles.wrapper, hidden]}>
-                <Subtitle style={styles.subtitle}>Connected with</Subtitle>
-                <WalletButton
-                  onPress={openModal.changeWallet}
-                  wallet={wallet.activeWallet}
-                  style={{ marginBottom: 16 }}
-                />
+			<ThemedGradient style={styles.container} invert>
+				<SafeAreaView style={styles.container}>
+					<Animated.View style={[{ opacity: 1 }, animStyle]}>
+						<Header onPressClose={goBack} style={styles.header} animtedValue={translationY} />
+						<Animated.View style={headerContainerAnimatedStyle}>
+							<Head
+								style={styles.head}
+								input={inputNick}
+								onPressAvatar={openModal.changeAvatar}
+								onNickEdited={onChangeNick}
+								avatar={wallet.activeProfile?.avatar}
+								animtedValue={translationY}
+							/>
+						</Animated.View>
+						<Animated.ScrollView
+							onScroll={scrollHandler}
+							contentContainerStyle={{ paddingTop: 100 }}
+							scrollEventThrottle={1}
+						>
+							<animated.View style={[styles.wrapper, hidden]}>
+								<Subtitle style={styles.subtitle}>Connected with</Subtitle>
+								<WalletButton
+									onPress={openModal.changeWallet}
+									wallet={wallet.activeWallet}
+									style={{ marginBottom: 16 }}
+								/>
 
-                <ListButton
-                  text="Add a new account"
-                  onPress={openModal.addAccount}
-                  icon="wallet"
-                  arrow
-                  style={styles.listButton}
-                />
-                <ListButton
-                  text="Add a Watch account"
-                  onPress={openModal.addWatchAccount}
-                  icon="eye"
-                  arrow
-                />
+								<ListButton
+									text="Add a new account"
+									onPress={openModal.addAccount}
+									icon="wallet"
+									arrow
+									style={styles.listButton}
+								/>
+								<ListButton
+									text="Add a Watch account"
+									onPress={openModal.addWatchAccount}
+									icon="eye"
+									arrow
+								/>
 
-                <Agreement
-                  onPressPrivacy={navToPrivacy}
-                  onPressTerms={navToTerms}
-                  style={styles.agreement}
-                />
+								<Agreement
+									onPressPrivacy={navToPrivacy}
+									onPressTerms={navToTerms}
+									style={styles.agreement}
+								/>
 
-                <View>
-                  <Title style={styles.title}>Settings</Title>
+								<View>
+									<Title style={styles.title}>Settings</Title>
 
-                  <View style={styles.section}>
-                    <Subtitle style={styles.subtitle}>Account</Subtitle>
-                    <ListButton
-                      onPress={openSecurity}
-                      icon="star_shield"
-                      text="Security"
-                      arrow
-                      style={styles.listButton}
-                    />
-                    <ListButton
-                      onPress={openAddressBook}
-                      icon="address_book"
-                      text="Address Book"
-                      arrow
-                      style={styles.listButton}
-                    />
-                    <ListButton
-                      text="Notifications"
-                      onPress={openNotifications}
-                      icon="bell"
-                      style={styles.listButton}
-                      Right={
-                        <Switch
-                          active={settings.notifications.enable}
-                          onPress={toggleNotification}
-                        />
-                      }
-                    />
-                    <ListButton
-                      text="Wallet Connect"
-                      icon="wallet_connect"
-                      onPress={openWalletConnect}
-                      style={styles.listButton}
-                      arrow
-                    />
-                  </View>
-
+									<View style={styles.section}>
+										<Subtitle style={styles.subtitle}>Account</Subtitle>
+										<ListButton
+											onPress={openSecurity}
+											icon="star_shield"
+											text="Security"
+											arrow
+											style={styles.listButton}
+										/>
+										<ListButton
+											onPress={openAddressBook}
+											icon="address_book"
+											text="Address Book"
+											arrow
+											style={styles.listButton}
+										/>
+										<ListButton
+											text="Notifications"
+											onPress={openNotifications}
+											icon="bell"
+											style={styles.listButton}
+											Right={
+												<Switch
+													active={settings.notifications.enable}
+													onPress={toggleNotification}
+												/>
+											}
+										/>
+										<ListButton
+											text="Wallet Connect"
+											icon="wallet_connect"
+											onPress={openWalletConnect}
+											style={styles.listButton}
+											arrow
+										/>
+									</View>
                   <View style={styles.section}>
                     <Subtitle style={styles.subtitle}>App Preferences</Subtitle>
                     <ListButton
@@ -298,51 +276,51 @@ export default observer<Props>(function MainScreen({ navigation }) {
                       arrow
                     />
                   </View>
-
-                  <Button
-                    mode="fill"
-                    text="Disconnect and Remove Wallet"
-                    onPress={disconnectAndRemove}
-                    style={styles.button}
-                    textStyle={styles.buttonText}
-                    contentContainerStyle={styles.buttonContent}
-                  />
-                </View>
-              </animated.View>
-            </Animated.ScrollView>
-          </Animated.View>
-        </SafeAreaView>
-      </ThemedGradient>
-    </>
-  );
-});
+                  
+									<Button
+										mode="fill"
+										text="Disconnect and Remove Wallet"
+										onPress={disconnectAndRemove}
+										style={styles.button}
+										textStyle={styles.buttonText}
+										contentContainerStyle={styles.buttonContent}
+									/>
+								</View>
+							</animated.View>
+						</Animated.ScrollView>
+					</Animated.View>
+				</SafeAreaView>
+			</ThemedGradient>
+		</>
+	)
+})
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: {
-    marginLeft: 27.5,
-    marginRight: 17,
-    zIndex: 5,
-  },
+	container: { flex: 1 },
+	header: {
+		marginLeft: 27.5,
+		marginRight: 17,
+		zIndex: 5,
+	},
 
-  head: {
-    marginHorizontal: 25, // <- wrapper
-    marginBottom: 30,
-  },
+	head: {
+		marginHorizontal: 25, // <- wrapper
+		marginBottom: 30,
+	},
 
-  wrapper: { marginHorizontal: 34 },
-  wrapper_opacity: { opacity: 0.1 },
-  agreement: { marginBottom: 54, marginTop: 25 },
-  title: { marginBottom: 38 },
-  section: { marginBottom: 35 },
-  subtitle: { marginBottom: 22 },
+	wrapper: { marginHorizontal: 34 },
+	wrapper_opacity: { opacity: 0.1 },
+	agreement: { marginBottom: 54, marginTop: 25 },
+	title: { marginBottom: 38 },
+	section: { marginBottom: 35 },
+	subtitle: { marginBottom: 22 },
 
-  listButton: { marginTop: 4 },
+	listButton: { marginTop: 4 },
 
-  button: { backgroundColor: COLOR.Dark3, marginBottom: 8 },
-  buttonContent: { paddingVertical: 18 },
-  buttonText: {
-    fontSize: 14,
-    lineHeight: 18,
-  },
-});
+	button: { backgroundColor: COLOR.Dark3, marginBottom: 8 },
+	buttonContent: { paddingVertical: 18 },
+	buttonText: {
+		fontSize: 14,
+		lineHeight: 18,
+	},
+})

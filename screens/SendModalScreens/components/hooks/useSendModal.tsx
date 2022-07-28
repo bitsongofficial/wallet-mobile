@@ -23,8 +23,7 @@ export default function useSendModal(style: StyleProp<ViewStyle>) {
 
 	const { coin } = useStore()
 
-	return function() {
-	
+	return function() {	
 		const open = async () => {
 			await gbs.setProps({ ...props, children })
 			gbs.expand()
@@ -36,12 +35,10 @@ export default function useSendModal(style: StyleProp<ViewStyle>) {
 	
 		const scanReciver = async () => {
 			await gbs.close()
-			navigation.push("ScannerQR", {
-				onBarCodeScanned: async (result) => {
-					open()
-					result && controller.creater.addressInput.set(result)
-				},
-			})
+			navigation.navigate("ScannerQR", {
+        onBarCodeScanned: async (result) => controller.creater.addressInput.set(result),
+        onClose: open,
+		  })
 		}
 	
 		const children = () => {
@@ -56,6 +53,6 @@ export default function useSendModal(style: StyleProp<ViewStyle>) {
 					onPressScanQRReciver={scanReciver}
 				/>)
 		}
-		open()		
+		open()
 	}
 }
