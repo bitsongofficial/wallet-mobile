@@ -247,6 +247,7 @@ export default class WalletStore {
     if(this.profiles.length > 0)
     {
       const wallets: ProfileWallets[] = []
+      console.log("asking pin", this.walletSetUpPin)
       const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
       await Promise.all(toJS(this.profiles).map(async (profile, index) =>

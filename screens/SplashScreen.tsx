@@ -9,6 +9,8 @@ import { COLOR } from "utils"
 import { autorun } from "mobx"
 import { Icon } from "components/atoms"
 import { StatusBar } from "expo-status-bar"
+import { isBiometricAvailable } from "utils/biometrics"
+import { useAsyncStorage } from "@react-native-async-storage/async-storage"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Splash">
 
@@ -17,8 +19,10 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 
 	const mainScreen = useCallback(() => navigation.replace("Root"), [])
 	const start = useCallback(() => navigation.replace("Start"), [])
+	const storage = useAsyncStorage("a")
 
 	useEffect(() => {
+		console.log("Run")
 		const dismiss = autorun(() => {
 			if (wallet.firstLoad) {
 				if (wallet.wallets.length > 0) mainScreen()
@@ -27,7 +31,7 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 			}
 			else
 			{
-				localStorageManager.initialLoad()
+				setTimeout(() => {localStorageManager.initialLoad()}, 1500)
 			}
 		})
 
