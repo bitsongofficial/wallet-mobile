@@ -18,6 +18,7 @@ const settings_location = "settings"
 const connections_location = "wc_sessions"
 const stored_wallets_path = "stored_wallets"
 const contacts_location = "contacts"
+const active_wallet_id = "active_wallet"
 
 type connectionRaw = {
 	session: IWalletConnectSession,
@@ -43,8 +44,8 @@ export default class LocalStorageManager
 	async initialLoad()
 	{
 		const loadings: Promise<any>[] = []
-		this.setUpStores()
 		await this.loadSettings()
+		console.log("settings loaded")
 		this.loadContacts()
 
 		this.connectionsLoadHandler = autorun(() =>
@@ -59,6 +60,7 @@ export default class LocalStorageManager
 		this.walletsLoadHandler = autorun(() =>
 		{
 			if(this.remoteConfigs.firstLoad) {
+				console.log("loading wallets")
 				this.loadWallets()
 				if(this.walletsLoadHandler) this.walletsLoadHandler()
 			}
@@ -68,7 +70,6 @@ export default class LocalStorageManager
 		this.saveSettings()
 		this.saveWallets()
 		this.saveConnections()
-		console.log("X")
 		return true
 	}
 
@@ -92,6 +93,7 @@ export default class LocalStorageManager
 	async loadSettings()
 	{
 		const raw = await AsyncStorageLib.getItem(settings_location)
+		console.log("Settings", raw)
 		if(raw)
 		{
 			const settings = JSON.parse(raw)
@@ -155,25 +157,42 @@ export default class LocalStorageManager
 
 	async loadWallets()
 	{
-		const granted = await PermissionsAndroid.request(
-			PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
-		)
-		if(granted === PermissionsAndroid.RESULTS.GRANTED)
-		{
-			const serializedWalletsRaw = await AsyncStorageLib.getItem(stored_wallets_path)
-			if(serializedWalletsRaw != null)
+		console.log("permission requested")
+		try {
+			const granted = await PermissionsAndroid.request(
+				PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+			)
+			console.log("permission request done")
+			if(granted === PermissionsAndroid.RESULTS.GRANTED)
 			{
-				const serializedWallets = JSON.parse(serializedWalletsRaw) as Array<ProfileInner>
-				if(serializedWallets != null)
+				console.log("permission grandted")
+				console.log(stored_wallets_path)
+				const serializedWalletsRaw = await AsyncStorageLib.getItem(stored_wallets_path)
+				console.log(serializedWalletsRaw)
+				if(serializedWalletsRaw != null)
 				{
-					runInAction(() =>
+					console.log("raw found")
+					const serializedWallets = JSON.parse(serializedWalletsRaw) as Array<ProfileInner>
+					if(serializedWallets != null)
 					{
-						this.wallet.profiles.splice(0, this.wallet.profiles.length, ...serializedWallets)
-						if(this.wallet.profiles.length > 0) this.wallet.activeProfile = this.wallet.profiles[0]
-					})
+						console.log("parse successfull")
+						const activeId = await AsyncStorageLib.getItem(active_wallet_id)
+						runInAction(() =>
+						{
+							this.wallet.profiles.splice(0, this.wallet.profiles.length, ...serializedWallets)
+							if(this.wallet.profiles.length > 0) this.wallet.activeProfile = this.wallet.profiles[0]
+							if(activeId != "") this.wallet.changeActive(activeId)
+							console.log("loaded")
+						})
+					}
 				}
 			}
 		}
+		catch(e)
+		{
+			console.error(e)
+		}
+		console.log("setted loading")
 		this.wallet.setLoadedFromMemory(true)
 	}
 
@@ -190,6 +209,13 @@ export default class LocalStorageManager
 				{
 					AsyncStorageLib.setItem(stored_wallets_path, json)
 				}
+			}
+		)
+
+		reaction(
+			() => this.wallet.activeWallet?.profile.id ?? "",
+			(id) => {
+				AsyncStorageLib.setItem(active_wallet_id, id)
 			}
 		)
 	}
@@ -215,7 +241,7 @@ export default class LocalStorageManager
 		}[] = []
 		try
 		{
-			await Promise.all(this.wallet.wallets.map(async (w) =>
+			await Promise.all(this.wallet.wallets.filter(w => w.profile.type != WalletTypes.WATCH).map(async (w) =>
 				{
 					let path
 					switch(w.profile.type)

@@ -5,6 +5,7 @@ import { COLOR, hexAlpha } from "utils";
 import { Icon2 } from "components/atoms";
 import { trimAddress } from "utils/string";
 import { ProfileWallets } from "stores/WalletStore";
+import { WalletTypes } from "core/types/storing/Generic";
 
 type Props = {
   wallet: ProfileWallets | null;
@@ -28,7 +29,7 @@ export default ({ onPress, wallet, style }: Props) => {
       <View style={styles.container}>
         <Icon2
           size={18}
-          name="wallet"
+          name={wallet?.profile.type == WalletTypes.WATCH ? "eye" : "wallet"}
           stroke={hexAlpha(COLOR.White, 20)}
           style={styles.icon}
         />

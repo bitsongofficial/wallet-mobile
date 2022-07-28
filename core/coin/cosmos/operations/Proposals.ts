@@ -54,7 +54,7 @@ export class Proposals extends CosmosOperation {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 		return []
 	}

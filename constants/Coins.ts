@@ -6,6 +6,10 @@ export enum SupportedCoins {
 	// STARGATE = "stars",
 }
 
-export type SupportedCoinsMap = {
-	[k in SupportedCoins]?: any
+export type SupportedCoinsFullMap<T = any> = {
+	[k in SupportedCoins]: T
+}
+
+export type SupportedCoinsMap<T = any> = {
+	[k in SupportedCoins]?: T
 }

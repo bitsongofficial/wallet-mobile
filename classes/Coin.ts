@@ -26,6 +26,6 @@ export default class Coin {
   }
 
   static culcTokenBalance(fiatBalance: number, rate?: number) {
-    return rate ? fiatBalance / rate : null;
+    return rate ? fiatBalance / (rate ?? 1) : null;
   }
 }

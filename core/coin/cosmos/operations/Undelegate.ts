@@ -23,7 +23,7 @@ export class Undelegate extends CosmosOperation {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 		return false
 	}

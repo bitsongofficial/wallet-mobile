@@ -11,6 +11,7 @@ import { ListButton, Search, Title } from "../atoms";
 import { WalletItemEdited } from "../moleculs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ProfileWallets } from "stores/WalletStore";
+import { WalletTypes } from "core/types/storing/Generic";
 
 type Props = {
   close(): void;
@@ -140,13 +141,13 @@ export default observer<Props>(({ close }) => {
           <View style={styles.editMenu}>
             <Text style={styles.editTitle}>Safety</Text>
             <View style={styles.buttons_list}>
-              <ListButton
+            {edited.profile.type == WalletTypes.COSMOS && <ListButton
                 style={styles.listButton}
                 icon="eye"
                 text="View Mnemonics"
                 arrow
-                onPress={async () => (console.log(await wallet.activeWallet?.wallets.btsg.Mnemonic()))}
-              />
+                onPress={async () => (console.log(await edited.wallets.btsg.Mnemonic()))}
+              />}
               {/* <ListButton
                 style={styles.listButton}
                 icon="key"

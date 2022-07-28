@@ -29,7 +29,7 @@ export async function openSendRecap({
       flags.accepted = true;
       onDone();
     } catch (e) {
-      console.log(e);
+      console.error("Catched", e);
     }
     gbs.close();
   };
@@ -39,7 +39,7 @@ export async function openSendRecap({
       try {
         onReject();
       } catch (e) {
-        console.log(e);
+        console.error("Catched", e);
       }
     }
   };
