@@ -26,15 +26,11 @@ export default async function openRedelegate({ controller, onClose, onDone }: Op
 	)
 
 	const goBack = () => (steps.history.length > 1 ? steps.goBack() : gbs.close())
-
-	const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-		goBack()
-		return true
-	})
+	gbs.backHandler = goBack
 
 	const close = () => {
 		disposer()
-		backHandler.remove()
+		gbs.removeBackHandler()
 		onClose && onClose()
 	}
 

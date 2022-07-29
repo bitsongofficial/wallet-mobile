@@ -36,17 +36,15 @@ export default function useBottomSheetModals() {
 	}, [])
 
 	const changeAvatar = useCallback(async () => {
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			close()
-			return true
-		})
+		gbs.backHandler = () => close()
+
 		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
 			android_keyboardInputMode: undefined,
 			onClose: () => {
-				backHandler.remove()
+				gbs.removeBackHandler()
 			},
 			children: () => <ChangeAvatar close={close} />,
 		})
@@ -57,31 +55,29 @@ export default function useBottomSheetModals() {
 		const steps = new Steps(["Add", "Name"])
 		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
 
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			goBack()
-			return true
-		})
+		gbs.backHandler = () => goBack()
+
 		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
-			onClose: () => backHandler.remove(),
+			onClose: () => {
+				gbs.removeBackHandler()
+			},
 			children: () => <AddWatchAccount close={close} steps={steps} />,
 		})
 		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const changeWallet = useCallback(async () => {
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			close()
-			return true
-		})
+		gbs.backHandler = () => close()
+
 		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
 			onClose: () => {
-				backHandler.remove()
+				gbs.removeBackHandler()
 			},
 			children: () => <ChangeWallet close={close} />,
 		})
@@ -89,31 +85,29 @@ export default function useBottomSheetModals() {
 	}, [])
 
 	const changeLanguage = useCallback(async () => {
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			close()
-			return true
-		})
+		gbs.backHandler = () => close()
+
 		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
-			onClose: () => backHandler.remove(),
+			onClose: () => {
+				gbs.removeBackHandler()
+			},
 			children: () => <ChangeLanguage close={close} />,
 		})
 		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const channgeCurrency = useCallback(async () => {
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			close()
-			return true
-		})
+		gbs.backHandler = () => close()
+
 		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
 			onClose: () => {
-				backHandler.remove()
+				gbs.removeBackHandler()
 			},
 			children: () => <ChangeCurrency close={close} />,
 		})
@@ -127,11 +121,9 @@ export default function useBottomSheetModals() {
 
 		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
 
-		const getBackHandler = () =>
-			BackHandler.addEventListener("hardwareBackPress", () => {
-				goBack()
-				return true
-			})
+		const setBackHandler = () => {
+			gbs.backHandler = () => goBack()
+		}
 
 		const scan = () => {
 			close()
@@ -153,13 +145,13 @@ export default function useBottomSheetModals() {
 		)
 
 		const open = () => {
-			const backHandler = getBackHandler()
+			setBackHandler()
 			gbs.setProps({
 				snapPoints: [350],
 				animatedPosition,
 				backgroundStyle: styles.background,
 				onClose: () => {
-					backHandler.remove()
+					gbs.removeBackHandler()
 				},
 				children,
 			})
@@ -170,16 +162,14 @@ export default function useBottomSheetModals() {
 	}, [])
 
 	const removeContact = useCallback(async (contact: Contact) => {
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			close()
-			return true
-		})
+		gbs.backHandler = () => close()
+
 		await gbs.setProps({
 			snapPoints: [270],
 			animatedPosition,
 			backgroundStyle: styles.background,
 			onClose: () => {
-				backHandler.remove()
+				gbs.removeBackHandler()
 			},
 			children: () => <RemoveContact close={close} contact={contact} />,
 		})
@@ -205,10 +195,7 @@ export default function useBottomSheetModals() {
 
 		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
 
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			goBack()
-			return true
-		})
+		gbs.backHandler = () => goBack()
 
 		await gbs.setProps({
 			snapPoints: [410],
@@ -216,7 +203,7 @@ export default function useBottomSheetModals() {
 			backgroundStyle: styles.background,
 			onClose: () => {
 				disposer()
-				backHandler.remove()
+				gbs.removeBackHandler()
 			},
 			children: () => (
 				<EditContact close={close} contact={contact} steps={steps} navigation={navigation} />
@@ -253,10 +240,7 @@ export default function useBottomSheetModals() {
 
 		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
 
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			goBack()
-			return true
-		})
+		gbs.backHandler = () => goBack()
 
 		await gbs.setProps({
 			snapPoints: [350],
@@ -266,7 +250,7 @@ export default function useBottomSheetModals() {
 
 			onClose: () => {
 				disposer()
-				backHandler.remove()
+				gbs.removeBackHandler()
 			},
 
 			children: () => <AddAccount steps={steps} phrase={phrase} close={close} />,

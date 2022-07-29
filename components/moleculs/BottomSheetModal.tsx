@@ -23,7 +23,7 @@ export const BottomSheetModal = observer(
 		const theme = useTheme()
 		const [isOpen, handleAnimate] = useBackdrop(props.onAnimate)
 
-		useBottomSheetBackButton(isOpen)
+		// useBottomSheetBackButton(isOpen)
 
 		return (
 			<>
@@ -92,15 +92,6 @@ function useBackdrop(onAnimate: BottomSheetProps["onAnimate"]) {
 	)
 
 	return [isOpen, handleAnimate] as const
-}
-
-function useBottomSheetBackButton(isOpen: boolean | undefined) {
-	useEffect(() => {
-		if (isOpen) {
-			const handler = BackHandler.addEventListener("hardwareBackPress", () => true)
-			return () => handler.remove()
-		}
-	}, [isOpen])
 }
 
 const styles = StyleSheet.create({

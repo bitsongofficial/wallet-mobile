@@ -1,7 +1,7 @@
 import "./shim"
 
 import { StatusBar } from "expo-status-bar"
-import { Platform, StyleSheet, View } from "react-native"
+import { Platform, StyleSheet, View, BackHandler } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { configure, toJS } from "mobx"
@@ -31,6 +31,17 @@ const App = observer(() => {
 			NavigationBar.setBackgroundColorAsync(COLOR.Dark3)
 		}
 	}, [])
+
+	useEffect(() => {
+		const backHandler = bottomsheet.backHandler
+		if (backHandler) {
+			const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+				const result = backHandler()
+				return result !== undefined ? result : true
+			})
+			return () => handler.remove()
+		}
+	}, [bottomsheet.backHandler])
 
 	const theme = useTheme()
 
