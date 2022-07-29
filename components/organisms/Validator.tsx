@@ -49,7 +49,7 @@ export default ({ id, onPressKebab }: ValidatorProps) => {
 			</View>
 			<View style={styles.footer}>
 				<View style={styles.left}>
-					<Text style={styles.percent}>{item.apr.toFixed(2)} %</Text>
+					<Text style={styles.percent}>{validators.apr(item).toFixed(2)} %</Text>
 					<Text style={styles.text}>APR</Text>
 				</View>
 				<View style={styles.right}>

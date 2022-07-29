@@ -3,6 +3,7 @@ import axios from "axios";
 import { DelegateData } from "core/types/coin/cosmos/DelegateData";
 import { Proposal, ProposalType } from "core/types/coin/cosmos/Proposal";
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov";
+import Long from "long";
 import { CosmosOperation } from "./CosmosOperation";
 
 function fromProposalUriToType(uri: string)
@@ -31,11 +32,11 @@ export class Proposals extends CosmosOperation {
 			const rawProposals = (await service.get("cosmos/gov/v1beta1/proposals")).data.proposals
 			const proposals = rawProposals.map((p:any):Proposal =>
 				({
-					id: p.proposal_id,
+					id: Long.fromString(p.proposal_id),
 					type: fromProposalUriToType(p.content['@type']),
 					title: p.content.title,
 					description: p.content.description,
-					status: p.status as ProposalStatus,
+					status: Object.entries(ProposalStatus).find(e => e[0] == p.status)?.[1] as ProposalStatus,
 					voting: {
 						start: new Date(p.voting_start_time),
 						end: new Date(p.voting_end_time),

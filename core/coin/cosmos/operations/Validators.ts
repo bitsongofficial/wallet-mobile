@@ -47,7 +47,6 @@ export class Validators extends CosmosOperation {
 					operator: v.operator_address,
 					tokens: parseInt(v.tokens),
 					// uptime: 0,
-					apr: Math.random() * 100,
 					userClaimAmount: 0,
 					userDelegation: 0,
 					commission: {
