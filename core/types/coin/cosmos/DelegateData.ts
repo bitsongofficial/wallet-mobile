@@ -1,10 +1,10 @@
 import { CosmosWallet } from "core/storing/Wallet"
-import { Wallet } from "core/types/storing/Generic"
 import { Amount } from "core/types/coin/Generic"
+import { Validator } from "./Validator"
 
 export interface DelegateData {
 	delegator: CosmosWallet,
-	validator: Wallet,
+	validator: Validator,
 	amount: Amount,
 	description?: string,
 }

@@ -36,7 +36,7 @@ export class Redelegate extends CosmosOperation {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 		return false
 	}

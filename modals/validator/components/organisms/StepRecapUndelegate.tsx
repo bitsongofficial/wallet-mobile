@@ -1,10 +1,10 @@
 import { Coin } from "classes"
-import { IValidator } from "classes/types"
+import { Validator } from "core/types/coin/cosmos/Validator"
 import { StyleSheet } from "react-native"
 import { Recap } from "../moleculs"
 
 type Props = {
-	from?: IValidator | null
+	from?: Validator | null
 	coin: Coin | null
 	amount: string
 }

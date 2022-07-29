@@ -10,7 +10,7 @@ export class Claim extends CosmosOperation {
 				data.owner.Address(),
 				data.owner.Signer(),
 			])
-		const validators = Promise.all(data.validators.map(v => v.Address()))
+		const validators = Promise.all(data.validators.map(v => v.operator))
 		const transactionData = await Promise.all([walletInfos, validators])
 		const wallet = transactionData[0][1]
 		const ownerAddress = transactionData[0][0]
@@ -36,7 +36,7 @@ export class Claim extends CosmosOperation {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 		return false
 	}

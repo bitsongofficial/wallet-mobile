@@ -1,11 +1,11 @@
 import Coin from "classes/Coin";
 import { IPerson, ITransaction } from "classes/types";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { InputHandler } from "utils";
 
 export default class TransactionCreater {
   coin: Coin | null = null;
-  amount: string = ""; // usd
+  balance: number = 0
   receiver?: IPerson | null = null; //
 
   addressInput = new InputHandler();
@@ -17,16 +17,19 @@ export default class TransactionCreater {
 	setCoin(coin: Coin | null) {
 		this.coin = coin
 	}
-  setAmount(amount: string) {
-    this.amount = amount;
+  setBalance(balance: number) {
+    const coin = this.coin
+    let actualBalance = balance
+    if(coin && balance > coin.balance) actualBalance = coin.balance
+    this.balance = actualBalance
   }
   setReceiver(receiver: IPerson) {
     this.receiver = receiver;
   }
 
   setMax() {
-    if (this.coin?.balanceUSD) {
-      this.amount = this.coin.balanceUSD.toString();
+    if (this.coin?.balance) {
+      this.balance = this.coin.balance;
     }
   }
 
@@ -40,15 +43,15 @@ export default class TransactionCreater {
   }
 
   get isReady() {
-    return !!this.coin && !!this.amount && this.isAddressValid && this.receiver;
+    return !!this.coin && !!this.balance && this.isAddressValid && this.receiver;
   }
 
   create(): ITransaction | undefined {
-    if (!!this.coin && !!this.amount && this.isAddressValid && this.receiver) {
-      const { address, amount, coin, receiver } = this;
+    if (!!this.coin && !!this.balance && this.isAddressValid && this.receiver) {
+      const { address, balance, coin, receiver } = this;
       return {
         address,
-        amount,
+        balance,
         coin: coin.info,
         receiver,
       };

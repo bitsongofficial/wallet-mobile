@@ -5,18 +5,19 @@ import { COLOR } from "utils"
 import { Caption, Card, Count } from "../atoms"
 
 type Props = {
+	value: number,
 	style?: StyleProp<ViewStyle>
 	onPressStake(): void
 	onPressUnstake(): void
 	onPressRestake(): void
 }
 
-export default ({ style, onPressRestake, onPressStake, onPressUnstake }: Props) => {
+export default ({ value, style, onPressRestake, onPressStake, onPressUnstake }: Props) => {
 	return (
 		<Card style={[styles.container, style]}>
 			<View style={styles.head}>
 				<Caption style={styles.caption}>MY DELEGATION</Caption>
-				<Count value="7,268.78" coinName="BTSG" />
+				<Count value={value.toFixed(2)} coinName="BTSG" />
 			</View>
 			<View style={styles.row}>
 				<ToolbarAction

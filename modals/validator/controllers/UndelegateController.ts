@@ -1,17 +1,17 @@
 import { AmountInput, Steps } from "classes"
-import { IValidator } from "classes/types"
+import { Validator } from "core/types/coin/cosmos/Validator"
 import { makeAutoObservable } from "mobx"
 
 export default class UndelegateController {
 	steps = new Steps(["Undelegate Import", "Undelegate Recap"])
 	amountInput = new AmountInput()
-	from: IValidator | null = null
+	from: Validator | null = null
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
-	setFrom(validator: IValidator) {
+	setFrom(validator: Validator) {
 		this.from = validator
 	}
 

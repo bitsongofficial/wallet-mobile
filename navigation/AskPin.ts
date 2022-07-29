@@ -12,7 +12,7 @@ export type OptionsAskPin = Omit<RootStackParamList["PinRequest"], "callback">;
 export function askPin(options?: OptionsAskPin) {
   const defaultOptions: OptionsAskPin = {
     isHiddenCode: true,
-    isRandomKeyboard: false,
+    isRandomKeyboard: true,
   };
   const { settings } = store
   if(settings.biometric_enable) return new Promise<string>(async (resolve, reject) =>

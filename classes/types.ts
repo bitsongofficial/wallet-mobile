@@ -8,22 +8,7 @@ export interface ICoin {
 	coinName: string;
 	address: string;
 	coin: SupportedCoins;
-}
-
-export type IValidator = {
-	_id: string
-	name: string
-	claim: number
-	logo: string
-	apr: number
-	voting_power: number
-	total: number
-	address_operation: string
-	address_account: string
-	uptime: number
-	maxConvertionRate: number
-	currentCommissionRate: number
-	lastCommissionChange: string // date
+	denom: string;
 }
 
 export type IPerson = {
@@ -38,7 +23,7 @@ export type IPerson = {
 // WIP
 export type ITransaction = {
   coin: ICoin;
-  amount: string;
+  balance: number;
   address: string;
   receiver: IPerson;
 };

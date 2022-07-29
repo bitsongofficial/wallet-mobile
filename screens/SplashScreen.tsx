@@ -9,6 +9,8 @@ import { COLOR } from "utils"
 import { autorun } from "mobx"
 import { Icon } from "components/atoms"
 import { StatusBar } from "expo-status-bar"
+import { isBiometricAvailable } from "utils/biometrics"
+import { useAsyncStorage } from "@react-native-async-storage/async-storage"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Splash">
 
@@ -27,7 +29,7 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 			}
 			else
 			{
-				localStorageManager.initialLoad()
+				setTimeout(() => {localStorageManager.initialLoad()}, 1500)
 			}
 		})
 

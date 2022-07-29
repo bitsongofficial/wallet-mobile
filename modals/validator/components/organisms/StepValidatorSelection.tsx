@@ -1,6 +1,6 @@
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet"
-import { IValidator } from "classes/types"
 import { Icon2, Input } from "components/atoms"
+import { Validator } from "core/types/coin/cosmos/Validator"
 import { useStore } from "hooks"
 import { observer } from "mobx-react-lite"
 import { useCallback, useMemo } from "react"
@@ -9,25 +9,25 @@ import { COLOR, InputHandler } from "utils"
 import { ValidatorListItem } from "../moleculs"
 
 type Props = {
-	onPressValidator(validator: IValidator): void
-	activeValidator?: IValidator | null
+	onPressValidator(validator: Validator): void
+	activeValidator?: Validator | null
 }
 
 export default observer<Props>(({ onPressValidator, activeValidator }) => {
-	const { validator } = useStore()
+	const { validators } = useStore()
 
 	const input = useMemo(() => new InputHandler(), [])
 
 	const filtredValidators = useMemo(() => {
 		if (input.value) {
 			const lowerCase = input.value.toLowerCase()
-			return validator.validators.filter(({ name }) => name.toLowerCase().includes(lowerCase))
+			return validators.validators.filter(({ name }) => name.toLowerCase().includes(lowerCase))
 		} else {
-			return validator.validators
+			return validators.validators
 		}
 	}, [input.value])
 
-	const renderValidator = useCallback<ListRenderItem<IValidator>>(
+	const renderValidator = useCallback<ListRenderItem<Validator>>(
 		({ item }) => (
 			<ValidatorListItem
 				onPress={() => onPressValidator(item)}

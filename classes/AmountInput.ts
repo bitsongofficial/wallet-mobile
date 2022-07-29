@@ -16,8 +16,8 @@ export default class AmountInput {
 		this.value = value
 	}
 	setMax() {
-		if (this.coin?.balanceUSD) {
-			this.value = this.coin.balanceUSD.toString()
+		if (this.coin?.balance) {
+			this.value = this.coin.balance.toString()
 		}
 	}
 
@@ -27,12 +27,13 @@ export default class AmountInput {
 
 		if (isDotIsOnce) {
 			const nextAmount = value + num
-			const balance = coin?.balanceUSD
+			const balance = coin?.balance
 
-			!balance || balance > Number(nextAmount)
-				? //
-				  this.setAmount(nextAmount)
-				: this.setMax()
+			balance == undefined || balance < Number(nextAmount)
+				?
+				this.setMax()
+				:
+				this.setAmount(nextAmount)
 		}
 	}
 
