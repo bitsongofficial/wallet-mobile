@@ -29,6 +29,7 @@ import { Head } from "./components/moleculs";
 import { useDimensions } from "@react-native-community/hooks";
 import { useBottomSheetModals } from "./hooks";
 import { FAQ_URL, PRIVACY_POLICY_URL, TERMS_AND_CONDITIONS_URL } from "constants/Links";
+import { WalletTypes } from "core/types/storing/Generic"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">
 
@@ -205,6 +206,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 											}
 										/>
 										<ListButton
+											disabled={wallet.activeProfile?.type == WalletTypes.WATCH}
 											text="Wallet Connect"
 											icon="wallet_connect"
 											onPress={openWalletConnect}
