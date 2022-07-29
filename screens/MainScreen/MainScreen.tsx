@@ -7,6 +7,7 @@ import {
 	View,
 	Platform,
 	BackHandler,
+	ScrollView,
 } from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { CoinStat, Tabs } from "components/organisms"
@@ -19,7 +20,6 @@ import { COLOR, wait } from "utils"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { ScrollView } from "react-native-gesture-handler"
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal"
 import { useSendModal } from "screens/SendModalScreens/components/hooks"
 import { SupportedCoins } from "constants/Coins"
@@ -206,12 +206,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		flexShrink: 1,
 		backgroundColor: COLOR.Dark3,
 	},
 
 	scrollviewContent: {
 		marginTop: 40,
 		paddingTop: 40,
+		flex:1,
+		flexShrink: 1,
 	},
 	info: {
 		marginRight: 22,

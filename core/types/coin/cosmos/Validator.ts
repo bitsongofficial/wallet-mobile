@@ -1,5 +1,12 @@
 import { SupportedCoins } from "constants/Coins"
 
+export enum ValidatorStatusRequest {
+	BOND_STATUS_BONDED = 'BOND_STATUS_BONDED',
+	BOND_STATUS_UNBONDING = 'BOND_STATUS_UNBONDING',
+	BOND_STATUS_UNBONDED = 'BOND_STATUS_UNBONDED',
+	BOND_STATUS_UNSPECIFIED = 'BOND_STATUS_UNSPECIFIED'
+}
+
 export enum ValidatorStatus {
 	ACTIVE = 'ACTIVE',
 	INACTIVE = 'INACTIVE',
@@ -8,6 +15,15 @@ export enum ValidatorStatus {
 export interface DetailedValidatorStatus {
 	status: ValidatorStatus,
 	statusDetailed: string,
+}
+
+export interface SignerInfo {
+	address: string;
+	start_height: string;
+	index_offset: string;
+	jailed_until: string;
+	tombstoned: boolean;
+	missed_blocks_counter: string;
 }
 
 export interface Validator {
@@ -33,4 +49,5 @@ export interface Validator {
 	tokens: number,
 	// uptime: number,
 	chain?: SupportedCoins,
+	signingInfo?: SignerInfo,
 }

@@ -57,7 +57,7 @@ export const BottomSheet = observer(
 
 		return (
 			<>
-				{isOpen && <Backdrop />}
+				{false && isOpen && <Backdrop />}
 
 				<DefaultBottomSheet
 					handleComponent={() => (

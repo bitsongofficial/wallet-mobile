@@ -30,7 +30,9 @@ export class Vote extends CosmosOperation {
 			const result = await client.signAndBroadcast(walletInfos[0], [encodedMessage], "auto")
 			assertIsDeliverTxSuccess(result)
 				
-			return true
+			return {
+				hash: result.transactionHash
+			}
 		}
 		catch(e)
 		{

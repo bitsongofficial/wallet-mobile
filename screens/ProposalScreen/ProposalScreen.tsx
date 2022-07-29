@@ -55,7 +55,6 @@ export default observer<Props>(function Stacking({ navigation }) {
 
 	const renderProposals = useCallback<ListRenderItem<Proposal>>(
 		({item}) => {
-			console.log(item.id.toString())
 			return (
 				<CardCommission key={item.id.toString()} title={item.title} status={item.status} style={{ marginBottom: 20 }} />
 			)

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
-import { Image, ListRenderItem, Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
+import { Image, ListRenderItem, Platform, RefreshControl, SafeAreaView, StyleSheet, Text, View } from "react-native"
 import { RootStackParamList } from "types"
 import { COLOR, hexAlpha } from "utils"
 import { CardAddress, CardClaim, CardDelegation, CardInfo } from "./components/moleculs"
@@ -98,12 +98,27 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 
 	const source = validator.logo ? {uri: validator.logo} : undefined
 
+	const [isRefreshing, setRefreshing] = useState(false)
+
+	const onRefresh = useCallback(async () => {
+		setRefreshing(true)
+		await validators.load()
+		setRefreshing(false)
+	}, [])
+
 	return (
 		<>
 			<StatusBar style="light" />
 
 			<SafeAreaView style={styles.container}>
-				<ScrollView style={styles.scrollview} contentContainerStyle={styles.scrollviewContent}>
+				<ScrollView style={styles.scrollview} contentContainerStyle={styles.scrollviewContent}
+				refreshControl={
+					<RefreshControl
+						tintColor={COLOR.White}
+						refreshing={isRefreshing}
+						onRefresh={onRefresh}
+					/>
+				}>
 					<View style={styles.wrapper}>
 						<View style={styles.head}>
 							<View style={styles.avatarContainer}>

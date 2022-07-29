@@ -1,12 +1,14 @@
 import { SupportedCoins, SupportedCoinsMap } from "constants/Coins"
 import { ClaimData } from "core/types/coin/cosmos/ClaimData"
+import { DelegateData } from "core/types/coin/cosmos/DelegateData"
 import { DelegationsData } from "core/types/coin/cosmos/DelegationsData"
+import { RedelegateData } from "core/types/coin/cosmos/RedelegateData"
 import { RewardsData } from "core/types/coin/cosmos/RewardsData"
-import { Validator } from "core/types/coin/cosmos/Validator"
+import { Validator, ValidatorStatus } from "core/types/coin/cosmos/Validator"
 import { CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 import { CoinOperationEnum } from "core/types/coin/OperationTypes"
-import { fromAmountToCoin } from "core/utils/Coin"
+import { convertRateFromDenom, fromAmountToCoin } from "core/utils/Coin"
 import { autorun, makeAutoObservable, runInAction, set, toJS } from "mobx"
 import CoinStore from "./CoinStore"
 import WalletStore from "./WalletStore"
@@ -66,7 +68,8 @@ export default class ValidatorStore {
 				{
 					console.error("Catched", e)
 				})
-				const val:Validator[] = await coin.Do(CoinOperationEnum.Validators)
+				let val:Validator[] = await coin.Do(CoinOperationEnum.Validators)
+				val = val.filter(v => (v.status.status != ValidatorStatus.INACTIVE))
 				val.forEach(v => {
 					v.chain = chain
 					this.totalVotingPower += v.tokens
@@ -94,7 +97,6 @@ export default class ValidatorStore {
 		this.validators.splice(0, this.validators.length, ...validators)
 		this.rewards.splice(0, this.rewards.length, ...rewards)
 		this.delegations.splice(0, this.delegations.length, ...delegations)
-		console.log(this.aprRatio)
 	}
 
 	get validatorsIds()
@@ -252,5 +254,80 @@ export default class ValidatorStore {
 			return res
 		}
 		return false
-	} 
+	}
+
+	async delegate(validator: Validator, amount: number)
+	{
+		const activeWallet = this.walletStore.activeWallet
+		if(activeWallet && validator)
+		{
+			const chain = validator.chain ?? SupportedCoins.BITSONG
+			const coin = CoinClasses[chain]
+			const delegateData: DelegateData = {
+				delegator: activeWallet.wallets[chain],
+				validator,
+				amount: {
+					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
+					denom: coin.denom()
+				}
+			}
+			const res = await coin.Do(CoinOperationEnum.Delegate, delegateData)
+			this.refreshData()
+			return res
+		}
+
+		return false
+	}
+
+	async redelegate(validator: Validator, newValidator: Validator, amount: number)
+	{
+		const activeWallet = this.walletStore.activeWallet
+		if(activeWallet && validator && newValidator)
+		{
+			const chain = validator.chain ?? SupportedCoins.BITSONG
+			const coin = CoinClasses[chain]
+			const delegateData: RedelegateData = {
+				delegator: activeWallet.wallets[chain],
+				validator,
+				newValidator,
+				amount: {
+					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
+					denom: coin.denom()
+				}
+			}
+			const res = await await coin.Do(CoinOperationEnum.Redelegate, delegateData)
+			if(res) this.refreshData()
+			return res
+		}
+		return false
+	}
+
+	async undelegate(validator: Validator, amount: number)
+	{
+		
+		const activeWallet = this.walletStore.activeWallet
+		if(activeWallet && validator)
+		{
+			const chain = validator.chain ?? SupportedCoins.BITSONG
+			const coin = CoinClasses[chain]
+			const delegateData: DelegateData = {
+				delegator: activeWallet.wallets[chain],
+				validator,
+				amount: {
+					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
+					denom: coin.denom()
+				}
+			}
+			const res = await coin.Do(CoinOperationEnum.Undelegate, delegateData)
+			if(res) this.refreshData()
+			return res
+		}
+		return false
+	}
+
+	async refreshData()
+	{
+		this.load()
+		this.coinStore.updateBalances()
+	}
 }

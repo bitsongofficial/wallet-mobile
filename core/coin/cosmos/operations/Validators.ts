@@ -2,20 +2,17 @@ import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosm
 import axios from "axios";
 import { validatorIdentity } from "core/rest/keybase";
 import { DelegateData } from "core/types/coin/cosmos/DelegateData";
-import { Validator, ValidatorStatus } from "core/types/coin/cosmos/Validator";
+import { SignerInfo, Validator, ValidatorStatus, ValidatorStatusRequest } from "core/types/coin/cosmos/Validator";
 import { CosmosOperation } from "./CosmosOperation";
 
 const getValidatorStatus = (validator: any) => {
-	if (validator.status.toString() === '3') {
+	if (validator.status.toString() === ValidatorStatusRequest.BOND_STATUS_BONDED) {
 		return {
 			status: ValidatorStatus.ACTIVE,
 			statusDetailed: 'active',
 		}
 	}
-	if (
-	  validator.signing_info &&
-	  new Date(validator.signing_info.jailed_until) > new Date(9000, 1, 1)
-	)
+	if (validator.jailed)
 	{
 		return {
 			status: ValidatorStatus.INACTIVE,

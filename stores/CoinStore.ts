@@ -227,7 +227,6 @@ export default class CoinStore {
 
 	fromAmountToFIAT(amount: Amount)
 	{
-		console.log(amount)
 		return fromAmountToFIAT(amount, this.Prices)
 	}
 
@@ -249,6 +248,6 @@ export default class CoinStore {
 
 	coinOfType(coin: SupportedCoins)
 	{
-		return this.coins.find(c => c.info.coin == coin) ?? null
+		return this.coins.find(c => c.info.denom == CoinClasses[coin].denom()) ?? null
 	}
 }

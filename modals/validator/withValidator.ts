@@ -15,34 +15,22 @@ import openUndelegate from "./openUndelegate";
 
 export function openDelegateWithValidator(validator: Validator, navigation: NativeStackNavigationProp<any>)
 {
-	const wallet = store.wallet
+	const validators = store.validators
 	const controller = new DelegateController()
 	controller.setSelectedValidator(validator)
 	openDelegate({
 		controller: controller,
 		onDone() {
-			const activeWallet = wallet.activeWallet
-			const validator = controller.selectedValidator
-			if(activeWallet && validator)
+			if(controller.selectedValidator != null)
 			{
-				const chain = validator.chain ?? SupportedCoins.BITSONG
-				const coin = CoinClasses[chain]
-				const delegateData: DelegateData = {
-					delegator: activeWallet.wallets[chain],
-					validator,
-					amount: {
-						amount: (parseFloat(controller.amountInput.value) * convertRateFromDenom(coin.denom())).toString(),
-						denom: coin.denom()
-					}
-				}
 				navigation.push("Loader", {
 					// @ts-ignore
 					callback: async () => {
-						await coin.Do(CoinOperationEnum.Delegate, delegateData)
+						if(controller.selectedValidator) await validators.delegate(controller.selectedValidator, parseFloat(controller.amountInput.value))
 					},
 				})
 			}
-		},
+	},
 	})
 }
 
@@ -55,62 +43,32 @@ export function openRedelegateWithValidator(validator: Validator, navigation: Na
 	openRedelegate({
 		controller,
 		onDone() {
-			const activeWallet = wallet.activeWallet
-			const validator = controller.from
-			if(activeWallet && validator && controller.to)
-			{
-				const chain = validator.chain ?? SupportedCoins.BITSONG
-				const coin = CoinClasses[chain]
-				const delegateData: RedelegateData = {
-					delegator: activeWallet.wallets[chain],
-					validator,
-					newValidator: controller.to,
-					amount: {
-						amount: (parseFloat(controller.amountInput.value) * convertRateFromDenom(coin.denom())).toString(),
-						denom: coin.denom()
-					}
-				}
-				navigation.push("Loader", {
-					// @ts-ignore
-					callback: async () => {
-						await coin.Do(CoinOperationEnum.Undelegate, delegateData)
-					},
-				})
-			}
+			const validators = store.validators
+			navigation.push("Loader", {
+				// @ts-ignore
+				callback: async () => {
+					if(controller.from && controller.to) await validators.redelegate(controller.from, controller.to, parseFloat(controller.amountInput.value))
+				},
+			})
 		},
 	})
 }
 
 export function openUndelegateWithValidator(validator: Validator, navigation: NativeStackNavigationProp<any>)
 {
-	const wallet = store.wallet
+	const validators = store.validators
 	const controller = new UndelegateController()
 	controller.setFrom(validator)
 
 	openUndelegate({
 		controller,
 		onDone() {
-			const activeWallet = wallet.activeWallet
-			const validator = controller.from
-			if(activeWallet && validator)
-			{
-				const chain = validator.chain ?? SupportedCoins.BITSONG
-				const coin = CoinClasses[chain]
-				const delegateData: DelegateData = {
-					delegator: activeWallet.wallets[chain],
-					validator,
-					amount: {
-						amount: (parseFloat(controller.amountInput.value) * convertRateFromDenom(coin.denom())).toString(),
-						denom: coin.denom()
-					}
-				}
-				navigation.push("Loader", {
-					// @ts-ignore
-					callback: async () => {
-						await coin.Do(CoinOperationEnum.Undelegate, delegateData)
-					},
-				})
-			}
+			navigation.push("Loader", {
+				// @ts-ignore
+				callback: async () => {
+					if(controller.from) await validators.undelegate(controller.from, parseFloat(controller.amountInput.value))
+				},
+			})
 		},
 	})
 }

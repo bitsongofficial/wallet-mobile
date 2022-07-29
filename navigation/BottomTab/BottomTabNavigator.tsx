@@ -27,7 +27,7 @@ export default () => (
 					// paddingBottom: 20,
 				},
 				headerTransparent: true,
-				tabBarStyle: { position: "absolute" },
+				tabBarStyle: { position: "absolute", },
 				tabBarShowLabel: false,
 				// headerShown: false,
 			}}

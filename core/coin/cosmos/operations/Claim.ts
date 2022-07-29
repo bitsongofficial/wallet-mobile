@@ -32,7 +32,9 @@ export class Claim extends CosmosOperation {
 			const result = await client.signAndBroadcast(ownerAddress, encodedMessages, "auto")
 			assertIsDeliverTxSuccess(result)
 			
-			return true
+			return {
+				hash: result.transactionHash
+			}
 		}
 		catch(e)
 		{

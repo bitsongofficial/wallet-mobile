@@ -1,17 +1,18 @@
 import { useDimensions } from "@react-native-community/hooks";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Button } from "components/atoms";
-import { globalBottomsheet } from "hooks/useGlobalBottomsheet";
+import { gbs } from "modals";
+import { navigate } from "navigation/utils";
 import { StyleSheet } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import { Data } from "screens/SendModalScreens/components/organisms";
+import { RootStackParamList } from "types";
 import { COLOR } from "utils";
 
 type Props = {
-	/** How many $ we will send */
 	data: any;
-	/** Account details from which we send */
 	accept: () => void;
-	/** The address we ship to */
 	reject?: () => void;
 }
 
@@ -23,13 +24,21 @@ export function TransactionSignConfirm({data, accept, reject}: Props)
 			style={{ marginTop: 36 }}
 			json={JSON.stringify(data, null, 4)}
 			/>
-			<Button text="Confirm" onPress={accept}></Button>
+			<Button text="Confirm" onPress={
+				() =>
+				{
+					navigate("Loader", {
+						callback: async () =>
+						{
+							return await accept()
+						}
+					})
+				}}></Button>
 		</>
 	)
 }
 
 export const confirmTransaction = (data: any, accept: () => void, reject: () => void) => {
-	const gbs = globalBottomsheet;
 	const flag = {accepted: false}
     gbs.setProps({
       snapPoints: ["80%"],
@@ -38,11 +47,12 @@ export const confirmTransaction = (data: any, accept: () => void, reject: () => 
       onClose: () => {
 		if(!flag.accepted) reject()
 	  },
-      children: <TransactionSignConfirm data={data} accept={() => {
+      children: <TransactionSignConfirm data={data} accept={async () => {
 		flag.accepted = true
-		accept()
 		gbs.close()
-	  }} />,
+		const res = await accept()
+		return res
+	  }}/>,
     });
     gbs.snapToIndex(0);
 }

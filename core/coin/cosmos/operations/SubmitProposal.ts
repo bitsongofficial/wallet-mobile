@@ -36,7 +36,9 @@ export class SubmitProposal extends CosmosOperation {
 			const result = await client.signAndBroadcast(walletInfos[0], [message], "auto")
 			assertIsDeliverTxSuccess(result)
 				
-			return true
+			return {
+				hash: result.transactionHash
+			}
 		}
 		catch(e)
 		{
