@@ -8,6 +8,7 @@ import DappConnectionStore from "./DappConnectionStore"
 import LocalStorageManager from "./LocalStorageManager"
 import ContactsStore from "./ContactsStore"
 import ValidatorStore from "./ValidatorStore"
+import ProposalsStore from "./ProposalsStore"
 
 export default class MainStore {
 	auth = null
@@ -28,6 +29,7 @@ export default class MainStore {
 	)
 
 	validators = new ValidatorStore(this.coin, this.wallet)
+	proposals = new ProposalsStore(this.wallet)
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
