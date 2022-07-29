@@ -23,6 +23,16 @@ Install dependencies
   yarn setup
 ```
 
+Create .env file, start from .env.example
+```bash
+  cp .env.example .env
+```
+
+Copy google-services.json inside ./android/app. If the file is in the project folder and you are running the command from there it is:
+```bash
+  cp google-services.json ./android/app/google-services.json
+```
+
 Start the server
 
 ```bash
