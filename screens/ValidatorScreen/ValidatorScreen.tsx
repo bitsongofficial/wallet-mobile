@@ -17,6 +17,8 @@ import {
 	openRedelegate,
 	openRedelegateWithValidator,
 	openUndelegate,
+	openClaim,
+	DelegateController,
 	RedelegateController,
 	UndelegateController,
 } from "modals/validator"
@@ -38,6 +40,15 @@ type IData = {
 }
 
 export default observer<Props>(function Stacking({ navigation, route }) {
+
+	// --------- Modals --------------
+
+	const openClaimModal = useCallback(() => {
+		openClaim({
+			amount: 12345,
+			coinName: "BTSG",
+		})
+	}, [])
 	const { validators, wallet } = useStore()
 	const validator = route.params.validator
 	const [address, setAddress] = useState("")

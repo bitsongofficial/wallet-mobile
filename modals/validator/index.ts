@@ -1,5 +1,6 @@
 export { default as openDelegate } from "./openDelegate"
 export { default as openRedelegate } from "./openRedelegate"
 export { default as openUndelegate } from "./openUndelegate"
+export { default as openClaim } from "./openClaim"
 export { openDelegateWithValidator, openRedelegateWithValidator } from "./withValidator"
 export { DelegateController, RedelegateController, UndelegateController } from "./controllers"

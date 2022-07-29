@@ -4,6 +4,7 @@ import { Undelegate } from "./components/template"
 import { UndelegateController } from "./controllers"
 import { store } from "stores/Store"
 import { gbs } from "modals"
+import { BackHandler } from "react-native"
 import { SupportedCoins } from "constants/Coins"
 
 type Options = {
@@ -12,6 +13,8 @@ type Options = {
 	onDone?(): void
 	onClose?(): void
 }
+
+const snapPoints = [[600], [450]]
 
 export default async function openUndelegate({ controller, onClose, onDone }: Options) {
 	const { coin: coinStore } = store
@@ -26,26 +29,24 @@ export default async function openUndelegate({ controller, onClose, onDone }: Op
 
 	const disposer = reaction(
 		() => steps.active,
-		(index) => {
-			switch (index) {
-				case 0:
-					return gbs.updProps({ snapPoints: [600] })
-				case 1:
-					return gbs.updProps({ snapPoints: [450] })
-				default:
-					break
-			}
-		},
+		(index) => gbs.updProps({ snapPoints: snapPoints[index] }),
 	)
 
-	const goBack = () => (steps.active > 0 ? steps.prev() : gbs.close())
+	const goBack = () => (steps.history.length > 1 ? steps.goBack() : gbs.close())
+
+	const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+		goBack()
+		return true
+	})
+
 	const close = () => {
 		disposer()
+		backHandler.remove()
 		onClose && onClose()
 	}
 
 	await gbs.setProps({
-		snapPoints: [600],
+		snapPoints: snapPoints[controller.steps.active],
 		onClose: close,
 		footerComponent: () => (
 			<FooterUndelegate onPressDone={() =>
