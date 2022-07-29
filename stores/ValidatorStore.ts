@@ -135,12 +135,26 @@ export default class ValidatorStore {
 		return 0
 	}
 
-	get totalReward()
+	get totalRewardAsDollars()
 	{
 		try
 		{
 			const rewards = this.rewards.reduce<Amount[]>((prev, current) => (prev.concat(current.rewards)), [])
 			const total = rewards.reduce((tot, r) => (tot + this.coinStore.fromAmountToFIAT(r)), 0)
+			return total
+		}
+		catch(e)
+		{
+			return 0
+		}
+	}
+
+	get totalReward()
+	{
+		try
+		{
+			const rewards = this.rewards.reduce<Amount[]>((prev, current) => (prev.concat(current.rewards)), [])
+			const total = rewards.reduce((tot, r) => (tot + fromAmountToCoin(r)), 0)
 			return total
 		}
 		catch(e)

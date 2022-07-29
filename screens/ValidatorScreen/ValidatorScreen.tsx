@@ -41,14 +41,6 @@ type IData = {
 
 export default observer<Props>(function Stacking({ navigation, route }) {
 
-	// --------- Modals --------------
-
-	const openClaimModal = useCallback(() => {
-		openClaim({
-			amount: 12345,
-			coinName: "BTSG",
-		})
-	}, [])
 	const { validators, wallet } = useStore()
 	const validator = route.params.validator
 	const [address, setAddress] = useState("")
@@ -61,7 +53,18 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 		})()
 	}, [])
 
+	// --------- Modals --------------
+
 	const onPressClaim = () => (validators.claim(validator))
+
+	const openClaimModal = () => {
+		openClaim({
+			amount: validators.validatorReward(validator),
+			coinName: "BTSG",
+			onDone: onPressClaim,
+			navigation,
+		})
+	}
 
 	// --------- Modals --------------
 
@@ -77,7 +80,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 		() => [
 			{ title: "APR", value: `${validator.apr.toFixed(2)}%` },
 			{ title: "VOTING POWER", value: `${validators.percentageVotingPower(validator).toFixed(1)}%` },
-			{ title: "TOTAL STAKE", value: `$${validators.totalStakeAsFIAT(validator)}` },
+			{ title: "TOTAL STAKE", value: `$${validators.totalStakeAsFIAT(validator).toFixed(2)}` },
 		],
 		[validator.apr, validator.tokens],
 	)
@@ -122,7 +125,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 							</View>
 						</View>
 
-						<CardClaim style={styles.claim} onPressClaim={onPressClaim} value={validators.validatorReward(validator)} />
+						<CardClaim style={styles.claim} onPressClaim={openClaimModal} value={validators.validatorReward(validator)} />
 
 						<CardDelegation
 							value={validators.validatorDelegations(validator)}

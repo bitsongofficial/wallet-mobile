@@ -24,6 +24,7 @@ import ReceiveModal from "screens/SendModalScreens/ReceiveModal"
 import { useSendModal } from "screens/SendModalScreens/components/hooks"
 import { SupportedCoins } from "constants/Coins"
 import { Button } from "components/atoms"
+import { openClaim } from "modals/validator"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -84,13 +85,23 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		},
 	})), [])
 
+	const onPressClaim = () =>
+	{
+		navigation.push("Loader", {
+			// @ts-ignore
+			callback: async () => {
+				await validators.claimAll()
+			},
+		})
+	}
+
 	const openScanner = coin.CanSend ? openScannerMemorized : undefined
 
 	const openToolbar = useCallback(async () => {
 		const onPressScann = () => {
-			openScanner()
+			openScanner && openScanner()
 			Platform.OS === "android" && gbs.close()
-		} : undefined
+		}
 
 		await gbs.setProps({
 			snapPoints: ["70%"],
@@ -101,7 +112,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 					onPressReceive={openReceive}
 					onPressInquire={undefined}
 					onPressScan={onPressScann}
-					onPressClaim={validators.claimAll}
+					onPressClaim={onPressClaim}
 					onPressStake={undefined}
 					onPressUnstake={undefined}
 					onPressRestake={undefined}
@@ -112,7 +123,16 @@ export default observer<Props>(function MainScreen({ navigation }) {
 			),
 		})
 		requestAnimationFrame(() => gbs.expand())
-	}, [])
+	}, [coin.CanSend])
+
+	const openClaimAll = useCallback(() => {
+		openClaim({
+			amount: validators.totalReward,
+			coinName: "BTSG",
+			onDone: () => (validators.claimAll()),
+			navigation,
+		})
+	}, [validators.totalReward])
 
 	const [isRefreshing, setRefreshing] = useState(false)
 
@@ -147,8 +167,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						<View style={styles.reward}>
 							<Text style={styles.reward_title}>Reward</Text>
 							<View style={styles.reward_row}>
-								<Text style={styles.reward_value}>{validators.totalReward.toFixed(2)} $</Text>
-								<Button onPress={callback}>CLAIM</Button>
+								<Text style={styles.reward_value}>{validators.totalRewardAsDollars.toFixed(2)} $</Text>
+								<Button onPress={openClaimAll}>CLAIM</Button>
 							</View>
 						</View>
 					</View>

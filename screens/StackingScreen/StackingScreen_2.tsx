@@ -12,7 +12,7 @@ import { useGlobalBottomsheet, useStore } from "hooks"
 import { Title, Toolbar } from "./components"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { Validator } from "core/types/coin/cosmos/Validator"
-import { openDelegateWithValidator } from "modals/validator"
+import { openClaim, openDelegateWithValidator } from "modals/validator"
 import { openRedelegateWithValidator, openUndelegateWithValidator } from "modals/validator/withValidator"
 
 type Props = CompositeScreenProps<
@@ -23,6 +23,17 @@ type Props = CompositeScreenProps<
 export default observer<Props>(function Stacking({ navigation }) {
 	const {validators} = useStore()
 	const gbs = useGlobalBottomsheet()
+
+	const openClaimModal = (item: Validator) => {
+		openClaim({
+			amount: validators.validatorReward(item),
+			coinName: "BTSG",
+			onDone: () => {
+				validators.claim(item)
+			},
+			navigation,
+		})
+	}
 
 	const [isRefreshing, setRefreshing] = useState(false)
 
@@ -39,7 +50,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 				<Toolbar
 					style={{ marginHorizontal: 30 }}
 					onPressClaim={
-						() => {validators.claim(item)}
+						() => {openClaimModal(item)}
 					}
 					onPressStake={
 						() => {openDelegateWithValidator(item, navigation)}

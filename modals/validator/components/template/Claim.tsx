@@ -14,7 +14,7 @@ export default observer<Props>(({ amount, coinName }) => {
 			<BottomSheetHeader title="Claim Import" subtitle="Amount" />
 
 			<View style={styles.value}>
-				<Text style={styles.amount}>{amount || 0}</Text>
+				<Text style={styles.amount}>{(typeof amount == "number") ? amount.toFixed(2) : amount|| 0}</Text>
 				<Text style={styles.coinName}>{coinName}</Text>
 			</View>
 		</View>
