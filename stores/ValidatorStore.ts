@@ -7,7 +7,7 @@ import { CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 import { CoinOperationEnum } from "core/types/coin/OperationTypes"
 import { fromAmountToCoin } from "core/utils/Coin"
-import { autorun, makeAutoObservable } from "mobx"
+import { autorun, makeAutoObservable, runInAction, toJS } from "mobx"
 import CoinStore from "./CoinStore"
 import WalletStore from "./WalletStore"
 
@@ -24,21 +24,27 @@ export default class ValidatorStore {
 		amount: Amount,
 	}[] = []
 
+	totalVotingPower: number = 0
+
 	constructor(private coinStore: CoinStore, private walletStore: WalletStore) {
-		makeAutoObservable(this, {}, { autoBind: true })
+		makeAutoObservable(this, {
+			totalVotingPower: false,
+			percentageVotingPower: false,
+		}, { autoBind: true })
 
 		autorun(() =>
 		{
 			this.load()
-		})	
+		})
 	}
 
 	async load()
 	{
-		let validators: any = []
-		let rewards: any = []
-		let delegations: any = []
+		let validators: Validator[] = []
+		let rewards: any[] = []
+		let delegations: any[] = []
 		const wallet = this.walletStore.activeWallet
+		this.totalVotingPower = 0
 		for(const chain of Object.values(SupportedCoins))
 		{
 			try
@@ -47,6 +53,7 @@ export default class ValidatorStore {
 				const val:Validator[] = await coin.Do(CoinOperationEnum.Validators)
 				val.forEach(v => {
 					v.chain = chain
+					this.totalVotingPower += v.tokens
 				})
 				validators = validators.concat(val)
 
@@ -67,20 +74,23 @@ export default class ValidatorStore {
 				console.error("Catched", e)
 			}
 		}
+		validators = validators.sort((v1, v2) => (v2.tokens - v1.tokens))
 		this.validators.splice(0, this.validators.length, ...validators)
 		this.rewards.splice(0, this.rewards.length, ...rewards)
 		this.delegations.splice(0, this.delegations.length, ...delegations)
 	}
 
-	get totalVotingPower()
+	get validatorsIds()
 	{
-		return this.validators.reduce((current, next) => (current + next.tokens), 0)
+		return this.validators.map(v => v.id)
 	}
 
 	resolveValidator(index: validatorIndexer)
 	{
 		if(typeof index == "string") return this.validators.find(v => v.id == index) ?? null
 		if(typeof index == "number") return this.validators[index] ?? null
+		const i = this.validators.indexOf(index)
+		if(i > -1) return index
 		return this.validators.find(v => v.id = index.id) ?? null
 	}
 

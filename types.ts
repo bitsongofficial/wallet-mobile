@@ -62,7 +62,7 @@ export type RootStackParamList = {
 		isHiddenCode?: boolean
 		disableVerification?: boolean
 	}
-	Validator: { validator: Validator }
+	Validator: { id: string }
 	NewProposal: undefined
 }
 

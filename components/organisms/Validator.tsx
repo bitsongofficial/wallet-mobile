@@ -1,29 +1,47 @@
-import { useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Image, StyleSheet, Text, View } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import { COLOR } from "utils"
 import { Icon2 } from "components/atoms"
 import { Validator } from "core/types/coin/cosmos/Validator"
 import { useStore } from "hooks"
+import { validatorIdentity } from "core/rest/keybase"
 
 type ValidatorProps = {
-	item: Validator
+	id: string
 	onPressKebab(item: Validator): void
 }
 
-export default ({ item, onPressKebab }: ValidatorProps) => {
-	const handlePressKebab = useCallback(() => onPressKebab(item), [item])
+export default ({ id, onPressKebab }: ValidatorProps) => {
 	const { validators } = useStore()
+	const item = validators.resolveValidator(id) ?? validators.validators[0]
+
+	const handlePressKebab = useCallback(() => onPressKebab(item), [item])
+	// const [logo, setLogo] = useState("")
 
 	const source = item.logo ? { uri: item.logo } : undefined
+
+	// useEffect(() =>
+	// {
+	// 	validatorIdentity(item.identity).then((identity) =>
+	// 	{
+	// 		if(item.identity)
+	// 		{
+	// 			console.log("A", item.identity, identity)
+	// 			setLogo(identity.picture_url)
+	// 		}
+	// 	}).catch((e) =>
+	// 	{
+	// 		console.error("Catched", e)
+	// 	})
+	// }, [item, item.identity])
 
 	return (
 		<View style={styles.container}>
 			<View style={[styles.row, { marginBottom: 14 }]}>
 				<View style={styles.info}>
-					{source && <Image source={source} />}
-					<View style={styles.avatar} />
-					<Text style={styles.title}>{item.name ? item.name : item.id}</Text>
+					{source && <Image style={styles.avatar} source={source} />}
+					<Text style={styles.title}>{item.id}</Text>
 				</View>
 				<RectButton onPress={handlePressKebab}>
 					<Icon2 name="kebab" stroke={COLOR.Marengo} size={24} />
@@ -35,7 +53,7 @@ export default ({ item, onPressKebab }: ValidatorProps) => {
 					<Text style={styles.text}>APR</Text>
 				</View>
 				<View style={styles.right}>
-					<Text style={styles.percent}>{validators.percentageVotingPower(item)} %</Text>
+					<Text style={styles.percent}>{validators.percentageVotingPower(item).toFixed(2)} %</Text>
 					<Text style={styles.text}>VOTING POWER</Text>
 				</View>
 			</View>
@@ -49,6 +67,7 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 		backgroundColor: COLOR.Dark2,
 		padding: 24,
+		marginBottom: 20,
 	},
 	row: {
 		flexDirection: "row",
@@ -99,6 +118,7 @@ const styles = StyleSheet.create({
 		fontWeight: "500",
 		fontSize: 18,
 		lineHeight: 23,
+		flexShrink: 1,
 
 		color: COLOR.White,
 	},
@@ -107,7 +127,7 @@ const styles = StyleSheet.create({
 		width: 42,
 		height: 42,
 		borderRadius: 42,
-		backgroundColor: "red",
+		backgroundColor: COLOR.Dark3,
 
 		marginRight: 16,
 	},

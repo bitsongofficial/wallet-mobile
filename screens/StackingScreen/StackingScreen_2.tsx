@@ -1,19 +1,20 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { observer } from "mobx-react-lite"
+import { Observer, observer } from "mobx-react-lite"
 import { FlatList, ListRenderItem, Platform, RefreshControl, SafeAreaView, StyleSheet, View } from "react-native"
 import { RootStackParamList, RootTabParamList } from "types"
 import { COLOR } from "utils"
 import { Validator as ValidatorItem } from "components/organisms"
 import { useGlobalBottomsheet, useStore } from "hooks"
 import { Title, Toolbar } from "./components"
-import { TouchableOpacity } from "react-native-gesture-handler"
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { Validator } from "core/types/coin/cosmos/Validator"
 import { openClaim, openDelegateWithValidator } from "modals/validator"
 import { openRedelegateWithValidator, openUndelegateWithValidator } from "modals/validator/withValidator"
+import { toJS } from "mobx"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
@@ -68,18 +69,26 @@ export default observer<Props>(function Stacking({ navigation }) {
 	}, [])
 
 	const navToValidator = useCallback(
-		(validator: Validator) => navigation.navigate("Validator", { validator }),
+		(id: string) =>
+		{
+			navigation.navigate("Validator", { id })
+		},
 		[],
 	)
 
-	const renderValidators = useCallback<ListRenderItem<Validator>>(
-		({ item }) => (
-			<TouchableOpacity onPress={() => navToValidator(item)}>
-				<ValidatorItem item={item} onPressKebab={openBottomSheet} />
-			</TouchableOpacity>
-		),
+	const renderValidators = useCallback<ListRenderItem<string>>(
+		({item}) => {
+			return (
+				<TouchableOpacity key={item} onPress={() => navToValidator(item)}>
+					<ValidatorItem id={item} onPressKebab={openBottomSheet} />
+				</TouchableOpacity>
+			)
+		},
 		[],
 	)
+
+	// console.log("A", validators.validators.map(v => v.id))
+	// console.log(validators.validators.map(v => v.logo))
 
 	return (
 		<>
@@ -88,8 +97,17 @@ export default observer<Props>(function Stacking({ navigation }) {
 			<SafeAreaView style={styles.container}>
 				<View style={styles.wrapper}>
 					<Title style={styles.title}>Validators</Title>
-
-					<FlatList data={validators.validators} renderItem={renderValidators}
+					{/* <ScrollView>
+						{validators.validatorsIds.map(
+							(id) => (
+								<TouchableOpacity key={id} onPress={() => navToValidator(id)}>
+									<ValidatorItem id={id} onPressKebab={openBottomSheet} />
+								</TouchableOpacity>
+							)
+						)}
+						<View style={{height: 80}}></View>
+					</ScrollView> */}
+					<FlatList keyExtractor={item => item} data={validators.validatorsIds} renderItem={renderValidators}
 						refreshControl={
 							<RefreshControl
 								tintColor={COLOR.White}

@@ -47,6 +47,6 @@ export default class ProposalsStore {
 			}
 		}
 		this.proposals.splice(0, this.proposals.length, ...proposals)
-		console.log(this.proposals)
+		// console.log(this.proposals)
 	}
 }

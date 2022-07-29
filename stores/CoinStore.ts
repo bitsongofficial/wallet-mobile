@@ -227,6 +227,7 @@ export default class CoinStore {
 
 	fromAmountToFIAT(amount: Amount)
 	{
+		console.log(amount)
 		return fromAmountToFIAT(amount, this.Prices)
 	}
 

@@ -39,7 +39,7 @@ export class Validators extends CosmosOperation {
 			const validators:Validator[] = results.map((v:any):Validator =>
 				({
 					id: v.description.moniker,
-					identity: v.description.identiy,
+					identity: v.description.identity,
 					name: v.description.moniker,
 					logo: "",
 					description: v.description.details,
@@ -72,6 +72,7 @@ export class Validators extends CosmosOperation {
 					}
 					catch(e)
 					{
+						console.error(e)
 						reject()
 					}
 				}))))

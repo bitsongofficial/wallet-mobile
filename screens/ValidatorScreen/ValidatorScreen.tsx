@@ -42,7 +42,7 @@ type IData = {
 export default observer<Props>(function Stacking({ navigation, route }) {
 
 	const { validators, wallet } = useStore()
-	const validator = route.params.validator
+	const validator = validators.resolveValidator(route.params.id) ?? validators.validators[0]
 	const [address, setAddress] = useState("")
 
 	useEffect(() =>
@@ -107,20 +107,18 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 					<View style={styles.wrapper}>
 						<View style={styles.head}>
 							<View style={styles.avatarContainer}>
-								<View style={styles.avatar} >
-									{source && <Image source={source} />}
-								</View>
+								{source && <Image style={styles.avatar} source={source} />}
 							</View>
 
-							<View style={{ justifyContent: "center" }}>
+							<View style={{ flexShrink: 1, justifyContent: "center"}}>
 								<View style={styles.validatorNameContainer}>
-									<Text style={styles.validatorName}>{validator.name ? validator.name : validator.id}</Text>
+									<Text style={styles.validatorName}>{validator.id}</Text>
 									<View style={styles.badge}>
 										<Text style={styles.badgeText}>{validator.status.statusDetailed}</Text>
 									</View>
 								</View>
 								<View>
-									<Text style={styles.tag}>{validator.description}</Text>
+									<Text style={[styles.tag, {flex:1}]}>{validator.description}</Text>
 								</View>
 							</View>
 						</View>
@@ -224,6 +222,8 @@ const styles = StyleSheet.create({
 
 	head: {
 		flexDirection: "row",
+		justifyContent: "flex-start",
+		width: "100%",
 		marginBottom: 33,
 	},
 
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
 		width: 54,
 		height: 54,
 		borderRadius: 54,
-		backgroundColor: "red",
+		backgroundColor: COLOR.Dark3,
 	},
 
 	validatorNameContainer: {
