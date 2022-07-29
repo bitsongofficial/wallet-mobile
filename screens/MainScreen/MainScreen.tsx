@@ -1,12 +1,19 @@
 import { useCallback, useMemo, useState } from "react"
-import { RefreshControl, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native"
+import {
+	RefreshControl,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+	Platform,
+	BackHandler,
+} from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { CoinStat, Tabs } from "components/organisms"
 import { useGlobalBottomsheet, useStore } from "hooks"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
 import { ToolbarFull, ToolbarShort } from "./components"
-import SendModal from "screens/SendModalScreens/SendModal"
 import { RootStackParamList, RootTabParamList } from "types"
 import { COLOR, wait } from "utils"
 import { CompositeScreenProps } from "@react-navigation/native"
@@ -48,14 +55,21 @@ export default observer<Props>(function MainScreen({ navigation }) {
 	const openSend = coin.CanSend ? openSendInner : undefined
 	const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
-	const openReceive = useCallback(() => {
-		gbs.setProps({
+	const openReceive = useCallback(async () => {
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			gbs.close()
+			return true
+		})
+		await gbs.setProps({
 			snapPoints: ["85%"],
+			onClose: () => {
+				backHandler.remove()
+			},
 			children: () => (
 				<ReceiveModal style={sendCoinContainerStyle} close={closeGlobalBottomSheet} />
 			),
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const openScannerMemorized = useCallback(() => (navigation.navigate("ScannerQR", {
@@ -72,13 +86,13 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 	const openScanner = coin.CanSend ? openScannerMemorized : undefined
 
-	const openToolbar = useCallback(() => {
-		const onPressScann = coin.CanSend ? () => {
-			openScannerMemorized()
+	const openToolbar = useCallback(async () => {
+		const onPressScann = () => {
+			openScanner()
 			Platform.OS === "android" && gbs.close()
 		} : undefined
 
-		gbs.setProps({
+		await gbs.setProps({
 			snapPoints: ["70%"],
 			children: () => (
 				<ToolbarFull
@@ -97,8 +111,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 				/>
 			),
 		})
-		gbs.expand()
-	}, [coin.CanSend])
+		requestAnimationFrame(() => gbs.expand())
+	}, [])
 
 	const [isRefreshing, setRefreshing] = useState(false)
 

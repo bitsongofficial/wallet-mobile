@@ -1,11 +1,11 @@
 import { useCallback } from "react"
-import { Platform, StyleSheet } from "react-native"
+import { BackHandler, Platform, StyleSheet } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
 import { useDimensions } from "@react-native-community/hooks"
 import { reaction } from "mobx"
 import { Phrase, Steps } from "classes"
 import { useGlobalBottomsheet } from "hooks"
-import { COLOR } from "utils"
+import { COLOR, InputHandler } from "utils"
 import {
 	AddWatchAccount,
 	ChangeAvatar,
@@ -21,6 +21,7 @@ import { useNavigation } from "@react-navigation/native"
 import { Contact } from "stores/ContactsStore"
 import { RootStackParamList } from "types"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { Keyboard } from "react-native"
 
 export default function useBottomSheetModals() {
 	const gbs = useGlobalBottomsheet()
@@ -29,83 +30,160 @@ export default function useBottomSheetModals() {
 	const { screen } = useDimensions()
 	const animatedPosition = useSharedValue(screen.height)
 
-	const close = useCallback(() => gbs.close(), [])
+	const close = useCallback(() => {
+		Keyboard.dismiss()
+		gbs.close()
+	}, [])
 
 	const changeAvatar = useCallback(async () => {
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			close()
+			return true
+		})
 		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
 			android_keyboardInputMode: undefined,
-			children: <ChangeAvatar close={close} />,
+			onClose: () => {
+				backHandler.remove()
+			},
+			children: () => <ChangeAvatar close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const addWatchAccount = useCallback(async () => {
+		const steps = new Steps(["Add", "Name"])
+		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
+
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			goBack()
+			return true
+		})
 		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
-
-			children: <AddWatchAccount close={close} />,
+			onClose: () => backHandler.remove(),
+			children: () => <AddWatchAccount close={close} steps={steps} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const changeWallet = useCallback(async () => {
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			close()
+			return true
+		})
 		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
-
-			children: <ChangeWallet close={close} />,
+			onClose: () => {
+				backHandler.remove()
+			},
+			children: () => <ChangeWallet close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const changeLanguage = useCallback(async () => {
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			close()
+			return true
+		})
 		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
-
-			children: <ChangeLanguage close={close} />,
+			onClose: () => backHandler.remove(),
+			children: () => <ChangeLanguage close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const channgeCurrency = useCallback(async () => {
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			close()
+			return true
+		})
 		await gbs.setProps({
 			snapPoints: ["95%"],
 			animatedPosition,
 			backgroundStyle: styles.background,
-
-			children: <ChangeCurrency close={close} />,
+			onClose: () => {
+				backHandler.remove()
+			},
+			children: () => <ChangeCurrency close={close} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const addContact = useCallback(async () => {
-		await gbs.setProps({
-			snapPoints: [350],
-			animatedPosition,
-			backgroundStyle: styles.background,
+		const steps = new Steps(["Add", "Name", "Avatar"])
+		const inputWallet = new InputHandler()
+		const inputName = new InputHandler()
 
-			children: <AddContact close={close} />,
-		})
-		gbs.snapToIndex(0)
+		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
+
+		const getBackHandler = () =>
+			BackHandler.addEventListener("hardwareBackPress", () => {
+				goBack()
+				return true
+			})
+
+		const scan = () => {
+			close()
+			navigation.navigate("ScannerQR", {
+				onBarCodeScanned: inputWallet.set,
+				onClose: open,
+			})
+		}
+
+		const children = () => (
+			<AddContact
+				inputWallet={inputWallet}
+				inputName={inputName}
+				onPressScan={scan}
+				close={close}
+				steps={steps}
+				onPressBack={goBack}
+			/>
+		)
+
+		const open = () => {
+			const backHandler = getBackHandler()
+			gbs.setProps({
+				snapPoints: [350],
+				animatedPosition,
+				backgroundStyle: styles.background,
+				onClose: () => {
+					backHandler.remove()
+				},
+				children,
+			})
+			requestAnimationFrame(() => gbs.expand())
+		}
+
+		open()
 	}, [])
 
 	const removeContact = useCallback(async (contact: Contact) => {
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			close()
+			return true
+		})
 		await gbs.setProps({
 			snapPoints: [270],
 			animatedPosition,
 			backgroundStyle: styles.background,
-
-			children: <RemoveContact close={close} contact={contact} />,
+			onClose: () => {
+				backHandler.remove()
+			},
+			children: () => <RemoveContact close={close} contact={contact} />,
 		})
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const editContact = useCallback(async (contact: Contact) => {
@@ -125,17 +203,26 @@ export default function useBottomSheetModals() {
 			},
 		)
 
+		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
+
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			goBack()
+			return true
+		})
+
 		await gbs.setProps({
 			snapPoints: [410],
 			animatedPosition,
 			backgroundStyle: styles.background,
-			onClose: disposer,
-			children: (
+			onClose: () => {
+				disposer()
+				backHandler.remove()
+			},
+			children: () => (
 				<EditContact close={close} contact={contact} steps={steps} navigation={navigation} />
 			),
 		})
-
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	const addAccount = useCallback(async () => {
@@ -164,21 +251,27 @@ export default function useBottomSheetModals() {
 			},
 		)
 
+		const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
+
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			goBack()
+			return true
+		})
+
 		await gbs.setProps({
 			snapPoints: [350],
 			animatedPosition,
 			backgroundStyle: styles.background,
-
 			keyboardBehavior: Platform.OS === "android" ? "interactive" : "fillParent",
 
 			onClose: () => {
 				disposer()
+				backHandler.remove()
 			},
 
 			children: () => <AddAccount steps={steps} phrase={phrase} close={close} />,
 		})
-
-		gbs.snapToIndex(0)
+		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
 	return [

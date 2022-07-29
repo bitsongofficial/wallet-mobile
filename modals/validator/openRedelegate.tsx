@@ -56,5 +56,5 @@ export default async function openRedelegate({ controller, onClose, onDone }: Op
 		),
 		children: () => <Redelegate controller={controller} />,
 	})
-	gbs.snapToIndex(0)
+	requestAnimationFrame(() => gbs.expand())
 }

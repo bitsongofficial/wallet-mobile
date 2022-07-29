@@ -8,19 +8,18 @@ import { useStore } from "hooks"
 import { COLOR, hexAlpha, wait } from "utils"
 import { Button, Icon2 } from "components/atoms"
 import { Header } from "./components/atoms"
-import { BottomSheetScrollView, TouchableOpacity } from "@gorhom/bottom-sheet"
+import { BottomSheetView, TouchableOpacity } from "@gorhom/bottom-sheet"
 import { useState } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useEffect } from "react"
 import { trimAddress } from "utils/string"
-import { ScrollView } from "react-native-gesture-handler"
 
 type Props = {
 	style: StyleProp<ViewStyle>
 	close(): void
 }
 
-export default observer(function ReceiveModal({ style, close }: Props) {
+export default observer<Props>(function ReceiveModal({ style, close }) {
 	const { wallet } = useStore()
 	const { screen } = useDimensions()
 	const [address, setAddress] = useState("")
@@ -29,12 +28,7 @@ export default observer(function ReceiveModal({ style, close }: Props) {
 
 	const [isCopied, setCopied] = useState(false)
 
-	const shortAddress = useMemo(() => {
-		if (address) {
-			return address ? trimAddress(address) : undefined
-		}
-		return ""
-	}, [address])
+	const shortAddress = useMemo(() => (address ? trimAddress(address) : ""), [address])
 
 	const copyToClipboard = useCallback(async () => {
 		if (address) {
@@ -46,12 +40,11 @@ export default observer(function ReceiveModal({ style, close }: Props) {
 	}, [address])
 
 	useEffect(() => {
-		if (wallet.activeWallet && wallet.activeWallet.wallets.btsg)
-			(async () => setAddress(await wallet.activeWallet?.wallets.btsg?.Address()))()
-	}, [wallet.activeWallet, wallet.activeWallet?.wallets, wallet.activeWallet?.wallets.btsg])
+		wallet.activeWallet?.wallets.btsg?.Address().then(setAddress)
+	}, [wallet.activeWallet?.wallets.btsg])
 
 	return (
-		<BottomSheetScrollView style={[styles.wrapper, style]}>
+		<BottomSheetView style={[styles.wrapper, style]}>
 			<Header title="Qr Code" subtitle="Scan to receive import" style={styles.header} />
 
 			<View style={styles.qr_code}>
@@ -75,7 +68,7 @@ export default observer(function ReceiveModal({ style, close }: Props) {
 					textStyle={styles.buttonText}
 				/>
 			</View>
-		</BottomSheetScrollView>
+		</BottomSheetView>
 	)
 })
 
@@ -86,7 +79,7 @@ const styles = StyleSheet.create({
 	},
 
 	header: {
-		marginBottom: 40,
+		marginBottom: 22,
 	},
 
 	subtitle: {
@@ -103,8 +96,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		paddingVertical: 19,
-
-		marginBottom: 40,
+		marginBottom: 20,
 	},
 
 	address: {
@@ -139,6 +131,7 @@ const styles = StyleSheet.create({
 		justifyContent: "flex-end",
 		alignItems: "center",
 		paddingBottom: 8,
+		paddingTop: 15,
 	},
 
 	buttonContent: {
