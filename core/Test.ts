@@ -14,11 +14,14 @@ import { CoinOperationEnum } from "./types/coin/OperationTypes"
 import { Wallet } from "./types/storing/Generic"
 import { argon2Encode, argon2Verify } from "utils/argon"
 import Config from "react-native-config"
+import { CoinClasses } from "./types/coin/Dictionaries"
 
 const amount = {
 	denom: Denom.UBTSG,
 	amount: "100",
 }
+
+const Bitsong = CoinClasses.btsg
 
 async function trySend(wallet: any, pubWallet: any, transaction: any)
 {
@@ -142,7 +145,7 @@ export async function test()
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 	}
 }

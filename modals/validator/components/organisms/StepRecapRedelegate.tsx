@@ -1,12 +1,12 @@
 import { StyleSheet } from "react-native"
 import { Coin } from "classes"
-import { IValidator } from "classes/types"
 import { COLOR } from "utils"
 import { Recap } from "../moleculs"
+import { Validator } from "core/types/coin/cosmos/Validator"
 
 type Props = {
-	from?: IValidator | null
-	to?: IValidator | null
+	from?: Validator | null
+	to?: Validator | null
 	coin: Coin | null
 	amount: string
 }

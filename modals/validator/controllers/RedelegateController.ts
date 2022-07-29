@@ -1,23 +1,23 @@
 import { AmountInput, Steps } from "classes"
-import { IValidator } from "classes/types"
+import { Validator } from "core/types/coin/cosmos/Validator"
 import { makeAutoObservable } from "mobx"
 
 export default class RedelegateController {
 	steps = new Steps(["Redelegate Import", "Redelegate to", "Redelegate Recap"])
 	amountInput = new AmountInput()
 
-	from: IValidator | null = null
-	to: IValidator | null = null
+	from: Validator | null = null
+	to: Validator | null = null
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
-	setFrom(validator: IValidator) {
+	setFrom(validator: Validator) {
 		this.from = validator
 	}
 
-	setTo(validator: IValidator) {
+	setTo(validator: Validator) {
 		this.to = validator
 	}
 

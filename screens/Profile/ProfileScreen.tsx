@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { StyleSheet, View } from "react-native"
+import { Linking, StyleSheet, View } from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
@@ -17,17 +17,18 @@ import Animated, {
 	useSharedValue,
 } from "react-native-reanimated"
 import {
-	Agreement,
-	Header,
-	ListButton,
-	Subtitle,
-	Title,
-	Value,
-	WalletButton,
-} from "./components/atoms"
-import { Head } from "./components/moleculs"
-import { useDimensions } from "@react-native-community/hooks"
-import { useBottomSheetModals } from "./hooks"
+  Agreement,
+  Header,
+  ListButton,
+  Subtitle,
+  Title,
+  Value,
+  WalletButton,
+} from "./components/atoms";
+import { Head } from "./components/moleculs";
+import { useDimensions } from "@react-native-community/hooks";
+import { useBottomSheetModals } from "./hooks";
+import { FAQ_URL, PRIVACY_POLICY_URL, TERMS_AND_CONDITIONS_URL } from "constants/Links";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">
 
@@ -74,10 +75,17 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		else settings.setTheme("light")
 	}, [])
 
-	const openCurrencyApp = useCallback(() => {}, [])
-	const openFAQ = useCallback(() => {}, [])
-	const openTermsAndConditions = useCallback(() => {}, [])
-	const openPrivacyPolicy = useCallback(() => {}, [])
+
+  const openCurrencyApp = useCallback(() => {}, []);
+  const openFAQ = useCallback(() => {
+    Linking.openURL(FAQ_URL)
+  }, []);
+  const openTermsAndConditions = useCallback(() => {
+    Linking.openURL(TERMS_AND_CONDITIONS_URL)
+  }, []);
+  const openPrivacyPolicy = useCallback(() => {
+    Linking.openURL(PRIVACY_POLICY_URL)
+  }, []);
 
 	const toggleNotification = useCallback(
 		() => settings.setNotifications({ enable: !settings.notifications.enable }),
@@ -204,64 +212,71 @@ export default observer<Props>(function MainScreen({ navigation }) {
 											arrow
 										/>
 									</View>
+                  <View style={styles.section}>
+                    <Subtitle style={styles.subtitle}>App Preferences</Subtitle>
+                    <ListButton
+                      text="Language"
+                      onPress={openModal.changeLanguage}
+                      icon="translate"
+                      style={styles.listButton}
+                      Right={<Value text={settings.language.name} />}
+                    />
+                    <ListButton
+                      text="Currency"
+                      onPress={openModal.channgeCurrency}
+                      icon="circle_dollar"
+                      style={styles.listButton}
+                      Right={
+                        settings.currency != null && (
+                          <Value text={settings.currency?.name} />
+                        )
+                      }
+                    />
+                    <ListButton
+                      text="Night Mode"
+                      onPress={toggleNightMode}
+                      icon="moon"
+                      style={styles.listButton}
+                      disabled={true}
+                      Right={
+                        <Switch active={settings.theme == "dark"} onPress={toggleNightMode} disabled={true} />
+                      }
+                    />
+                  </View>
 
-									<View style={styles.section}>
-										<Subtitle style={styles.subtitle}>App Preferences</Subtitle>
-										<ListButton
-											text="Language"
-											onPress={openModal.changeLanguage}
-											icon="translate"
-											style={styles.listButton}
-											Right={<Value text={settings.language.name} />}
-										/>
-										<ListButton
-											text="Currency"
-											onPress={openModal.channgeCurrency}
-											icon="circle_dollar"
-											style={styles.listButton}
-											Right={settings.currency != null && <Value text={settings.currency?.name} />}
-										/>
-										<ListButton
-											text="Night Mode"
-											onPress={toggleNightMode}
-											icon="moon"
-											style={styles.listButton}
-											Right={<Switch active={settings.theme == "dark"} onPress={toggleNightMode} />}
-										/>
-									</View>
-
-									<View style={styles.section}>
-										<Subtitle style={styles.subtitle}>Support</Subtitle>
-										<ListButton
-											text="Currency App"
-											onPress={openCurrencyApp}
-											icon="star"
-											arrow
-											style={styles.listButton}
-										/>
-										<ListButton
-											text="FAQ"
-											onPress={openFAQ}
-											icon="chat_dots"
-											arrow
-											style={styles.listButton}
-										/>
-										<ListButton
-											text="Terms and conditions"
-											onPress={openTermsAndConditions}
-											icon="file_text"
-											arrow
-											style={styles.listButton}
-										/>
-										<ListButton
-											text="Privacy Policy"
-											onPress={openPrivacyPolicy}
-											icon="file_text"
-											style={styles.listButton}
-											arrow
-										/>
-									</View>
-
+                  <View style={styles.section}>
+                    <Subtitle style={styles.subtitle}>Support</Subtitle>
+                    <ListButton
+                      text="Currency App"
+                      onPress={openCurrencyApp}
+                      icon="star"
+                      arrow
+                      style={styles.listButton}
+                      disabled={true}
+                    />
+                    <ListButton
+                      text="FAQ"
+                      onPress={openFAQ}
+                      icon="chat_dots"
+                      arrow
+                      style={styles.listButton}
+                    />
+                    <ListButton
+                      text="Terms and conditions"
+                      onPress={openTermsAndConditions}
+                      icon="file_text"
+                      arrow
+                      style={styles.listButton}
+                    />
+                    <ListButton
+                      text="Privacy Policy"
+                      onPress={openPrivacyPolicy}
+                      icon="file_text"
+                      style={styles.listButton}
+                      arrow
+                    />
+                  </View>
+                  
 									<Button
 										mode="fill"
 										text="Disconnect and Remove Wallet"

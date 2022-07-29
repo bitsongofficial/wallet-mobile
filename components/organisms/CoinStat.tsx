@@ -1,5 +1,7 @@
 import {
   Image,
+  ImageSourcePropType,
+  ImageURISource,
   StyleProp,
   StyleSheet,
   Text,
@@ -9,6 +11,9 @@ import {
 import { COLOR, hexAlpha } from "utils";
 import Coin from "classes/Coin";
 import { observer } from "mobx-react-lite";
+import { assets } from 'chain-registry'
+import { useStore } from "hooks";
+import { toJS } from "mobx";
 
 type Props = {
   coin: Coin;
@@ -16,6 +21,12 @@ type Props = {
 };
 
 export default observer(({ coin, style }: Props) => {
+  const { settings } = useStore()
+  const asset = assets.reduce((res: any[], a:any) => res.concat(a.assets), []).find((a: any)=>(a.base===coin.info.denom))
+  const logo = asset && asset.logo_URIs && asset.logo_URIs.png ? asset.logo_URIs.png : undefined
+  const source: ImageURISource = {uri: logo}
+  const name = asset ? asset.name.replace("Fantoken", "") : "undefined"
+  const display = asset ? asset.display.toUpperCase() : "Undefined"
   const balance = coin.balance.toLocaleString("en");
   const balanceUSD = coin.balanceUSD
     ? coin.balanceUSD.toLocaleString("en")
@@ -24,18 +35,18 @@ export default observer(({ coin, style }: Props) => {
   return (
     <View style={[styles.container, style]}>
       <View style={styles.imageContainer}>
-        <Image source={coin.info.logo} style={styles.image} />
+        <Image source={source} style={styles.image} />
       </View>
 
       <View style={styles.about}>
         <View style={styles.texts}>
-          <Text style={styles.primary}>{coin.info.brand}</Text>
-          <Text style={styles.secondary}>{coin.info.coinName}</Text>
+          <Text style={styles.primary}>{name}</Text>
+          <Text style={styles.secondary}>{display}</Text>
         </View>
 
         <View style={styles.numbers}>
           <Text style={styles.primary}>{balance}</Text>
-          {balanceUSD && <Text style={styles.secondary}>{balanceUSD} $</Text>}
+          {balanceUSD && <Text style={styles.secondary}>{balanceUSD} {settings.currency?.symbol}</Text>}
         </View>
       </View>
     </View>
@@ -66,6 +77,7 @@ const styles = StyleSheet.create({
   image: {
     width: 30,
     height: 30,
+    borderRadius: 30,
   },
   texts: {
     flex: 1,

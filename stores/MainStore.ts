@@ -27,7 +27,7 @@ export default class MainStore {
 		this.contacts,
 	)
 
-	validator = new ValidatorStore()
+	validators = new ValidatorStore(this.coin, this.wallet)
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })

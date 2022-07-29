@@ -14,8 +14,9 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { ScrollView } from "react-native-gesture-handler"
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal"
-import { SendController } from "screens/SendModalScreens/classes"
 import { useSendModal } from "screens/SendModalScreens/components/hooks"
+import { SupportedCoins } from "constants/Coins"
+import { Button } from "components/atoms"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -27,7 +28,7 @@ type Props = CompositeScreenProps<
 >
 
 export default observer<Props>(function MainScreen({ navigation }) {
-	const { coin, dapp, settings } = useStore()
+	const { coin, dapp, settings, validators } = useStore()
 	// need culc by wallet
 
 	const [activeTab, setActiveTab] = useState<ValueTabs>("Coins")
@@ -43,7 +44,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		[safeAreaInsets.bottom],
 	)
 
-	const openSend = useSendModal(sendCoinContainerStyle)
+	const openSendInner = useSendModal(sendCoinContainerStyle)
+	const openSend = coin.CanSend ? openSendInner : undefined
 	const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
 	const openReceive = useCallback(() => {
@@ -56,27 +58,25 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		gbs.snapToIndex(0)
 	}, [])
 
-	const openScanner = useCallback(
-		() =>
-			navigation.navigate("ScannerQR", {
-				onBarCodeScanned: (uri: string) => {
-					try {
-						if (uri.startsWith("wc")) {
-							dapp.connect(uri)
-						}
-					} catch (e) {
-						console.log(e)
-					}
-				},
-			}),
-		[],
-	)
+	const openScannerMemorized = useCallback(() => (navigation.navigate("ScannerQR", {
+		onBarCodeScanned: (uri: string) => {
+			try {
+				if (uri.startsWith("wc")) {
+					dapp.connect(uri)
+				}
+			} catch (e) {
+				console.error("Catched", e)
+			}
+		},
+	})), [])
+
+	const openScanner = coin.CanSend ? openScannerMemorized : undefined
 
 	const openToolbar = useCallback(() => {
-		const onPressScann = () => {
-			openScanner()
+		const onPressScann = coin.CanSend ? () => {
+			openScannerMemorized()
 			Platform.OS === "android" && gbs.close()
-		}
+		} : undefined
 
 		gbs.setProps({
 			snapPoints: ["70%"],
@@ -87,7 +87,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 					onPressReceive={openReceive}
 					onPressInquire={undefined}
 					onPressScan={onPressScann}
-					onPressClaim={undefined}
+					onPressClaim={validators.claimAll}
 					onPressStake={undefined}
 					onPressUnstake={undefined}
 					onPressRestake={undefined}
@@ -98,7 +98,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 			),
 		})
 		gbs.expand()
-	}, [])
+	}, [coin.CanSend])
 
 	const [isRefreshing, setRefreshing] = useState(false)
 
@@ -127,6 +127,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						<View style={styles.balance}>
 							<Text style={styles.balance_title}>Total Balance</Text>
 							<Text style={styles.balance_value}>{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}</Text>
+							{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}
+						</View>
+
+						<View style={styles.reward}>
+							<Text style={styles.reward_title}>Reward</Text>
+							<View style={styles.reward_row}>
+								<Text style={styles.reward_value}>{validators.totalReward.toFixed(2)} $</Text>
+								<Button onPress={callback}>CLAIM</Button>
+							</View>
 						</View>
 					</View>
 					<ToolbarShort
@@ -134,8 +143,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						onPressAll={openToolbar}
 						onPressInquire={undefined}
 						onPressReceive={openReceive}
-						onPressScan={coin.CanSend ? openScanner : undefined}
-						onPressSend={coin.CanSend ? openSend : undefined}
+						onPressScan={openScanner}
+						onPressSend={openSend}
 					/>
 					<Tabs
 						values={tabs}
@@ -147,7 +156,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 					<View style={styles.coins}>
 						{coin.coins
-							.filter((c) => c.balance > 0)
+							.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
 							.map((coin) => (
 								<TouchableOpacity key={coin.info._id} disabled={true}>
 									<CoinStat coin={coin} style={{ marginBottom: 9 }} />

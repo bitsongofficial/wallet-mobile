@@ -1,12 +1,12 @@
-import { Coin as CoinInterface } from "core/types/coin/Generic";
-import { CoinOperation } from "core/types/coin/OperationTypes";
+import { CoinOperation, OperationMap } from "core/types/coin/OperationTypes";
 
 export class Coin {
-	protected static operations: any = {}
-	public static async Do(operation: CoinOperation, params?: any) {
-		if(operation in this.operations)
+	protected operations: OperationMap = {}
+	public async Do(operation: CoinOperation, params?: any) {
+		const requestOp = this.operations[operation]
+		if(requestOp)
 		{
-			return await this.operations[operation].Run(params)
+			return await requestOp.Run(params)
 		}
 		else
 		{

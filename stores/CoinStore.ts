@@ -1,4 +1,5 @@
 import { Coin } from "classes";
+import { Coin as CoinClass } from "core/coin/Generic"
 import mock from "classes/mock";
 import { ICoin } from "classes/types";
 import { SupportedCoins, SupportedCoinsMap } from "constants/Coins";
@@ -13,7 +14,7 @@ import { autorun, keys, makeAutoObservable, runInAction, toJS, values } from "mo
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore, { ProfileWallets } from "./WalletStore";
-import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, SupportedFiats } from "core/utils/Coin";
+import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmount, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, SupportedFiats } from "core/utils/Coin";
 import SettingsStore from "./SettingsStore";
 import Config from "react-native-config";
 
@@ -77,6 +78,8 @@ export default class CoinStore {
 					{
 						const profile = this.walletStore.activeWallet
 						info.address = await profile?.wallets[chain].Address()
+						info._id = coin.denom()
+						info.denom = coin.denom()
 						balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
 							wallet: new PublicWallet(info.address)
 						}))
@@ -86,7 +89,7 @@ export default class CoinStore {
 				}
 			}
 			catch(e) {
-				console.log(e)
+				console.error("Catched", e)
 			}
 		}
 		let errors = false
@@ -103,14 +106,17 @@ export default class CoinStore {
 				if(balance)
 				{
 					if(balance.length > 0) balance.forEach(asset => {
-						if(asset.denom != "ubtsg") return
 						try
 						{
 							const currentInfo = Object.assign({}, infos[i])
+							currentInfo.denom = asset.denom
+							currentInfo._id = asset.denom
 							currentInfo.balance = fromAmountToCoin(asset)
 							coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices)))
 						}
-						catch{}
+						catch(e){
+							console.error("Catched", e)
+						}
 					})
 					else
 					{
@@ -135,7 +141,7 @@ export default class CoinStore {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 	}
 
@@ -154,7 +160,7 @@ export default class CoinStore {
 		return this.walletStore.activeProfile?.type != WalletTypes.WATCH
 	}
 
-	async send(coin: SupportedCoins, address: string, fiat:number)
+	async sendAmount(coin: SupportedCoins, address: string, amount: Amount)
 	{
 		runInAction(() =>
 		{
@@ -178,7 +184,7 @@ export default class CoinStore {
 			const data: FromToAmount = {
 				from:  wallet as CosmosWallet,
 				to: new PublicWallet(address),
-				amount: fromFIATToAmount(fiat, coinClass.coin.denom(), this.Prices),
+				amount,
 			}
 			const res = await coinClass.Do(CoinOperationEnum.Send, data)
 			runInAction(() =>
@@ -190,14 +196,33 @@ export default class CoinStore {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
+	}
+
+	async sendCoin(coin: SupportedCoins, address: string, balance: number)
+	{
+		this.sendAmount(coin, address, {
+			amount: balance.toString(),
+			denom: fromCoinToDefaultDenom(coin),
+		})
+	}
+
+	async sendFiat(coin: SupportedCoins, address: string, fiat: number)
+	{
+		this.sendAmount(coin, address, fromFIATToAmount(fiat, fromCoinToDefaultDenom(coin), this.Prices))
 	}
 
 	fromFIATToAssetAmount(fiat: number, asset: SupportedCoins)
 	{
 		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.Prices)
-		return parseFloat(assetAmount.amount) / convertRateFromDenom(assetAmount.denom)
+		return parseFloat(assetAmount.amount) /* / convertRateFromDenom(assetAmount.denom) */
+	}
+
+	fromFIATToCoin(fiat: number, asset: SupportedCoins)
+	{
+		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.Prices)
+		return parseFloat(assetAmount.amount) / (convertRateFromDenom(assetAmount.denom) ?? 1)
 	}
 
 	fromAmountToFIAT(amount: Amount)
@@ -205,5 +230,24 @@ export default class CoinStore {
 		return fromAmountToFIAT(amount, this.Prices)
 	}
 
-	defaultCoin = new Coin(mock.BitSong, 1000) // mock
+	fromCoinToFiat(balance: number, coin: SupportedCoins)
+	{
+		return this.fromAmountToFIAT(fromCoinToAmount(balance, coin))
+	}
+
+	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins)
+	{
+		const a = CoinClasses[coin]
+		if(a)
+		{
+			return this.fromCoinToFiat(balance, coin)
+		}
+
+		return 0
+	}
+
+	coinOfType(coin: SupportedCoins)
+	{
+		return this.coins.find(c => c.info.coin == coin) ?? null
+	}
 }

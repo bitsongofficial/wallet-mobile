@@ -1,43 +1,36 @@
-import { useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
-import { FlatList, ListRenderItem, Platform, SafeAreaView, StyleSheet, View } from "react-native"
+import { FlatList, ListRenderItem, Platform, RefreshControl, SafeAreaView, StyleSheet, View } from "react-native"
 import { RootStackParamList, RootTabParamList } from "types"
 import { COLOR } from "utils"
-import { Validator } from "components/organisms"
-import { useGlobalBottomsheet } from "hooks"
+import { Validator as ValidatorItem } from "components/organisms"
+import { useGlobalBottomsheet, useStore } from "hooks"
 import { Title, Toolbar } from "./components"
-import { IValidator } from "classes/types"
 import { TouchableOpacity } from "react-native-gesture-handler"
+import { Validator } from "core/types/coin/cosmos/Validator"
+import { openDelegateWithValidator } from "modals/validator"
+import { openRedelegateWithValidator, openUndelegateWithValidator } from "modals/validator/withValidator"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
 	BottomTabScreenProps<RootTabParamList, "StackingTab">
 >
 
-const data: IValidator[] = [
-	{
-		_id: "123",
-		name: "Forbole",
-		logo: "123451234",
-		claim: 234.78,
-		apr: 29.6,
-		voting_power: 10.6,
-		total: 4500000,
-		address_operation: "bitsongval00000000000000000za9ssklclsd",
-		address_account: "bitsongval00000000000000000za9ssklclsd",
-		uptime: 100,
-		maxConvertionRate: 100,
-		currentCommissionRate: 12.5,
-		lastCommissionChange: "Sun Oct 31 2021 00:00:00 GMT+0300",
-	},
-]
-
 export default observer<Props>(function Stacking({ navigation }) {
+	const {validators} = useStore()
 	const gbs = useGlobalBottomsheet()
+
+	const [isRefreshing, setRefreshing] = useState(false)
+
+	const onRefresh = useCallback(async () => {
+		setRefreshing(true)
+		await validators.load()
+		setRefreshing(false)
+	}, [])
 
 	const openBottomSheet = useCallback(async (item) => {
 		await gbs.setProps({
@@ -45,10 +38,18 @@ export default observer<Props>(function Stacking({ navigation }) {
 			children: () => (
 				<Toolbar
 					style={{ marginHorizontal: 30 }}
-					onPressClaim={() => {}}
-					onPressStake={() => {}}
-					onPressUnstake={() => {}}
-					onPressRestake={() => {}}
+					onPressClaim={
+						() => {validators.claim(item)}
+					}
+					onPressStake={
+						() => {openDelegateWithValidator(item, navigation)}
+					}
+					onPressUnstake={
+						() => (openUndelegateWithValidator(item, navigation))
+					}
+					onPressRestake={
+						() => (openRedelegateWithValidator(item, navigation))
+					}
 				/>
 			),
 		})
@@ -56,14 +57,14 @@ export default observer<Props>(function Stacking({ navigation }) {
 	}, [])
 
 	const navToValidator = useCallback(
-		(validator: IValidator) => navigation.navigate("Validator", { validator }),
+		(validator: Validator) => navigation.navigate("Validator", { validator }),
 		[],
 	)
 
-	const renderValidators = useCallback<ListRenderItem<IValidator>>(
+	const renderValidators = useCallback<ListRenderItem<Validator>>(
 		({ item }) => (
 			<TouchableOpacity onPress={() => navToValidator(item)}>
-				<Validator item={item} onPressKebab={openBottomSheet} />
+				<ValidatorItem item={item} onPressKebab={openBottomSheet} />
 			</TouchableOpacity>
 		),
 		[],
@@ -77,7 +78,15 @@ export default observer<Props>(function Stacking({ navigation }) {
 				<View style={styles.wrapper}>
 					<Title style={styles.title}>Validators</Title>
 
-					<FlatList data={data} renderItem={renderValidators} />
+					<FlatList data={validators.validators} renderItem={renderValidators}
+						refreshControl={
+							<RefreshControl
+								tintColor={COLOR.White}
+								refreshing={isRefreshing}
+								onRefresh={onRefresh}
+							/>
+						}
+					/>
 				</View>
 			</SafeAreaView>
 		</>

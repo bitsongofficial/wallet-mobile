@@ -11,9 +11,15 @@ export class Rewards extends CosmosOperation {
 		{
 			const service = this.coin.explorer()
 			const address = await data.wallet.Address()
-			const rawRewards = (await service.get(`/cosmos/distribution/v1beta1/delegators/${address}/rewards`)).data.rewards
+			const extraParams = data.validator ? ("/" + data.validator.operator) : ""
+			const rawRewards = (await service.get(`/cosmos/distribution/v1beta1/delegators/${address}/rewards${extraParams}`)).data.rewards
 			const rewards = rawRewards.map((r:any):Reward =>
-				({
+				(data.validator ? {
+					debtor: r.data.validator,
+					rewards: r as Amount[],
+				}
+				:
+				{
 					debtor: r.validator_address,
 					rewards: r.reward as Amount[],
 				}))
@@ -21,7 +27,7 @@ export class Rewards extends CosmosOperation {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 		return []
 	}

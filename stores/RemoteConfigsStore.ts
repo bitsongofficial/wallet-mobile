@@ -100,7 +100,7 @@ export default class RemoteConfigsStore {
 		}
 		catch(e: any)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 	}
 }

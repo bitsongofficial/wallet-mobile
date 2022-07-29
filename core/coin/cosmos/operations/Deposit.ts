@@ -33,7 +33,7 @@ export class Deposit extends CosmosOperation {
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 		return false
 	}

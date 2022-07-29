@@ -30,7 +30,7 @@ const TIME = 200
 const EASING = Easing.elastic(1.5)
 
 export default observer<Props>(({ navigation, route }) => {
-	const { callback, title = "Confirm with PIN", errorMax = 3, disableVerification = false } = route.params
+	const { callback, title = "Confirm with PIN", errorMax = 3, disableVerification = false, isRandomKeyboard = true } = route.params
 	const { wallet } = useStore()
 
 	const goBack = useCallback(() => navigation.goBack(), [])
@@ -133,7 +133,7 @@ export default observer<Props>(({ navigation, route }) => {
 	}))
 
 	const numpad = useMemo(
-		() => Pin.getKeyboard({ random: route.params.isRandomKeyboard }),
+		() => Pin.getKeyboard({ random: isRandomKeyboard }),
 		[route.params.isRandomKeyboard],
 	)
 

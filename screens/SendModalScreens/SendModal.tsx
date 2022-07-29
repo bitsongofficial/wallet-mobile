@@ -10,6 +10,7 @@ import { SendController } from "./classes"
 import { Header } from "./components/atoms"
 import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "./components/templates"
 import { COLOR } from "utils"
+import { toJS } from "mobx"
 
 type Props = {
 	close(): void
@@ -34,20 +35,20 @@ export default observer<Props>(function SendModal({
 
 	const creater = hasCoins
 		? controller.creater
-		: { coin: undefined, addressInput: undefined, amount: undefined }
+		: { coin: undefined, addressInput: undefined, balance: undefined, }
 
 	const goBack = useCallback(
 		() => (steps.title === "Insert Import" ? close() : steps.goBack()),
 		[steps, close],
 	)
 	const send = () => {
-		const { coin, addressInput, amount } = creater
-		if (coin && addressInput && amount) {
-			navigation.navigate("Loader", {
+		const { coin, addressInput, balance } = creater
+		if (coin && addressInput && balance) {
+			navigation.push("Loader", {
 				// @ts-ignore
 				callback: async () => {
 					// await wait(2000); // for example
-					await store.coin.send(coin.info.coin, addressInput.value, parseFloat(amount))
+					await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
 				},
 			})
 		}
