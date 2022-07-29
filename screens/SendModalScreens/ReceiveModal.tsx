@@ -59,15 +59,6 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 					<Icon2 name="copy" stroke={hexAlpha(COLOR.White, 30)} size={17} />
 				</TouchableOpacity>
 			</View>
-
-			<View style={[styles.footer, { marginBottom: insets.bottom }]}>
-				<Button
-					text="Close"
-					onPress={close}
-					contentContainerStyle={styles.buttonContent}
-					textStyle={styles.buttonText}
-				/>
-			</View>
 		</BottomSheetView>
 	)
 })
