@@ -1,3 +1,4 @@
+import { SupportedCoins } from "constants/Coins";
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov";
 
 export enum ProposalType {
@@ -27,6 +28,7 @@ export interface Proposal {
 	},
 	submit?: Date,
 	deposit?: Date,
+	chain?: SupportedCoins,
 }
 
 interface ProposalOption {
