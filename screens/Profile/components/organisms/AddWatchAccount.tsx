@@ -7,6 +7,7 @@ import { Steps } from "classes"
 import { Button } from "components/atoms"
 import { Search, Subtitle, Title } from "../atoms"
 import { useLoading, useStore } from "hooks"
+import { isValidAddress } from "core/utils/Address"
 
 type Props = {
 	close(): void
@@ -79,6 +80,7 @@ export default observer<Props>(({ close, steps }) => {
 			<View style={styles.footer}>
 				{steps.title === "Add" && (
 					<Button
+						disable={isValidAddress(inputWallet.value)}
 						text="Proceed"
 						onPress={openStepName}
 						contentContainerStyle={styles.buttonContent}
