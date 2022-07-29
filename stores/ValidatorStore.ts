@@ -1,4 +1,4 @@
-import { SupportedCoins } from "constants/Coins"
+import { SupportedCoins, SupportedCoinsMap } from "constants/Coins"
 import { ClaimData } from "core/types/coin/cosmos/ClaimData"
 import { DelegationsData } from "core/types/coin/cosmos/DelegationsData"
 import { RewardsData } from "core/types/coin/cosmos/RewardsData"
@@ -7,7 +7,7 @@ import { CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 import { CoinOperationEnum } from "core/types/coin/OperationTypes"
 import { fromAmountToCoin } from "core/utils/Coin"
-import { autorun, makeAutoObservable, runInAction, toJS } from "mobx"
+import { autorun, makeAutoObservable, runInAction, set, toJS } from "mobx"
 import CoinStore from "./CoinStore"
 import WalletStore from "./WalletStore"
 
@@ -25,6 +25,10 @@ export default class ValidatorStore {
 	}[] = []
 
 	totalVotingPower: number = 0
+
+	private aprRatio: SupportedCoinsMap = {
+
+	}
 
 	constructor(private coinStore: CoinStore, private walletStore: WalletStore) {
 		makeAutoObservable(this, {
@@ -50,6 +54,18 @@ export default class ValidatorStore {
 			try
 			{
 				const coin = CoinClasses[chain]
+				const service = coin.explorer()
+				Promise.all([
+					service.get("cosmos/mint/v1beta1/annual_provisions"),
+					service.get("cosmos/staking/v1beta1/pool"),
+				]).then((resRaw) =>
+				{
+					const res = resRaw.map(r => r.data)
+					set(this.aprRatio, {[chain]: res[0].annual_provisions / res[1].pool.bonded_tokens})
+				}).catch(e =>
+				{
+					console.error("Catched", e)
+				})
 				const val:Validator[] = await coin.Do(CoinOperationEnum.Validators)
 				val.forEach(v => {
 					v.chain = chain
@@ -78,6 +94,7 @@ export default class ValidatorStore {
 		this.validators.splice(0, this.validators.length, ...validators)
 		this.rewards.splice(0, this.rewards.length, ...rewards)
 		this.delegations.splice(0, this.delegations.length, ...delegations)
+		console.log(this.aprRatio)
 	}
 
 	get validatorsIds()
@@ -98,6 +115,13 @@ export default class ValidatorStore {
 	{
 		const v = this.resolveValidator(validator)
 		if(v) return v.tokens / this.totalVotingPower * 100
+		return 0
+	}
+
+	apr(validator: validatorIndexer)
+	{
+		const v = this.resolveValidator(validator)
+		if(v && v.chain) return (1 - v.commission.rate.current) * this.aprRatio[v.chain] * 100
 		return 0
 	}
 

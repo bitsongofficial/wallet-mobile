@@ -78,11 +78,11 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 
 	const data = useMemo<IData[]>(
 		() => [
-			{ title: "APR", value: `${validator.apr.toFixed(2)}%` },
+			{ title: "APR", value: `${validators.apr(validator).toFixed(2)}%` },
 			{ title: "VOTING POWER", value: `${validators.percentageVotingPower(validator).toFixed(1)}%` },
 			{ title: "TOTAL STAKE", value: `$${validators.totalStakeAsFIAT(validator).toFixed(2)}` },
 		],
-		[validator.apr, validator.tokens],
+		[validator, validator.commission.rate.current, validator.tokens],
 	)
 
 	const renderInfo = useCallback<ListRenderItem<IData>>(

@@ -32,6 +32,5 @@ export interface Validator {
 	operator: string,
 	tokens: number,
 	// uptime: number,
-	apr: number,
 	chain?: SupportedCoins,
 }

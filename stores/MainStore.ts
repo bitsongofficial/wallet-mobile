@@ -29,7 +29,7 @@ export default class MainStore {
 	)
 
 	validators = new ValidatorStore(this.coin, this.wallet)
-	// proposals = new ProposalsStore(this.wallet)
+	proposals = new ProposalsStore(this.wallet)
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
