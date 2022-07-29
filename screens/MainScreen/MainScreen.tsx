@@ -16,6 +16,7 @@ import { ScrollView } from "react-native-gesture-handler"
 import ReceiveModal from "screens/SendModalScreens/ReceiveModal"
 import { useSendModal } from "screens/SendModalScreens/components/hooks"
 import { SupportedCoins } from "constants/Coins"
+import { Button } from "components/atoms"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -27,7 +28,7 @@ type Props = CompositeScreenProps<
 >
 
 export default observer<Props>(function MainScreen({ navigation }) {
-	const { coin, dapp, settings } = useStore()
+	const { coin, dapp, settings, validators } = useStore()
 	// need culc by wallet
 
 	const [activeTab, setActiveTab] = useState<ValueTabs>("Coins")
@@ -86,7 +87,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 					onPressReceive={openReceive}
 					onPressInquire={undefined}
 					onPressScan={onPressScann}
-					onPressClaim={undefined}
+					onPressClaim={validators.claimAll}
 					onPressStake={undefined}
 					onPressUnstake={undefined}
 					onPressRestake={undefined}
@@ -126,6 +127,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						<View style={styles.balance}>
 							<Text style={styles.balance_title}>Total Balance</Text>
 							<Text style={styles.balance_value}>{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}</Text>
+							{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}
+						</View>
+
+						<View style={styles.reward}>
+							<Text style={styles.reward_title}>Reward</Text>
+							<View style={styles.reward_row}>
+								<Text style={styles.reward_value}>{validators.totalReward.toFixed(2)} $</Text>
+								<Button onPress={callback}>CLAIM</Button>
+							</View>
 						</View>
 					</View>
 					<ToolbarShort

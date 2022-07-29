@@ -246,5 +246,8 @@ export default class CoinStore {
 		return 0
 	}
 
-	defaultCoin = new Coin(mock.BitSong, 1000) // mock
+	coinOfType(coin: SupportedCoins)
+	{
+		return this.coins.find(c => c.info.coin == coin) ?? null
+	}
 }

@@ -4,6 +4,7 @@ import { FooterDelegate } from "./components/organisms"
 import { Delegate } from "./components/template"
 import { store } from "stores/Store"
 import { gbs } from "modals"
+import { SupportedCoins } from "constants/Coins"
 
 type Options = {
 	controller: DelegateController
@@ -13,7 +14,12 @@ type Options = {
 
 export default async function openDelegate({ onDone, onClose, controller }: Options) {
 	const { coin: coinStore } = store
-	controller.amountInput.setCoin(coinStore.defaultCoin) // as example
+	const validator = controller.selectedValidator
+	if(validator)
+	{
+		const coin = coinStore.coinOfType(validator.chain ?? SupportedCoins.BITSONG)
+		if(coin) controller.amountInput.setCoin(coin) // as example
+	}
 
 	const { steps } = controller
 
@@ -44,7 +50,11 @@ export default async function openDelegate({ onDone, onClose, controller }: Opti
 		snapPoints: [600],
 		onClose: close,
 		footerComponent: () => (
-			<FooterDelegate onPressDone={onDone} onPressBack={goBack} steps={steps} />
+			<FooterDelegate onPressDone={() =>
+				{
+					onDone && onDone()
+					gbs.close()
+				}} onPressBack={goBack} steps={steps} />
 		),
 		children: () => <Delegate controller={controller} />,
 	})

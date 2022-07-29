@@ -4,6 +4,7 @@ import { FooterRedelegate } from "./components/organisms"
 import { Redelegate } from "./components/template"
 import { store } from "stores/Store"
 import { gbs } from "modals"
+import { SupportedCoins } from "constants/Coins"
 
 type Options = {
 	controller: RedelegateController
@@ -13,7 +14,12 @@ type Options = {
 
 export default async function openRedelegate({ controller, onClose, onDone }: Options) {
 	const { coin: coinStore } = store
-	controller.amountInput.setCoin(coinStore.defaultCoin) // as example
+	const validator = controller.from
+	if(validator)
+	{
+		const coin = coinStore.coinOfType(validator.chain ?? SupportedCoins.BITSONG)
+		if(coin) controller.amountInput.setCoin(coin)
+	}
 
 	const { steps } = controller
 
@@ -43,7 +49,11 @@ export default async function openRedelegate({ controller, onClose, onDone }: Op
 		snapPoints: [600],
 		onClose: close,
 		footerComponent: () => (
-			<FooterRedelegate onPressDone={onDone} onPressBack={goBack} steps={steps} />
+			<FooterRedelegate onPressDone={() =>
+				{
+					onDone && onDone()
+					gbs.close()
+				}} onPressBack={goBack} steps={steps} />
 		),
 		children: () => <Redelegate controller={controller} />,
 	})

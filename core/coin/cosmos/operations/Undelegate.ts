@@ -8,7 +8,6 @@ export class Undelegate extends CosmosOperation {
 			[
 				data.delegator.Address(),
 				data.delegator.Signer(),
-				data.validator.Address(),
 			])
 		const wallet = walletInfos[1]
 		const client = await SigningStargateClient.connectWithSigner(this.coin.RPCEndpoint(), wallet, {
@@ -17,7 +16,7 @@ export class Undelegate extends CosmosOperation {
 
 		try
 		{
-			const result = await client.undelegateTokens(walletInfos[0], walletInfos[2], data.amount, "auto", data.description)
+			const result = await client.undelegateTokens(walletInfos[0], data.validator.operator, data.amount, "auto", data.description)
 			assertIsDeliverTxSuccess(result)
 			return true
 		}
