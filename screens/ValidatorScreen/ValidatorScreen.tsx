@@ -1,43 +1,36 @@
-import { useCallback, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
-import { ListRenderItem, Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
+import { Image, ListRenderItem, Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
 import { RootStackParamList } from "types"
 import { COLOR, hexAlpha } from "utils"
 import { CardAddress, CardClaim, CardDelegation, CardInfo } from "./components/moleculs"
 import { FlatList, ScrollView } from "react-native-gesture-handler"
-import { IValidator } from "classes/types"
+import { Validator } from "core/types/coin/cosmos/Validator"
 import moment from "moment"
 import { ButtonBack } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Stat } from "./components/atoms"
 import {
-	openDelegate,
+	openDelegateWithValidator,
 	openRedelegate,
+	openRedelegateWithValidator,
 	openUndelegate,
-	DelegateController,
 	RedelegateController,
 	UndelegateController,
 } from "modals/validator"
+import { useStore } from "hooks"
+import { SupportedCoins } from "constants/Coins"
+import * as Clipboard from "expo-clipboard"
+import { CoinClasses } from "core/types/coin/Dictionaries"
+import { CoinOperationEnum } from "core/types/coin/OperationTypes"
+import { DelegateData } from "core/types/coin/cosmos/DelegateData"
+import { convertRateFromDenom } from "core/utils/Coin"
+import { RedelegateData } from "core/types/coin/cosmos/RedelegateData"
+import { openUndelegateWithValidator } from "modals/validator/withValidator"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Validator">
-
-const mock: IValidator = {
-	_id: "123",
-	name: "Forbole",
-	logo: "123451234",
-	claim: 234.78,
-	apr: 29.6,
-	voting_power: 10.6,
-	total: 4500000,
-	address_operation: "bitsongval00000000000000000za9ssklclsd",
-	address_account: "bitsongval00000000000000000za9ssklclsd",
-	uptime: 100,
-	maxConvertionRate: 100,
-	currentCommissionRate: 12.5,
-	lastCommissionChange: "Sun Oct 31 2021 00:00:00 GMT+0300",
-}
 
 type IData = {
 	title: string
@@ -45,52 +38,37 @@ type IData = {
 }
 
 export default observer<Props>(function Stacking({ navigation, route }) {
-	const validator = mock // route.params.validator
+	const { validators, wallet } = useStore()
+	const validator = route.params.validator
+	const [address, setAddress] = useState("")
+
+	useEffect(() =>
+	{
+		(async () =>
+		{
+			setAddress(await wallet.activeWallet?.wallets[validator.chain ?? SupportedCoins.BITSONG].Address())
+		})()
+	}, [])
+
+	const onPressClaim = () => (validators.claim(validator))
 
 	// --------- Modals --------------
 
-	const openDelegateModal = useCallback(() => {
-		openDelegate({
-			controller: new DelegateController(),
-			onDone() {
-				// nav to check pin with callback
-			},
-		})
-	}, [])
+	const openDelegateModal = () => (openDelegateWithValidator(validator, navigation))
 
-	const openRedelegateModal = useCallback(() => {
-		const controller = new RedelegateController()
-		controller.setFrom(validator)
+	const openRedelegateModal = () => (openRedelegateWithValidator(validator, navigation))
 
-		openRedelegate({
-			controller,
-			onDone() {
-				// nav to check pin with callback
-			},
-		})
-	}, [])
-
-	const openUndelegateModal = useCallback(() => {
-		const controller = new UndelegateController()
-		controller.setFrom(validator)
-
-		openUndelegate({
-			controller,
-			onDone() {
-				// nav to check pin with callback
-			},
-		})
-	}, [])
+	const openUndelegateModal = () => (openUndelegateWithValidator(validator, navigation))
 
 	// =======================================
 
 	const data = useMemo<IData[]>(
 		() => [
-			{ title: "APR", value: `${validator.apr}%` },
-			{ title: "VOTING POWER", value: `${validator.voting_power}%` },
-			{ title: "TOTAL STAKE", value: `$${validator.total}` },
+			{ title: "APR", value: `${validator.apr.toFixed(2)}%` },
+			{ title: "VOTING POWER", value: `${validators.percentageVotingPower(validator).toFixed(1)}%` },
+			{ title: "TOTAL STAKE", value: `$${validators.totalStakeAsFIAT(validator)}` },
 		],
-		[validator.apr, validator.voting_power, validator.total],
+		[validator.apr, validator.tokens],
 	)
 
 	const renderInfo = useCallback<ListRenderItem<IData>>(
@@ -104,6 +82,8 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 
 	const insets = useSafeAreaInsets()
 
+	const source = validator.logo ? {uri: validator.logo} : undefined
+
 	return (
 		<>
 			<StatusBar style="light" />
@@ -113,25 +93,28 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 					<View style={styles.wrapper}>
 						<View style={styles.head}>
 							<View style={styles.avatarContainer}>
-								<View style={styles.avatar} />
+								<View style={styles.avatar} >
+									{source && <Image source={source} />}
+								</View>
 							</View>
 
 							<View style={{ justifyContent: "center" }}>
 								<View style={styles.validatorNameContainer}>
-									<Text style={styles.validatorName}>{validator.name}</Text>
+									<Text style={styles.validatorName}>{validator.name ? validator.name : validator.id}</Text>
 									<View style={styles.badge}>
-										<Text style={styles.badgeText}>ACTIVE</Text>
+										<Text style={styles.badgeText}>{validator.status.statusDetailed}</Text>
 									</View>
 								</View>
 								<View>
-									<Text style={styles.tag}>Co-building the interchain</Text>
+									<Text style={styles.tag}>{validator.description}</Text>
 								</View>
 							</View>
 						</View>
 
-						<CardClaim style={styles.claim} onPressClaim={openDelegateModal} />
+						<CardClaim style={styles.claim} onPressClaim={onPressClaim} value={validators.validatorReward(validator)} />
 
 						<CardDelegation
+							value={validators.validatorDelegations(validator)}
 							style={styles.delegation}
 							onPressStake={openDelegateModal}
 							onPressUnstake={openUndelegateModal}
@@ -152,38 +135,42 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 					<View style={styles.wrapper}>
 						<CardAddress
 							title="OPERATION ADDRESS"
-							onPress={() => {}}
-							value={validator.address_operation}
+							onPress={() => {
+								Clipboard.setStringAsync(validator.operator)
+							}}
+							value={validator.operator}
 							style={styles.address}
 						/>
 						<CardAddress
 							title="ACCOUNT ADDRESS"
-							onPress={() => {}}
-							value={validator.address_account}
+							onPress={() => {
+								Clipboard.setStringAsync(validator.operator)
+							}}
+							value={address}
 							style={styles.address}
 						/>
 
 						<View style={{ marginHorizontal: 10, marginTop: 10 }}>
-							<Stat
+							{/* <Stat
 								style={styles.stat}
 								title="Uptime"
 								value={validator.uptime + "%"}
 								//
-							/>
+							/> */}
 							<Stat
 								style={styles.stat}
 								title="Max Conversion Rate"
-								value={validator.maxConvertionRate + "%"}
+								value={validator.commission.rate.max + "%"}
 							/>
 							<Stat
 								style={styles.stat}
 								title="Current Commission Rate"
-								value={validator.currentCommissionRate + "%"}
+								value={validator.commission.rate.current + "%"}
 							/>
 							<Stat
 								style={styles.stat}
 								title="Last Commission Change"
-								value={moment(validator.lastCommissionChange).fromNow()}
+								value={moment(validator.commission.change.last).fromNow()}
 							/>
 						</View>
 					</View>

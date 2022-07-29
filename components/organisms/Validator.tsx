@@ -1,25 +1,29 @@
 import { useCallback } from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { Image, StyleSheet, Text, View } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import { COLOR } from "utils"
 import { Icon2 } from "components/atoms"
-import { IValidator } from "classes/types"
+import { Validator } from "core/types/coin/cosmos/Validator"
+import { useStore } from "hooks"
 
 type ValidatorProps = {
-	item: IValidator
-	onPressKebab(item: IValidator): void
+	item: Validator
+	onPressKebab(item: Validator): void
 }
 
 export default ({ item, onPressKebab }: ValidatorProps) => {
 	const handlePressKebab = useCallback(() => onPressKebab(item), [item])
+	const { validators } = useStore()
+
+	const source = item.logo ? { uri: item.logo } : undefined
 
 	return (
 		<View style={styles.container}>
 			<View style={[styles.row, { marginBottom: 14 }]}>
 				<View style={styles.info}>
-					{/* <Image source={{ uri: item.logo }} /> */}
+					{source && <Image source={source} />}
 					<View style={styles.avatar} />
-					<Text style={styles.title}>Forbole</Text>
+					<Text style={styles.title}>{item.name ? item.name : item.id}</Text>
 				</View>
 				<RectButton onPress={handlePressKebab}>
 					<Icon2 name="kebab" stroke={COLOR.Marengo} size={24} />
@@ -27,11 +31,11 @@ export default ({ item, onPressKebab }: ValidatorProps) => {
 			</View>
 			<View style={styles.footer}>
 				<View style={styles.left}>
-					<Text style={styles.percent}>33.83%</Text>
+					<Text style={styles.percent}>{item.apr.toFixed(2)} %</Text>
 					<Text style={styles.text}>APR</Text>
 				</View>
 				<View style={styles.right}>
-					<Text style={styles.percent}>10.64%</Text>
+					<Text style={styles.percent}>{validators.percentageVotingPower(item)} %</Text>
 					<Text style={styles.text}>VOTING POWER</Text>
 				</View>
 			</View>

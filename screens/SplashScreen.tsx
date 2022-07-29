@@ -19,10 +19,8 @@ export default observer<Props>(function SplashScreen({ navigation }) {
 
 	const mainScreen = useCallback(() => navigation.replace("Root"), [])
 	const start = useCallback(() => navigation.replace("Start"), [])
-	const storage = useAsyncStorage("a")
 
 	useEffect(() => {
-		console.log("Run")
 		const dismiss = autorun(() => {
 			if (wallet.firstLoad) {
 				if (wallet.wallets.length > 0) mainScreen()

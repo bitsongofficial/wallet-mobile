@@ -34,7 +34,7 @@ export default ({
 				<ToolbarAction
 					backgroundStyle={styles.actionBackground}
 					title="Stake"
-					onPress={onPressRestake}
+					onPress={onPressStake}
 					Icon={<Icon2 size={18} stroke={COLOR.White} name="stake" />}
 					size={65}
 				/>
@@ -48,7 +48,7 @@ export default ({
 				<ToolbarAction
 					backgroundStyle={styles.actionBackground}
 					title="Restake"
-					onPress={onPressStake}
+					onPress={onPressRestake}
 					Icon={<Icon2 size={18} stroke={COLOR.White} name="restake" />}
 					size={65}
 				/>
