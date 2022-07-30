@@ -8,6 +8,8 @@ import { SendController } from "../../classes";
 import { CardAddress, CardAdressSelf } from "../moleculs";
 import { Footer, User } from "../atoms";
 import { isValidAddress } from "core/utils/Address";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { Contact } from "stores/ContactsStore";
 
 type Props = {
   controller: SendController;
@@ -30,6 +32,11 @@ export default observer(function SelectReceiver({
   const hidden = useSpring({ opacity: addressInput.isFocused ? 0.1 : 1 });
   useEffect(() => addressInput.focusOFF, []);
 
+  const setAddress = (contact: Contact) =>
+  {
+    addressInput.set(contact.address)
+  }
+
   return (
     <>
       <BottomSheetScrollView style={{ flexGrow: 1 }}>
@@ -45,7 +52,12 @@ export default observer(function SelectReceiver({
 
             <View style={styles.users}>
               {contacts.starred.map((c) => (
-                <User user={c} key={c.address} />
+                <TouchableOpacity key={c.address} onPress={() =>
+                {
+                  setAddress(c)
+                }}>
+                  <User user={c} />
+                </TouchableOpacity>
               ))}
             </View>
           </>}

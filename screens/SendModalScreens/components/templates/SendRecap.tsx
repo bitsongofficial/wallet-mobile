@@ -11,12 +11,13 @@ import {
   BottomSheetScrollView,
   BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
-import { useTheme } from "hooks";
+import { useStore, useTheme } from "hooks";
 import { InputHandler } from "utils";
 import { Tabs, Recap } from "components/organisms";
 import { SendController } from "../../classes";
 import { Footer } from "../atoms";
 import { Data } from "../organisms";
+import { SupportedCoins } from "constants/Coins";
 
 type ValueTabs = "Details" | "Data";
 const tabs = ["Details", "Data"];
@@ -34,6 +35,7 @@ export default observer(function SelectReceiver({
   onPressSend,
   isShowBack,
 }: Props) {
+  const {coin} = useStore()
   const theme = useTheme();
 
   const [activeTab, setActiveTab] = useState<ValueTabs>("Details");
@@ -69,7 +71,7 @@ export default observer(function SelectReceiver({
             bottomSheet
             style={{ marginTop: 36 }}
             address={controller.creater.address}
-            amount={controller.creater.amount}
+            amount={coin.fromCoinBalanceToFiat(controller.creater.balance, controller.creater.coin?.info.coin ?? SupportedCoins.BITSONG).toString()}
             coin={controller.creater.coin?.info}
             onPress={() => {}}
             memoInput={memo}

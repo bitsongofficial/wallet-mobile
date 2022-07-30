@@ -48,7 +48,7 @@ export default observer<Props>(function SendModal({
 				// @ts-ignore
 				callback: async () => {
 					// await wait(2000); // for example
-					await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
+					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
 				},
 			})
 		}

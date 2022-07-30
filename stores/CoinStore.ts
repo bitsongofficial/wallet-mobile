@@ -193,6 +193,8 @@ export default class CoinStore {
 				this.results.send = res
 			})
 			this.updateBalances()
+
+			return res
 		}
 		catch(e)
 		{
@@ -202,15 +204,16 @@ export default class CoinStore {
 
 	async sendCoin(coin: SupportedCoins, address: string, balance: number)
 	{
-		this.sendAmount(coin, address, {
-			amount: balance.toString(),
-			denom: fromCoinToDefaultDenom(coin),
+		const denom = fromCoinToDefaultDenom(coin)
+		return await this.sendAmount(coin, address, {
+			amount: (balance * convertRateFromDenom(denom)).toString(),
+			denom: denom,
 		})
 	}
 
 	async sendFiat(coin: SupportedCoins, address: string, fiat: number)
 	{
-		this.sendAmount(coin, address, fromFIATToAmount(fiat, fromCoinToDefaultDenom(coin), this.Prices))
+		return await this.sendAmount(coin, address, fromFIATToAmount(fiat, fromCoinToDefaultDenom(coin), this.Prices))
 	}
 
 	fromFIATToAssetAmount(fiat: number, asset: SupportedCoins)

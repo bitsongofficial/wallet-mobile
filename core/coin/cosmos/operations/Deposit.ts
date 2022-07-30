@@ -29,7 +29,9 @@ export class Deposit extends CosmosOperation {
 			const result = await client.signAndBroadcast(walletInfos[0], [message], "auto", data.description)
 			assertIsDeliverTxSuccess(result)
 				
-			return true
+			return {
+				hash: result.transactionHash
+			}
 		}
 		catch(e)
 		{
