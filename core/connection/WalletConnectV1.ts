@@ -190,13 +190,17 @@ export class WalletConnectCosmosClientV1 {
 				case operationToAminoType(CoinOperationEnum.Claim):
 					wallet = await this.getWalletOrReject(params.value.delegatorAddress, reject)
 					if(!wallet) return
-					operationData = {
+					const claimData = {
 						owner: wallet,
-						validators: [new PublicWallet(params.value.validatorAddress)],
+						validators: [{operator: params.value.validatorAddress} as any],
+					}
+					data = {
+						owner: wallet,
+						validator: params.value.validatorAddress,
 					}
 					accept = async () =>
 					{
-						const data: ClaimData = operationData
+						const data: ClaimData = claimData
 						const res = await Bitsong.Do(CoinOperationEnum.Claim, data)
 						approve(res)
 						return res
@@ -256,12 +260,7 @@ export class WalletConnectCosmosClientV1 {
 						return res
 					}
 					break
-			}
-
-			if(params.typeUrl != operationToAminoType(CoinOperationEnum.Send)) data = {
-				type: params.typeUrl,
-				data: params.value,
-			}			
+			}		
 			
 			if(options.onRequest) options.onRequest(params.typeUrl, data, {
 				accept,

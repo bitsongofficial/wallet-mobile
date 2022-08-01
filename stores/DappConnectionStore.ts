@@ -9,6 +9,12 @@ import LocalStorageManager from "./LocalStorageManager";
 import SettingsStore from "./SettingsStore";
 import { confirmTransaction } from "components/organisms/TransactionSignConfirm";
 import mock from "classes/mock";
+import { CoinOperationEnum } from "core/types/coin/OperationTypes";
+import { operationToAminoType } from "core/coin/cosmos/operations/utils";
+import { openClaim } from "modals/validator";
+import ValidatorStore from "./ValidatorStore";
+import { SupportedCoins } from "constants/Coins";
+import { getMainNavigation } from "navigation/utils";
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
@@ -22,7 +28,7 @@ export default class DappConnectionStore {
 	  return true;
 	}
 
-	constructor(private walletStore: WalletStore, private coinStore: CoinStore, private remoteConfigsStore: RemoteConfigsStore, private settingsStore: SettingsStore)
+	constructor(private walletStore: WalletStore, private coinStore: CoinStore, private validatorsStore: ValidatorStore, private remoteConfigsStore: RemoteConfigsStore, private settingsStore: SettingsStore)
 	{
 		makeAutoObservable(this, {}, { autoBind: true })
 		// AsyncStorageLib.removeItem(session_location)
@@ -57,9 +63,11 @@ export default class DappConnectionStore {
 
 	private onRequest(type: string, data: any, handler: acceptRejectType)
 	{
+		const navigation = getMainNavigation()
+		console.log(type, operationToAminoType(CoinOperationEnum.Claim))
 		switch(type)
 		{
-			case "/cosmos.bank.v1beta1.MsgSend":
+			case operationToAminoType(CoinOperationEnum.Send):
 				openSendRecap({
 					to: data.to,
 					from: Object.assign(mock.BitSong, {
@@ -74,11 +82,52 @@ export default class DappConnectionStore {
 					onReject: () => {handler.reject()},
 				})
 				break
+			case operationToAminoType(CoinOperationEnum.Claim):
+				const validator = this.validatorsStore.resolveValidator({operator: data.validator})
+				if(validator == null)
+				{
+					handler.reject()
+					return
+				}
+				const {accept, reject} = handler
+				openClaim({
+					onDone: async () =>
+					{
+						const res = await accept()
+						if(res) this.validatorsStore.update()
+						return res
+					},
+					onDismiss: reject,
+					amount: this.validatorsStore.validatorReward(validator),
+					coinName: validator.chain ?? SupportedCoins.BITSONG,
+				})
+				break
 			default:
 				confirmTransaction(data, handler.accept, handler.reject)
 				break
 		}
 	}
+
+	// private getExclusiveHandler(handler: acceptRejectType): acceptRejectType
+	// {
+	// 	const status = {accepted: false}
+	// 	return {
+	// 		accept: () =>
+	// 		{
+	// 			console.log("Accept")
+	// 			status.accepted = true
+	// 			handler.accept()
+	// 		},
+	// 		reject: () =>
+	// 		{
+	// 			if(!status.accepted)
+	// 			{
+	// 				console.log("Reject")
+	// 				handler.reject()
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	private onConnect(connection: WalletConnectCosmosClientV1)
 	{
