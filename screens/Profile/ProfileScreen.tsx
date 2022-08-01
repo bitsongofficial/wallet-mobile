@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite"
 import { RootStackParamList } from "types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { useStore, useTheme } from "hooks"
-import { Button, Switch, ThemedGradient } from "components/atoms"
+import { Agreement, Button, Switch, ThemedGradient } from "components/atoms"
 import { COLOR, InputHandler } from "utils"
 import { animated, useSpring } from "@react-spring/native"
 import Animated, {
@@ -17,7 +17,6 @@ import Animated, {
 	useSharedValue,
 } from "react-native-reanimated"
 import {
-  Agreement,
   Header,
   ListButton,
   Subtitle,
@@ -40,7 +39,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 	const { screen } = useDimensions()
 
-	const [position, openModal, closeModal] = useBottomSheetModals()
+	const [position, openModal] = useBottomSheetModals()
 
 	const animStyle = useAnimatedStyle(() => {
 		const opacity = interpolate(position.value, [0, screen.height], [0, 1], Extrapolation.EXTEND)
@@ -52,7 +51,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 	const inputNick = useMemo(
 		() => new InputHandler(wallet.activeProfile?.name),
-		[wallet, wallet.activeProfile, wallet.activeProfile?.name],
+		[wallet.activeProfile?.name],
 	)
 	const hidden = useSpring({ opacity: inputNick.isFocused ? 0.3 : 1 })
 
@@ -98,10 +97,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
 			wallet.changeActiveProfileName(inputNick.value)
 		}
 	}, [inputNick])
-
-	useEffect(() => {
-		if (inputNick.isFocused) closeModal()
-	}, [inputNick.isFocused])
 
 	const translationY = useSharedValue(0)
 	const scrollHandler = useAnimatedScrollHandler({
