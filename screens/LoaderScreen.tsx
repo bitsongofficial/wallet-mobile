@@ -34,7 +34,8 @@ export default function LoaderScreen({
       ?.callback()
       .then((r) => {
         result.current = r;
-        setStatus("fulfilled");
+        if(r) setStatus("fulfilled")
+        else setStatus("rejected")
       })
       .catch((e) => {
         error.current = e;

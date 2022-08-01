@@ -1,7 +1,9 @@
 import { Coin, Steps } from "classes";
 import Transaction from "classes/Transaction";
 import TransactionCreater from "classes/Transaction/Creater";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction, toJS } from "mobx";
+import { CoinStore } from "stores";
+import { store } from "stores/Store";
 import { round } from "utils";
 
 export default class SendController {
@@ -12,128 +14,122 @@ export default class SendController {
     "Select coin",
   ]);
 
-  creater = new Transaction.Creater();
-  balance = ""
+  private currentInput = ""
+  private invertedInner = true
 
-  constructor(coin: Coin, creater?: TransactionCreater) {
-    if(creater) this.creater = creater
-    this.creater.setCoin(coin);
+  creater = new Transaction.Creater();
+
+  constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  fromAmountToBalance(amount: string)
+  get readableInput () {
+    return this.currentInput == "" ? "0" : this.currentInput
+  }
+
+  setCreater(creater: TransactionCreater)
   {
-    let v
-    if (this.creater.coin?.rate) {
-      const value = Coin.culcTokenBalance(
-        parseFloat(amount),
-        this.creater.coin.rate
-      );
-      if (value) {
-        v = round(value);
-      }
-      else
-      {
-        v = 0
-      }
-    }
-    else
+    this.creater = creater
+  }
+
+  private maxAvailableValue() {
+    const coinStore = store.coin
+    const coin = this.creater.coin
+    let max = 0
+    if(coin)
     {
-      v = 0
+      max = coin.balance
+      if(this.inverted)
+      {
+        max = coinStore.fromCoinToFiat(max, coin.info.coin)
+      }
     }
-    return v.toString()
+
+    return max
   }
 
-  fromBalanceToAmount(balance: string)
+  limitDecimal(val: string, limit: number)
   {
-    if (this.creater.coin?.rate) {
-      const value = Coin.culcFiatBalance(
-        parseFloat(balance),
-        this.creater.coin.rate
-      );
-      if (value) {
-        return round(value).toString();
-      }
-      else
-      {
-        return ""
-      }
-    }
-    else
+    
+    const dot = val.indexOf(".")
+    if(dot > -1) return val.substring(0, dot + limit + 1)
+    return val
+  }
+
+  get fiat(): string {
+    const balance = this.creater.balance
+    const coin = this.creater.coin?.info.coin
+    if(balance && coin) return this.limitDecimal(store.coin.fromCoinBalanceToFiat(balance, coin).toString(), 2)
+    return ""
+  }
+
+  set fiat(value) {
+    const f = parseFloat(value ?? 0)
+    const coin = this.creater.coin?.info.coin
+    if(coin)
     {
-      return ""
+      const balance = store.coin.fromFIATToCoin(f, coin)
+      this.creater.setBalance(balance)
     }
   }
 
-  updateAmountFromBalance()
-  {
-    this.creater.setAmount(this.fromBalanceToAmount(this.balance))
+  get balance () {
+    const balance = this.creater.balance
+    return balance ? this.limitDecimal(balance.toString(), 5) : ""
   }
 
-  updateBalanceFromAmount()
-  {
-    if (this.creater.coin?.rate) {
-      const value = Coin.culcTokenBalance(
-        parseFloat(this.creater.amount),
-        this.creater.coin.rate
-      );
-      if (value) {
-        this.balance = (round(value).toString());
-      }
-      else
-      {
-        this.balance = ""
-      }
-    }
+  set balance(value) {
+    this.creater.setBalance(parseFloat(value))
   }
 
   isValidNumberString(current: string, num: string) {
     return (num === "." && !current.includes(num)) || num !== ".";
   }
 
-  addAmountNumber(num: string) {
-    const { coin, amount } = this.creater;
-    const isDotIsOnce = this.isValidNumberString(amount, num)
+  setActive(value: string) {
+    if(this.inverted) this.fiat = value
+    else this.balance = value
+  }
+
+  addNumber(num: string) {
+    const isDotIsOnce = this.isValidNumberString(this.currentInput, num)
 
     if (isDotIsOnce) {
-      const nextAmount = amount + num;
-      const balance = coin?.balanceUSD;
-
-      !balance || balance > Number(nextAmount)
-        ? this.creater.setAmount(nextAmount)
-        : this.creater.setMax();
+      this.currentInput = this.currentInput + num
+      const max = this.maxAvailableValue()
+      if(parseFloat(this.currentInput) > max) this.currentInput = max.toString()
+      if(this.currentInput == "0") this.currentInput = ""
+      let limit = 2
+      if(!this.inverted) limit = 5
+      this.currentInput = this.limitDecimal(this.currentInput, limit)
+      this.setActive(this.currentInput)
     }
-    this.updateBalanceFromAmount()
   }
 
-  removeAmountNumber() {
-    this.creater.setAmount(this.creater.amount.slice(0, -1));
-    this.updateBalanceFromAmount()
-  }
-
-  addBalanceNumber(num: string)
-  {
-    const { coin } = this.creater;
-    const isDotIsOnce = this.isValidNumberString(this.balance, num)
-
-    if (isDotIsOnce) {
-      const nextBalance = this.balance + num
-      const balance = coin?.balance;
-
-      !balance || balance > Number(nextBalance)
-        ? this.balance = nextBalance
-        : this.creater.setMax();
+  removeNumber() {
+    if(this.currentInput.length > 0)
+    {
+      this.currentInput = (this.currentInput.slice(0, -1))
+      this.setActive(this.currentInput)
     }
-    this.updateAmountFromBalance()
   }
 
-  removeBalanceNumber() {
-    if(this.balance.length > 0) this.balance = this.balance.slice(0, -1)
-    this.updateAmountFromBalance()
+  get inverted(): boolean {
+    return this.invertedInner
   }
+
+  set inverted(value: boolean) {
+    if(this.inverted && !value) this.currentInput = this.balance
+    else if (!this.inverted && value) this.currentInput = this.fiat
+    this.invertedInner = value
+  }
+
+  invert() {
+    this.inverted = !this.inverted
+  }
+
 	clear() {
 		this.steps.clear()
-		this.balance = ""
 
 		const coin = this.creater.coin
 		this.creater = new Transaction.Creater()
@@ -141,6 +137,6 @@ export default class SendController {
 	}
   setMax() {
     this.creater.setMax()
-    this.updateBalanceFromAmount()
+    // this.updateBalanceFromAmount()
   }
 }

@@ -7,14 +7,15 @@ import { Caption, Card, Count } from "../atoms"
 type Props = {
 	style: StyleProp<ViewStyle>
 	onPressClaim(): void
+	value: number,
 }
 
-export default ({ style, onPressClaim }: Props) => {
+export default ({ style, onPressClaim, value }: Props) => {
 	return (
 		<Card style={[styles.container, style]}>
 			<View>
 				<Caption style={styles.caption}>CLAIM</Caption>
-				<Count value="234.78" coinName="BTSG" />
+				<Count value={value.toFixed(2)} coinName="BTSG" />
 			</View>
 			<View>
 				<RectButton onPress={onPressClaim}>

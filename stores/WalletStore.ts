@@ -27,7 +27,7 @@ export interface ProfileInner extends Profile {
   id: string,
 }
 
-type profileIndexer = number | ProfileInner | Profile | ProfileWallets
+type profileIndexer = number | string | ProfileInner | Profile | ProfileWallets
 
 export interface ProfileWallets {
   profile: ProfileInner,
@@ -153,7 +153,7 @@ export default class WalletStore {
     }
     catch(e)
     {
-      console.log(e)
+      console.error("Catched", e)
     }
     return true
   }
@@ -201,7 +201,7 @@ export default class WalletStore {
           type: WalletTypes.WATCH,
           id: uuid.v4().toString(),
           data: {
-            address
+            address: address.trim(),
           }
         })
       })
@@ -213,6 +213,7 @@ export default class WalletStore {
     const inputProfile = profile as any
     if(inputProfile.id) return this.profiles.find(p => p.id == inputProfile.id) ?? null
     if(typeof profile == "number") return this.profiles[profile]
+    if(typeof profile == "string") return this.profiles.find(p => p.id == profile) ?? null
     let targetProfile = inputProfile
     if(inputProfile.profile) targetProfile = inputProfile.profile
     return this.profiles.find(p => p.name == targetProfile.name) ?? null
@@ -276,22 +277,29 @@ export default class WalletStore {
             }
             catch(e)
             {
-              console.log(e)
+              console.error("Catched", e)
               this.deleteProfile(profile)
             }
             store.Lock()
             break
           case WalletTypes.WATCH:
-            const prefix = getPrefixFromAddress(profile.data.address)
-            const coin = prefixToCoin(prefix)
-            if(coin)
+            try
             {
-              const pubWallets: SupportedCoinsMap = {}
-              pubWallets[coin] = new PublicWallet(profile.data.address)
-              wallets.push({
-                profile: this.profiles[index],
-                wallets: pubWallets
-              })
+              const prefix = getPrefixFromAddress(profile.data.address)
+              const coin = prefixToCoin(prefix)
+              if(coin)
+              {
+                const pubWallets: SupportedCoinsMap = {}
+                pubWallets[coin] = new PublicWallet(profile.data.address)
+                wallets.push({
+                  profile: this.profiles[index],
+                  wallets: pubWallets
+                })
+              }
+            }
+            catch (e)
+            {
+              this.deleteProfile(profile)
             }
             break
         }
@@ -347,5 +355,6 @@ export default class WalletStore {
     if(p == undefined) return
     this.localStorageManager?.removeProfileData(p)
     this.profiles.splice(this.profiles.indexOf(p), 1)
+    if(p == this.activeProfile) this.activeProfile = this.profiles[0]
   }
 }

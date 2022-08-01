@@ -44,7 +44,7 @@ export default observer(function CardWillSend({
 
   const coinsValue = useMemo(
     () =>
-      coin.fromFIATToAssetAmount(parseFloat(amount), SupportedCoins.BITSONG),
+      coin.fromFIATToCoin(parseFloat(amount), SupportedCoins.BITSONG),
     [amount]
   );
 

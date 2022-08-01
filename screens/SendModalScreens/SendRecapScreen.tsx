@@ -9,15 +9,21 @@ import { COLOR, InputHandler } from "utils"
 import { useKeyboard } from "@react-native-community/hooks"
 import { Footer } from "./components/atoms"
 import { Recap } from "components/organisms"
+import { SupportedCoins } from "constants/Coins"
+import { toJS } from "mobx"
+import { CoinClasses } from "core/types/coin/Dictionaries"
 
 type Props = NativeStackScreenProps<RootStackParamList, "SendRecap">
 
 export default observer<Props>(function SendRecapScreen({ navigation, route }) {
-	const store = useStore()
+	const { coin } = useStore()
 	const controller = useMemo(
-		() => new SendController(store.coin.coins[0], route.params.creater),
-		[store],
+		() => new SendController(),
+		[],
 	)
+	route.params.creater.setCoin(coin.coins.find(c => c.info.denom == CoinClasses[SupportedCoins.BITSONG].denom()) ?? coin.coins[0])
+	controller.setCreater(route.params.creater)
+	
 	const { steps } = controller
 	const memo = useMemo(() => new InputHandler(), [])
 	const keyboard = useKeyboard()
@@ -43,7 +49,7 @@ export default observer<Props>(function SendRecapScreen({ navigation, route }) {
 					bottomSheet={false}
 					style={{ marginTop: 100 }}
 					address={controller.creater.address}
-					amount={controller.creater.amount}
+					amount={coin.fromCoinBalanceToFiat(controller.creater.balance ?? 0, controller.creater.coin?.info.coin || SupportedCoins.BITSONG).toFixed(2)}
 					coin={controller.creater.coin?.info}
 					onPress={() => {}}
 					memoInput={memo}

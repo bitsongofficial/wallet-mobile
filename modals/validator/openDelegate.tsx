@@ -5,6 +5,7 @@ import { Delegate } from "./components/template"
 import { store } from "stores/Store"
 import { gbs } from "modals"
 import { BackHandler } from "react-native"
+import { SupportedCoins } from "constants/Coins"
 
 type Options = {
 	controller: DelegateController
@@ -16,7 +17,12 @@ const snapPoints = [[600], ["85%"], [450]]
 
 export default async function openDelegate({ onDone, onClose, controller }: Options) {
 	const { coin: coinStore } = store
-	controller.amountInput.setCoin(coinStore.defaultCoin) // as example
+	const validator = controller.selectedValidator
+	if(validator)
+	{
+		const coin = coinStore.coinOfType(validator.chain ?? SupportedCoins.BITSONG)
+		if(coin) controller.amountInput.setCoin(coin) // as example
+	}
 
 	const { steps } = controller
 
@@ -39,7 +45,11 @@ export default async function openDelegate({ onDone, onClose, controller }: Opti
 		snapPoints: snapPoints[controller.steps.active],
 		onClose: close,
 		footerComponent: () => (
-			<FooterDelegate onPressDone={onDone} onPressBack={goBack} steps={steps} />
+			<FooterDelegate onPressDone={() =>
+				{
+					onDone && onDone()
+					gbs.close()
+				}} onPressBack={goBack} steps={steps} />
 		),
 		children: () => <Delegate controller={controller} />,
 	})

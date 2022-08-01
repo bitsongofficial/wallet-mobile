@@ -1,35 +1,82 @@
 import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
 import axios from "axios";
+import { validatorIdentity } from "core/rest/keybase";
 import { DelegateData } from "core/types/coin/cosmos/DelegateData";
+import { SignerInfo, Validator, ValidatorStatus, ValidatorStatusRequest } from "core/types/coin/cosmos/Validator";
 import { CosmosOperation } from "./CosmosOperation";
+
+const getValidatorStatus = (validator: any) => {
+	if (validator.status.toString() === ValidatorStatusRequest.BOND_STATUS_BONDED) {
+		return {
+			status: ValidatorStatus.ACTIVE,
+			statusDetailed: 'active',
+		}
+	}
+	if (validator.jailed)
+	{
+		return {
+			status: ValidatorStatus.INACTIVE,
+			statusDetailed: 'banned',
+		}
+	}
+  
+	return {
+		status: ValidatorStatus.INACTIVE,
+		statusDetailed: 'inactive',
+	}
+}
 
 export class Validators extends CosmosOperation {
 	async Run() {
 		try
 		{
 			const service = this.coin.explorer()
-			const validatorInfosRequests = []
-			validatorInfosRequests.push(service.get("staking/validators"))
-			validatorInfosRequests.push(service.get("/validatorsets/latest"))
-			const results = (await Promise.all(validatorInfosRequests)).map(r => (r.data.result.validators ?? r.data.result))
-			results[0].forEach((element:any) => {
-				//console.log(element.operator_address)
-				element.voting_power = results[1].find((e2:any) => 
+			const results = (await service.get("/cosmos/staking/v1beta1/validators")).data.validators
+
+			const validators:Validator[] = results.map((v:any):Validator =>
+				({
+					id: v.description.moniker,
+					identity: v.description.identity,
+					name: v.description.moniker,
+					logo: "",
+					description: v.description.details,
+					status: getValidatorStatus(v),
+					operator: v.operator_address,
+					tokens: parseInt(v.tokens),
+					// uptime: 0,
+					userClaimAmount: 0,
+					userDelegation: 0,
+					commission: {
+						rate: {
+							max: parseFloat(v.commission.commission_rates.max_rate),
+							current: parseFloat(v.commission.commission_rates.rate),
+						},
+						change: {
+							max: parseFloat(v.commission.commission_rates.max_change_rate),
+							last: new Date(v.commission.update_time),
+						}
+					},
+				}))
+			await Promise.allSettled(validators.map(v => (new Promise(async (resolve, reject) =>
 				{
-					if(e2.address == element.operator_address)
+					try
 					{
-						return true
+						const valIdentity = await validatorIdentity(v.identity)
+						// v.name = valIdentity.full_name ?? ""
+						v.logo = valIdentity.picture_url
+						resolve(true)
 					}
-					return false
-				}).voting_power
-			});
-			const validators = results[0]
+					catch(e)
+					{
+						console.error(e)
+						reject()
+					}
+				}))))
 			return validators
-			//console.log("B", validators)
 		}
 		catch(e)
 		{
-			console.log(e)
+			console.error("Catched", e)
 		}
 		return []
 	}

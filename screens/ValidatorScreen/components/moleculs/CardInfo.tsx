@@ -11,7 +11,7 @@ type Props = {
 export default ({ style, title, value }: Props) => {
 	return (
 		<Card style={[styles.container, style]}>
-			<Caption>{title}</Caption>
+			<Caption style={styles.caption}>{title}</Caption>
 			<Text style={styles.text}>{value}</Text>
 		</Card>
 	)
@@ -20,9 +20,6 @@ export default ({ style, title, value }: Props) => {
 const styles = StyleSheet.create({
 	container: {
 		padding: 24,
-		height: 146,
-		width: 130,
-
 		justifyContent: "space-between",
 	},
 	text: {
@@ -33,4 +30,7 @@ const styles = StyleSheet.create({
 		lineHeight: 30,
 		color: COLOR.White,
 	},
+	caption: {
+		marginBottom: 10,
+	}
 })

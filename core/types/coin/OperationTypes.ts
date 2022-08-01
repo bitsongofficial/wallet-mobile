@@ -1,7 +1,10 @@
+import { Runnable } from "../utils/runnable"
+
 enum OperationTypeEnum {}
 
 export enum CoinOperationEnum {
 	Send = 'SEND',
+	Delegations = 'DELEGATIONS',
 	Delegate = 'DELEGATE',
 	Undelegate = 'UNDELEGATE',
 	Redelegate = 'REDELEGATE',
@@ -27,3 +30,7 @@ export enum FanTokenOperationEnum {
 }
 
 export type FanTokenOperation = OperationTypeEnum | FanTokenOperationEnum
+
+export type OperationMap = {
+	[k in CoinOperation]?: Runnable
+}

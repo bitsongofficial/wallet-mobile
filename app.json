@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "wallet-mobile",
+    "name": "Cosmonautico",
     "slug": "wallet-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,9 +8,9 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/Foreground.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#14142E"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -18,17 +18,18 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bitsong.wallet"
+      "bundleIdentifier": "com.bitsong.wallet",
+      "icon": "./assets/images/iOs_icon.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/Foreground.png",
+        "backgroundColor": "#14142E"
       },
       "package": "com.bitsong.wallet"
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/Foreground.png"
     }
   }
 }

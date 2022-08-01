@@ -5,6 +5,7 @@ import { UndelegateController } from "./controllers"
 import { store } from "stores/Store"
 import { gbs } from "modals"
 import { BackHandler } from "react-native"
+import { SupportedCoins } from "constants/Coins"
 
 type Options = {
 	// from: IValidator
@@ -17,7 +18,12 @@ const snapPoints = [[600], [450]]
 
 export default async function openUndelegate({ controller, onClose, onDone }: Options) {
 	const { coin: coinStore } = store
-	controller.amountInput.setCoin(coinStore.defaultCoin) // as example
+	const validator = controller.from
+	if(validator)
+	{
+		const coin = coinStore.coinOfType(validator.chain ?? SupportedCoins.BITSONG)
+		if(coin) controller.amountInput.setCoin(coin)
+	}
 
 	const { steps } = controller
 
@@ -40,7 +46,11 @@ export default async function openUndelegate({ controller, onClose, onDone }: Op
 		snapPoints: snapPoints[controller.steps.active],
 		onClose: close,
 		footerComponent: () => (
-			<FooterUndelegate onPressDone={onDone} onPressBack={goBack} steps={steps} />
+			<FooterUndelegate onPressDone={() =>
+				{
+					onDone && onDone()
+					gbs.close()
+				}} onPressBack={goBack} steps={steps} />
 		),
 		children: () => <Undelegate controller={controller} />,
 	})

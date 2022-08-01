@@ -69,24 +69,28 @@ export default observer(function ToolbarFull({
 			</View>
 			<View style={styles.row}>
 				<ToolbarAction
+					onPress={onPressClaim}
 					backgroundStyle={styles.actionBackground}
 					title="Claim"
 					Icon={<Icon2 size={18} stroke={COLOR.White} name="claim" />}
 					size={65}
 				/>
 				<ToolbarAction
+					onPress={onPressStake}
 					backgroundStyle={styles.actionBackground}
 					title="Stake"
 					Icon={<Icon2 size={18} stroke={COLOR.White} name="stake" />}
 					size={65}
 				/>
 				<ToolbarAction
+					onPress={onPressUnstake}
 					backgroundStyle={styles.actionBackground}
 					title="Unstake"
 					Icon={<Icon2 size={18} stroke={COLOR.White} name="unstake" />}
 					size={65}
 				/>
 				<ToolbarAction
+					onPress={onPressRestake}
 					backgroundStyle={styles.actionBackground}
 					title="Restake"
 					Icon={<Icon2 size={18} stroke={COLOR.White} name="restake" />}

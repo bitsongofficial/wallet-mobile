@@ -4,13 +4,18 @@ import { CompositeScreenProps } from "@react-navigation/native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
-import { Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
+import { ListRenderItem, Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
 import { RootStackParamList, RootTabParamList } from "types"
 import { COLOR } from "utils"
 import { RectButton, ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { CardCoin, CardCommission, ITab, Tabs } from "./components/moleculs"
+import { FlatList } from "react-native"
+import { useStore } from "hooks"
+import { SupportedCoins } from "constants/Coins"
+import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
+import { Proposal } from "core/types/coin/cosmos/Proposal"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
@@ -18,13 +23,46 @@ type Props = CompositeScreenProps<
 >
 
 export default observer<Props>(function Stacking({ navigation }) {
+	const { proposals } = useStore()
 	const goBack = useCallback(() => navigation.goBack(), [])
 
 	const insets = useSafeAreaInsets()
 
 	const [activeTab, setActiveTab] = useState<ITab>("All")
 
+	let status = undefined
+	switch(activeTab)
+	{
+		case "Deposit":
+			status = ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
+			break
+
+		case "Voting":
+			status = ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+			break
+
+		case "Passed":
+			status = ProposalStatus.PROPOSAL_STATUS_PASSED
+			break
+	}
+
+	const changeActiveTab = (tab: ITab) =>
+	{
+		setActiveTab(tab)
+	}
+
 	const navToNew = useCallback(() => navigation.navigate("NewProposal"), [])
+
+	const renderProposals = useCallback<ListRenderItem<Proposal>>(
+		({item}) => {
+			return (
+				<CardCommission key={item.id.toString()} title={item.title} status={item.status} style={{ marginBottom: 20 }} />
+			)
+		},
+		[],
+	)
+
+	const proposalsToShow = proposals.filterByCoinAndType(SupportedCoins.BITSONG, status).slice()
 
 	return (
 		<>
@@ -43,19 +81,20 @@ export default observer<Props>(function Stacking({ navigation }) {
 
 					<Tabs
 						active={activeTab}
-						onPress={setActiveTab}
+						onPress={changeActiveTab}
 						style={styles.wrapper}
 						//
 					/>
 
-					<ScrollView style={styles.wrapper}>
+					<View style={styles.wrapper}>
 						<RectButton style={{ marginBottom: 30 }}>
 							<CardCoin title="BitSong" />
 						</RectButton>
 
-						<CardCommission style={{ marginBottom: 20 }} />
-						<CardCommission />
-					</ScrollView>
+						{proposalsToShow && <FlatList data={proposalsToShow} renderItem={renderProposals}>
+
+						</FlatList>}
+					</View>
 				</View>
 			</SafeAreaView>
 		</>
@@ -79,6 +118,7 @@ const styles = StyleSheet.create({
 
 	wrapper: {
 		paddingHorizontal: 30,
+		flexShrink: 100,
 	},
 
 	buttonPlus: {

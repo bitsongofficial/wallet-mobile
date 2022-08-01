@@ -10,6 +10,7 @@ import { DepositData } from "core/types/coin/cosmos/DepositData";
 import { ProposalVote } from "core/types/coin/cosmos/ProposalVote";
 import { RedelegateData } from "core/types/coin/cosmos/RedelegateData";
 import { SubmitProposalData } from "core/types/coin/cosmos/SubmitProposalData";
+import { CoinClasses } from "core/types/coin/Dictionaries";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { Wallet } from "core/types/storing/Generic";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
@@ -35,6 +36,7 @@ export class WalletConnectCosmosClientV1 {
 		onDisconnect?: (connection: WalletConnectCosmosClientV1) => void,
 	})
 	{
+		const Bitsong = CoinClasses.btsg
 		makeAutoObservable(this, {}, { autoBind: true })
 		this.wallets = options.wallets
 		this.onConnect = options.onConnect
@@ -97,11 +99,18 @@ export class WalletConnectCosmosClientV1 {
 			})
 			const approve = (res: any) =>
 			{
-				this.connector?.approveRequest({
-					id: payload.id,
-					result: res,
-					jsonrpc: payload.method,
-				})
+				try
+				{
+					this.connector?.approveRequest({
+						id: payload.id,
+						result: res,
+						jsonrpc: payload.method,
+					})
+				}
+				catch(e)
+				{
+					console.error("Catched", e)
+				}
 			}
 			let wallet: CosmosWallet | false = false
 			let operationData: any = {}
@@ -120,6 +129,7 @@ export class WalletConnectCosmosClientV1 {
 					{
 						const res = await Bitsong.Do(CoinOperationEnum.Send, sendParams)
 						approve(res)
+						return res
 					}
 
 					data = {
@@ -133,7 +143,7 @@ export class WalletConnectCosmosClientV1 {
 					if(!wallet) return
 					operationData = {
 						delegator: wallet,
-						validator: new PublicWallet(params.value.validatorAddress),
+						validator: {operator: params.value.validatorAddress},
 						amount: params.value.amount
 					}
 					accept = async () =>
@@ -141,6 +151,7 @@ export class WalletConnectCosmosClientV1 {
 						const data: DelegateData = operationData
 						const res = await Bitsong.Do(CoinOperationEnum.Delegate, data)
 						approve(res)
+						return res
 					}
 					break
 				case operationToAminoType(CoinOperationEnum.Redelegate):
@@ -148,8 +159,8 @@ export class WalletConnectCosmosClientV1 {
 					if(!wallet) return
 					operationData = {
 						delegator: wallet,
-						validator: new PublicWallet(params.value.validatorSrcAddress),
-						newValidator: new PublicWallet(params.value.validatorDstAddress),
+						validator: {operator: params.value.validatorSrcAddress},
+						newValidator: {operator: params.value.validatorDstAddress},
 						amount: params.value.amount
 					}
 					accept = async () =>
@@ -157,6 +168,7 @@ export class WalletConnectCosmosClientV1 {
 						const data: RedelegateData = operationData
 						const res = await Bitsong.Do(CoinOperationEnum.Redelegate, data)
 						approve(res)
+						return res
 					}
 					break
 				case operationToAminoType(CoinOperationEnum.Undelegate):
@@ -164,7 +176,7 @@ export class WalletConnectCosmosClientV1 {
 					if(!wallet) return
 					operationData = {
 						delegator: wallet,
-						validator: new PublicWallet(params.value.validatorAddress),
+						validator: {operator: params.value.validatorAddress},
 						amount: params.value.amount
 					}
 					accept = async () =>
@@ -172,6 +184,7 @@ export class WalletConnectCosmosClientV1 {
 						const data: DelegateData = operationData
 						const res = await Bitsong.Do(CoinOperationEnum.Undelegate, data)
 						approve(res)
+						return res
 					}
 					break
 				case operationToAminoType(CoinOperationEnum.Claim):
@@ -186,6 +199,7 @@ export class WalletConnectCosmosClientV1 {
 						const data: ClaimData = operationData
 						const res = await Bitsong.Do(CoinOperationEnum.Claim, data)
 						approve(res)
+						return res
 					}
 					break
 				case operationToAminoType(CoinOperationEnum.Vote):
@@ -201,6 +215,7 @@ export class WalletConnectCosmosClientV1 {
 						const data: ProposalVote = operationData
 						const res = await Bitsong.Do(CoinOperationEnum.Vote, data)
 						approve(res)
+						return res
 					}
 					break
 				case operationToAminoType(CoinOperationEnum.Deposit):
@@ -216,6 +231,7 @@ export class WalletConnectCosmosClientV1 {
 						const data: DepositData = operationData
 						const res = await Bitsong.Do(CoinOperationEnum.Deposit, data)
 						approve(res)
+						return res
 					}
 					break
 
@@ -237,6 +253,7 @@ export class WalletConnectCosmosClientV1 {
 						const data: SubmitProposalData = operationData
 						const res = await Bitsong.Do(CoinOperationEnum.SubmitProposal, data)
 						approve(res)
+						return res
 					}
 					break
 			}

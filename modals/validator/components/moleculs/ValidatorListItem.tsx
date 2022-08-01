@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
 		width: 32,
 		height: 32,
 		borderRadius: 32,
-		backgroundColor: "red",
+		backgroundColor: COLOR.Dark3,
 
 		marginRight: 40,
 	},

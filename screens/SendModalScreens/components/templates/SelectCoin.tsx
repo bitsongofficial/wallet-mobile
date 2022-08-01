@@ -4,6 +4,9 @@ import { useStore, useTheme } from "hooks";
 import { ButtonBack } from "components/atoms";
 import { ButtonCoinSelect } from "../moleculs";
 import { SendController } from "screens/SendModalScreens/classes";
+import { SupportedCoins } from "constants/Coins";
+import { Coin } from "classes";
+import { CoinClasses } from "core/types/coin/Dictionaries";
 
 type Props = {
   controller: SendController;
@@ -22,6 +25,9 @@ export default function SelectCoin({ controller, onBack }: Props) {
     [controller, onBack]
   );
 
+  const coinsFromSupported = Object.values(SupportedCoins).map(sc => coin.coins.find(c => c.info.denom == CoinClasses[sc].denom()))
+  const availableCoins = coinsFromSupported.filter(c => c != undefined) as Coin[]
+
   return (
     <View style={styles.container}>
       <ButtonBack onPress={onBack} />
@@ -30,15 +36,15 @@ export default function SelectCoin({ controller, onBack }: Props) {
         Select also the chain where your coin come from
       </Text>
 
-      {coin.coins.map((c) => (
+      {availableCoins.map(c => (
         <ButtonCoinSelect
-          key={c.info._id}
+          key={c?.info._id}
           coin={c}
           onPress={selectCoin}
         />
       ))}
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({

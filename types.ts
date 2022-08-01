@@ -7,7 +7,7 @@ import { BottomTabHeaderProps, BottomTabScreenProps } from "@react-navigation/bo
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack"
 import TransactionCreater from "classes/Transaction/Creater"
-import { IValidator } from "classes/types"
+import { Validator } from "core/types/coin/cosmos/Validator"
 
 declare global {
 	namespace ReactNavigation {
@@ -62,7 +62,7 @@ export type RootStackParamList = {
 		isHiddenCode?: boolean
 		disableVerification?: boolean
 	}
-	Validator: { validator: IValidator }
+	Validator: { id: string }
 	NewProposal: undefined
 }
 
