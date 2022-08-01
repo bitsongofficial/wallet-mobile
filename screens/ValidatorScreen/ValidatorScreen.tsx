@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
-import { Image, ListRenderItem, Platform, RefreshControl, SafeAreaView, StyleSheet, Text, View } from "react-native"
+import { Image, ListRenderItem, Platform, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native"
 import { RootStackParamList } from "types"
 import { COLOR, hexAlpha } from "utils"
 import { CardAddress, CardClaim, CardDelegation, CardInfo } from "./components/moleculs"
-import { FlatList, ScrollView } from "react-native-gesture-handler"
+import { FlatList } from "react-native-gesture-handler"
 import { Validator } from "core/types/coin/cosmos/Validator"
 import moment from "moment"
 import { ButtonBack } from "components/atoms"
@@ -102,7 +102,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 
 	const onRefresh = useCallback(async () => {
 		setRefreshing(true)
-		await validators.load()
+		await validators.update()
 		setRefreshing(false)
 	}, [])
 
