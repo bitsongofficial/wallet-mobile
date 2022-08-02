@@ -7,7 +7,7 @@ import { PublicWallet } from "core/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
 import { CoinClasses } from "core/types/coin/Dictionaries";
 import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
-import { Amount } from "core/types/coin/Generic";
+import { Amount, Denom } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { WalletData, WalletTypes } from "core/types/storing/Generic";
 import { autorun, keys, makeAutoObservable, runInAction, toJS, values } from "mobx";
@@ -202,6 +202,16 @@ export default class CoinStore {
 		}
 	}
 
+	findAssetWithDenom(denom: Denom)
+	{
+		return this.coins.find(c => c.info.denom == denom)
+	}
+
+	findAssetWithCoin(coin: SupportedCoins)
+	{
+		return this.findAssetWithDenom(CoinClasses[coin].denom())
+	}
+
 	async sendCoin(coin: SupportedCoins, address: string, balance: number)
 	{
 		const denom = fromCoinToDefaultDenom(coin)
@@ -247,10 +257,5 @@ export default class CoinStore {
 		}
 
 		return 0
-	}
-
-	coinOfType(coin: SupportedCoins)
-	{
-		return this.coins.find(c => c.info.denom == CoinClasses[coin].denom()) ?? null
 	}
 }

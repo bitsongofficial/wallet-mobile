@@ -6,6 +6,7 @@ export default class DelegateController {
 	steps = new Steps(["Delegate Import", "Delegate to", "Delegate Recap"])
 	amountInput = new AmountInput()
 	selectedValidator: Validator | null = null
+	disableBack: boolean = false
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })

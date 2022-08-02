@@ -146,6 +146,7 @@ export class WalletConnectCosmosClientV1 {
 						validator: {operator: params.value.validatorAddress},
 						amount: params.value.amount
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: DelegateData = operationData
@@ -163,6 +164,7 @@ export class WalletConnectCosmosClientV1 {
 						newValidator: {operator: params.value.validatorDstAddress},
 						amount: params.value.amount
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: RedelegateData = operationData
@@ -179,6 +181,7 @@ export class WalletConnectCosmosClientV1 {
 						validator: {operator: params.value.validatorAddress},
 						amount: params.value.amount
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: DelegateData = operationData
@@ -198,6 +201,7 @@ export class WalletConnectCosmosClientV1 {
 						owner: wallet,
 						validator: params.value.validatorAddress,
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: ClaimData = claimData
@@ -214,6 +218,7 @@ export class WalletConnectCosmosClientV1 {
 						proposal: {id: params.value.proposalId},
 						choice: params.value.option,
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: ProposalVote = operationData
@@ -230,6 +235,7 @@ export class WalletConnectCosmosClientV1 {
 						proposal: {id: params.value.proposalId},
 						amount: params.value.amount[0],
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: DepositData = operationData
