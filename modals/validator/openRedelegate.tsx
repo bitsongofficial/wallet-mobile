@@ -6,21 +6,24 @@ import { store } from "stores/Store"
 import { gbs } from "modals"
 import { BackHandler } from "react-native"
 import { SupportedCoins } from "constants/Coins"
+import { navigate } from "navigation/utils"
 
 type Options = {
 	controller: RedelegateController
 	onDone?(): void
 	onClose?(): void
+	onDismiss?(): void
 }
 
 const snapPoints = [[600], ["85%"], [520]]
 
-export default async function openRedelegate({ controller, onClose, onDone }: Options) {
+export default async function openRedelegate({ controller, onClose, onDone, onDismiss }: Options) {
+	const status = {done: false}
 	const { coin: coinStore } = store
 	const validator = controller.from
 	if(validator)
 	{
-		const coin = coinStore.coinOfType(validator.chain ?? SupportedCoins.BITSONG)
+		const coin = coinStore.findAssetWithCoin(validator.chain ?? SupportedCoins.BITSONG)
 		if(coin) controller.amountInput.setCoin(coin)
 	}
 
@@ -32,16 +35,13 @@ export default async function openRedelegate({ controller, onClose, onDone }: Op
 	)
 
 	const goBack = () => (steps.history.length > 1 ? steps.goBack() : gbs.close())
-
-	const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-		goBack()
-		return true
-	})
+	gbs.backHandler = goBack
 
 	const close = () => {
 		disposer()
-		backHandler.remove()
+		gbs.removeBackHandler()
 		onClose && onClose()
+		onDismiss && !status.done && onDismiss()
 	}
 
 	await gbs.setProps({
@@ -50,9 +50,15 @@ export default async function openRedelegate({ controller, onClose, onDone }: Op
 		footerComponent: () => (
 			<FooterRedelegate onPressDone={() =>
 				{
-					onDone && onDone()
+					status.done = true
 					gbs.close()
-				}} onPressBack={goBack} steps={steps} />
+					navigate("Loader", {
+						// @ts-ignore
+						callback: async () => (
+							onDone ? (await onDone()) : false
+						),
+					})
+				}} onPressBack={controller.disableBack ? undefined : goBack} steps={steps} />
 		),
 		children: () => <Redelegate controller={controller} />,
 	})

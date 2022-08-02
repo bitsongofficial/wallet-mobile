@@ -63,3 +63,13 @@ export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
 {
 	return CoinClasses[coin].denom()
 }
+
+export function fromDenomToCoin(denom: Denom): SupportedCoins | undefined
+{
+	for(const chain of Object.values(SupportedCoins))
+	{
+		if(CoinClasses[chain].denom() == denom) return chain
+	}
+
+	return undefined
+}

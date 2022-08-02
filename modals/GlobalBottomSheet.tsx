@@ -16,6 +16,12 @@ export default class GlobalBottomSheet implements BottomSheetMethods {
 	ref = createRef<BottomSheetMethods>()
 	props: Partial<BottomSheetProps> = {}
 
+	backHandler: (() => boolean | void) | undefined
+
+	removeBackHandler() {
+		this.backHandler = undefined
+	}
+
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}

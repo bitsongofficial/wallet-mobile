@@ -24,8 +24,7 @@ export default function SelectCoin({ controller, onBack }: Props) {
     },
     [controller, onBack]
   );
-
-  const coinsFromSupported = Object.values(SupportedCoins).map(sc => coin.coins.find(c => c.info.denom == CoinClasses[sc].denom()))
+  const coinsFromSupported = Object.values(SupportedCoins).map(sc => coin.findAssetWithCoin(sc))
   const availableCoins = coinsFromSupported.filter(c => c != undefined) as Coin[]
 
   return (

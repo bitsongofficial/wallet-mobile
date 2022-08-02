@@ -57,14 +57,12 @@ export default observer<Props>(function MainScreen({ navigation }) {
 	const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
 	const openReceive = useCallback(async () => {
-		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-			gbs.close()
-			return true
-		})
+		gbs.backHandler = () => gbs.close()
+
 		await gbs.setProps({
 			snapPoints: ["85%"],
-			onClose: () => {
-				backHandler.remove()
+			onClose: async () => {
+				gbs.removeBackHandler()
 			},
 			children: () => (
 				<ReceiveModal style={sendCoinContainerStyle} close={closeGlobalBottomSheet} />
@@ -98,6 +96,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 	const openScanner = coin.CanSend ? openScannerMemorized : undefined
 
 	const openToolbar = useCallback(async () => {
+		gbs.backHandler = () => gbs.close()
+
 		const onPressScann = () => {
 			openScanner && openScanner()
 			Platform.OS === "android" && gbs.close()
@@ -105,6 +105,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 		await gbs.setProps({
 			snapPoints: ["70%"],
+			onClose: () => {
+				gbs.removeBackHandler()
+			},
 			children: () => (
 				<ToolbarFull
 					style={styles.toolbar_full}

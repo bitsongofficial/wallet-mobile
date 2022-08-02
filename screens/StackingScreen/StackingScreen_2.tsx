@@ -40,7 +40,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 
 	const onRefresh = useCallback(async () => {
 		setRefreshing(true)
-		await validators.load()
+		await validators.update()
 		setRefreshing(false)
 	}, [])
 

@@ -13,7 +13,7 @@ import { autorun, makeAutoObservable, runInAction, set, toJS } from "mobx"
 import CoinStore from "./CoinStore"
 import WalletStore from "./WalletStore"
 
-type validatorIndexer = string | number | Validator
+type validatorIndexer = string | number | Validator | {operator: string} | {id: string}
 
 export default class ValidatorStore {
 	validators: Validator[] = []
@@ -44,7 +44,7 @@ export default class ValidatorStore {
 		})
 	}
 
-	async load()
+	private async load()
 	{
 		let validators: Validator[] = []
 		let rewards: any[] = []
@@ -99,18 +99,38 @@ export default class ValidatorStore {
 		this.delegations.splice(0, this.delegations.length, ...delegations)
 	}
 
+	update()
+	{
+		return new Promise<void>((accept, reject) =>
+		{
+			runInAction(async () =>
+			{
+				try {
+					await this.load()
+				}
+				catch
+				{
+					reject()
+				}
+				accept()
+			})
+		})
+	}
+
 	get validatorsIds()
 	{
 		return this.validators.map(v => v.id)
 	}
 
-	resolveValidator(index: validatorIndexer)
+	resolveValidator(index: validatorIndexer): Validator | null
 	{
-		if(typeof index == "string") return this.validators.find(v => v.id == index) ?? null
 		if(typeof index == "number") return this.validators[index] ?? null
-		const i = this.validators.indexOf(index)
-		if(i > -1) return index
-		return this.validators.find(v => v.id = index.id) ?? null
+		const i = this.validators.indexOf(index as any)
+		if(i > -1) return index as Validator
+		if(typeof index == "string") return this.validators.find(v => v.id == index) ?? null
+		if('id' in index) return this.validators.find(v => v.id = index.id) ?? null
+		if('operator' in index) return this.validators.find(v => v.operator = index.operator) ?? null
+		return null
 	}
 
 	percentageVotingPower(validator: validatorIndexer)
