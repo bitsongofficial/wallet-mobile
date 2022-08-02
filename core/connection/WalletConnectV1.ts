@@ -258,6 +258,7 @@ export class WalletConnectCosmosClientV1 {
 						},
 						initialDeposit: params.value.initialDeposit[0],
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: SubmitProposalData = operationData
