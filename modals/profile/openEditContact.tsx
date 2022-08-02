@@ -76,4 +76,6 @@ export default async function openChangeAvatar({ props, onClose, contact }: Opti
 		})
 		requestAnimationFrame(() => gbs.expand())
 	}
+
+	open()
 }

@@ -40,7 +40,7 @@ export default class ValidatorStore {
 
 		autorun(() =>
 		{
-			this.load()
+			this.update()
 		})
 	}
 

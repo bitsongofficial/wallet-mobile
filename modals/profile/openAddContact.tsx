@@ -43,6 +43,7 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 			// close={close}
 			steps={steps}
 			onPressBack={goBack}
+			close={close}
 		/>
 	)
 
