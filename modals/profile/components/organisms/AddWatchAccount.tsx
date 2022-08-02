@@ -80,7 +80,7 @@ export default observer<Props>(({ close, steps }) => {
 			<View style={styles.footer}>
 				{steps.title === "Add" && (
 					<Button
-						disable={isValidAddress(inputWallet.value)}
+						disable={!isValidAddress(inputWallet.value.trim())}
 						text="Proceed"
 						onPress={openStepName}
 						contentContainerStyle={styles.buttonContent}
