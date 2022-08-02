@@ -71,29 +71,37 @@ export default observer<Props>(function Stacking({ navigation }) {
 			<SafeAreaView style={styles.safearea}>
 				<View style={styles.container}>
 					<View style={styles.wrapper}>
-						<View style={styles.head}>
-							<Text style={styles.title}>Proposals</Text>
-							<TouchableOpacity style={styles.buttonPlus} onPress={navToNew}>
-								<Icon2 name="plus" stroke={COLOR.White} size={18} />
-							</TouchableOpacity>
-						</View>
-					</View>
+						<FlatList data={proposalsToShow} renderItem={renderProposals}
+							ListHeaderComponent={
+								<>
+									<RectButton style={{ marginBottom: 30 }}>
+										<CardCoin title="BitSong" />
+									</RectButton>
+									<View style={styles.wrapper}>
+										<View style={styles.head}>
+											<Text style={styles.title}>Proposals</Text>
+											<TouchableOpacity style={styles.buttonPlus} onPress={navToNew}>
+												<Icon2 name="plus" stroke={COLOR.White} size={18} />
+											</TouchableOpacity>
+										</View>
+									</View>
+				
+									<Tabs
+										active={activeTab}
+										onPress={changeActiveTab}
+										style={styles.wrapper}
+										//
+									/>
+								</>
+							}
+							ListFooterComponent={
+								<View style={{height: 100}}>
 
-					<Tabs
-						active={activeTab}
-						onPress={changeActiveTab}
-						style={styles.wrapper}
-						//
-					/>
+								</View>
+							}
+						>
 
-					<View style={styles.wrapper}>
-						<RectButton style={{ marginBottom: 30 }}>
-							<CardCoin title="BitSong" />
-						</RectButton>
-
-						{proposalsToShow && <FlatList data={proposalsToShow} renderItem={renderProposals}>
-
-						</FlatList>}
+						</FlatList>
 					</View>
 				</View>
 			</SafeAreaView>
