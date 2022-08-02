@@ -9,6 +9,7 @@ import { Search, Subtitle, Title } from "../atoms"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { ButtonAvatar } from "../moleculs"
 import { useStore } from "hooks"
+import { isValidAddress } from "core/utils/Address"
 
 type Props = {
 	close(): void
@@ -47,8 +48,8 @@ export default observer<Props>(
 
 		const createContact = useCallback(() => {
 			contacts.addContact({
-				address: inputWallet.value,
-				name: inputName.value,
+				address: inputWallet.value.trim(),
+				name: inputName.value.trim(),
 				avatar: image, //  if skip create avatar neededr
 			})
 			close()
@@ -111,7 +112,7 @@ export default observer<Props>(
 						{steps.title !== "Avatar" ? (
 							<Button
 								text="Continue"
-								disable={steps.title === "Name" && inputName.value.length < 4}
+								disable={(steps.title === "Name" && inputName.value.length < 4) || (steps.title === "Add" && !isValidAddress(inputWallet.value.trim()))}
 								onPress={next}
 								contentContainerStyle={styles.buttonContent}
 								textStyle={styles.buttonText}

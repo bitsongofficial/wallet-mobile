@@ -12,6 +12,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "types"
 import { Contact } from "stores/ContactsStore"
 import { useGlobalBottomsheet, useStore } from "hooks"
+import { isValidAddress } from "core/utils/Address"
 
 type Props = {
 	contact: Contact | null
@@ -102,6 +103,7 @@ export default observer<Props>(({ close, contact, steps, navigation }) => {
 
 					{steps.title === "Data" ? (
 						<Button
+							disable={!isValidAddress(inputAddress.value.trim()) || inputNickname.value.length < 4}
 							text="Continue"
 							onPress={steps.next}
 							textStyle={styles.buttonText}
