@@ -146,6 +146,7 @@ export class WalletConnectCosmosClientV1 {
 						validator: {operator: params.value.validatorAddress},
 						amount: params.value.amount
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: DelegateData = operationData
@@ -163,6 +164,7 @@ export class WalletConnectCosmosClientV1 {
 						newValidator: {operator: params.value.validatorDstAddress},
 						amount: params.value.amount
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: RedelegateData = operationData
@@ -179,6 +181,7 @@ export class WalletConnectCosmosClientV1 {
 						validator: {operator: params.value.validatorAddress},
 						amount: params.value.amount
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: DelegateData = operationData
@@ -190,13 +193,18 @@ export class WalletConnectCosmosClientV1 {
 				case operationToAminoType(CoinOperationEnum.Claim):
 					wallet = await this.getWalletOrReject(params.value.delegatorAddress, reject)
 					if(!wallet) return
-					operationData = {
+					const claimData = {
 						owner: wallet,
-						validators: [new PublicWallet(params.value.validatorAddress)],
+						validators: [{operator: params.value.validatorAddress} as any],
 					}
+					data = {
+						owner: wallet,
+						validator: params.value.validatorAddress,
+					}
+					data = operationData
 					accept = async () =>
 					{
-						const data: ClaimData = operationData
+						const data: ClaimData = claimData
 						const res = await Bitsong.Do(CoinOperationEnum.Claim, data)
 						approve(res)
 						return res
@@ -210,6 +218,7 @@ export class WalletConnectCosmosClientV1 {
 						proposal: {id: params.value.proposalId},
 						choice: params.value.option,
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: ProposalVote = operationData
@@ -226,6 +235,7 @@ export class WalletConnectCosmosClientV1 {
 						proposal: {id: params.value.proposalId},
 						amount: params.value.amount[0],
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: DepositData = operationData
@@ -248,6 +258,7 @@ export class WalletConnectCosmosClientV1 {
 						},
 						initialDeposit: params.value.initialDeposit[0],
 					}
+					data = operationData
 					accept = async () =>
 					{
 						const data: SubmitProposalData = operationData
@@ -256,12 +267,7 @@ export class WalletConnectCosmosClientV1 {
 						return res
 					}
 					break
-			}
-
-			if(params.typeUrl != operationToAminoType(CoinOperationEnum.Send)) data = {
-				type: params.typeUrl,
-				data: params.value,
-			}			
+			}		
 			
 			if(options.onRequest) options.onRequest(params.typeUrl, data, {
 				accept,

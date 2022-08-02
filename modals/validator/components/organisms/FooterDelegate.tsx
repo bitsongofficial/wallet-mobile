@@ -6,7 +6,7 @@ import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 type Props = {
-	onPressBack(): void
+	onPressBack?(): void
 	onPressDone?(): void
 	style?: StyleProp<ViewStyle>
 	steps: Steps<any>
@@ -17,7 +17,7 @@ export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
 	return (
 		<Footer
 			style={{ bottom: insets.bottom, marginBottom: 8 }}
-			Left={<ButtonBack onPress={onPressBack} />}
+			Left={onPressBack && <ButtonBack onPress={onPressBack} />}
 			Center={
 				steps.active === 1 ? (
 					<Button

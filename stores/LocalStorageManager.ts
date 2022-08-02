@@ -34,12 +34,12 @@ export default class LocalStorageManager
 	constructor(
 		private wallet: WalletStore,
 		private dappConnection: DappConnectionStore,
+		private contacts: ContactsStore,
 		private settings: SettingsStore,
 		private remoteConfigs: RemoteConfigsStore,
-		private contacts: ContactsStore,
 	)
 	{
-
+		this.setUpStores()
 	}
 
 	async initialLoad()
@@ -69,7 +69,6 @@ export default class LocalStorageManager
 		this.saveContacts()
 		this.saveSettings()
 		this.saveWallets()
-		this.saveConnections()
 		return true
 	}
 

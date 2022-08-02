@@ -9,6 +9,13 @@ import LocalStorageManager from "./LocalStorageManager";
 import SettingsStore from "./SettingsStore";
 import { confirmTransaction } from "components/organisms/TransactionSignConfirm";
 import mock from "classes/mock";
+import { CoinOperationEnum } from "core/types/coin/OperationTypes";
+import { operationToAminoType } from "core/coin/cosmos/operations/utils";
+import { DelegateController, openClaim, openDelegate, openRedelegate, openUndelegate, RedelegateController, UndelegateController } from "modals/validator";
+import ValidatorStore from "./ValidatorStore";
+import { SupportedCoins } from "constants/Coins";
+import { getMainNavigation } from "navigation/utils";
+import { fromAmountToCoin, fromDenomToCoin } from "core/utils/Coin";
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
@@ -22,7 +29,7 @@ export default class DappConnectionStore {
 	  return true;
 	}
 
-	constructor(private walletStore: WalletStore, private coinStore: CoinStore, private remoteConfigsStore: RemoteConfigsStore, private settingsStore: SettingsStore)
+	constructor(private walletStore: WalletStore, private coinStore: CoinStore, private validatorsStore: ValidatorStore, private remoteConfigsStore: RemoteConfigsStore, private settingsStore: SettingsStore)
 	{
 		makeAutoObservable(this, {}, { autoBind: true })
 		// AsyncStorageLib.removeItem(session_location)
@@ -59,26 +66,178 @@ export default class DappConnectionStore {
 	{
 		switch(type)
 		{
-			case "/cosmos.bank.v1beta1.MsgSend":
-				openSendRecap({
-					to: data.to,
-					from: Object.assign(mock.BitSong, {
-						address: data.from
-					}),
-					amount: this.coinStore.fromAmountToFIAT(data.amount[0]).toFixed(2),
-					onDone: async () =>
-					{
-						await handler.accept()
-						this.coinStore.updateBalances()
-					},
-					onReject: () => {handler.reject()},
-				})
+			case operationToAminoType(CoinOperationEnum.Send):
+				this.sendRequest(data, handler)
+				break
+			case operationToAminoType(CoinOperationEnum.Claim):
+				this.claimRequest(data, handler)
+				break
+			case operationToAminoType(CoinOperationEnum.Delegate):
+				this.delegateRequest(data, handler)
+				break
+			case operationToAminoType(CoinOperationEnum.Redelegate):
+				this.redelegateRequest(data, handler)
+				break
+			case operationToAminoType(CoinOperationEnum.Undelegate):
+				this.undelegateRequest(data, handler)
 				break
 			default:
-				confirmTransaction(data, handler.accept, handler.reject)
+				confirmTransaction({
+					type,
+					data,
+				}, handler.accept, handler.reject)
 				break
 		}
 	}
+	private sendRequest(data: any, handler: acceptRejectType) {
+		openSendRecap({
+			to: data.to,
+			from: Object.assign(mock.BitSong, {
+				address: data.from
+			}),
+			amount: this.coinStore.fromAmountToFIAT(data.amount[0]).toFixed(2),
+			onDone: async () =>
+			{
+				await handler.accept()
+				this.coinStore.updateBalances()
+			},
+			onReject: () => {handler.reject()},
+		})
+	}
+
+	private claimRequest(data: any, handler: acceptRejectType)
+	{
+		const validator = this.validatorsStore.resolveValidator({operator: data.validator})
+		if(validator == null)
+		{
+			handler.reject()
+			return
+		}
+		openClaim({
+			onDone: async () =>
+			{
+				const res = await handler.accept()
+				if(res) this.validatorsStore.update()
+				return res
+			},
+			onDismiss: handler.reject,
+			amount: this.validatorsStore.validatorReward(validator),
+			coinName: validator.chain ?? SupportedCoins.BITSONG,
+		})
+	}
+
+	private delegateRequest(data: any, handler: acceptRejectType)
+	{
+		const validator = this.validatorsStore.resolveValidator(data.validator)
+		if(validator == null)
+		{
+			handler.reject()
+			return
+		}
+		const controller = new DelegateController()
+		controller.disableBack = true
+		controller.setSelectedValidator(validator)
+		controller.steps.setActive(2)
+		controller.amountInput.setAmount(fromAmountToCoin(data.amount).toFixed(2))
+		controller.amountInput.setCoin(this.coinStore.findAssetWithDenom(data.amount.denom) ?? this.coinStore.coins[0])
+		openDelegate({
+			onDone: async () =>
+			{
+				const res = await handler.accept()
+				if(res)
+				{
+					this.validatorsStore.update()
+					this.coinStore.updateBalances()
+				}
+				return res
+			},
+			onDismiss: handler.reject,
+			controller,
+		})
+	}
+
+	private undelegateRequest(data: any, handler: acceptRejectType)
+	{
+		const validator = this.validatorsStore.resolveValidator(data.validator)
+		if(validator == null)
+		{
+			handler.reject()
+			return
+		}
+		const controller = new UndelegateController()
+		controller.disableBack = true
+		controller.setFrom(validator)
+		controller.steps.setActive(1)
+		controller.amountInput.setAmount(fromAmountToCoin(data.amount).toFixed(2))
+		controller.amountInput.setCoin(this.coinStore.findAssetWithDenom(data.amount.denom) ?? this.coinStore.coins[0])
+		openUndelegate({
+			onDone: async () =>
+			{
+				const res = await handler.accept()
+				if(res)
+				{
+					this.validatorsStore.update()
+					this.coinStore.updateBalances()
+				}
+				return res
+			},
+			onDismiss: handler.reject,
+			controller,
+		})
+	}
+
+	private redelegateRequest(data: any, handler: acceptRejectType)
+	{
+		const validator = this.validatorsStore.resolveValidator(data.validator)
+		const newValidator = this.validatorsStore.resolveValidator(data.newValidator)
+		if(validator == null || newValidator == null)
+		{
+			handler.reject()
+			return
+		}
+		const controller = new RedelegateController()
+		controller.disableBack = true
+		controller.setFrom(validator)
+		controller.setTo(newValidator)
+		controller.steps.setActive(3)
+		controller.amountInput.setAmount(fromAmountToCoin(data.amount).toFixed(2))
+		controller.amountInput.setCoin(this.coinStore.findAssetWithDenom(data.amount.denom) ?? this.coinStore.coins[0])
+		openRedelegate({
+			onDone: async () =>
+			{
+				const res = await handler.accept()
+				if(res)
+				{
+					this.validatorsStore.update()
+					this.coinStore.updateBalances()
+				}
+				return res
+			},
+			onDismiss: handler.reject,
+			controller,
+		})
+	}
+
+	// private getExclusiveHandler(handler: acceptRejectType): acceptRejectType
+	// {
+	// 	const status = {accepted: false}
+	// 	return {
+	// 		accept: () =>
+	// 		{
+	// 			console.log("Accept")
+	// 			status.accepted = true
+	// 			handler.accept()
+	// 		},
+	// 		reject: () =>
+	// 		{
+	// 			if(!status.accepted)
+	// 			{
+	// 				console.log("Reject")
+	// 				handler.reject()
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	private onConnect(connection: WalletConnectCosmosClientV1)
 	{

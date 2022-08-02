@@ -6,6 +6,7 @@ export default class UndelegateController {
 	steps = new Steps(["Undelegate Import", "Undelegate Recap"])
 	amountInput = new AmountInput()
 	from: Validator | null = null
+	disableBack: boolean = false
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })

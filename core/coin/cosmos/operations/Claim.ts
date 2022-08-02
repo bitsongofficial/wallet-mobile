@@ -5,16 +5,14 @@ import { CosmosOperation } from "./CosmosOperation";
 
 export class Claim extends CosmosOperation {
 	async Run(data: ClaimData) {
-		const walletInfos = Promise.all(
+		const walletInfos = await Promise.all(
 			[
 				data.owner.Address(),
 				data.owner.Signer(),
 			])
-		const validators = Promise.all(data.validators.map(v => v.operator))
-		const transactionData = await Promise.all([walletInfos, validators])
-		const wallet = transactionData[0][1]
-		const ownerAddress = transactionData[0][0]
-		const validatorAddresses = transactionData[1]
+		const validatorAddresses = data.validators.map(v => v.operator)
+		const wallet = walletInfos[1]
+		const ownerAddress = walletInfos[0]
 		const client = await SigningStargateClient.connectWithSigner(this.coin.RPCEndpoint(), wallet, {
 			gasPrice: GasPrice.fromString("0.001ubtsg"),
 		})
@@ -26,6 +24,8 @@ export class Claim extends CosmosOperation {
 				validatorAddress: validatorAddresse,
 			}),
 		}))
+
+		console.log("em", encodedMessages)
 
 		try
 		{

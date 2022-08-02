@@ -5,6 +5,7 @@ import { makeAutoObservable } from "mobx"
 export default class RedelegateController {
 	steps = new Steps(["Redelegate Import", "Redelegate to", "Redelegate Recap"])
 	amountInput = new AmountInput()
+	disableBack: boolean = false
 
 	from: Validator | null = null
 	to: Validator | null = null

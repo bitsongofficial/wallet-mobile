@@ -21,7 +21,7 @@ export default observer<Props>(function SendRecapScreen({ navigation, route }) {
 		() => new SendController(),
 		[],
 	)
-	route.params.creater.setCoin(coin.coins.find(c => c.info.denom == CoinClasses[SupportedCoins.BITSONG].denom()) ?? coin.coins[0])
+	route.params.creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
 	controller.setCreater(route.params.creater)
 	
 	const { steps } = controller

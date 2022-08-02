@@ -30,8 +30,7 @@ export default function useSendModal(style: StyleProp<ViewStyle>) {
 		}
 	
 		const controller = new SendController()
-		coin.coins.find(c => c.info.denom == CoinClasses[SupportedCoins.BITSONG].denom()) ?? coin.coins[0]
-		controller.creater.setCoin(coin.coins.find(c => c.info.denom == CoinClasses[SupportedCoins.BITSONG].denom()) ?? coin.coins[0])
+		controller.creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
 	
 		const scanReciver = async () => {
 			await gbs.close()
