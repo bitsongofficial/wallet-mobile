@@ -40,7 +40,7 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 			inputWallet={inputWallet}
 			inputName={inputName}
 			onPressScan={scan}
-			// close={close}
+			close={close}
 			steps={steps}
 			onPressBack={goBack}
 		/>
