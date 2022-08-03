@@ -29,11 +29,6 @@ const biometricsAuth = async () => {
 };
 
 export default function Fingerprint({ style, onCancel }: Props) {
-  useEffect(() => {
-    biometricsAuth()
-      .catch((e) => console.error("NO", e))
-      .then((result) => console.log("YES", result));
-  }, []);
   return (
     <View style={[styles.container, style]}>
       <Icon2 size={75} name="fingerprint_gradient" style={styles.fingerprint} />

@@ -38,6 +38,7 @@ export default observer<Props>(({ navigation }) => {
   useEffect(() => {
     supportedAuthenticationTypesAsync().then(setAuthenticationTypes);
   }, []);
+  console.log("authType", authTypes)
   const [goBack, goNext] = useFooter(controller.steps);
 
   useEffect(() => {

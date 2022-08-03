@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default ({ onDone, authTypes, pin }: Props) => {
-  const isAnableFaceID = useMemo(
+  const isEnableFaceID = useMemo(
     () => authTypes.includes(AuthenticationType.FACIAL_RECOGNITION),
     [authTypes]
   );
@@ -23,7 +23,7 @@ export default ({ onDone, authTypes, pin }: Props) => {
   const { settings } = useStore()
 
   const [method, setMethod] = useState<CheckMethod>(() =>
-    isAnableFaceID ? "FaceID" : "TouchID"
+    isEnableFaceID ? "FaceID" : "TouchID"
   );
 
   const toggleMethod = useCallback(
@@ -57,7 +57,7 @@ export default ({ onDone, authTypes, pin }: Props) => {
           of the pin?
         </Subtitle>
 
-        {isAnableFaceID && (
+        {isEnableFaceID && (
           <Button
             mode="fill"
             onPress={toggleMethod}
