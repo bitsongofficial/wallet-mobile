@@ -1,4 +1,4 @@
-export { BottomSheetModal, BottomSheet } from "./BottomSheetModal"
+export { BottomSheetModal, BottomSheetObserver as BottomSheet } from "./BottomSheetModal"
 export { default as Phrase } from "./Phrase"
 export { default as PhraseHorisontal } from "./PhraseHorisontal"
 export { default as Pagination } from "./Pagination"

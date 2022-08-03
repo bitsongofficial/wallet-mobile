@@ -1,17 +1,19 @@
-import { forwardRef, useCallback, useEffect, useState } from "react"
-import { BackHandler, StyleSheet, View } from "react-native"
+import { FC, forwardRef, useCallback } from "react"
+import { StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import {
 	BottomSheetModalMethods,
 	BottomSheetMethods,
 } from "@gorhom/bottom-sheet/lib/typescript/types"
 import DefaultBottomSheet, {
+	BottomSheetBackdrop,
+	BottomSheetBackdropProps,
 	BottomSheetModal as Default,
 	BottomSheetModalProps,
 	BottomSheetProps,
 } from "@gorhom/bottom-sheet"
 import { useTheme } from "hooks"
-import { Backdrop } from "components/atoms"
+import { COLOR } from "utils"
 
 type PropsModal = BottomSheetModalProps
 
@@ -21,78 +23,65 @@ export const BottomSheetModal = observer(
 		ref: React.Ref<BottomSheetModalMethods>,
 	) {
 		const theme = useTheme()
-		const [isOpen, handleAnimate] = useBackdrop(props.onAnimate)
-
-		// useBottomSheetBackButton(isOpen)
-
 		return (
-			<>
-				{isOpen && <Backdrop />}
-				<Default
-					handleComponent={() => (
-						<View style={styles.handleContainer}>
-							<View style={[styles.handleIndicator, theme.bottomsheet.indicator]} />
-						</View>
-					)}
-					backgroundStyle={[styles.background, theme.bottomsheet.background, backgroundStyle]}
-					{...props}
-					onAnimate={handleAnimate}
-					ref={ref}
-				/>
-			</>
+			<Default
+				handleComponent={() => (
+					<View style={styles.handleContainer}>
+						<View style={[styles.handleIndicator, theme.bottomsheet.indicator]} />
+					</View>
+				)}
+				backdropComponent={(bProps) => (
+					<BottomSheetBackdrop
+						{...bProps}
+						disappearsOnIndex={-1}
+						appearsOnIndex={0}
+						style={[{ backgroundColor: COLOR.Dark3 }, bProps.style]}
+					/>
+				)}
+				backgroundStyle={[styles.background, theme.bottomsheet.background, backgroundStyle]}
+				{...props}
+				ref={ref}
+			/>
 		)
 	}),
 )
 
 type Props = BottomSheetProps
 
-export const BottomSheet = observer(
+export const BottomSheetObserver = observer(
 	forwardRef(function BottomSheet(
 		{ backgroundStyle, ...props }: Props,
 		ref: React.Ref<BottomSheetMethods>,
 	) {
 		const theme = useTheme()
 
-		const [isOpen, handleAnimate] = useBackdrop(props.onAnimate)
+		const renderBackdrop = useCallback<FC<BottomSheetBackdropProps>>(
+			(bProps) => (
+				<BottomSheetBackdrop
+					{...bProps}
+					disappearsOnIndex={-1}
+					appearsOnIndex={0}
+					style={[styles.backdrop, bProps.style]}
+				/>
+			),
+			[],
+		)
 
 		return (
-			<>
-				{false && isOpen && <Backdrop />}
-
-				<DefaultBottomSheet
-					handleComponent={() => (
-						<View style={styles.handleContainer}>
-							<View style={[styles.handleIndicator, theme.bottomsheet.indicator]} />
-						</View>
-					)}
-					backgroundStyle={[styles.background, theme.bottomsheet.background, backgroundStyle]}
-					{...props}
-					onAnimate={handleAnimate}
-					ref={ref}
-				/>
-			</>
+			<DefaultBottomSheet
+				handleComponent={() => (
+					<View style={styles.handleContainer}>
+						<View style={[styles.handleIndicator, theme.bottomsheet.indicator]} />
+					</View>
+				)}
+				backdropComponent={renderBackdrop}
+				backgroundStyle={[styles.background, theme.bottomsheet.background, backgroundStyle]}
+				{...props}
+				ref={ref}
+			/>
 		)
 	}),
 )
-
-function useBackdrop(onAnimate: BottomSheetProps["onAnimate"]) {
-	const [isOpen, setOpen] = useState(false)
-
-	const toggleBackdrop = useCallback<NonNullable<BottomSheetProps["onAnimate"]>>(
-		(_, to) => setOpen(!to),
-		[],
-	)
-
-	const handleAnimate = useCallback<NonNullable<BottomSheetProps["onAnimate"]>>(
-		(...args) => {
-			toggleBackdrop(...args)
-			onAnimate && onAnimate(...args)
-		},
-		[onAnimate],
-	)
-
-	return [isOpen, handleAnimate] as const
-}
 
 const styles = StyleSheet.create({
 	background: {
@@ -110,4 +99,5 @@ const styles = StyleSheet.create({
 		width: 120,
 		borderRadius: 2,
 	},
+	backdrop: { backgroundColor: COLOR.Dark3 },
 })
