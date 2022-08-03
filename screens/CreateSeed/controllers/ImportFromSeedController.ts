@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { InputHandler } from "utils";
-import { Pin, Steps, Phrase, Biometric } from "classes";
+import { Pin, Steps, Phrase } from "classes";
 
 export default class ImportFromSeedController {
   steps = new Steps([
