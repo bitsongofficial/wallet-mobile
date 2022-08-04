@@ -59,8 +59,13 @@ export default () => (
 				options={{
 					headerShown: false,
 					tabBarIcon: ({ focused }) => (
-						<Icon2 name="circle" size={20} stroke={getStroke(focused)} />
+						<Icon2 name="circle" size={20} stroke={hexAlpha(COLOR.White, 10)} />
 					),
+				}}
+				listeners={{
+					tabPress: e => {
+						e.preventDefault()
+					}
 				}}
 			/>
 		</BottomTab.Navigator>
