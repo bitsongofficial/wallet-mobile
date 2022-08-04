@@ -71,7 +71,7 @@ export default observer(function SelectReceiver({
             bottomSheet
             style={{ marginTop: 36 }}
             address={controller.creater.address}
-            amount={coin.fromCoinBalanceToFiat(controller.creater.balance, controller.creater.coin?.info.coin ?? SupportedCoins.BITSONG).toString()}
+            amount={coin.fromCoinBalanceToFiat(controller.creater.balance, controller.creater.coin?.info.coin ?? SupportedCoins.BITSONG).toFixed(2)}
             coin={controller.creater.coin?.info}
             onPress={() => {}}
             memoInput={memo}
