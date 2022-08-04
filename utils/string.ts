@@ -14,3 +14,8 @@ export function trimAddress(address: string, lengthWithoutPrefix = 13)
 	}
 	return "Missing address"
 }
+
+export function capitalize(s: string)
+{
+	return s.charAt(0).toUpperCase() + s.slice(1)
+}
