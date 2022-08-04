@@ -4,6 +4,9 @@ import { Proposal } from "./Proposal";
 
 export interface SubmitProposalData {
 	proposer: CosmosWallet,
-	proposal: Proposal,
+	proposal: {
+		title: string,
+		description: string,
+	},
 	initialDeposit: Amount,
 }
