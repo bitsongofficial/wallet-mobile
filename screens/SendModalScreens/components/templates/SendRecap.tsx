@@ -18,6 +18,7 @@ import { SendController } from "../../classes";
 import { Footer } from "../atoms";
 import { Data } from "../organisms";
 import { SupportedCoins } from "constants/Coins";
+import { formatNumber } from "utils/numbers";
 
 type ValueTabs = "Details" | "Data";
 const tabs = ["Details", "Data"];
@@ -71,7 +72,7 @@ export default observer(function SelectReceiver({
             bottomSheet
             style={{ marginTop: 36 }}
             address={controller.creater.address}
-            amount={coin.fromCoinBalanceToFiat(controller.creater.balance, controller.creater.coin?.info.coin ?? SupportedCoins.BITSONG).toString()}
+            amount={formatNumber(coin.fromCoinBalanceToFiat(controller.creater.balance, controller.creater.coin?.info.coin ?? SupportedCoins.BITSONG))}
             coin={controller.creater.coin?.info}
             onPress={() => {}}
             memoInput={memo}
