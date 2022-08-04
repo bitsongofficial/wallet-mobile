@@ -73,8 +73,7 @@ export default observer<Props>(({ close, steps }) => {
 			)}
 
 			<Subtitle style={styles.subtitle}>
-				Access VIP experiences, exclusive previews,{"\n"}
-				finance your own and have your say.
+				Insert the address you want to explore and discover data.
 			</Subtitle>
 
 			<View style={styles.footer}>

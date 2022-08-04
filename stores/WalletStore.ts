@@ -13,6 +13,7 @@ import SettingsStore from "./SettingsStore";
 import LocalStorageManager from "./LocalStorageManager";
 import { askPin } from "navigation/AskPin";
 import uuid from 'react-native-uuid';
+import { navigate } from "navigation/utils";
 
 export const cosmos_mnemonic_prefix = "mnemonic_"
 
@@ -355,6 +356,12 @@ export default class WalletStore {
     if(p == undefined) return
     this.localStorageManager?.removeProfileData(p)
     this.profiles.splice(this.profiles.indexOf(p), 1)
+    if(this.profiles.length < 1)
+    {
+      this.activeProfile = null
+      navigate("Start")
+      return
+    }
     if(p == this.activeProfile) this.activeProfile = this.profiles[0]
   }
 }
