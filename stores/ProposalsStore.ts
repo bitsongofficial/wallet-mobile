@@ -1,5 +1,6 @@
 import { SupportedCoins, SupportedCoinsFullMap, SupportedCoinsMap } from "constants/Coins"
 import { CosmosWallet } from "core/storing/Wallet"
+import { DepositData } from "core/types/coin/cosmos/DepositData"
 import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { ProposalVote } from "core/types/coin/cosmos/ProposalVote"
 import { SubmitProposalData } from "core/types/coin/cosmos/SubmitProposalData"
@@ -179,5 +180,26 @@ export default class ProposalsStore {
 			},
 		}
 		return await coin.Do(CoinOperationEnum.SubmitProposal, data)
+	}
+
+	async deposit(proposal: proposalIndexer, deposit: number)
+	{
+		const p = this.resolveProposal(proposal)
+		if(p)
+		{
+			const coin = p.chain ?? SupportedCoins.BITSONG
+			const wallet = this.walletStore.activeWallet?.wallets[coin] as CosmosWallet
+			const chain = CoinClasses[coin]
+			const denom = chain.denom()
+			const data: DepositData = {
+				depositor: wallet,
+				proposal: p,
+				amount: {
+					amount: (deposit * convertRateFromDenom(denom)).toString(),
+					denom,
+				}
+			}
+			return await chain.Do(CoinOperationEnum.Deposit, data)
+		}
 	}
 }
