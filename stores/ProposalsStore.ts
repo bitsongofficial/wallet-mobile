@@ -23,10 +23,7 @@ export default class ProposalsStore {
 	constructor(private walletStore: WalletStore, private validatorsStore: ValidatorStore) {
 		makeAutoObservable(this, {}, { autoBind: true })
 
-		autorun(() =>
-		{
-			this.load()
-		})	
+		this.load()
 	}
 
 	async load()
@@ -64,6 +61,24 @@ export default class ProposalsStore {
 				console.error("Catched", e)
 			}
 		}
+	}
+
+	update()
+	{
+		return new Promise<void>((accept, reject) =>
+		{
+			runInAction(async () =>
+			{
+				try {
+					await this.load()
+				}
+				catch
+				{
+					reject()
+				}
+				accept()
+			})
+		})
 	}
 
 	get allProposals()
@@ -157,7 +172,9 @@ export default class ProposalsStore {
 				proposal: p,
 				choice: option,
 			}
-			return await chain.Do(CoinOperationEnum.Vote, data)
+			const res = await chain.Do(CoinOperationEnum.Vote, data)
+			this.update()
+			return res
 		}
 
 		return false
@@ -179,7 +196,9 @@ export default class ProposalsStore {
 				denom,
 			},
 		}
-		return await coin.Do(CoinOperationEnum.SubmitProposal, data)
+		const res = await coin.Do(CoinOperationEnum.SubmitProposal, data)
+		this.update()
+		return res
 	}
 
 	async deposit(proposal: proposalIndexer, deposit: number)
@@ -199,7 +218,9 @@ export default class ProposalsStore {
 					denom,
 				}
 			}
-			return await chain.Do(CoinOperationEnum.Deposit, data)
+			const res = await chain.Do(CoinOperationEnum.Deposit, data)
+			this.update()
+			return res
 		}
 	}
 }
