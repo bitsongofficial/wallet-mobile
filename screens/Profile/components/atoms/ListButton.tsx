@@ -34,7 +34,7 @@ export default ({
 		>
 			<View style={styles.container}>
 				<View style={styles.left}>
-					<Icon2 name={icon} size={24} style={styles.icon} stroke={hexAlpha(COLOR.White, 50)} />
+					<Icon2 name={icon} size={24} style={styles.icon} stroke={COLOR.PaleCornflowerBlue} />
 					<Text style={[styles.text, theme.text.primary]}>{children || text}</Text>
 				</View>
 				<View style={styles.right}>

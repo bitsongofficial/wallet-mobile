@@ -25,13 +25,13 @@ export default ({
 		<View style={[styles.container, isFocus && styles.container_focused, style]}>
 			<Input
 				style={styles.input}
-				placeholderTextColor={hexAlpha(COLOR.White, 50)}
+				placeholderTextColor={COLOR.PaleCornflowerBlue}
 				keyboardAppearance="dark"
 				{...props}
 			/>
 			{loupe && (
 				<View style={styles.iconContainer}>
-					<Icon2 name="magnifying_glass" stroke={hexAlpha(COLOR.White, 20)} size={21} />
+					<Icon2 name="magnifying_glass" stroke={COLOR.PaleCornflowerBlue} size={21} />
 				</View>
 			)}
 			{Right && <View style={styles.right}>{Right}</View>}
