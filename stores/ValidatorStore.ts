@@ -1,4 +1,4 @@
-import { SupportedCoins, SupportedCoinsMap } from "constants/Coins"
+import { SupportedCoins, SupportedCoinsFullMap, SupportedCoinsMap } from "constants/Coins"
 import { ClaimData } from "core/types/coin/cosmos/ClaimData"
 import { DelegateData } from "core/types/coin/cosmos/DelegateData"
 import { DelegationsData } from "core/types/coin/cosmos/DelegationsData"
@@ -26,7 +26,9 @@ export default class ValidatorStore {
 		amount: Amount,
 	}[] = []
 
-	totalVotingPower: number = 0
+	totalVotingPower: SupportedCoinsFullMap<number> = {
+		[SupportedCoins.BITSONG]: 0,
+	}
 
 	private aprRatio: SupportedCoinsMap = {
 
@@ -50,9 +52,9 @@ export default class ValidatorStore {
 		let rewards: any[] = []
 		let delegations: any[] = []
 		const wallet = this.walletStore.activeWallet
-		this.totalVotingPower = 0
 		for(const chain of Object.values(SupportedCoins))
 		{
+			this.totalVotingPower[chain] = 0
 			try
 			{
 				const coin = CoinClasses[chain]
@@ -72,7 +74,8 @@ export default class ValidatorStore {
 				val = val.filter(v => (v.status.status != ValidatorStatus.INACTIVE))
 				val.forEach(v => {
 					v.chain = chain
-					this.totalVotingPower += v.tokens
+					console.log(v.id, v.identity)
+					this.totalVotingPower[chain] += v.tokens
 				})
 				validators = validators.concat(val)
 
@@ -128,15 +131,15 @@ export default class ValidatorStore {
 		const i = this.validators.indexOf(index as any)
 		if(i > -1) return index as Validator
 		if(typeof index == "string") return this.validators.find(v => v.id == index) ?? null
-		if('id' in index) return this.validators.find(v => v.id = index.id) ?? null
-		if('operator' in index) return this.validators.find(v => v.operator = index.operator) ?? null
+		if('id' in index) return this.validators.find(v => v.id == index.id) ?? null
+		if('operator' in index) return this.validators.find(v => v.operator == index.operator) ?? null
 		return null
 	}
 
 	percentageVotingPower(validator: validatorIndexer)
 	{
 		const v = this.resolveValidator(validator)
-		if(v) return v.tokens / this.totalVotingPower * 100
+		if(v) return v.tokens / this.totalVotingPower[v.chain ?? SupportedCoins.BITSONG] * 100
 		return 0
 	}
 

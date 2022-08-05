@@ -67,7 +67,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						wallet.deleteProfile(w)
 					}}
 					onPressEdit={(profile) => {
-						steps.goTo("Edit Wallet")
+						// steps.goTo("Edit Wallet")
 						setEdited(profile)
 					}}
 					mapItemsRef={mapItemsRef}
@@ -116,8 +116,8 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 							<RectButton
 								style={styles.buttonBack}
 								onPress={() => {
-									steps.goBack()
 									removeEdited()
+									steps.goBack()
 								}}
 							>
 								<Icon2 size={24} name="arrow_left" stroke={COLOR.White} />
@@ -207,8 +207,7 @@ type FooterProps = {
 export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, controller }) => {
 	const insent = useSafeAreaInsets()
 	const copyToClipboard = useCallback(async () => {
-		console.log("controller.seedPhrase.toString() ", controller.seedPhrase.toString())
-		await Clipboard.setStringAsync(controller.seedPhrase.toString())
+		await Clipboard.setStringAsync(controller.seedPhrase.join(" "))
 	}, [])
 	return (
 		<View style={[styles.buttons, { bottom: insent.bottom }]}>

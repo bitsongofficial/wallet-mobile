@@ -75,7 +75,7 @@ export default class SendController {
 
   get balance () {
     const balance = this.creater.balance
-    return balance ? this.limitDecimal(balance.toString(), 5) : ""
+    return balance ? this.limitDecimal(balance.toString(), 4) : ""
   }
 
   set balance(value) {

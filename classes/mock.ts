@@ -1,5 +1,5 @@
 import { SupportedCoins } from "constants/Coins";
-import { ICoin } from "./types";
+import { ICoin } from "./types_new";
 
 const btsg = {
   _id: "1",
@@ -33,4 +33,4 @@ export default {
     address: "osmo19gwrv99dc99craqxzgf7tjh7hruk9h95vpwajn",
     coin: SupportedCoins.BITSONG
   } as ICoin,
-};
+}

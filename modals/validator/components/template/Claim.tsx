@@ -2,6 +2,7 @@ import { StyleSheet, View, Text } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetHeader } from "components/moleculs"
 import { COLOR } from "utils"
+import { formatNumber } from "utils/numbers"
 
 type Props = {
 	amount: string | number
@@ -14,7 +15,7 @@ export default observer<Props>(({ amount, coinName }) => {
 			<BottomSheetHeader title="Claim Import" subtitle="Amount" />
 
 			<View style={styles.value}>
-				<Text style={styles.amount}>{(typeof amount == "number") ? amount.toFixed(2) : amount|| 0}</Text>
+				<Text style={styles.amount}>{(typeof amount == "number") ? formatNumber(amount) : amount|| 0}</Text>
 				<Text style={styles.coinName}>{coinName}</Text>
 			</View>
 		</View>

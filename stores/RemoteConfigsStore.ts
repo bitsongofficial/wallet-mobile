@@ -92,7 +92,7 @@ export default class RemoteConfigsStore {
 					}
 				}
 				// this.prices.bitsong = bitsongPrice
-				this.enabledCoins.splice(1, this.enabledCoins.length, ...(enabledCoins ?? []))
+				this.enabledCoins.splice(0, this.enabledCoins.length, ...(enabledCoins ?? []))
 				this.pushNotificationToken = pushNotificationToken ?? ""
 				this.firstLoad = true
 				this.loading = false

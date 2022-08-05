@@ -8,7 +8,7 @@ import { IWalletConnectSession } from "@walletconnect/types"
 import LocalStorageManager from "./LocalStorageManager";
 import SettingsStore from "./SettingsStore";
 import { confirmTransaction } from "components/organisms/TransactionSignConfirm";
-import mock from "classes/mock";
+import mock from "classes/mock_new";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { operationToAminoType } from "core/coin/cosmos/operations/utils";
 import { DelegateController, openClaim, openDelegate, openRedelegate, openUndelegate, RedelegateController, UndelegateController } from "modals/validator";
@@ -16,6 +16,7 @@ import ValidatorStore from "./ValidatorStore";
 import { SupportedCoins } from "constants/Coins";
 import { getMainNavigation } from "navigation/utils";
 import { fromAmountToCoin, fromDenomToCoin } from "core/utils/Coin";
+import { formatNumber } from "utils/numbers";
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
@@ -95,7 +96,7 @@ export default class DappConnectionStore {
 			from: Object.assign(mock.BitSong, {
 				address: data.from
 			}),
-			amount: this.coinStore.fromAmountToFIAT(data.amount[0]).toFixed(2),
+			amount: formatNumber(this.coinStore.fromAmountToFIAT(data.amount[0])),
 			onDone: async () =>
 			{
 				await handler.accept()
@@ -138,7 +139,7 @@ export default class DappConnectionStore {
 		controller.disableBack = true
 		controller.setSelectedValidator(validator)
 		controller.steps.setActive(2)
-		controller.amountInput.setAmount(fromAmountToCoin(data.amount).toFixed(2))
+		controller.amountInput.setAmount(formatNumber(fromAmountToCoin(data.amount)))
 		controller.amountInput.setCoin(this.coinStore.findAssetWithDenom(data.amount.denom) ?? this.coinStore.coins[0])
 		openDelegate({
 			onDone: async () =>
@@ -168,7 +169,7 @@ export default class DappConnectionStore {
 		controller.disableBack = true
 		controller.setFrom(validator)
 		controller.steps.setActive(1)
-		controller.amountInput.setAmount(fromAmountToCoin(data.amount).toFixed(2))
+		controller.amountInput.setAmount(formatNumber(fromAmountToCoin(data.amount)))
 		controller.amountInput.setCoin(this.coinStore.findAssetWithDenom(data.amount.denom) ?? this.coinStore.coins[0])
 		openUndelegate({
 			onDone: async () =>
@@ -200,7 +201,7 @@ export default class DappConnectionStore {
 		controller.setFrom(validator)
 		controller.setTo(newValidator)
 		controller.steps.setActive(3)
-		controller.amountInput.setAmount(fromAmountToCoin(data.amount).toFixed(2))
+		controller.amountInput.setAmount(formatNumber(fromAmountToCoin(data.amount)))
 		controller.amountInput.setCoin(this.coinStore.findAssetWithDenom(data.amount.denom) ?? this.coinStore.coins[0])
 		openRedelegate({
 			onDone: async () =>

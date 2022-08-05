@@ -26,4 +26,4 @@ export type ITransaction = {
   balance: number;
   address: string;
   receiver: IPerson;
-};
+}

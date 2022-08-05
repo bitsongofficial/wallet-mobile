@@ -32,9 +32,10 @@ export default observer(function SelectReceiver({
   const hidden = useSpring({ opacity: addressInput.isFocused ? 0.1 : 1 });
   useEffect(() => addressInput.focusOFF, []);
 
-  const setAddress = (contact: Contact) =>
+  const setAddress = (contact: Contact | string) =>
   {
-    addressInput.set(contact.address)
+    if(typeof contact == "string") addressInput.set(contact)
+    else addressInput.set(contact.address)
   }
 
   return (
@@ -64,11 +65,22 @@ export default observer(function SelectReceiver({
           <Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
           <View style={styles.users}>
             {contacts.starred.map((c) => (
-              <User user={c} key={c.address} />
+                <TouchableOpacity key={c.address} onPress={() =>
+                {
+                  console.log("aadsadf", c.address)
+                  setAddress(c)
+                }}>
+                  <User user={c} key={c.address} />
+                </TouchableOpacity>
             ))}
           </View>
 
-          <CardAdressSelf coin={creater.coin} style={styles.self} />
+          <TouchableOpacity onPress={() =>
+                {
+                  setAddress(creater.coin?.info.address)
+                }}>
+            <CardAdressSelf coin={creater.coin} style={styles.self} />
+          </TouchableOpacity>
         </animated.View>
       </BottomSheetScrollView>
       <Footer
