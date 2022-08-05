@@ -31,6 +31,7 @@ import { DelegateData } from "core/types/coin/cosmos/DelegateData"
 import { convertRateFromDenom } from "core/utils/Coin"
 import { RedelegateData } from "core/types/coin/cosmos/RedelegateData"
 import { openUndelegateWithValidator } from "modals/validator/withValidator"
+import { formatNumber } from "utils/numbers"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Validator">
 
@@ -41,7 +42,7 @@ type IData = {
 
 export default observer<Props>(function Stacking({ navigation, route }) {
 
-	const { validators, wallet } = useStore()
+	const { validators, wallet, settings } = useStore()
 	const validator = validators.resolveValidator(route.params.id) ?? validators.validators[0]
 	const [address, setAddress] = useState("")
 
@@ -80,7 +81,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 		() => [
 			{ title: "APR", value: `${validators.apr(validator).toFixed(2)}%` },
 			{ title: "VOTING POWER", value: `${validators.percentageVotingPower(validator).toFixed(1)}%` },
-			{ title: "TOTAL STAKE", value: `$${validators.totalStakeAsFIAT(validator).toFixed(2)}` },
+			{ title: "TOTAL STAKE", value: `${settings.currency?.symbol}${formatNumber(validators.totalStakeAsFIAT(validator))}` },
 		],
 		[validator, validator.commission.rate.current, validator.tokens],
 	)
@@ -138,10 +139,11 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 							</View>
 						</View>
 
-						<CardClaim style={styles.claim} onPressClaim={openClaimModal} value={validators.validatorReward(validator)} />
+						<CardClaim style={styles.claim} onPressClaim={openClaimModal} value={validators.validatorReward(validator)} coin={validator.chain} />
 
 						<CardDelegation
 							value={validators.validatorDelegations(validator)}
+							coin={validator.chain}
 							style={styles.delegation}
 							onPressStake={openDelegateModal}
 							onPressUnstake={openUndelegateModal}

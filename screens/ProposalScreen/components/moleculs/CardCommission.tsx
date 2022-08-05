@@ -3,14 +3,16 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { COLOR } from "utils"
 import { Card, Icon2 } from "components/atoms"
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
+import { useStore } from "hooks"
 
 type Props = {
 	title?: string,
+	percentage?: string | number,
 	status?: ProposalStatus
 	style?: StyleProp<ViewStyle>
 }
 
-export default memo(({ style, title, status }: Props) =>
+export default memo(({ style, title, status, percentage }: Props) =>
 {
 	let statusLabel = "N/A"
 	switch(status)
@@ -37,27 +39,27 @@ export default memo(({ style, title, status }: Props) =>
 	}
 	return (
 		<Card style={[styles.card, style]}>
-			<View>
+			<View style={{flexShrink: 1}}>
 				<Text style={styles.title}>
 					{title ?? "Unspecified"}
 				</Text>
-				<View style={styles.row}>
+				<View style={[styles.row, {flexGrow: 1}]}>
 					<View style={styles.badge}>
 						<Text style={styles.badgeText}>
-							{statusLabel}
+							{statusLabel.toUpperCase()}
 						</Text>
 					</View>
 				</View>
 			</View>
 	
 			<View style={styles.right}>
-				{/* <View style={{ alignItems: "flex-end" }}>
-					<Text style={styles.percent}>24%</Text>
+				<View style={{ alignItems: "flex-end", marginBottom: 14 }}>
+					<Text style={styles.percent}>{percentage}%</Text>
 					<Text style={styles.voted}>VOTED</Text>
 				</View>
 				<View style={styles.arrowContainer}>
 					<Icon2 name="arrow_right" stroke={COLOR.White} />
-				</View> */}
+				</View>
 			</View>
 		</Card>
 	)
@@ -85,9 +87,10 @@ const styles = StyleSheet.create({
 	row: { flexDirection: "row" },
 	badge: {
 		paddingHorizontal: 16,
-		paddingVertical: 5,
+		paddingVertical: 10,
 		borderRadius: 25,
 		backgroundColor: COLOR.LightGreyBlue,
+		alignSelf: "flex-end",
 	},
 	badgeText: {
 		fontFamily: "CircularStd",
@@ -99,6 +102,7 @@ const styles = StyleSheet.create({
 
 	right: {
 		justifyContent: "space-between",
+		display: "flex",
 	},
 	percent: {
 		fontFamily: "CircularStd",
@@ -119,5 +123,6 @@ const styles = StyleSheet.create({
 		backgroundColor: COLOR.Dark3,
 		paddingHorizontal: 26,
 		paddingVertical: 17,
+		alignSelf: "flex-end",
 	},
 })

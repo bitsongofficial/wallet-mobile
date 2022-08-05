@@ -19,8 +19,8 @@ export default class MainStore {
 	settings = new SettingsStore()
 	wallet = new WalletStore(this.settings, this.configs.remote)
 	coin = new CoinStore(this.wallet, this.configs.remote, this.settings)
-	proposals = new ProposalsStore(this.wallet)
 	validators = new ValidatorStore(this.coin, this.wallet)
+	proposals = new ProposalsStore(this.wallet, this.validators)
 	dapp = new DappConnectionStore(
 		this.wallet,
 		this.coin,

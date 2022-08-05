@@ -40,10 +40,9 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 			inputWallet={inputWallet}
 			inputName={inputName}
 			onPressScan={scan}
-			// close={close}
+			close={close}
 			steps={steps}
 			onPressBack={goBack}
-			close={close}
 		/>
 	)
 
@@ -56,7 +55,6 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 				if (index === -1) {
 					gbs.removeBackHandler()
 					onClose && onClose()
-					console.log("onClose")
 				}
 			},
 			children,

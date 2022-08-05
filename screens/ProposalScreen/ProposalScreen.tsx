@@ -56,7 +56,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 	const renderProposals = useCallback<ListRenderItem<Proposal>>(
 		({item}) => {
 			return (
-				<CardCommission key={item.id.toString()} title={item.title} status={item.status} style={{ marginBottom: 20 }} />
+				<CardCommission key={item.id.toString()} title={item.title} status={item.status} percentage={Math.floor(proposals.votedPercentage(item))} style={{ marginBottom: 20 }} />
 			)
 		},
 		[],
