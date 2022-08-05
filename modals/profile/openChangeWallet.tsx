@@ -1,7 +1,9 @@
 import { BottomSheetProps } from "@gorhom/bottom-sheet"
 import { gbs } from "modals"
 import { Keyboard } from "react-native"
-import { ChangeWallet } from "./components/organisms"
+import { store } from "stores/Store"
+import { ChangeWallet, FooterChangeWallet } from "./components/organisms"
+import { ControllerChangeWallet } from "./controllers"
 
 type Options = {
 	props?: Omit<Partial<BottomSheetProps>, "onClose" | " children">
@@ -9,6 +11,10 @@ type Options = {
 }
 
 export default async function openChangeAvatar({ props, onClose }: Options) {
+	const { wallet } = store
+
+	const controller = new ControllerChangeWallet()
+
 	const close = () => {
 		Keyboard.dismiss()
 		gbs.close()
@@ -16,16 +22,49 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 
 	gbs.backHandler = () => close()
 
-	await gbs.setProps({
-		snapPoints: ["95%"],
-		...props,
-		onChange(index) {
-			if (index === -1) {
-				gbs.removeBackHandler()
-				onClose && onClose()
-			}
-		},
-		children: () => <ChangeWallet close={close} />,
-	})
-	requestAnimationFrame(() => gbs.expand())
+	const setWallet = () => {
+		wallet.changeActive(controller.selected)
+		close()
+	}
+
+	const saveEdited = () => {
+		controller.saveName()
+		close()
+	}
+
+	const showMnemonic = async () => {
+		const edited = controller.edited
+		if (edited) {
+			close()
+			controller.setPhrase((await edited.wallets.btsg.Mnemonic()).split(" "))
+			controller.steps.goTo("View Mnemonic Seed")
+			open()
+		}
+	}
+
+	const open = async () => {
+		await gbs.setProps({
+			snapPoints: ["95%"],
+			...props,
+			onChange(index) {
+				if (index === -1) {
+					gbs.removeBackHandler()
+					onClose && onClose()
+				}
+			},
+			footerComponent: () => (
+				<FooterChangeWallet
+					onPressSelect={setWallet}
+					onPressSave={saveEdited}
+					controller={controller}
+				/>
+			),
+			children: () => (
+				<ChangeWallet onPressViewMnemonic={showMnemonic} close={close} controller={controller} />
+			),
+		})
+		requestAnimationFrame(() => gbs.expand())
+	}
+
+	open()
 }
