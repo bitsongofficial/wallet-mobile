@@ -99,8 +99,9 @@ export default class DappConnectionStore {
 			amount: formatNumber(this.coinStore.fromAmountToFIAT(data.amount[0])),
 			onDone: async () =>
 			{
-				await handler.accept()
+				const res = await handler.accept()
 				this.coinStore.updateBalances()
+				return res
 			},
 			onReject: () => {handler.reject()},
 		})
@@ -130,7 +131,6 @@ export default class DappConnectionStore {
 	private delegateRequest(data: any, handler: acceptRejectType)
 	{
 		const validator = this.validatorsStore.resolveValidator(data.validator)
-		console.log(validator, data.validator)
 		if(validator == null)
 		{
 			handler.reject()
