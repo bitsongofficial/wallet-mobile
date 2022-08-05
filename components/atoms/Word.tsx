@@ -17,7 +17,7 @@ type Props = {
 	hidden?: boolean
 
 	onPress?(text: string): void
-	isActive: boolean
+	isActive?: boolean
 }
 
 export default ({ index, text, style, hidden, onPress, isActive }: Props) => {

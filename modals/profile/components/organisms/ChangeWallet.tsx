@@ -1,28 +1,40 @@
-import { useCallback, useMemo, useState } from "react"
-import { Dimensions, StyleSheet, Text, View } from "react-native"
+import { useCallback, useMemo } from "react"
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { RectButton, Swipeable } from "react-native-gesture-handler"
-import { BottomSheetFlatList } from "@gorhom/bottom-sheet"
+import { BottomSheetFlatList, BottomSheetScrollView } from "@gorhom/bottom-sheet"
 import { observable } from "mobx"
 import { observer } from "mobx-react-lite"
 import { useStore } from "hooks"
-import { COLOR, hexAlpha, InputHandler } from "utils"
+import { COLOR, hexAlpha } from "utils"
 import { Button, Icon2 } from "components/atoms"
-import { ListButton, Search, Title } from "../atoms"
+import { Search, Title } from "../atoms"
+import { Phrase as PhraseView } from "components/moleculs"
+import * as Clipboard from "expo-clipboard"
 import { WalletItemEdited } from "../moleculs"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { ProfileWallets } from "stores/WalletStore"
 import { WalletTypes } from "core/types/storing/Generic"
+import { ListButton } from "screens/Profile/components/atoms"
+import { ControllerChangeWallet } from "../../controllers"
 
 type Props = {
 	close(): void
+	controller: ControllerChangeWallet
+	onPressViewMnemonic(): void
 }
 
-export default observer<Props>(({ close }) => {
-	const { settings, wallet } = useStore()
-	const insent = useSafeAreaInsets()
-
-	// ------- Search -----------
-	const inputSearch = useMemo(() => new InputHandler(), [])
+export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
+	const { wallet } = useStore()
+	const {
+		steps,
+		edited,
+		inputSearch,
+		inputWalletName,
+		selected,
+		setEdited,
+		setSelected,
+		seedPhrase,
+	} = controller
 
 	const filtred = useMemo(() => {
 		if (inputSearch.value) {
@@ -33,16 +45,7 @@ export default observer<Props>(({ close }) => {
 		}
 	}, [inputSearch.value, wallet.wallets])
 
-	// ---------- Edit -----------
-	const [edited, setEdited] = useState<ProfileWallets>() // need store
-
-	const inputWalletName = useMemo(() => new InputHandler(edited?.profile.name), [edited])
-
-	const removeEdited = useCallback(() => setEdited(undefined), [])
-	const saveEdited = useCallback(() => {
-		if (edited) edited.profile.name = inputWalletName.value
-		close()
-	}, [edited, inputWalletName])
+	const removeEdited = useCallback(() => setEdited(null), [])
 
 	// ------- FlatList ----------
 
@@ -51,38 +54,32 @@ export default observer<Props>(({ close }) => {
 		[],
 	)
 
-	const [selectedWallet, setSelectedWallet] = useState(wallet.activeWallet)
-
 	const keyExtractor = ({ profile }: ProfileWallets) => profile.name
 	const renderWallets = useCallback(
 		({ item }) => (
 			<View style={{ marginBottom: 13 }}>
 				<WalletItemEdited
 					value={item}
-					isActive={selectedWallet === item}
-					onPress={setSelectedWallet}
+					isActive={selected === item}
+					onPress={setSelected}
 					onPressDelete={(w) => {
 						close()
 						wallet.deleteProfile(w)
 					}}
-					onPressEdit={setEdited}
+					onPressEdit={(profile) => {
+						steps.goTo("Edit Wallet")
+						setEdited(profile)
+					}}
 					mapItemsRef={mapItemsRef}
 				/>
 			</View>
 		),
-		[selectedWallet],
+		[selected],
 	)
-
-	// -------- Done ---------
-
-	const setWallet = useCallback(() => {
-		wallet.changeActive(selectedWallet)
-		close()
-	}, [selectedWallet])
 
 	return (
 		<View style={styles.container}>
-			{!edited ? (
+			{steps.active === 0 && (
 				<>
 					<View style={styles.wrapper}>
 						<View style={styles.header}>
@@ -111,11 +108,18 @@ export default observer<Props>(({ close }) => {
 						contentContainerStyle={styles.scrollContent}
 					/>
 				</>
-			) : (
+			)}
+			{steps.active === 1 && (
 				<View style={styles.wrapper}>
 					<View style={styles.header}>
 						<View style={styles.headerLeft}>
-							<RectButton style={styles.buttonBack} onPress={removeEdited}>
+							<RectButton
+								style={styles.buttonBack}
+								onPress={() => {
+									steps.goBack()
+									removeEdited()
+								}}
+							>
 								<Icon2 size={24} name="arrow_left" stroke={COLOR.White} />
 							</RectButton>
 						</View>
@@ -135,27 +139,21 @@ export default observer<Props>(({ close }) => {
 					<View style={styles.editMenu}>
 						<Text style={styles.editTitle}>Safety</Text>
 						<View style={styles.buttons_list}>
-							{edited.profile.type == WalletTypes.COSMOS && (
+							{edited?.profile.type == WalletTypes.COSMOS && (
 								<ListButton
 									style={styles.listButton}
 									icon="eye"
 									text="View Mnemonics"
 									arrow
-									onPress={async () => console.log(await edited.wallets.btsg.Mnemonic())}
+									onPress={onPressViewMnemonic}
 								/>
 							)}
-							{/* <ListButton
-                style={styles.listButton}
-                icon="key"
-                text="Eliminate Mnemonics"
-                arrow
-              /> */}
 							<ListButton
 								style={styles.listButton}
 								icon="power"
 								text="Disconnect Wallet"
 								arrow
-								onPress={() => wallet.deleteProfile(edited)}
+								onPress={() => edited && wallet.deleteProfile(edited)}
 							/>
 						</View>
 
@@ -167,23 +165,74 @@ export default observer<Props>(({ close }) => {
 				</View>
 			)}
 
-			<View style={[styles.buttons, { bottom: insent.bottom }]}>
-				{!edited ? (
-					<Button
-						text="Select"
-						onPress={setWallet}
-						textStyle={styles.buttonText}
-						contentContainerStyle={styles.buttonContent}
-					/>
-				) : (
-					<Button
-						text="Save"
-						onPress={saveEdited}
-						textStyle={styles.buttonText}
-						contentContainerStyle={styles.buttonContent}
-					/>
-				)}
-			</View>
+			{steps.active === 2 && (
+				<View style={[styles.wrapper, { flex: 1 }]}>
+					<View style={styles.header}>
+						<View style={styles.headerLeft}>
+							<RectButton
+								style={styles.buttonBack}
+								onPress={() => {
+									steps.goBack()
+									controller.setPhrase([])
+								}}
+							>
+								<Icon2 size={24} name="arrow_left" stroke={COLOR.White} />
+							</RectButton>
+						</View>
+
+						<View style={styles.headerCenter}>
+							<Title style={styles.title}>View Mnemonic Seed</Title>
+						</View>
+						<View style={styles.headerRight} />
+					</View>
+
+					<BottomSheetScrollView
+						style={{ flex: 1 }}
+						contentContainerStyle={{ paddingBottom: 116, paddingTop: 10 }}
+					>
+						<PhraseView style={styles.phrase} hidden={false} value={seedPhrase} />
+					</BottomSheetScrollView>
+				</View>
+			)}
+		</View>
+	)
+})
+
+type FooterProps = {
+	onPressSelect(): void
+	onPressSave(): void
+	controller: ControllerChangeWallet
+}
+
+export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, controller }) => {
+	const insent = useSafeAreaInsets()
+	const copyToClipboard = useCallback(async () => {
+		console.log("controller.seedPhrase.toString() ", controller.seedPhrase.toString())
+		await Clipboard.setStringAsync(controller.seedPhrase.toString())
+	}, [])
+	return (
+		<View style={[styles.buttons, { bottom: insent.bottom }]}>
+			{controller.steps.active === 0 && (
+				<Button
+					text="Select"
+					onPress={onPressSelect}
+					textStyle={styles.buttonText}
+					contentContainerStyle={styles.buttonContent}
+				/>
+			)}
+			{controller.steps.active === 1 && (
+				<Button
+					text="Save"
+					onPress={onPressSave}
+					textStyle={styles.buttonText}
+					contentContainerStyle={styles.buttonContent}
+				/>
+			)}
+			{controller.steps.active === 2 && (
+				<TouchableOpacity onPress={copyToClipboard}>
+					<Text style={[styles.editTitle, { color: COLOR.White }]}>Copy to Clipboard</Text>
+				</TouchableOpacity>
+			)}
 		</View>
 	)
 })
@@ -274,6 +323,10 @@ const styles = StyleSheet.create({
 	scrollContent: {
 		paddingTop: 9,
 		paddingBottom: 50,
+	},
+
+	phrase: {
+		alignItems: "center",
 	},
 
 	// ------- Buttons ------
