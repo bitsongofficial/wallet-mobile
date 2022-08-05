@@ -39,7 +39,7 @@ export default memo(({ style, title, status, percentage }: Props) =>
 	}
 	return (
 		<Card style={[styles.card, style]}>
-			<View style={{flexShrink: 1}}>
+			<View style={{flexShrink: 1, paddingEnd: 4}}>
 				<Text style={styles.title}>
 					{title ?? "Unspecified"}
 				</Text>
@@ -57,9 +57,9 @@ export default memo(({ style, title, status, percentage }: Props) =>
 					<Text style={styles.percent}>{percentage}%</Text>
 					<Text style={styles.voted}>VOTED</Text>
 				</View>
-				<View style={styles.arrowContainer}>
+				{/* <View style={styles.arrowContainer}>
 					<Icon2 name="arrow_right" stroke={COLOR.White} />
-				</View>
+				</View> */}
 			</View>
 		</Card>
 	)
