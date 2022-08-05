@@ -25,6 +25,7 @@ enum COLOR {
 	LightGreyBlue = "#67BAB0",
 	PearlBlackberry = "#656476",
 	PaleBlue = "#EAEAEB",
+	PaleCornflowerBlue = "#ACACEC",
 }
 
 export default COLOR
