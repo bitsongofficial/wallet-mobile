@@ -1,7 +1,5 @@
 import { Coin } from "classes";
-import { Coin as CoinClass } from "core/coin/Generic"
-import mock from "classes/mock";
-import { ICoin } from "classes/types";
+import mock from "classes/mock_new";
 import { SupportedCoins, SupportedCoinsMap } from "constants/Coins";
 import { PublicWallet } from "core/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
@@ -9,14 +7,14 @@ import { CoinClasses } from "core/types/coin/Dictionaries";
 import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
 import { Amount, Denom } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
-import { WalletData, WalletTypes } from "core/types/storing/Generic";
+import { WalletTypes } from "core/types/storing/Generic";
 import { autorun, keys, makeAutoObservable, runInAction, toJS, values } from "mobx";
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore, { ProfileWallets } from "./WalletStore";
 import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmount, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, SupportedFiats } from "core/utils/Coin";
 import SettingsStore from "./SettingsStore";
-import Config from "react-native-config";
+import { ICoin } from "classes/types";
 
 export default class CoinStore {
 	coins: Coin[] = []
@@ -134,7 +132,7 @@ export default class CoinStore {
 			})
 			runInAction(() =>
 			{
-				this.coins.splice(0, this.coins.length, ...coins)
+				this.coins.splice(0, this.coins.length, ...coins.sort((c1, c2) => (c2.balanceUSD ?? 0) - (c1.balanceUSD ?? 0)))
 				this.loading.balance = false
 				this.results.balance = errors
 			})

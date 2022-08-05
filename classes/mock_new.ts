@@ -1,8 +1,10 @@
 import { SupportedCoins } from "constants/Coins"
-import { ICoin, IChainCoinData, IRemoteCoinData } from "./types_new"
+import { ICoin } from "./types_new"
 
 const btsg = {
 	_id: "1",
+	denom: "1",
+
 	logo: require("assets/images/mock/logo_bitsong.png"),
 	balance: 101001.34,
 	brand: "BitSong",
@@ -10,21 +12,6 @@ const btsg = {
 	address: "bitsong19gwrv99dc99craqxzgf7tjh7hruk9h95y6adyp",
 	coin: SupportedCoins.BITSONG,
 } as ICoin
-
-export const byRemote = {
-	btsg: {
-		brand: "BITSONG",
-		logo: require("assets/images/mock/logo_bitsong.png"),
-		price: 1234, // $
-		coinName: "BTSG",
-	} as IRemoteCoinData,
-}
-
-export const byChain = {
-	btsg: {
-		balance: 101001.34,
-	} as IChainCoinData,
-}
 
 export default {
 	BitSong: btsg,

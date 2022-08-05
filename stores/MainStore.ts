@@ -1,8 +1,7 @@
-import { User } from "classes"
 import { makeAutoObservable } from "mobx"
 import SettingsStore from "./SettingsStore"
 import WalletStore from "./WalletStore"
-import CoinStore from "./CoinStore_2"
+import CoinStore from "./CoinStore"
 import RemoteConfigsStore from "./RemoteConfigsStore"
 import DappConnectionStore from "./DappConnectionStore"
 import LocalStorageManager from "./LocalStorageManager"
@@ -39,12 +38,5 @@ export default class MainStore {
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
-		this.initApp()
-	}
-
-	initApp() {
-		// config
-		BackgroundTimer.runBackgroundTimer(this.configs.remote.requestData, 1000 * 60 * 60)
-		this.configs.remote.requestData()
 	}
 }

@@ -8,7 +8,7 @@ import { IWalletConnectSession } from "@walletconnect/types"
 import LocalStorageManager from "./LocalStorageManager";
 import SettingsStore from "./SettingsStore";
 import { confirmTransaction } from "components/organisms/TransactionSignConfirm";
-import mock from "classes/mock";
+import mock from "classes/mock_new";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { operationToAminoType } from "core/coin/cosmos/operations/utils";
 import { DelegateController, openClaim, openDelegate, openRedelegate, openUndelegate, RedelegateController, UndelegateController } from "modals/validator";
