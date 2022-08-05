@@ -67,7 +67,6 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						wallet.deleteProfile(w)
 					}}
 					onPressEdit={(profile) => {
-						// steps.goTo("Edit Wallet")
 						setEdited(profile)
 					}}
 					mapItemsRef={mapItemsRef}
