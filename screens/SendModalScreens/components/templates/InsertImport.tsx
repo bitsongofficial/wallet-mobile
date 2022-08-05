@@ -31,7 +31,6 @@ export default observer<Props>(function InsertImport({
   const { settings } = useStore()
   const creater: TransactionCreater = controller.creater;
   const fiatSymbol = settings.currency?.symbol
-  console.log("r", controller.readableInput)
   return (
     <>
       <View style={styles.row}>

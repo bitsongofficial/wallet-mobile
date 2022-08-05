@@ -68,6 +68,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 					}}
 					onPressEdit={(profile) => {
 						setEdited(profile)
+						steps.goTo("Edit Wallet")
 					}}
 					mapItemsRef={mapItemsRef}
 				/>

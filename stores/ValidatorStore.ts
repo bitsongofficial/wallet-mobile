@@ -74,7 +74,6 @@ export default class ValidatorStore {
 				val = val.filter(v => (v.status.status != ValidatorStatus.INACTIVE))
 				val.forEach(v => {
 					v.chain = chain
-					console.log(v.id, v.identity)
 					this.totalVotingPower[chain] += v.tokens
 				})
 				validators = validators.concat(val)
