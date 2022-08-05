@@ -75,6 +75,7 @@ export default class SendController {
 
   get balance () {
     const balance = this.creater.balance
+    console.log("updated", balance)
     return balance ? this.limitDecimal(balance.toString(), 4) : ""
   }
 
@@ -137,6 +138,8 @@ export default class SendController {
 	}
   setMax() {
     this.creater.setMax()
+    if(this.inverted) this.currentInput = this.fiat
+    else this.currentInput = this.balance
     // this.updateBalanceFromAmount()
   }
 }
