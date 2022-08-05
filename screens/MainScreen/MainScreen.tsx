@@ -88,7 +88,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		navigation.push("Loader", {
 			// @ts-ignore
 			callback: async () => {
-				await validators.claimAll()
+				return await validators.claimAll()
 			},
 		})
 	}

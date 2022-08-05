@@ -129,7 +129,7 @@ export default class DappConnectionStore {
 
 	private delegateRequest(data: any, handler: acceptRejectType)
 	{
-		const validator = this.validatorsStore.resolveValidator(data.validator)
+		const validator = this.validatorsStore.resolveValidator({operator: data.validator})
 		if(validator == null)
 		{
 			handler.reject()
@@ -159,7 +159,7 @@ export default class DappConnectionStore {
 
 	private undelegateRequest(data: any, handler: acceptRejectType)
 	{
-		const validator = this.validatorsStore.resolveValidator(data.validator)
+		const validator = this.validatorsStore.resolveValidator({operator: data.validator})
 		if(validator == null)
 		{
 			handler.reject()
@@ -189,8 +189,8 @@ export default class DappConnectionStore {
 
 	private redelegateRequest(data: any, handler: acceptRejectType)
 	{
-		const validator = this.validatorsStore.resolveValidator(data.validator)
-		const newValidator = this.validatorsStore.resolveValidator(data.newValidator)
+		const validator = this.validatorsStore.resolveValidator({operator: data.validator})
+		const newValidator = this.validatorsStore.resolveValidator({operator: data.newValidator})
 		if(validator == null || newValidator == null)
 		{
 			handler.reject()
