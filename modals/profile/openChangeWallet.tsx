@@ -20,7 +20,7 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 		gbs.close()
 	}
 
-	gbs.backHandler = () => close()
+	const goBack = () => (controller.steps.history.length > 1 ? controller.steps.goBack() : close())
 
 	const setWallet = () => {
 		wallet.changeActive(controller.selected)
@@ -43,6 +43,8 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 	}
 
 	const open = async () => {
+		gbs.backHandler = goBack
+
 		await gbs.setProps({
 			snapPoints: ["95%"],
 			...props,
