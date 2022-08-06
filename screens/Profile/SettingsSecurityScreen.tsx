@@ -31,8 +31,8 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
     []
   );
   const goToChangePin = useCallback(async () => {
-    const pin = await askPin()
-    const newPin = await askPin({disableVerification: true})
+    const pin = await askPin({isBiometricAllowed: false})
+    const newPin = await askPin({disableVerification: true, isBiometricAllowed: false})
     loading.open()
     await localStorageManager.changePin(newPin, pin)
     loading.close()
