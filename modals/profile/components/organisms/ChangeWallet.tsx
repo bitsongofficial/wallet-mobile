@@ -47,6 +47,15 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 
 	const removeEdited = useCallback(() => setEdited(null), [])
 
+	const onPressDelete = useCallback(() =>
+	{
+		if(edited)
+		{
+			wallet.deleteProfile(edited)
+			close()
+		}
+	}, [edited])
+
 	// ------- FlatList ----------
 
 	const mapItemsRef = useMemo(
@@ -153,7 +162,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 								icon="power"
 								text="Disconnect Wallet"
 								arrow
-								onPress={() => edited && wallet.deleteProfile(edited)}
+								onPress={onPressDelete}
 							/>
 						</View>
 
