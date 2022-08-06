@@ -99,8 +99,9 @@ export default class DappConnectionStore {
 			amount: formatNumber(this.coinStore.fromAmountToFIAT(data.amount[0])),
 			onDone: async () =>
 			{
-				await handler.accept()
+				const res = await handler.accept()
 				this.coinStore.updateBalances()
+				return res
 			},
 			onReject: () => {handler.reject()},
 		})
