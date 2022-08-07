@@ -152,7 +152,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 								<ListButton
 									style={styles.listButton}
 									icon="eye"
-									text="View Mnemonics"
+									text="View Mnemonic"
 									arrow
 									onPress={onPressViewMnemonic}
 								/>

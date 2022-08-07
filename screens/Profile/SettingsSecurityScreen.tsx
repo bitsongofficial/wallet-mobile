@@ -66,7 +66,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
 
               {/* <View style={styles.section}>
                 <Subtitle style={styles.subtitle}>Account</Subtitle>
-                <ListButton icon="key" text="View Mnemonics" arrow />
+                <ListButton icon="key" text="View Mnemonic" arrow />
               </View> */}
 
               <View style={styles.section}>
