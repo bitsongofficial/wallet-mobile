@@ -174,7 +174,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 							<Text style={styles.reward_title}>Reward</Text>
 							<View style={styles.reward_row}>
 								<Text style={styles.reward_value}>{formatNumber(rewards)} {settings.currency?.symbol}</Text>
-								<Button disable={!validators.CanStake && rewards <= 0} onPress={openClaimAll}>CLAIM</Button>
+								<Button disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>CLAIM</Button>
 							</View>
 						</View>
 					</View>

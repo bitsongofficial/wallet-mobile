@@ -88,6 +88,7 @@ export default observer<Props>(({ close, steps }) => {
 				)}
 				{steps.title === "Name" && (
 					<Button
+						disable={inputName.value.length < 4}
 						text="Add Account"
 						onPress={saveWallet}
 						contentContainerStyle={styles.buttonContent}
