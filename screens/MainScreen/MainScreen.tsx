@@ -25,6 +25,7 @@ import { useSendModal } from "screens/SendModalScreens/components/hooks"
 import { SupportedCoins } from "constants/Coins"
 import { Button } from "components/atoms"
 import { openClaim } from "modals/validator"
+import { formatNumber } from "utils/numbers"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -115,7 +116,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 					onPressReceive={openReceive}
 					onPressInquire={undefined}
 					onPressScan={onPressScann}
-					onPressClaim={onPressClaim}
+					onPressClaim={validators.totalReward > 0 ? onPressClaim : undefined}
 					onPressStake={undefined}
 					onPressUnstake={undefined}
 					onPressRestake={undefined}
@@ -132,7 +133,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		openClaim({
 			amount: validators.totalReward,
 			coinName: "BTSG",
-			onDone: () => (validators.claimAll()),
+			onDone: async () => (await validators.claimAll()),
 			navigation,
 		})
 	}, [validators.totalReward])
@@ -144,6 +145,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		await coin.updateBalances()
 		setRefreshing(false)
 	}, [])
+
+	const rewards = validators.totalRewardAsDollars
 
 	return (
 		<>
@@ -170,8 +173,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						<View style={styles.reward}>
 							<Text style={styles.reward_title}>Reward</Text>
 							<View style={styles.reward_row}>
-								<Text style={styles.reward_value}>{validators.totalRewardAsDollars.toFixed(2)} $</Text>
-								<Button onPress={openClaimAll}>CLAIM</Button>
+								<Text style={styles.reward_value}>{formatNumber(rewards)} {settings.currency?.symbol}</Text>
+								<Button disable={!validators.CanStake && rewards <= 0} onPress={openClaimAll}>CLAIM</Button>
 							</View>
 						</View>
 					</View>

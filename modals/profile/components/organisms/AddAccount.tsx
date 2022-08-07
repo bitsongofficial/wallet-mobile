@@ -61,8 +61,8 @@ export default observer<Props>(({ close, phrase, steps }) => {
 
 	const saveWallet = useCallback(() => {
 		if (input.value && phrase.isValid) {
-			wallet.newCosmosWallet(input.value, phrase.words)
 			close()
+			wallet.newCosmosWallet(input.value, phrase.words)
 		}
 	}, [])
 
