@@ -230,6 +230,7 @@ export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, contr
 			)}
 			{controller.steps.active === 1 && (
 				<Button
+					disable={controller.inputWalletName.value.length < 4}
 					text="Save"
 					onPress={onPressSave}
 					textStyle={styles.buttonText}
