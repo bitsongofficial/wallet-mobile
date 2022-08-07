@@ -86,7 +86,10 @@ export default class ValidatorStore {
 			}
 		}
 		validators = validators.sort((v1, v2) => (v2.tokens - v1.tokens))
-		this.validators.splice(0, this.validators.length, ...validators)
+		runInAction(() =>
+		{
+			this.validators.splice(0, this.validators.length, ...validators)
+		})
 	}
 
 	private async loadRewardsAndDelegations()
@@ -118,8 +121,11 @@ export default class ValidatorStore {
 				console.error("Catched", e)
 			}
 		}
-		this.rewards.splice(0, this.rewards.length, ...rewards)
-		this.delegations.splice(0, this.delegations.length, ...delegations)
+		runInAction(() =>
+		{
+			this.rewards.splice(0, this.rewards.length, ...rewards)
+			this.delegations.splice(0, this.delegations.length, ...delegations)
+		})
 	}
 
 	private async load()
