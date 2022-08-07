@@ -14,7 +14,7 @@ type Props = {
 export default ({ onPressMax, onPressNum, onPressDelNum, amount }: Props) => (
 	<>
 		<View style={styles.row}>
-			<Text style={styles.usd}>{amount} $</Text>
+			<Text style={styles.usd}>{amount} {settings.currency?.symbol}</Text>
 			<View>
 				<Button text="MAX" onPress={onPressMax} contentContainerStyle={styles.maxButtonContent} />
 			</View>
