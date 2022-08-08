@@ -1,37 +1,23 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { StyleSheet, TextInputProps, View } from "react-native"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useCallback, useEffect, useState } from "react"
+import { StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import * as Clipboard from "expo-clipboard"
-import { useStore } from "hooks"
-import { COLOR, hexAlpha, InputHandler } from "utils"
-import { Phrase, Steps } from "classes"
-import { Button } from "components/atoms"
+import { COLOR } from "utils"
+import { Button, ButtonBack } from "components/atoms"
 import { InputWord } from "components/moleculs"
 import { BottomSheetFooter, BottomSheetFooterProps } from "@gorhom/bottom-sheet"
 import { ChooseStep, CreateStep, ImportStep, InputNameStep } from "../moleculs/AddAccount"
+import { ControllerAddAccount } from "modals/profile/controllers"
 
 type Props = {
-	steps: Steps<"Choose" | "Create" | "Name" | "Import">
-	phrase: Phrase
-	close(): void
+	controller: ControllerAddAccount
 }
 
-export default observer<Props>(({ close, phrase, steps }) => {
-	const { wallet } = useStore()
-	const insets = useSafeAreaInsets()
+export default observer<Props>(({ controller }) => {
+	const { phrase, steps, nameInput } = controller
 	// --------- Steps ------------
 	const openCreate = useCallback(() => steps.goTo("Create"), [])
 	const openImport = useCallback(() => steps.goTo("Import"), [])
-	const openName = useCallback(() => steps.goTo("Name"), [])
-
-	const goBack = useCallback(() => {
-		if (steps.active === 0) {
-			close()
-		} else {
-			steps.goBack()
-		}
-	}, [])
 
 	// --------- Phrase ----------
 
@@ -50,98 +36,80 @@ export default observer<Props>(({ close, phrase, steps }) => {
 		}
 	}, [phrase])
 
-	const handlePressGo = useCallback(() => {
-		phrase.inputSubmit()
-		phrase.isValid && steps.goTo("Name")
-	}, [])
-
-	// ---------- Name -----------
-
-	const input = useMemo(() => new InputHandler(), [])
-
-	const saveWallet = useCallback(() => {
-		if (input.value && phrase.isValid) {
-			wallet.newCosmosWallet(input.value, phrase.words)
-			close()
-		}
-	}, [])
-
 	return (
-		<>
+		<View style={styles.wrapper}>
 			{steps.title === "Choose" && (
-				<View style={[styles.wrapper]}>
-					<ChooseStep onPressCreate={openCreate} onPressImport={openImport} />
-				</View>
+				<ChooseStep onPressCreate={openCreate} onPressImport={openImport} />
 			)}
-
 			{steps.title === "Create" && (
-				<View style={[styles.wrapper]}>
-					<CreateStep isHidden={isHidden} phrase={phrase} onPressToggle={toggle} />
-					<View style={[styles.footer, { bottom: insets.bottom }]}>
-						<Button
-							text="Continue"
-							contentContainerStyle={styles.buttonContinueContent}
-							textStyle={styles.buttonContinueText}
-							onPress={openName}
-						/>
-					</View>
-				</View>
+				<CreateStep isHidden={isHidden} phrase={phrase} onPressToggle={toggle} />
 			)}
-
-			{steps.title === "Name" && (
-				<View style={[styles.wrapper]}>
-					<InputNameStep
-						input={input}
-						isAddDisable={!phrase.isValid || input.value.length < 3}
-						onPressAdd={saveWallet}
-						onPressBack={goBack}
-					/>
-				</View>
-			)}
-
-			{steps.title === "Import" && (
-				<>
-					<ImportStep onPressPaste={paste} phrase={phrase} />
-					<View style={[styles.footer, { bottom: insets.bottom }]}>
-						<Button
-							text="Continue"
-							contentContainerStyle={styles.buttonContinueContent}
-							textStyle={styles.buttonContinueText}
-							onPress={openName}
-						/>
-					</View>
-				</>
-			)}
-		</>
+			{steps.title === "Name" && <InputNameStep input={nameInput} />}
+			{steps.title === "Import" && <ImportStep onPressPaste={paste} phrase={phrase} />}
+		</View>
 	)
 })
 
 type FooterProps = BottomSheetFooterProps & {
-	phrase: Phrase
-	onPressDone(): void
-	onPressInputKeyboardSubmit: TextInputProps["onSubmitEditing"]
+	controller: ControllerAddAccount
+	onPressAddWallet(): void
+	onPressBack(): void
 }
 
-const Footer = observer(
-	({ phrase, animatedFooterPosition, onPressDone, onPressInputKeyboardSubmit }: FooterProps) => {
+export const Footer = observer(
+	({ animatedFooterPosition, controller, onPressAddWallet, onPressBack }: FooterProps) => {
+		const { phrase, steps, nameInput } = controller
+
+		const openName = useCallback(() => steps.goTo("Name"), [])
+
 		return (
 			<BottomSheetFooter animatedFooterPosition={animatedFooterPosition} bottomInset={24}>
-				{phrase.words.length === 16 ? (
-					<Button
-						text="Done"
-						onPress={onPressDone}
-						style={{ marginHorizontal: 26 }}
-						textStyle={styles.buttonContinueText}
-						contentContainerStyle={styles.buttonContinueContent}
-					/>
-				) : (
-					<InputWord
-						bottomsheet
-						onSubmitEditing={onPressInputKeyboardSubmit}
-						phrase={phrase}
-						style={{ marginHorizontal: 16, marginBottom: 16 }}
-					/>
-				)}
+				<View style={{ marginBottom: 8, marginHorizontal: 30 }}>
+					{steps.title === "Import" &&
+						(phrase.words.length === 16 ? (
+							<Button
+								text="Done"
+								onPress={openName}
+								textStyle={styles.buttonContinueText}
+								contentContainerStyle={styles.buttonContinueContent}
+							/>
+						) : (
+							<InputWord
+								bottomsheet
+								onSubmitEditing={() => {
+									phrase.inputSubmit()
+									phrase.isValid && steps.goTo("Name") // TODO: need upd. isValid
+								}}
+								phrase={phrase}
+							/>
+						))}
+
+					{steps.title === "Create" && (
+						<View style={{ alignItems: "center", justifyContent: "center" }}>
+							<Button
+								text="Continue"
+								contentContainerStyle={styles.buttonContinueContent}
+								textStyle={styles.buttonContinueText}
+								onPress={openName}
+							/>
+						</View>
+					)}
+
+					{steps.title === "Name" && (
+						<View style={styles.footer}>
+							<ButtonBack onPress={onPressBack} />
+							<View style={{ width: "66%" }}>
+								<Button
+									text="Add Account"
+									disable={!phrase.isValid || nameInput.value.length < 3}
+									contentContainerStyle={styles.buttonContinueContent}
+									textStyle={styles.buttonContinueText}
+									onPress={onPressAddWallet}
+								/>
+							</View>
+						</View>
+					)}
+				</View>
 			</BottomSheetFooter>
 		)
 	},
@@ -159,7 +127,6 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		lineHeight: 20,
 		textAlign: "center",
-
 		marginBottom: 30,
 	},
 	subtitle: {
@@ -179,75 +146,13 @@ const styles = StyleSheet.create({
 		color: COLOR.Marengo,
 		marginBottom: 26,
 	},
-
-	phrase: {
-		alignItems: "center",
-	},
-
-	buttons: {
-		marginBottom: 30,
-	},
-	agreements: {
-		paddingHorizontal: 8,
-		color: "#5C5B77",
-	},
-
-	//  ------- Button ----------
-	button: {
-		flexGrow: 1,
-		justifyContent: "flex-end",
-		padding: 16,
-	},
-
-	buttonContainer: {
-		backgroundColor: hexAlpha(COLOR.Lavender, 10),
-		height: 62,
-		borderRadius: 20,
-
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-between",
-
-		paddingHorizontal: 22,
-	},
-	buttonToggle: {
-		marginBottom: 25,
-	},
-	buttonToggleContainer: {
-		paddingHorizontal: 16,
-		paddingVertical: 8,
-	},
-	// -----
-
-	left: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
-	icon: {
-		marginRight: 20,
-	},
-	text: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
-		color: COLOR.White,
-	},
-
 	// ------ Footer -----
 
 	footer: {
-		flexGrow: 1,
-		justifyContent: "flex-end",
+		flexDirection: "row",
+		justifyContent: "space-between",
 		alignItems: "center",
-
-		position: "absolute",
-		bottom: 20,
-		paddingBottom: 16,
-		width: "100%",
 	},
-
 	buttonContinueContent: {
 		paddingHorizontal: 40,
 		paddingVertical: 18,
