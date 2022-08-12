@@ -1,21 +1,24 @@
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
+import { ListRenderItem, Platform, SafeAreaView, StyleSheet, View } from "react-native"
+import { observer } from "mobx-react-lite"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { StatusBar } from "expo-status-bar"
-import { observer } from "mobx-react-lite"
-import { ListRenderItem, Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
-import { RootStackParamList, RootTabParamList } from "types"
-import { COLOR } from "utils"
-import { RectButton, ScrollView, TouchableOpacity } from "react-native-gesture-handler"
-import { Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { CardCoin, CardCommission, ITab, Tabs } from "./components/moleculs"
-import { FlatList } from "react-native"
+import { StatusBar } from "expo-status-bar"
+import Animated from "react-native-reanimated"
+
+import { COLOR } from "utils"
 import { useStore } from "hooks"
-import { SupportedCoins } from "constants/Coins"
+import { RootStackParamList, RootTabParamList } from "types"
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 import { Proposal } from "core/types/coin/cosmos/Proposal"
+import { SupportedCoins } from "constants/Coins"
+
+import { CardCommission, Head, ITab, Tabs } from "./components/moleculs"
+import { Shadow } from "./components/atoms"
+import { useAnimateFlatlist } from "./hook"
+import { openChangeChain } from "modals/proposal"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
@@ -23,125 +26,96 @@ type Props = CompositeScreenProps<
 >
 
 export default observer<Props>(function Stacking({ navigation }) {
-	const { proposals } = useStore()
-	const goBack = useCallback(() => navigation.goBack(), [])
-
-	const insets = useSafeAreaInsets()
-
+	// ------------ Tabs ----------------
 	const [activeTab, setActiveTab] = useState<ITab>("All")
+	const changeActiveTab = (tab: ITab) => setActiveTab(tab) // ????
 
-	let status = undefined
-	switch(activeTab)
-	{
-		case "Deposit":
-			status = ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
-			break
+	const status = useMemo(() => {
+		switch (activeTab) {
+			case "Deposit":
+				return ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
+			case "Voting":
+				return ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+			case "Passed":
+				return ProposalStatus.PROPOSAL_STATUS_PASSED
+			case "Draft":
+				return undefined
+			case "Rejected":
+				return ProposalStatus.PROPOSAL_STATUS_REJECTED
+			default:
+				return undefined
+		}
+	}, [activeTab])
 
-		case "Voting":
-			status = ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-			break
-
-		case "Passed":
-			status = ProposalStatus.PROPOSAL_STATUS_PASSED
-			break
-	}
-
-	const changeActiveTab = (tab: ITab) =>
-	{
-		setActiveTab(tab)
-	}
-
-	const navToNew = useCallback(() => navigation.navigate("NewProposal"), [])
-
+	// -------------- Data -------------
+	const { proposals } = useStore()
+	const filterdProposals = useMemo(
+		() => proposals.filterByCoinAndType(SupportedCoins.BITSONG, status).slice(),
+		[status],
+	)
 	const renderProposals = useCallback<ListRenderItem<Proposal>>(
-		({item}) => {
-			return (
-				<CardCommission key={item.id.toString()} title={item.title} status={item.status} percentage={Math.floor(proposals.votedPercentage(item))} style={{ marginBottom: 20 }} />
-			)
-		},
+		({ item }) => (
+			<CardCommission
+				key={item.id.toString()}
+				title={item.title}
+				status={item.status}
+				style={styles.listItem}
+			/>
+		),
 		[],
 	)
 
-	const proposalsToShow = proposals.filterByCoinAndType(SupportedCoins.BITSONG, status).slice()
+	// ------------- Actions --------------
+	const navToNew = useCallback(() => navigation.navigate("NewProposal"), [])
+	const openChangeChainModal = useCallback(() => openChangeChain(), [])
+
+	// -------------- Styles --------------
+	const insets = useSafeAreaInsets()
+	const flatlistContentStyle = useMemo(
+		() => ({ paddingBottom: 100 + insets.bottom }),
+		[insets.bottom],
+	)
+
+	// ----------- Animated Styles --------
+	const [scrollHandler, animStyles] = useAnimateFlatlist()
 
 	return (
 		<>
 			<StatusBar style="light" />
-
-			<SafeAreaView style={styles.safearea}>
-				<View style={styles.container}>
-					<View style={styles.wrapper}>
-						<FlatList data={proposalsToShow} renderItem={renderProposals}
-							ListHeaderComponent={
-								<>
-									<RectButton style={{ marginBottom: 30 }}>
-										<CardCoin title="BitSong" />
-									</RectButton>
-									<View style={styles.wrapper}>
-										<View style={styles.head}>
-											<Text style={styles.title}>Proposals</Text>
-											<TouchableOpacity style={styles.buttonPlus} onPress={navToNew}>
-												<Icon2 name="plus" stroke={COLOR.White} size={18} />
-											</TouchableOpacity>
-										</View>
-									</View>
-				
-									<Tabs
-										active={activeTab}
-										onPress={changeActiveTab}
-										style={styles.wrapper}
-										//
-									/>
-								</>
-							}
-							ListFooterComponent={
-								<View style={{height: 100}}>
-
-								</View>
-							}
-						>
-
-						</FlatList>
+			<SafeAreaView style={styles.safearea} />
+			<Animated.FlatList
+				onScroll={scrollHandler}
+				// ------------ Header -----------------
+				stickyHeaderIndices={[0]}
+				ListHeaderComponent={
+					<View style={styles.listHeader}>
+						<Head onPressChain={openChangeChainModal} onPressNew={navToNew} chain={"test"} />
+						<Tabs active={activeTab} onPress={changeActiveTab} style={styles.tabs} />
+						<Shadow style={animStyles.topShadow} />
 					</View>
-				</View>
-			</SafeAreaView>
+				}
+				// ------------- List -------------------
+				data={filterdProposals}
+				renderItem={renderProposals}
+				// ------------ Styles --------------------
+				style={styles.flatlist}
+				contentContainerStyle={flatlistContentStyle}
+			/>
+			<Shadow style={animStyles.bottomShadow} invert />
 		</>
 	)
 })
 
 const styles = StyleSheet.create({
-	safearea: {
-		flex: 1,
+	safearea: { backgroundColor: COLOR.Dark3 },
+	flatlist: { backgroundColor: COLOR.Dark3 },
+	listHeader: {
 		backgroundColor: COLOR.Dark3,
+		paddingTop: Platform.OS === "ios" ? 50 : 105,
 	},
-	container: {
-		paddingTop: 40, // for header
-		marginTop: Platform.OS === "ios" ? 30 : 60,
-	},
-
-	head: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-	},
-
-	wrapper: {
-		paddingHorizontal: 30,
-		flexShrink: 100,
-	},
-
-	buttonPlus: {
-		width: 26,
-		height: 26,
-		borderRadius: 26,
-		backgroundColor: COLOR.Dark2,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	title: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: 18,
-		color: COLOR.White,
+	tabs: { paddingHorizontal: 30 },
+	listItem: {
+		marginTop: 20,
+		marginHorizontal: 30,
 	},
 })

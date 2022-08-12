@@ -46,11 +46,13 @@ import scan_1 from "./scan_1.svg"
 import scan_2 from "./scan_2.svg"
 import qr_code from "./qr_code.svg"
 import link_simple_horizontal from "./link_simple_horizontal.svg"
+import link from "./link.svg"
 import address_book_big from "./address_book_big.svg"
 import wallet_connect from "./wallet_connect.svg"
 import plus from "./plus.svg"
 import check_error from "./check_error.svg"
 import check_fulfilled from "./check_fulfilled.svg"
+import check_fulfilled_gradient from "./check_fulfilled_gradient.svg"
 import check_lock from "./check_lock.svg"
 import faceid_gradient from "./faceid.svg"
 import copy from "./copy.svg"
@@ -98,6 +100,7 @@ export default <const>{
 	check_error,
 	check_lock,
 	check_fulfilled,
+	check_fulfilled_gradient,
 	faceid_gradient,
 	copy,
 	address_book,
@@ -123,4 +126,5 @@ export default <const>{
 	fingerprint_simple,
 	wallet_connect,
 	loupe,
+	link,
 }
