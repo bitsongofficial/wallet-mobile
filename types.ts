@@ -64,6 +64,7 @@ export type RootStackParamList = {
 	}
 	Validator: { id: string }
 	NewProposal: undefined
+	ProposalDetails: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
