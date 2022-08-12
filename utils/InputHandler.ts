@@ -1,10 +1,13 @@
 import { makeAutoObservable } from "mobx"
-import { FormEvent } from "react"
 
 export default class InputHandler {
 	isFocused = false
 	constructor(public value: string = "") {
 		makeAutoObservable(this, {}, { autoBind: true })
+	}
+
+	get lowerCaseValue() {
+		return this.value.toLowerCase()
 	}
 
 	set(value: string = "") {
