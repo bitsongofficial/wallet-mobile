@@ -1,14 +1,13 @@
-import { Image, StyleSheet, Text, View, ViewStyle } from "react-native"
+import { useCallback } from "react"
+import { Image, StyleSheet, Text, View, ViewStyle, StyleProp } from "react-native"
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs"
 import { NativeStackHeaderProps, NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { Icon } from "components/atoms"
-import { COLOR } from "utils"
 import { TouchableOpacity } from "react-native-gesture-handler"
-import { useCallback } from "react"
-import { StyleProp } from "react-native"
+import { observer } from "mobx-react-lite"
+import { COLOR } from "utils"
 import { useStore } from "hooks"
 import { RootStackParamList } from "types"
-import { observer } from "mobx-react-lite"
+import { Icon } from "components/atoms"
 
 type Props = {
 	style?: StyleProp<ViewStyle>

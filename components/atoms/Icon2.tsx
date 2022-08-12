@@ -13,8 +13,8 @@ type Props = Omit<XmlProps, "xml" | "fill"> & {
 
 export default ({ size = 14, name, ...props }: Props) => {
 	const style = {
-		width: size,
-		height: size,
+		width: props.style?.width || size,
+		height: props.style?.height || size,
 	}
 
 	const Icon = Icons[name]
