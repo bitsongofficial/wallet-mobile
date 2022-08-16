@@ -63,6 +63,16 @@ import restake_gradient from "./restake_gradient.svg"
 import unstake_gradient from "./unstake_gradient.svg"
 import loupe from "./loupe.svg"
 
+// need rename
+import XCircle_gradient from "./XCircle_gradient.svg"
+import ProhibitInset_gradient from "./ProhibitInset_gradient.svg"
+import MinusCircle_gradient from "./MinusCircle_gradient.svg"
+import CheckCircle_gradient from "./CheckCircle_gradient.svg"
+
+import ProhibitInset from "./ProhibitInset.svg"
+import MinusCircle from "./MinusCircle.svg"
+import XCircle from "./XCircle.svg"
+
 export default <const>{
 	eye_closed_gradient,
 	fingerprint_gradient,
@@ -127,4 +137,12 @@ export default <const>{
 	wallet_connect,
 	loupe,
 	link,
+	// ---------
+	XCircle_gradient,
+	ProhibitInset_gradient,
+	MinusCircle_gradient,
+	CheckCircle_gradient,
+	ProhibitInset,
+	MinusCircle,
+	XCircle,
 }
