@@ -1,9 +1,11 @@
 import { useCallback, useMemo } from "react"
 import { View, Text, StyleProp, ViewStyle, StyleSheet } from "react-native"
-import { COLOR, hexAlpha } from "utils"
-import { Icon2, IconName } from "components/atoms"
-import { RadioButton } from "screens/Profile/components/atoms"
 import { RectButton } from "react-native-gesture-handler"
+import { COLOR, hexAlpha } from "utils"
+import { Icon2 } from "components/atoms"
+import { useVoteIcon } from "../../hooks"
+// TODO: need reorder components
+import { RadioButton } from "screens/Profile/components/atoms"
 
 export type VoteValue = "yes" | "no" | "no with veto" | "abstain"
 
@@ -30,18 +32,7 @@ export default ({ active, onPress, value, style }: RadioProps) => {
 		}
 	}, [value])
 
-	const icon = useMemo((): IconName => {
-		switch (value) {
-			case "yes":
-				return isActive ? "CheckCircle_gradient" : "check_fulfilled"
-			case "no":
-				return isActive ? "XCircle_gradient" : "XCircle"
-			case "no with veto":
-				return isActive ? "ProhibitInset_gradient" : "ProhibitInset"
-			case "abstain":
-				return isActive ? "MinusCircle_gradient" : "MinusCircle"
-		}
-	}, [value, isActive])
+	const icon = useVoteIcon(value, isActive)
 
 	const handlePress = useCallback(() => onPress(value), [value])
 
