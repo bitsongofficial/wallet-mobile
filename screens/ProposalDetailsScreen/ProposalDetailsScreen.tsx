@@ -1,37 +1,48 @@
-import {
-	ListRenderItem,
-	StyleProp,
-	StyleSheet,
-	Text,
-	View,
-	ViewProps,
-	ViewStyle,
-} from "react-native"
+import { useCallback, useMemo } from "react"
+import { ListRenderItem, StyleSheet, Text, View } from "react-native"
+import { FlatList, ScrollView } from "react-native-gesture-handler"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
+import moment from "moment"
+import { openDeposite, openVote, openVoteRecap } from "modals/proposal"
 import { COLOR, hexAlpha } from "utils"
 import { RootStackParamList } from "types"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Button, Icon2 } from "components/atoms"
-import { useMemo } from "react"
+import { Button, ButtonBack, Icon2 } from "components/atoms"
 import { Card, Diagram, Stat } from "./components/atoms"
 import { CheckListItem, LegendItem } from "./components/moleculs"
-import { FlatList, ScrollView } from "react-native-gesture-handler"
-import moment from "moment"
-import { useCallback } from "react"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ProposalDetails">
 
 type ProposalEvent = {
-	// ???? naming ???
+	// ???? naming? Is it Event? ???
 	complited: boolean
 	title: string
 	date: string
 }
 
 export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
-	const { top } = useSafeAreaInsets()
+	const insets = useSafeAreaInsets()
+
+	const goBack = useCallback(() => navigation.goBack(), [])
+
+	const openVoteModal = useCallback(() => {
+		// openDeposite({})
+		openVoteRecap({
+			value: "yes",
+			chain: "Bitsong",
+		})
+
+		// openVote({
+		// 	onVote(value) {
+		// 		openVoteRecap({
+		// 			value,
+		// 			chain: "Bitsong",
+		// 		})
+		// 	},
+		// })
+	}, [])
 
 	const results = useMemo(
 		() => ({
@@ -55,28 +66,37 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
 				title: "Deposit Period Ends",
 				date: moment().subtract(1, "month").toString(),
 			},
+			{
+				complited: false,
+				title: "Deposit Period Ends",
+				date: moment().subtract(1, "month").toString(),
+			},
 		],
 		[],
 	)
 
 	const renderCheckListItem = useCallback<ListRenderItem<ProposalEvent>>(
-		({ item }) => <CheckListItem {...item} style={{ marginRight: 13 }} />,
-		[],
+		({ item, index }) => (
+			<CheckListItem {...item} style={checklist.length !== index + 1 && { marginRight: 13 }} />
+		),
+		[checklist.length],
 	)
 
 	return (
 		<>
 			<StatusBar style="light" />
 			<View style={styles.container}>
-				<ScrollView>
+				<ScrollView contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}>
 					<View style={styles.wrapper}>
 						<Text style={[styles.title, { marginBottom: 15, marginTop: 30 }]}>
 							Increase minimum {"\n"}
 							commission rate to 5%
 						</Text>
+
 						<View style={[{ flexDirection: "row" }, { marginBottom: 20 }]}>
 							<Button text="PASSED" contentContainerStyle={styles.buttonPassedContent} />
 						</View>
+
 						<Text style={[styles.paragraph, { marginBottom: 14 }]}>
 							This is a text proposal. Text proposals can be proposed by anyone and are used as a
 							signalling mechanism for this community. If this proposal is accepted, nothing will
@@ -98,6 +118,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
 									paddingHorizontal: 33,
 									paddingVertical: 12,
 								}}
+								onPress={openVoteModal}
 								style={{ marginRight: 10 }}
 							/>
 							<Button
@@ -154,7 +175,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
 						horizontal
 						data={checklist}
 						style={{ marginBottom: 44 }}
-						contentContainerStyle={styles.wrapper}
+						contentContainerStyle={{ paddingHorizontal: 30 }}
 						renderItem={renderCheckListItem}
 					/>
 
@@ -174,6 +195,17 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
 						</Card>
 					</View>
 				</ScrollView>
+			</View>
+
+			<View style={[styles.footer, { marginBottom: insets.bottom }]}>
+				<View style={styles.buttonContainer}>
+					<ButtonBack
+						stroke={COLOR.Dark3}
+						style={styles.button}
+						textStyle={styles.buttonText}
+						onPress={goBack}
+					/>
+				</View>
 			</View>
 		</>
 	)
@@ -223,5 +255,24 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		lineHeight: 18,
 		color: hexAlpha(COLOR.White, 50),
+	},
+
+	footer: {
+		marginHorizontal: 30,
+		position: "absolute",
+		bottom: 0,
+	},
+
+	buttonContainer: { flexDirection: "row" },
+
+	button: {
+		backgroundColor: COLOR.White,
+		borderRadius: 50,
+		paddingHorizontal: 24,
+		paddingVertical: 18,
+		marginBottom: 16,
+	},
+	buttonText: {
+		color: COLOR.Dark3,
 	},
 })
