@@ -2,7 +2,7 @@ import { PureComponent } from "react"
 import { StyleProp, StyleSheet, Text, TextProps, View, ViewProps, ViewStyle } from "react-native"
 import { COLOR } from "utils"
 
-export default class Recap extends PureComponent {
+export default class Recap extends PureComponent<ViewProps> {
 	static Title = ({ children }: TextProps) => <Text style={styles.title}>{children}</Text>
 	static Amount = ({ children }: TextProps) => <Text style={styles.amount}>{children}</Text>
 	static Stats = ({ children }: ViewProps) => (
@@ -15,14 +15,16 @@ export default class Recap extends PureComponent {
 		name,
 		value,
 		style,
+		nameStyle,
 	}: {
 		name: string
 		value?: string | JSX.Element | boolean
 		style?: StyleProp<ViewStyle>
+		nameStyle?: StyleProp<ViewStyle>
 	}) => {
 		return (
 			<View style={[styles.statContainer, style]}>
-				<Text style={styles.name}>{name}</Text>
+				<Text style={[styles.name, nameStyle]}>{name}</Text>
 				{!!value && (typeof value === "string" ? <Text style={styles.value}>{value}</Text> : value)}
 			</View>
 		)
@@ -39,7 +41,7 @@ export default class Recap extends PureComponent {
 	}
 
 	render() {
-		return <View style={styles.container}>{this.props.children}</View>
+		return <View {...this.props} style={[styles.container, this.props.style]} />
 	}
 }
 

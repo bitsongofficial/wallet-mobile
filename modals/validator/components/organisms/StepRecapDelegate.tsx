@@ -1,6 +1,6 @@
+import { StyleSheet } from "react-native"
 import { Coin } from "classes"
 import { Validator } from "core/types/coin/cosmos/Validator"
-import { StyleSheet } from "react-native"
 import { COLOR } from "utils"
 import { Recap } from "../moleculs"
 
@@ -36,31 +36,5 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 		marginTop: 36,
 	},
-
-	stats: {
-		flexDirection: "row",
-		justifyContent: "flex-end",
-	},
-	flex1: { flex: 1 },
 	stat: { marginBottom: 16 },
-	title: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
-		color: COLOR.RoyalBlue2,
-
-		marginBottom: 12,
-	},
-	amount: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: 42,
-		lineHeight: 53,
-		color: COLOR.White,
-
-		marginBottom: 8,
-	},
 })
