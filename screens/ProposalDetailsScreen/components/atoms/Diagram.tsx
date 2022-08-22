@@ -5,12 +5,12 @@ import { COLOR } from "utils"
 type Props = {
 	yes: number
 	no: number
-	noWithVeto: number
+	noWithZero: number
 	abstain: number
 	style?: StyleProp<ViewStyle>
 }
 
-export default ({ abstain, no, noWithVeto, yes, style }: Props) => {
+export default ({ abstain, no, noWithZero, yes, style }: Props) => {
 	const data: PieChartData[] = [
 		{
 			key: "yes",
@@ -23,8 +23,8 @@ export default ({ abstain, no, noWithVeto, yes, style }: Props) => {
 			svg: { fill: COLOR.RoyalBlue },
 		},
 		{
-			key: "noWithVeto",
-			value: noWithVeto,
+			key: "noWithZero",
+			value: noWithZero,
 			svg: { fill: COLOR.SlateBlue },
 		},
 		{

@@ -6,12 +6,13 @@ import { observer } from "mobx-react-lite"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import moment from "moment"
-import { openDeposite, openVote, openVoteRecap } from "modals/proposal"
-import { COLOR, hexAlpha } from "utils"
+import { openVoteRecap } from "modals/proposal"
+import { COLOR, hexAlpha, round } from "utils"
 import { RootStackParamList } from "types"
 import { Button, ButtonBack, Icon2 } from "components/atoms"
 import { Card, Diagram, Stat } from "./components/atoms"
 import { CheckListItem, LegendItem } from "./components/moleculs"
+import { useProposalStatusName } from "screens/ProposalScreen/hook"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ProposalDetails">
 
@@ -22,37 +23,18 @@ type ProposalEvent = {
 	date: string
 }
 
-export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
+export default observer<Props>(function ProposalDetailsScreen({ navigation, route }) {
 	const insets = useSafeAreaInsets()
+	const { proposal } = route.params
 
 	const goBack = useCallback(() => navigation.goBack(), [])
 
 	const openVoteModal = useCallback(() => {
-		// openDeposite({})
 		openVoteRecap({
 			value: "yes",
 			chain: "Bitsong",
 		})
-
-		// openVote({
-		// 	onVote(value) {
-		// 		openVoteRecap({
-		// 			value,
-		// 			chain: "Bitsong",
-		// 		})
-		// 	},
-		// })
 	}, [])
-
-	const results = useMemo(
-		() => ({
-			yes: 54.65,
-			no: 17.34,
-			noWithVeto: 16.02,
-			abstain: 8.98,
-		}),
-		[],
-	)
 
 	const checklist: ProposalEvent[] = useMemo(
 		() => [
@@ -75,12 +57,33 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
 		[],
 	)
 
+	const resultsPercents = useMemo(() => {
+		if (proposal.result) {
+			const { abstain, no, noWithZero, yes } = proposal.result
+			const proportion = 100 / (abstain + no + noWithZero + yes)
+
+			return {
+				abstain: round(abstain * proportion),
+				no: round(no * proportion),
+				noWithZero: round(noWithZero * proportion),
+				yes: round(yes * proportion),
+			}
+		}
+	}, [
+		proposal.result?.abstain,
+		proposal.result?.no,
+		proposal.result?.noWithZero,
+		proposal.result?.yes,
+	])
+
 	const renderCheckListItem = useCallback<ListRenderItem<ProposalEvent>>(
 		({ item, index }) => (
 			<CheckListItem {...item} style={checklist.length !== index + 1 && { marginRight: 13 }} />
 		),
 		[checklist.length],
 	)
+
+	const proposalStatus = useProposalStatusName(proposal.status)
 
 	return (
 		<>
@@ -94,7 +97,10 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
 						</Text>
 
 						<View style={[{ flexDirection: "row" }, { marginBottom: 20 }]}>
-							<Button text="PASSED" contentContainerStyle={styles.buttonPassedContent} />
+							<Button
+								text={proposalStatus.toUpperCase()}
+								contentContainerStyle={styles.buttonPassedContent}
+							/>
 						</View>
 
 						<Text style={[styles.paragraph, { marginBottom: 14 }]}>
@@ -139,35 +145,38 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation }) {
 							<Stat name="QUORUM" persent={24} />
 						</View>
 
-						<Card style={[{ padding: 11 }, { marginBottom: 44 }]}>
-							<Diagram {...results} style={styles.diagram} />
-							<View>
-								<LegendItem
-									style={styles.legendItem}
-									value={results.yes}
-									name="Yes"
-									color={COLOR.White}
-								/>
-								<LegendItem
-									style={styles.legendItem}
-									value={results.no}
-									name="No"
-									color={COLOR.RoyalBlue}
-								/>
-								<LegendItem
-									style={styles.legendItem}
-									value={results.noWithVeto}
-									name="No With Veto"
-									color={COLOR.SlateBlue}
-								/>
-								<LegendItem
-									style={styles.legendItem}
-									value={results.abstain}
-									name="Abstain"
-									color={COLOR.Dark3}
-								/>
-							</View>
-						</Card>
+						{resultsPercents && (
+							<Card style={[{ padding: 11 }, { marginBottom: 44 }]}>
+								<Diagram {...resultsPercents} style={styles.diagram} />
+								<View>
+									<LegendItem
+										style={styles.legendItem}
+										value={resultsPercents.yes}
+										name="Yes"
+										color={COLOR.White}
+									/>
+									<LegendItem
+										style={styles.legendItem}
+										value={resultsPercents.no}
+										name="No"
+										color={COLOR.RoyalBlue}
+									/>
+									<LegendItem
+										style={styles.legendItem}
+										value={resultsPercents.noWithZero}
+										name="No With Veto"
+										color={COLOR.SlateBlue}
+									/>
+									<LegendItem
+										style={styles.legendItem}
+										value={resultsPercents.abstain}
+										name="Abstain"
+										color={COLOR.Dark3}
+									/>
+								</View>
+							</Card>
+						)}
+
 						<Text style={[styles.caption, { marginBottom: 22 }]}>Checklist</Text>
 					</View>
 

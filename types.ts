@@ -7,6 +7,7 @@ import { BottomTabHeaderProps, BottomTabScreenProps } from "@react-navigation/bo
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack"
 import TransactionCreater from "classes/Transaction/Creater"
+import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { Validator } from "core/types/coin/cosmos/Validator"
 
 declare global {
@@ -64,7 +65,7 @@ export type RootStackParamList = {
 	}
 	Validator: { id: string }
 	NewProposal: undefined
-	ProposalDetails: undefined
+	ProposalDetails: { proposal: Proposal }
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
