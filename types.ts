@@ -75,7 +75,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 
 export type RootTabParamList = {
 	MainTab: undefined
-	StackingTab: undefined
+	ValidatorsList: undefined
 	Proposal: undefined
 	Tab2: undefined
 }
