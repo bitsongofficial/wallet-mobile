@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Image, StyleSheet, Text, View } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import { COLOR } from "utils"
 import { Icon2 } from "components/atoms"
-import { Validator } from "core/types/coin/cosmos/Validator"
+import { Validator, ValidatorStatus, SignerInfo } from "core/types/coin/cosmos/Validator"
 import { useStore } from "hooks"
 import { validatorIdentity } from "core/rest/keybase"
+import { SupportedCoins } from "constants/Coins"
 
 type ValidatorProps = {
 	id: string
@@ -15,11 +16,11 @@ type ValidatorProps = {
 export default ({ id, onPressKebab }: ValidatorProps) => {
 	const { validators } = useStore()
 	const item = validators.resolveValidator(id) ?? validators.validators[0]
-
+	// const item = mock
 	const handlePressKebab = useCallback(() => onPressKebab(item), [item])
 	// const [logo, setLogo] = useState("")
 
-	const source = item.logo ? { uri: item.logo } : undefined
+	const source = useMemo(() => ({ uri: item?.logo || "" }), [item?.logo])
 
 	// useEffect(() =>
 	// {
@@ -132,3 +133,31 @@ const styles = StyleSheet.create({
 		marginRight: 16,
 	},
 })
+
+const mock: Validator = {
+	id: "1",
+	commission: {
+		change: {
+			last: new Date(),
+			max: 5,
+		},
+		rate: {
+			current: 4,
+			max: 5,
+		},
+	},
+	description: "description",
+	identity: "identity",
+	// logo: "logo",
+	name: "name",
+	operator: "operator",
+	status: {
+		status: ValidatorStatus.ACTIVE,
+		statusDetailed: "statusDetailed",
+	},
+	tokens: 1234567890,
+	userClaimAmount: 123456789,
+	userDelegation: 12345678,
+	chain: SupportedCoins.BITSONG,
+	signingInfo: {},
+}
