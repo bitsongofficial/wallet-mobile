@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
 	row: { flexDirection: "row" },
 	badge: {
 		paddingHorizontal: 16,
-		paddingVertical: 10,
+		paddingVertical: 7,
 		borderRadius: 25,
 		alignSelf: "flex-end",
 	},
