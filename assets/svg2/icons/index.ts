@@ -1,4 +1,6 @@
 import chevron_right from "./chevron-right.svg"
+import chevron_down_fixed from "./chevron-down_fixed.svg"
+
 import chevron_left from "./chevron-left.svg"
 import chevron_down from "./chevron-down.svg"
 import eye_closed_gradient from "./eye-closed_gradient.svg"
@@ -80,6 +82,7 @@ export default <const>{
 	restake_gradient,
 	unstake_gradient,
 	chevron_right,
+	chevron_down_fixed,
 	chevron_left,
 	chevron_down,
 	eye,
