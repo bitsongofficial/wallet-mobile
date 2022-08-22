@@ -1,65 +1,39 @@
-import { memo } from "react"
+import { memo, useMemo } from "react"
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { COLOR } from "utils"
-import { Card, Icon2 } from "components/atoms"
+import { Card, Icon2, ThemedGradient } from "components/atoms"
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
-import { useStore } from "hooks"
+import { useProposalStatusName } from "screens/ProposalScreen/hook"
 
 type Props = {
-	title?: string,
-	percentage?: string | number,
+	title?: string
+	percentage?: string | number
 	status?: ProposalStatus
 	style?: StyleProp<ViewStyle>
 }
 
-export default memo(({ style, title, status, percentage }: Props) =>
-{
-	let statusLabel = "N/A"
-	switch(status)
-	{
-		case ProposalStatus.PROPOSAL_STATUS_PASSED:
-			statusLabel = "passed"
-			break
+export default memo(({ style, title, status, percentage }: Props) => {
+	const statusLabel = useProposalStatusName(status)
 
-		case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
-			statusLabel = "deposit"
-			break
-
-		case ProposalStatus.PROPOSAL_STATUS_FAILED:
-			statusLabel = "failed"
-			break
-
-		case ProposalStatus.PROPOSAL_STATUS_REJECTED:
-			statusLabel = "rejected"
-			break
-
-		case ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD:
-			statusLabel = "voting"
-			break
-	}
 	return (
 		<Card style={[styles.card, style]}>
-			<View style={{flexShrink: 1, paddingEnd: 4}}>
-				<Text style={styles.title}>
-					{title ?? "Unspecified"}
-				</Text>
-				<View style={[styles.row, {flexGrow: 1}]}>
-					<View style={styles.badge}>
-						<Text style={styles.badgeText}>
-							{statusLabel.toUpperCase()}
-						</Text>
-					</View>
+			<View style={{ flexShrink: 1, paddingEnd: 4 }}>
+				<Text style={styles.title}>{title ?? "Unspecified"}</Text>
+				<View style={[styles.row, { flexGrow: 1 }]}>
+					<ThemedGradient style={styles.badge}>
+						<Text style={styles.badgeText}>{statusLabel.toUpperCase()}</Text>
+					</ThemedGradient>
 				</View>
 			</View>
-	
+
 			<View style={styles.right}>
-				<View style={{ alignItems: "flex-end", marginBottom: 14 }}>
+				<View style={{ alignItems: "flex-end", marginBottom: 24 }}>
 					<Text style={styles.percent}>{percentage}%</Text>
 					<Text style={styles.voted}>VOTED</Text>
 				</View>
-				{/* <View style={styles.arrowContainer}>
+				<View style={styles.arrowContainer}>
 					<Icon2 name="arrow_right" stroke={COLOR.White} />
-				</View> */}
+				</View>
 			</View>
 		</Card>
 	)
@@ -89,7 +63,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 		paddingVertical: 10,
 		borderRadius: 25,
-		backgroundColor: COLOR.LightGreyBlue,
 		alignSelf: "flex-end",
 	},
 	badgeText: {
