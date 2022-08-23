@@ -13,74 +13,71 @@ import { autorun, makeAutoObservable, runInAction, set, toJS } from "mobx"
 import CoinStore from "./CoinStore"
 import WalletStore from "./WalletStore"
 
-type validatorIndexer = string | number | Validator | {operator: string} | {id: string}
+type validatorIndexer = string | number | Validator | { operator: string } | { id: string }
 
 export default class ValidatorStore {
 	validators: Validator[] = []
 	rewards: {
-		debtor: string,
-		rewards: Amount[],
+		debtor: string
+		rewards: Amount[]
 	}[] = []
 	delegations: {
-		validatorAddress: string,
-		amount: Amount,
+		validatorAddress: string
+		amount: Amount
 	}[] = []
 
 	totalVotingPower: SupportedCoinsFullMap<number> = {
 		[SupportedCoins.BITSONG]: 0,
 	}
 
-	private aprRatio: SupportedCoinsMap = {
-
-	}
+	private aprRatio: SupportedCoinsMap = {}
 
 	constructor(private coinStore: CoinStore, private walletStore: WalletStore) {
-		makeAutoObservable(this, {
-			totalVotingPower: false,
-			percentageVotingPower: false,
-		}, { autoBind: true })
+		makeAutoObservable(
+			this,
+			{
+				totalVotingPower: false,
+				percentageVotingPower: false,
+			},
+			{ autoBind: true },
+		)
 
-		autorun(() =>
-		{
+		autorun(() => {
 			this.update()
 		})
 	}
 
-	private async load()
-	{
+	private async load() {
 		let validators: Validator[] = []
 		let rewards: any[] = []
 		let delegations: any[] = []
 		const wallet = this.walletStore.activeWallet
-		for(const chain of Object.values(SupportedCoins))
-		{
+		for (const chain of Object.values(SupportedCoins)) {
 			this.totalVotingPower[chain] = 0
-			try
-			{
+			try {
 				const coin = CoinClasses[chain]
 				const service = coin.explorer()
 				Promise.all([
 					service.get("cosmos/mint/v1beta1/annual_provisions"),
 					service.get("cosmos/staking/v1beta1/pool"),
-				]).then((resRaw) =>
-				{
-					const res = resRaw.map(r => r.data)
-					set(this.aprRatio, {[chain]: res[0].annual_provisions / res[1].pool.bonded_tokens})
-				}).catch(e =>
-				{
-					console.error("Catched", e)
-				})
-				let val:Validator[] = await coin.Do(CoinOperationEnum.Validators)
-				val = val.filter(v => (v.status.status != ValidatorStatus.INACTIVE))
-				val.forEach(v => {
+				])
+					.then((resRaw) => {
+						const res = resRaw.map((r) => r.data)
+						set(this.aprRatio, { [chain]: res[0].annual_provisions / res[1].pool.bonded_tokens })
+					})
+					.catch((e) => {
+						console.error("Catched", e)
+					})
+				let val: Validator[] = await coin.Do(CoinOperationEnum.Validators)
+				val = val.filter((v) => v.status.status != ValidatorStatus.INACTIVE)
+				val.forEach((v) => {
 					v.chain = chain
 					console.log(v.id, v.identity)
 					this.totalVotingPower[chain] += v.tokens
 				})
 				validators = validators.concat(val)
 
-				if(wallet)
-				{
+				if (wallet) {
 					const rewardsData: RewardsData = {
 						wallet: wallet.wallets[chain],
 					}
@@ -88,31 +85,26 @@ export default class ValidatorStore {
 					const delegationsData: DelegationsData = {
 						delegator: wallet.wallets[chain],
 					}
-					delegations = rewards.concat(await coin.Do(CoinOperationEnum.Delegations, delegationsData))
+					delegations = rewards.concat(
+						await coin.Do(CoinOperationEnum.Delegations, delegationsData),
+					)
 				}
-			}
-			catch(e)
-			{
+			} catch (e) {
 				console.error("Catched", e)
 			}
 		}
-		validators = validators.sort((v1, v2) => (v2.tokens - v1.tokens))
+		validators = validators.sort((v1, v2) => v2.tokens - v1.tokens)
 		this.validators.splice(0, this.validators.length, ...validators)
 		this.rewards.splice(0, this.rewards.length, ...rewards)
 		this.delegations.splice(0, this.delegations.length, ...delegations)
 	}
 
-	update()
-	{
-		return new Promise<void>((accept, reject) =>
-		{
-			runInAction(async () =>
-			{
+	update() {
+		return new Promise<void>((accept, reject) => {
+			runInAction(async () => {
 				try {
 					await this.load()
-				}
-				catch
-				{
+				} catch {
 					reject()
 				}
 				accept()
@@ -120,73 +112,63 @@ export default class ValidatorStore {
 		})
 	}
 
-	get validatorsIds()
-	{
-		return this.validators.map(v => v.id)
+	get validatorsIds() {
+		return this.validators.map((v) => v.id)
 	}
 
-	resolveValidator(index: validatorIndexer): Validator | null
-	{
-		if(typeof index == "number") return this.validators[index] ?? null
+	resolveValidator(index: validatorIndexer): Validator | null {
+		if (typeof index == "number") return this.validators[index] ?? null
 		const i = this.validators.indexOf(index as any)
-		if(i > -1) return index as Validator
-		if(typeof index == "string") return this.validators.find(v => v.id == index) ?? null
-		if('id' in index) return this.validators.find(v => v.id == index.id) ?? null
-		if('operator' in index) return this.validators.find(v => v.operator == index.operator) ?? null
+		if (i > -1) return index as Validator
+		if (typeof index == "string") return this.validators.find((v) => v.id == index) ?? null
+		if ("id" in index) return this.validators.find((v) => v.id == index.id) ?? null
+		if ("operator" in index)
+			return this.validators.find((v) => v.operator == index.operator) ?? null
 		return null
 	}
 
-	percentageVotingPower(validator: validatorIndexer)
-	{
+	percentageVotingPower(validator: validatorIndexer) {
 		const v = this.resolveValidator(validator)
-		if(v) return v.tokens / this.totalVotingPower[v.chain ?? SupportedCoins.BITSONG] * 100
+		if (v) return (v.tokens / this.totalVotingPower[v.chain ?? SupportedCoins.BITSONG]) * 100
 		return 0
 	}
 
-	apr(validator: validatorIndexer)
-	{
+	apr(validator: validatorIndexer) {
 		const v = this.resolveValidator(validator)
-		if(v && v.chain) return (1 - v.commission.rate.current) * this.aprRatio[v.chain] * 100
+		if (v && v.chain) return (1 - v.commission.rate.current) * this.aprRatio[v.chain] * 100
 		return 0
 	}
 
-	totalStakeAsFIAT(validator: validatorIndexer)
-	{
+	totalStakeAsFIAT(validator: validatorIndexer) {
 		const v = this.resolveValidator(validator)
-		if(v) return this.coinStore.fromAmountToFIAT(
-			{
+		if (v)
+			return this.coinStore.fromAmountToFIAT({
 				amount: v.tokens.toString(),
 				denom: CoinClasses[v.chain ?? SupportedCoins.BITSONG].denom(),
 			})
 		return 0
 	}
 
-	validatorDelegations(validator: validatorIndexer)
-	{
+	validatorDelegations(validator: validatorIndexer) {
 		const v = this.resolveValidator(validator)
-		if(v)
-		{
-			const validatorDelegations = this.delegations.find(r => r.validatorAddress == v.operator)
-			if(validatorDelegations)
-			{
+		if (v) {
+			const validatorDelegations = this.delegations.find((r) => r.validatorAddress == v.operator)
+			if (validatorDelegations) {
 				const delegations = validatorDelegations.amount
 				return fromAmountToCoin(delegations)
 			}
 		}
 
-		return 0		
+		return 0
 	}
 
-	validatorReward(validator: validatorIndexer)
-	{
+	validatorReward(validator: validatorIndexer) {
 		const v = this.resolveValidator(validator)
-		if(v)
-		{
-			const validatorRewards = this.rewards.find(r => r.debtor == v.operator)
-			if(validatorRewards)
-			{
+		if (v) {
+			const validatorRewards = this.rewards.find((r) => r.debtor == v.operator)
+			if (validatorRewards) {
 				const rewards = validatorRewards.rewards
-				const total = rewards.reduce((tot, r) => (tot + fromAmountToCoin(r)), 0)
+				const total = rewards.reduce((tot, r) => tot + fromAmountToCoin(r), 0)
 				return total
 			}
 		}
@@ -194,45 +176,41 @@ export default class ValidatorStore {
 		return 0
 	}
 
-	get totalRewardAsDollars()
-	{
-		try
-		{
-			const rewards = this.rewards.reduce<Amount[]>((prev, current) => (prev.concat(current.rewards)), [])
-			const total = rewards.reduce((tot, r) => (tot + this.coinStore.fromAmountToFIAT(r)), 0)
+	get totalRewardAsDollars() {
+		try {
+			const rewards = this.rewards.reduce<Amount[]>(
+				(prev, current) => prev.concat(current.rewards),
+				[],
+			)
+			const total = rewards.reduce((tot, r) => tot + this.coinStore.fromAmountToFIAT(r), 0)
 			return total
-		}
-		catch(e)
-		{
+		} catch (e) {
 			return 0
 		}
 	}
 
-	get totalReward()
-	{
-		try
-		{
-			const rewards = this.rewards.reduce<Amount[]>((prev, current) => (prev.concat(current.rewards)), [])
-			const total = rewards.reduce((tot, r) => (tot + fromAmountToCoin(r)), 0)
+	get totalReward() {
+		try {
+			const rewards = this.rewards.reduce<Amount[]>(
+				(prev, current) => prev.concat(current.rewards),
+				[],
+			)
+			const total = rewards.reduce((tot, r) => tot + fromAmountToCoin(r), 0)
 			return total
-		}
-		catch(e)
-		{
+		} catch (e) {
 			return 0
 		}
 	}
 
-	async claim(validator: validatorIndexer)
-	{
+	async claim(validator: validatorIndexer) {
 		const v = this.resolveValidator(validator)
 		const wallet = this.walletStore.activeWallet
-		if(v && wallet)
-		{
+		if (v && wallet) {
 			const chain = v.chain ?? SupportedCoins.BITSONG
 			const coin = CoinClasses[chain]
 			const claimData: ClaimData = {
 				owner: wallet.wallets[chain],
-				validators: [v]
+				validators: [v],
 			}
 			const res = await coin.Do(CoinOperationEnum.Claim, claimData)
 			this.load()
@@ -241,49 +219,47 @@ export default class ValidatorStore {
 		return false
 	}
 
-	async claimAll()
-	{
-		const validatorAddresses = this.rewards.map(r => r.debtor)
-		const validators = validatorAddresses.map(va => this.validators.find(v => v.operator == va)) as Validator[]
+	async claimAll() {
+		const validatorAddresses = this.rewards.map((r) => r.debtor)
+		const validators = validatorAddresses.map((va) =>
+			this.validators.find((v) => v.operator == va),
+		) as Validator[]
 		const wallet = this.walletStore.activeWallet
-		if(validators.length > 0 && wallet)
-		{
+		if (validators.length > 0 && wallet) {
 			const validatorPerChain: {
-				chain: SupportedCoins,
-				validators: Validator[],
+				chain: SupportedCoins
+				validators: Validator[]
 			}[] = []
-			validators.forEach(v => {
-				let found = validatorPerChain.find(vpc => vpc.chain == v.chain)
-				if(found == undefined)
-				{
+			validators.forEach((v) => {
+				let found = validatorPerChain.find((vpc) => vpc.chain == v.chain)
+				if (found == undefined) {
 					found = {
 						chain: v.chain ?? SupportedCoins.BITSONG,
 						validators: [],
 					}
 					validatorPerChain.push(found)
 				}
-				if(found) found.validators.push(v)
+				if (found) found.validators.push(v)
 			})
-			const res = await Promise.allSettled(validatorPerChain.map(vpc =>
-			{
-				const coin = CoinClasses[vpc.chain]
-				const claimData: ClaimData = {
-					owner: wallet.wallets[vpc.chain],
-					validators: vpc.validators
-				}
-				return coin.Do(CoinOperationEnum.Claim, claimData)
-			}))
+			const res = await Promise.allSettled(
+				validatorPerChain.map((vpc) => {
+					const coin = CoinClasses[vpc.chain]
+					const claimData: ClaimData = {
+						owner: wallet.wallets[vpc.chain],
+						validators: vpc.validators,
+					}
+					return coin.Do(CoinOperationEnum.Claim, claimData)
+				}),
+			)
 			this.load()
 			return res
 		}
 		return false
 	}
 
-	async delegate(validator: Validator, amount: number)
-	{
+	async delegate(validator: Validator, amount: number) {
 		const activeWallet = this.walletStore.activeWallet
-		if(activeWallet && validator)
-		{
+		if (activeWallet && validator) {
 			const chain = validator.chain ?? SupportedCoins.BITSONG
 			const coin = CoinClasses[chain]
 			const delegateData: DelegateData = {
@@ -291,8 +267,8 @@ export default class ValidatorStore {
 				validator,
 				amount: {
 					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
-					denom: coin.denom()
-				}
+					denom: coin.denom(),
+				},
 			}
 			const res = await coin.Do(CoinOperationEnum.Delegate, delegateData)
 			this.refreshData()
@@ -302,11 +278,9 @@ export default class ValidatorStore {
 		return false
 	}
 
-	async redelegate(validator: Validator, newValidator: Validator, amount: number)
-	{
+	async redelegate(validator: Validator, newValidator: Validator, amount: number) {
 		const activeWallet = this.walletStore.activeWallet
-		if(activeWallet && validator && newValidator)
-		{
+		if (activeWallet && validator && newValidator) {
 			const chain = validator.chain ?? SupportedCoins.BITSONG
 			const coin = CoinClasses[chain]
 			const delegateData: RedelegateData = {
@@ -315,22 +289,19 @@ export default class ValidatorStore {
 				newValidator,
 				amount: {
 					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
-					denom: coin.denom()
-				}
+					denom: coin.denom(),
+				},
 			}
 			const res = await await coin.Do(CoinOperationEnum.Redelegate, delegateData)
-			if(res) this.refreshData()
+			if (res) this.refreshData()
 			return res
 		}
 		return false
 	}
 
-	async undelegate(validator: Validator, amount: number)
-	{
-		
+	async undelegate(validator: Validator, amount: number) {
 		const activeWallet = this.walletStore.activeWallet
-		if(activeWallet && validator)
-		{
+		if (activeWallet && validator) {
 			const chain = validator.chain ?? SupportedCoins.BITSONG
 			const coin = CoinClasses[chain]
 			const delegateData: DelegateData = {
@@ -338,18 +309,17 @@ export default class ValidatorStore {
 				validator,
 				amount: {
 					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
-					denom: coin.denom()
-				}
+					denom: coin.denom(),
+				},
 			}
 			const res = await coin.Do(CoinOperationEnum.Undelegate, delegateData)
-			if(res) this.refreshData()
+			if (res) this.refreshData()
 			return res
 		}
 		return false
 	}
 
-	async refreshData()
-	{
+	async refreshData() {
 		this.load()
 		this.coinStore.updateBalances()
 	}
