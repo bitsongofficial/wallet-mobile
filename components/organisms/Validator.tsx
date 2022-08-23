@@ -16,8 +16,8 @@ type ValidatorProps = {
 
 export default ({ item, onPressKebab, style }: ValidatorProps) => {
 	const { validators } = useStore()
-	// const validator = validators.resolveValidator(item) ?? validators.validators[0]
-	const validator = mock
+	const validator = validators.resolveValidator(item) ?? validators.validators[0]
+	// const validator = mock
 
 	const handlePressKebab = useCallback(() => onPressKebab(validator), [validator])
 
@@ -152,7 +152,7 @@ const mock: Validator = {
 	},
 	description: "description",
 	identity: "identity",
-	// logo: "logo",
+	logo: "logo",
 	name: "name",
 	operator: "operator",
 	status: {

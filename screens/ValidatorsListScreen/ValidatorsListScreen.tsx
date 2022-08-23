@@ -125,8 +125,8 @@ export default observer<Props>(function ValidatorsListScreen({ navigation }) {
 				}
 				// ------------- List -------------------
 				keyExtractor={(item) => item.id}
-				// data={validators.validators}
-				data={mock}
+				data={validators.validators}
+				// data={mock}
 				renderItem={renderValidators}
 				// ------------ Styles --------------------
 				style={flatlistStyle}
