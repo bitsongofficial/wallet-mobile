@@ -19,7 +19,7 @@ export default observer(function Header({ navigation, style, options, ...props }
 	const openProfile = useCallback(() => navigation?.navigate("Profile"), [])
 
 	return (
-		<Animated.View style={[styles.container, options.headerStyle, style]}>
+		<Animated.View style={[styles.container, options?.headerStyle, style]}>
 			<View style={styles.header}>
 				<View style={styles.right}>
 					<Icon name="cosmo" size={40} />
