@@ -1,6 +1,6 @@
 import { BottomSheetProps } from "@gorhom/bottom-sheet"
 import { gbs } from "modals"
-import { Keyboard } from "react-native"
+import { Dimensions, Keyboard } from "react-native"
 import { store } from "stores/Store"
 import { ChangeWallet, FooterChangeWallet } from "./components/organisms"
 import { ControllerChangeWallet } from "./controllers"
@@ -42,9 +42,11 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 		}
 	}
 
+	const window = Dimensions.get("window")
+
 	const open = async () => {
 		await gbs.setProps({
-			snapPoints: ["95%"],
+			snapPoints: [window.height - 100],
 			...props,
 			onChange(index) {
 				if (index === -1) {
