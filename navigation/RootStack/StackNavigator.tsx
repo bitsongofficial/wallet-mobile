@@ -1,4 +1,8 @@
-import { createNativeStackNavigator, NativeStackHeaderProps } from "@react-navigation/native-stack"
+import {
+	createNativeStackNavigator,
+	NativeStackHeaderProps,
+	NativeStackNavigationOptions,
+} from "@react-navigation/native-stack"
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 import BottomTabNavigator from "navigation/BottomTab"
 import * as Screens from "screens"
@@ -11,8 +15,11 @@ import { Header } from "components/organisms"
  */
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
-const WithHeaderOption = {
+const WithHeaderOption: NativeStackNavigationOptions = {
 	headerShown: true,
+	headerStyle: {
+		height: 110,
+	},
 	header: (props: NativeStackHeaderProps) => <Header {...props} />,
 }
 

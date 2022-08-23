@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { Image, StyleSheet, Text, View, ViewStyle, StyleProp } from "react-native"
+import { Image, StyleSheet, Text, View, ViewStyle, StyleProp, Animated } from "react-native"
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs"
 import { NativeStackHeaderProps, NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { TouchableOpacity } from "react-native-gesture-handler"
@@ -14,12 +14,12 @@ type Props = {
 	navigation: NativeStackNavigationProp<RootStackParamList>
 } & (BottomTabHeaderProps | NativeStackHeaderProps)
 
-export default observer(function Header({ navigation, style }: Props) {
+export default observer(function Header({ navigation, style, options, ...props }: Props) {
 	const { wallet } = useStore()
 	const openProfile = useCallback(() => navigation?.navigate("Profile"), [])
 
 	return (
-		<View style={[styles.container, style]}>
+		<Animated.View style={[styles.container, options.headerStyle, style]}>
 			<View style={styles.header}>
 				<View style={styles.right}>
 					<Icon name="cosmo" size={40} />
@@ -41,14 +41,13 @@ export default observer(function Header({ navigation, style }: Props) {
 					</TouchableOpacity>
 				</View>
 			</View>
-		</View>
+		</Animated.View>
 	)
 })
 
 const styles = StyleSheet.create({
 	container: {
 		width: "100%",
-		height: 80,
 		backgroundColor: COLOR.Dark3,
 		justifyContent: "flex-end",
 	},
@@ -56,6 +55,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		paddingHorizontal: 25,
 		justifyContent: "space-between",
+		paddingVertical: 15,
 	},
 	right: {},
 	center: {
