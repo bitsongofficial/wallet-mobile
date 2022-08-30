@@ -17,7 +17,6 @@ import { RootStackParamList } from "types"
 import { COLOR, hexAlpha } from "utils"
 import { CardAddress, CardClaim, CardDelegation, CardInfo } from "./components/moleculs"
 import { FlatList } from "react-native-gesture-handler"
-import { Validator } from "core/types/coin/cosmos/Validator"
 import moment from "moment"
 import { ButtonBack } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -28,6 +27,7 @@ import { SupportedCoins } from "constants/Coins"
 import * as Clipboard from "expo-clipboard"
 import { openUndelegateWithValidator } from "modals/validator/withValidator"
 import { formatNumber } from "utils/numbers"
+import { Validator, ValidatorStatus } from "core/types/coin/cosmos/Validator"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Validator">
 
@@ -36,38 +36,47 @@ type IData = {
 	value: string
 }
 
-export default observer<Props>(function Stacking({ navigation, route }) {
+export default observer<Props>(function ValidatorScreen({ navigation, route }) {
 	const { validators, wallet, settings } = useStore()
-	const validator = validators.resolveValidator(route.params.id) ?? validators.validators[0]
+	const validator = useMemo<Validator>(
+		() => validators.resolveValidator(route.params.id) ?? validators.validators[0],
+		[route.params.id],
+	)
+	// const validator = mock
+
 	const [address, setAddress] = useState("")
 
 	useEffect(() => {
-		;(async () => {
-			setAddress(
-				await wallet.activeWallet?.wallets[validator.chain ?? SupportedCoins.BITSONG].Address(),
-			)
-		})()
+		validator &&
+			wallet.activeWallet?.wallets[validator.chain ?? SupportedCoins.BITSONG]
+				.Address()
+				.then(setAddress)
 	}, [])
 
 	// --------- Modals --------------
-	const onPressClaim = async () => (await validators.claim(validator))
+	const openClaimModal = useCallback(
+		() =>
+			openClaim({
+				amount: validators.validatorReward(validator),
+				coinName: "BTSG",
+				onDone: () => validators.claim(validator),
+				navigation,
+			}),
+		[validator],
+	)
 
-	const openClaimModal = () => {
-		openClaim({
-			amount: validators.validatorReward(validator),
-			coinName: "BTSG",
-			onDone: onPressClaim,
-			navigation,
-		})
-	}
-
-	// --------- Modals --------------
-
-	const openDelegateModal = () => openDelegateWithValidator(validator, navigation)
-
-	const openRedelegateModal = () => openRedelegateWithValidator(validator, navigation)
-
-	const openUndelegateModal = () => openUndelegateWithValidator(validator, navigation)
+	const openDelegateModal = useCallback(
+		() => openDelegateWithValidator(validator, navigation),
+		[validator],
+	)
+	const openRedelegateModal = useCallback(
+		() => openRedelegateWithValidator(validator, navigation),
+		[validator],
+	)
+	const openUndelegateModal = useCallback(
+		() => openUndelegateWithValidator(validator, navigation),
+		[validator],
+	)
 
 	// =======================================
 
@@ -85,7 +94,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 				)}`,
 			},
 		],
-		[validator, validator.commission.rate.current, validator.tokens],
+		[validator, validator?.commission.rate.current, validator?.tokens],
 	)
 
 	const renderInfo = useCallback<ListRenderItem<IData>>(
@@ -99,7 +108,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 
 	const insets = useSafeAreaInsets()
 
-	const source = validator.logo ? { uri: validator.logo } : undefined
+	const source = useMemo(() => ({ uri: validator?.logo && "fake" }), [])
 
 	const [isRefreshing, setRefreshing] = useState(false)
 
@@ -235,10 +244,10 @@ const styles = StyleSheet.create({
 		backgroundColor: COLOR.Dark3,
 	},
 	scrollview: {
-		paddingTop: 40, // for header
+		flex: 1,
 	},
 	scrollviewContent: {
-		paddingBottom: 40,
+		paddingBottom: Platform.OS === "ios" ? 40 : 110,
 	},
 
 	wrapper: {
@@ -316,12 +325,8 @@ const styles = StyleSheet.create({
 		color: hexAlpha(COLOR.PaleBlue, 50),
 	},
 
-	claim: {
-		marginBottom: 25,
-	},
-	delegation: {
-		marginBottom: 38,
-	},
+	claim: { marginBottom: 25 },
+	delegation: { marginBottom: 38 },
 	titleList: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
@@ -334,23 +339,11 @@ const styles = StyleSheet.create({
 		marginLeft: 10,
 	},
 
-	flatlistContent: {
-		paddingVertical: 10,
-	},
-	flatlist: {
-		marginBottom: 15,
-	},
-	info: {
-		marginRight: 20,
-	},
-
-	address: {
-		marginBottom: 25,
-	},
-
-	stat: {
-		marginBottom: 26,
-	},
+	flatlistContent: { paddingVertical: 10 },
+	flatlist: { marginBottom: 15 },
+	info: { marginRight: 20 },
+	address: { marginBottom: 25 },
+	stat: { marginBottom: 26 },
 
 	buttonBack: {
 		backgroundColor: COLOR.White,
@@ -359,3 +352,38 @@ const styles = StyleSheet.create({
 		borderRadius: 50,
 	},
 })
+
+const mock: Validator = {
+	id: "1",
+	commission: {
+		change: {
+			last: new Date(),
+			max: 5,
+		},
+		rate: {
+			current: 4,
+			max: 5,
+		},
+	},
+	description: "description",
+	identity: "identity",
+	logo: "logo",
+	name: "name",
+	operator: "operator",
+	status: {
+		status: ValidatorStatus.ACTIVE,
+		statusDetailed: "statusDetailed",
+	},
+	tokens: 1234567890,
+	userClaimAmount: 123456789,
+	userDelegation: 12345678,
+	chain: SupportedCoins.BITSONG,
+	signingInfo: {
+		address: "address",
+		index_offset: "index_offset",
+		jailed_until: "jailed_until",
+		missed_blocks_counter: "missed_blocks_counter",
+		start_height: "start_height",
+		tombstoned: false,
+	},
+}

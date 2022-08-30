@@ -16,10 +16,10 @@ import { Proposal, ProposalType } from "core/types/coin/cosmos/Proposal"
 import { SupportedCoins } from "constants/Coins"
 
 import { CardCommission, Head, ITab, Tabs } from "./components/moleculs"
-import { Shadow } from "./components/atoms"
-import { useAnimateFlatlist } from "./hook"
+import { useAnimateFlatlist } from "hooks"
 import { openChangeChain } from "modals/proposal"
 import { TouchableOpacity } from "react-native-gesture-handler"
+import { Shadow } from "components/atoms"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,

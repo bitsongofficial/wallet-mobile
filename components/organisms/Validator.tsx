@@ -1,47 +1,51 @@
-import { useCallback, useEffect, useState } from "react"
-import { Image, StyleSheet, Text, View } from "react-native"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import { COLOR } from "utils"
 import { Icon2 } from "components/atoms"
-import { Validator } from "core/types/coin/cosmos/Validator"
+import { Validator, ValidatorStatus, SignerInfo } from "core/types/coin/cosmos/Validator"
 import { useStore } from "hooks"
 import { validatorIdentity } from "core/rest/keybase"
+import { SupportedCoins } from "constants/Coins"
 
 type ValidatorProps = {
-	id: string
+	item: Validator
 	onPressKebab(item: Validator): void
+	style?: StyleProp<ViewStyle>
 }
 
-export default ({ id, onPressKebab }: ValidatorProps) => {
+export default ({ item, onPressKebab, style }: ValidatorProps) => {
 	const { validators } = useStore()
-	const item = validators.resolveValidator(id) ?? validators.validators[0]
+	const validator = validators.resolveValidator(item) ?? validators.validators[0]
+	// const validator = mock
 
-	const handlePressKebab = useCallback(() => onPressKebab(item), [item])
+	const handlePressKebab = useCallback(() => onPressKebab(validator), [validator])
+
+	const source = useMemo(() => ({ uri: validator?.logo || "" }), [validator?.logo])
+
 	// const [logo, setLogo] = useState("")
-
-	const source = item.logo ? { uri: item.logo } : undefined
 
 	// useEffect(() =>
 	// {
-	// 	validatorIdentity(item.identity).then((identity) =>
+	// 	validatorIdentity(validator.identity).then((identity) =>
 	// 	{
-	// 		if(item.identity)
+	// 		if(validator.identity)
 	// 		{
-	// 			console.log("A", item.identity, identity)
+	// 			console.log("A", validator.identity, identity)
 	// 			setLogo(identity.picture_url)
 	// 		}
 	// 	}).catch((e) =>
 	// 	{
 	// 		console.error("Catched", e)
 	// 	})
-	// }, [item, item.identity])
+	// }, [validator, validator.identity])
 
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, style]}>
 			<View style={[styles.row, { marginBottom: 14 }]}>
 				<View style={styles.info}>
 					{source && <Image style={styles.avatar} source={source} />}
-					<Text style={styles.title}>{item.id}</Text>
+					<Text style={styles.title}>{validator.name}</Text>
 				</View>
 				<RectButton onPress={handlePressKebab}>
 					<Icon2 name="kebab" stroke={COLOR.Marengo} size={24} />
@@ -49,11 +53,13 @@ export default ({ id, onPressKebab }: ValidatorProps) => {
 			</View>
 			<View style={styles.footer}>
 				<View style={styles.left}>
-					<Text style={styles.percent}>{validators.apr(item).toFixed(2)} %</Text>
+					<Text style={styles.percent}>{validators.apr(validator).toFixed(2)} %</Text>
 					<Text style={styles.text}>APR</Text>
 				</View>
 				<View style={styles.right}>
-					<Text style={styles.percent}>{validators.percentageVotingPower(item).toFixed(2)} %</Text>
+					<Text style={styles.percent}>
+						{validators.percentageVotingPower(validator).toFixed(2)} %
+					</Text>
 					<Text style={styles.text}>VOTING POWER</Text>
 				</View>
 			</View>
@@ -67,7 +73,6 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 		backgroundColor: COLOR.Dark2,
 		padding: 24,
-		marginBottom: 20,
 	},
 	row: {
 		flexDirection: "row",
@@ -132,3 +137,38 @@ const styles = StyleSheet.create({
 		marginRight: 16,
 	},
 })
+
+const mock: Validator = {
+	id: "1",
+	commission: {
+		change: {
+			last: new Date(),
+			max: 5,
+		},
+		rate: {
+			current: 4,
+			max: 5,
+		},
+	},
+	description: "description",
+	identity: "identity",
+	logo: "logo",
+	name: "name",
+	operator: "operator",
+	status: {
+		status: ValidatorStatus.ACTIVE,
+		statusDetailed: "statusDetailed",
+	},
+	tokens: 1234567890,
+	userClaimAmount: 123456789,
+	userDelegation: 12345678,
+	chain: SupportedCoins.BITSONG,
+	signingInfo: {
+		address: "address",
+		index_offset: "index_offset",
+		jailed_until: "jailed_until",
+		missed_blocks_counter: "missed_blocks_counter",
+		start_height: "start_height",
+		tombstoned: false,
+	},
+}

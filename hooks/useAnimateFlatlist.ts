@@ -8,7 +8,7 @@ import {
 
 export default function useAnimateFlatlist() {
 	const translationY = useSharedValue(0)
-	const translationYInvert = useSharedValue(0)
+	const translationYInvert = useSharedValue(80)
 
 	const scrollHandler = useAnimatedScrollHandler({
 		onScroll: ({ contentOffset, contentSize, layoutMeasurement }) => {
