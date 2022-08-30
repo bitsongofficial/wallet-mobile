@@ -14,6 +14,7 @@ import LocalStorageManager from "./LocalStorageManager";
 import { askPin } from "navigation/AskPin";
 import uuid from 'react-native-uuid';
 import { navigate } from "navigation/utils";
+import { isPinSaved } from "utils/biometrics";
 
 export const cosmos_mnemonic_prefix = "mnemonic_"
 
@@ -359,6 +360,7 @@ export default class WalletStore {
     if(this.profiles.length < 1)
     {
       this.activeProfile = null
+      if(this.settings.biometric_enable) this.settings.setBiometric(false) 
       navigate("Start")
       return
     }

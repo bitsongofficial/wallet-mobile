@@ -61,6 +61,7 @@ export type RootStackParamList = {
 		isRandomKeyboard?: boolean
 		isHiddenCode?: boolean
 		disableVerification?: boolean
+		isBiometricAllowed?: boolean
 	}
 	Validator: { id: string }
 	NewProposal: undefined

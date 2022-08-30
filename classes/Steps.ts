@@ -22,23 +22,18 @@ export default class Steps<T extends string = any> {
 	}
 
 	private add(index: number) {
-		console.log("add 0", this.history)
 		if (index >= 0 && index <= this.titles.length - 1) {
 			this.history.push(index)
 			this.setActive(index)
 		}
-		console.log("add 1", this.history)
 	}
 
 	goBack() {
-		console.log("back 0", this.history)
 		this.history.pop()
 		this.setActive(this.history[this.history.length - 1])
-		console.log("back 1", this.history)
 	}
 
 	goTo(title: T) {
-		console.log("go to", this.history)
 		this.add(this.titles.findIndex(Steps.equal(title)))
 	}
 

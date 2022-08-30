@@ -15,6 +15,7 @@ import { Wallet } from "./types/storing/Generic"
 import { argon2Encode, argon2Verify } from "utils/argon"
 import Config from "react-native-config"
 import { CoinClasses } from "./types/coin/Dictionaries"
+import { Validator } from "./types/coin/cosmos/Validator"
 
 const amount = {
 	denom: Denom.UBTSG,
@@ -42,7 +43,7 @@ async function trySend(wallet: any, pubWallet: any, transaction: any)
 
 }
 
-async function tryDelegate(delegator: CosmosWallet, validator: Wallet) {
+async function tryDelegate(delegator: CosmosWallet, validator: Validator) {
 	const data: DelegateData = {
 		delegator: delegator,
 		validator: validator,
@@ -51,7 +52,7 @@ async function tryDelegate(delegator: CosmosWallet, validator: Wallet) {
 	Bitsong.Do(CoinOperationEnum.Delegate, data)
 }
 
-async function tryUndelegate(delegator: CosmosWallet, validator: Wallet) {
+async function tryUndelegate(delegator: CosmosWallet, validator: Validator) {
 	const data: DelegateData = {
 		delegator: delegator,
 		validator: validator,
@@ -60,7 +61,7 @@ async function tryUndelegate(delegator: CosmosWallet, validator: Wallet) {
 	Bitsong.Do(CoinOperationEnum.Undelegate, data)
 }
 
-async function tryRedelegate(delegator: CosmosWallet, validator1: Wallet, validator2: Wallet) {
+async function tryRedelegate(delegator: CosmosWallet, validator1: Validator, validator2: Validator) {
 	const data: RedelegateData = {
 		delegator: delegator,
 		validator: validator1,
@@ -81,7 +82,7 @@ async function tryVote(voter: CosmosWallet, proposalId: Long, choice: VoteOption
 	Bitsong.Do(CoinOperationEnum.Vote, data)
 }
 
-async function tryClaim(owner: CosmosWallet, validators: Wallet[]) {
+async function tryClaim(owner: CosmosWallet, validators: Validator[]) {
 	const data: ClaimData = {
 		owner,
 		validators
