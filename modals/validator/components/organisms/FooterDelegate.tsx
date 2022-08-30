@@ -4,15 +4,17 @@ import { Steps } from "classes"
 import { COLOR } from "utils"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { DelegateController } from "modals/validator/controllers"
 
 type Props = {
+	controller: DelegateController
 	onPressBack?(): void
 	onPressDone?(): void
 	style?: StyleProp<ViewStyle>
 	steps: Steps<any>
 }
 
-export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
+export default observer<Props>(({ controller, onPressBack, onPressDone, style, steps }) => {
 	const insets = useSafeAreaInsets()
 	return (
 		<Footer
@@ -38,6 +40,7 @@ export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
 			Right={
 				steps.active === 0 && (
 					<Button
+						disable={!(parseFloat(controller.amountInput.value) > 0 && parseFloat(controller.amountInput.value) <= (controller.amountInput.coin?.balance ?? 0))}
 						text="Continue"
 						contentContainerStyle={styles.buttonContent}
 						textStyle={styles.buttonText}

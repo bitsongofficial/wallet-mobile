@@ -31,7 +31,7 @@ export default observer<Props>(function SendDetails({ navigation }: Props) {
 			<View style={styles.wrapper33}>
 				<Text style={[styles.text, theme.text.colorText]}>You will send</Text>
 
-				<Text style={[styles.transferAmount, theme.text.primary, styles.mt6]}>{amount}$</Text>
+				<Text style={[styles.transferAmount, theme.text.primary, styles.mt6]}>{amount}{settings.currency?.symbol}</Text>
 
 				<Text style={[styles.text, theme.text.secondary2, styles.mt6]}>
 					28,345 {firstCoin.info.coinName.toUpperCase()}

@@ -50,7 +50,6 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 	}, [])
 
 	// --------- Modals --------------
-
 	const onPressClaim = async () => (await validators.claim(validator))
 
 	const openClaimModal = () => {
@@ -110,6 +109,8 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 		setRefreshing(false)
 	}, [])
 
+	const delegations = validators.validatorDelegations(validator)
+
 	return (
 		<>
 			<StatusBar style="light" />
@@ -156,9 +157,9 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 							value={validators.validatorDelegations(validator)}
 							coin={validator.chain}
 							style={styles.delegation}
-							onPressStake={openDelegateModal}
-							onPressUnstake={openUndelegateModal}
-							onPressRestake={openRedelegateModal}
+							onPressStake={validators.CanStake ? openDelegateModal : undefined}
+							onPressUnstake={validators.CanStake && delegations > 0 ? openUndelegateModal : undefined}
+							onPressRestake={validators.CanStake && delegations > 0 ? openRedelegateModal : undefined}
 						/>
 
 						<Text style={styles.titleList}>Validator Info</Text>

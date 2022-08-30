@@ -47,8 +47,8 @@ export default async function openDelegate({ onDone, onClose, onDismiss, control
 		snapPoints: snapPoints[controller.steps.active],
 		onClose: close,
 		footerComponent: () => (
-			<FooterDelegate
-				onPressDone={() => {
+			<FooterDelegate controller={controller} onPressDone={() =>
+				{
 					status.done = true
 					gbs.close()
 					navigate("Loader", {
