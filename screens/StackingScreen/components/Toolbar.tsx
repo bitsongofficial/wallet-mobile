@@ -6,10 +6,10 @@ import { StyleProp } from "react-native"
 import Title from "./Title"
 
 type ToolbarProps = {
-	onPressClaim(): void
-	onPressStake(): void
-	onPressUnstake(): void
-	onPressRestake(): void
+	onPressClaim?(): void
+	onPressStake?(): void
+	onPressUnstake?(): void
+	onPressRestake?(): void
 	style?: StyleProp<ViewStyle>
 }
 

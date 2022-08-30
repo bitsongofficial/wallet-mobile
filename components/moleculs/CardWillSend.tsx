@@ -31,7 +31,7 @@ export default observer(function CardWillSend({
   style,
 }: Props) {
   const theme = useTheme();
-  const { configs, contacts, coin } = useStore();
+  const { settings, contacts, coin } = useStore();
 
   const receiver: Contact | undefined = contacts.contacts.find((c) => c.address === address)
 
@@ -66,7 +66,7 @@ export default observer(function CardWillSend({
       </View>
 
       <Text style={[styles.transferAmount, theme.text.primary]}>
-        {amount} $
+        {amount} {settings.currency?.symbol}
       </Text>
 
       <View style={styles.row}>

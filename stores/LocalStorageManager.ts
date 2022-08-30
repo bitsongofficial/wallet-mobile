@@ -12,7 +12,7 @@ import { argon2Encode, argon2Verify } from "utils/argon"
 import { askPin } from "navigation/AskPin"
 import { Contact } from "stores/ContactsStore"
 import ContactsStore from "./ContactsStore"
-import { clearPin, isPinSaved } from "utils/biometrics"
+import { clearPin, isPinSaved, savePin } from "utils/biometrics"
 
 const pin_hash_path = "pin_hash"
 const settings_location = "settings"
@@ -296,6 +296,7 @@ export default class LocalStorageManager
 				if(result)
 				{
 					this.setPin(actualNewPin)
+					if(await isPinSaved()) savePin(actualNewPin)
 					await this.wallet.setSetUpsPin(actualNewPin)
 				}
 			}
