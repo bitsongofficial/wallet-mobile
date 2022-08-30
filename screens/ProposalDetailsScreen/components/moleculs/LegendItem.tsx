@@ -15,7 +15,7 @@ export default ({ color, name, value, style }: LegendProps) => {
 			<View style={[{ backgroundColor: color }, styles.dot]} />
 			<View style={styles.data}>
 				<Text style={styles.text}>{name}</Text>
-				<Text style={styles.text}>{value}</Text>
+				<Text style={styles.text}>{value} %</Text>
 			</View>
 		</View>
 	)

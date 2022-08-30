@@ -27,7 +27,7 @@ export default () => (
 					// paddingBottom: 20,
 				},
 				headerTransparent: true,
-				tabBarStyle: { position: "absolute", },
+				tabBarStyle: { position: "absolute" },
 				tabBarShowLabel: false,
 				// headerShown: false,
 			}}
@@ -40,8 +40,8 @@ export default () => (
 				})}
 			/>
 			<BottomTab.Screen
-				name="StackingTab"
-				component={Screens.Stacking_2}
+				name="ValidatorsList"
+				component={Screens.ValidatorsList}
 				options={{
 					tabBarIcon: ({ focused }) => <Icon2 name="stake" size={20} stroke={getStroke(focused)} />,
 				}}
@@ -63,9 +63,9 @@ export default () => (
 					),
 				}}
 				listeners={{
-					tabPress: e => {
+					tabPress: (e) => {
 						e.preventDefault()
-					}
+					},
 				}}
 			/>
 		</BottomTab.Navigator>
