@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo } from "react"
-import { BackHandler, StyleSheet, Text, View } from "react-native"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { BackHandler, NativeEventSubscription, StyleSheet, Text, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
@@ -26,6 +26,7 @@ export default observer<Props>(function SendModal({
 	onPressScanQRReciver,
 }) {
 	const store = useStore()
+	const [backHandler, setBackHandler] = useState<NativeEventSubscription | null>(null)
 
 	const hasCoins = store.coin.coins.length > 0
 
@@ -44,6 +45,7 @@ export default observer<Props>(function SendModal({
 	const send = () => {
 		const { coin, addressInput, balance } = creater
 		if (coin && addressInput && balance) {
+			backHandler?.remove()
 			navigation.push("Loader", {
 				// @ts-ignore
 				callback: async () => {
@@ -60,6 +62,7 @@ export default observer<Props>(function SendModal({
 			goBack()
 			return true
 		})
+		setBackHandler(handler)
 		return () => handler.remove()
 	}, [goBack])
 

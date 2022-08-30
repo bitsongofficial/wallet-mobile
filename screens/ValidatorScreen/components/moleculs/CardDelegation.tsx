@@ -10,9 +10,9 @@ type Props = {
 	value: number,
 	coin?: SupportedCoins
 	style?: StyleProp<ViewStyle>
-	onPressStake(): void
-	onPressUnstake(): void
-	onPressRestake(): void
+	onPressStake?(): void
+	onPressUnstake?(): void
+	onPressRestake?(): void
 }
 
 export default ({ value, coin=SupportedCoins.BITSONG, style, onPressRestake, onPressStake, onPressUnstake }: Props) => {

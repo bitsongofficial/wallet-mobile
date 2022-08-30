@@ -31,7 +31,6 @@ export default observer<Props>(function InsertImport({
   const { settings } = useStore()
   const creater: TransactionCreater = controller.creater;
   const fiatSymbol = settings.currency?.symbol
-
   return (
     <>
       <View style={styles.row}>
@@ -69,7 +68,7 @@ export default observer<Props>(function InsertImport({
       <Footer
         onPressCenter={onPressNext}
         onPressBack={onPressBack}
-        isActiveCenter={Number(creater.balance) < (creater.coin ? creater.coin.balance : 0) && Number(creater.balance) > 0}
+        isActiveCenter={Number(creater.balance) <= (creater.coin ? creater.coin.balance : 0) && Number(creater.balance) > 0}
         centerTitle="Continue"
       />
     </>

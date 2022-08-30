@@ -36,6 +36,22 @@ export default observer<Props>(({ controller }) => {
 		}
 	}, [phrase])
 
+	const handlePressGo = useCallback(() => {
+		phrase.inputSubmit()
+		phrase.isValid && steps.goTo("Name")
+	}, [])
+
+	// ---------- Name -----------
+
+	const input = useMemo(() => new InputHandler(), [])
+
+	const saveWallet = useCallback(() => {
+		if (input.value && phrase.isValid) {
+			close()
+			wallet.newCosmosWallet(input.value, phrase.words)
+		}
+	}, [])
+
 	return (
 		<View style={styles.wrapper}>
 			{steps.title === "Choose" && (

@@ -29,8 +29,8 @@ export default observer<Props>(function Stacking({ navigation }) {
 		openClaim({
 			amount: validators.validatorReward(item),
 			coinName: "BTSG",
-			onDone: () => {
-				validators.claim(item)
+			onDone: async () => {
+				return await validators.claim(item)
 			},
 			navigation,
 		})
@@ -51,22 +51,30 @@ export default observer<Props>(function Stacking({ navigation }) {
 				<Toolbar
 					style={{ marginHorizontal: 30 }}
 					onPressClaim={
-						() => {openClaimModal(item)}
+						validators.CanStake && validators.validatorReward(item) > 0 ?
+						(() => {openClaimModal(item)})
+						: undefined
 					}
 					onPressStake={
+						validators.CanStake ?
 						() => {openDelegateWithValidator(item, navigation)}
+						: undefined
 					}
 					onPressUnstake={
+						validators.CanStake && validators.validatorDelegations(item) > 0 ?
 						() => (openUndelegateWithValidator(item, navigation))
+						: undefined
 					}
 					onPressRestake={
+						validators.CanStake && validators.validatorDelegations(item) > 0 ?
 						() => (openRedelegateWithValidator(item, navigation))
+						: undefined
 					}
 				/>
 			),
 		})
 		gbs.snapToIndex(0)
-	}, [])
+	}, [validators.CanStake])
 
 	const navToValidator = useCallback(
 		(id: string) =>
