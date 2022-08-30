@@ -131,7 +131,6 @@ const styles = StyleSheet.create({
 	},
 
 	flatlist: {
-		backgroundColor: "red",
 		flex: 1,
 		marginTop: Platform.OS === "ios" ? 130 : 160,
 	},
