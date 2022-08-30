@@ -1,9 +1,15 @@
-import { Icon2 } from "components/atoms"
 import { Image, StyleSheet, View } from "react-native"
-import { COLOR } from "utils"
 import { Caption, Title } from "../atoms"
 
-export default () => {
+type Props = {
+	title?: string
+	caption?: string
+}
+
+export default ({
+	title = "Transaction Successful",
+	caption = `Congratulations!${"\n"} Your transaction has been completed${"\n"} and confirmed by the blockchain.`,
+}: Props) => {
 	return (
 		<>
 			<View style={styles.iconContainer}>
@@ -11,12 +17,8 @@ export default () => {
 			</View>
 
 			<View>
-				<Title style={styles.title}>Transaction Successful</Title>
-				<Caption style={styles.caption}>
-					Congratulations!{"\n"}
-					Your transaction has been completed{"\n"}
-					and confirmed by the blockchain.
-				</Caption>
+				<Title style={styles.title}>{title}</Title>
+				<Caption style={styles.caption}>{caption}</Caption>
 			</View>
 		</>
 	)

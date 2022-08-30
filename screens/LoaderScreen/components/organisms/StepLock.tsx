@@ -1,13 +1,12 @@
 import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { Timer } from "classes"
 import { COLOR } from "utils"
-import { Icon2 } from "components/atoms"
 import { Title, Caption } from "../atoms"
 import { observer } from "mobx-react-lite"
 
 type Props = {
 	timer: Timer
-	style: StyleProp<ViewStyle>
+	style?: StyleProp<ViewStyle>
 }
 
 export default observer(({ timer, style }: Props) => (

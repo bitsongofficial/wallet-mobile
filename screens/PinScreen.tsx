@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { BackHandler, StyleSheet, Text, View } from "react-native"
+import { BackHandler, StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { RootStackParamList } from "types"
@@ -21,6 +21,8 @@ import Animated, {
 	withSequence,
 	withTiming,
 } from "react-native-reanimated"
+import { StepLock, StepSuccess } from "./LoaderScreen/components/organisms"
+import { Button } from "./LoaderScreen/components/atoms"
 
 type Props = NativeStackScreenProps<RootStackParamList, "PinRequest">
 
@@ -30,7 +32,13 @@ const TIME = 200
 const EASING = Easing.elastic(1.5)
 
 export default observer<Props>(({ navigation, route }) => {
-	const { callback, title = "Confirm with PIN", errorMax = 3, disableVerification = false, isRandomKeyboard = true } = route.params
+	const {
+		callback,
+		title = "Confirm with PIN",
+		errorMax = 3,
+		disableVerification = false,
+		isRandomKeyboard = true,
+	} = route.params
 	const { wallet } = useStore()
 
 	const goBack = useCallback(() => navigation.goBack(), [])
@@ -43,29 +51,24 @@ export default observer<Props>(({ navigation, route }) => {
 	const isError = isConfirm !== null && !isConfirm
 	const isBlocked = countError === errorMax
 
-  // --------- Check -------------
-  const { localStorageManager } = useStore();
+	// --------- Check -------------
+	const { localStorageManager } = useStore()
 
 	useEffect(() => {
-		if (pin.isValid)
-		{
-			(async () => {
-				const isConfirm = await localStorageManager.verifyPin(pin.value) || disableVerification;
-				setConfirm(isConfirm);
+		if (pin.isValid) {
+			;(async () => {
+				const isConfirm = (await localStorageManager.verifyPin(pin.value)) || disableVerification
+				setConfirm(isConfirm)
 				if (isConfirm) {
-					setErrorCount(0);
-				}
-				else
-				{
-					setErrorCount((v) => v + 1);
+					setErrorCount(0)
+				} else {
+					setErrorCount((v) => v + 1)
 				}
 			})()
+		} else {
+			setConfirm(null)
 		}
-		else
-		{
-			setConfirm(null);
-		}
-	}, [pin.isValid]);
+	}, [pin.isValid])
 	// ----------- Confirm ----------
 	useEffect(() => {
 		if (isConfirm) {
@@ -171,48 +174,23 @@ export default observer<Props>(({ navigation, route }) => {
 				)}
 				{isConfirm && !isBlocked && (
 					<View style={styles.confirm}>
-						<Icon2
-							name="check_fulfilled"
-							size={80}
-							stroke={COLOR.GreenCrayola}
-							style={styles.icon}
+						<StepSuccess
+							title="Operation Confirmed"
+							caption={`Congratulations,${"\n"} Operation successfully confirmed.`}
 						/>
-						<Title style={styles.title_confirmed}>Operation Confirmed</Title>
-						<Subtitle style={styles.subtitle_confirmed}>
-							Congratulations, {"\n"}
-							Operation successfully confirmed.
-						</Subtitle>
 					</View>
 				)}
 				{isBlocked && (
-					<View style={styles.confirm}>
-						<Icon2 name="check_lock" size={80} stroke={COLOR.Pink} style={styles.icon} />
-						<Title style={styles.title_confirmed}>Wallet app is blocked</Title>
-						<Subtitle style={styles.subtitle_confirmed}>Too many PIN attempts</Subtitle>
-						<View
-							style={{
-								marginTop: 28,
-								width: 187,
-								height: 177,
-								backgroundColor: COLOR.Dark2,
-								borderRadius: 20,
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							<Subtitle style={styles.subtitle_confirmed}>Try again in:</Subtitle>
-							<Text
-								style={{
-									fontFamily: "CircularStd",
-									fontStyle: "normal",
-									fontWeight: "500",
-									fontSize: 80,
-									lineHeight: 101,
-									color: COLOR.White,
-								}}
-							>
-								{timer.time}
-							</Text>
+					<View style={styles.block}>
+						<StepLock timer={timer} />
+						<View style={styles.buttonBackContainer}>
+							<Button
+								text="Back to homescreen"
+								mode="fill"
+								disable={timer.time !== null && timer.time !== 0}
+								onPress={goBack}
+								Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
+							/>
 						</View>
 					</View>
 				)}
@@ -230,13 +208,15 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 30,
 		flex: 1,
 	},
-	confirm: { alignItems: "center" },
+	confirm: { justifyContent: "space-evenly", flex: 1 },
 
 	header: {
 		height: 70,
 	},
 
-	icon: { marginTop: 90, marginBottom: 64 },
+	icon: {
+		marginBottom: 45,
+	},
 	button: {
 		height: 60,
 		justifyContent: "center",
@@ -253,7 +233,8 @@ const styles = StyleSheet.create({
 		marginTop: 30,
 	},
 	title_confirmed: {
-		marginBottom: 24,
+		marginBottom: 16,
+		fontSize: 20,
 	},
 	subtitle: {
 		marginTop: 8,
@@ -283,4 +264,34 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		lineHeight: 20,
 	},
+
+	// ------------ Block -----------
+
+	timerContainer: {
+		marginTop: 50,
+		width: 187,
+		height: 177,
+		backgroundColor: COLOR.Dark2,
+		borderRadius: 20,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+
+	timer: {
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "500",
+		fontSize: 80,
+		lineHeight: 101,
+		color: COLOR.White,
+	},
+	buttonBackContainer: {
+		justifyContent: "center",
+		alignItems: "center",
+		position: "absolute",
+		bottom: 8,
+		width: "100%",
+	},
+
+	block: { flex: 1, justifyContent: "space-evenly" },
 })
