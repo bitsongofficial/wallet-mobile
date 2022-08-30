@@ -60,15 +60,31 @@ export default observer<Props>(function Stacking({ navigation }) {
 			children: () => (
 				<Toolbar
 					style={{ marginHorizontal: 30 }}
-					onPressClaim={() => openClaimModal(item)}
-					onPressStake={() => openDelegateWithValidator(item, navigation)}
-					onPressUnstake={() => openUndelegateWithValidator(item, navigation)}
-					onPressRestake={() => openRedelegateWithValidator(item, navigation)}
+					onPressClaim={
+						validators.CanStake && validators.validatorReward(item) > 0 ?
+						(() => {openClaimModal(item)})
+						: undefined
+					}
+					onPressStake={
+						validators.CanStake ?
+						() => {openDelegateWithValidator(item, navigation)}
+						: undefined
+					}
+					onPressUnstake={
+						validators.CanStake && validators.validatorDelegations(item) > 0 ?
+						() => (openUndelegateWithValidator(item, navigation))
+						: undefined
+					}
+					onPressRestake={
+						validators.CanStake && validators.validatorDelegations(item) > 0 ?
+						() => (openRedelegateWithValidator(item, navigation))
+						: undefined
+					}
 				/>
 			),
 		})
 		gbs.snapToIndex(0)
-	}, [])
+	}, [validators.CanStake])
 
 	const navToValidator = useCallback((id: string) => navigation.navigate("Validator", { id }), [])
 
