@@ -50,6 +50,11 @@ export default () => (
 				component={Screens.ProposalDetails}
 				options={WithHeaderOption}
 			/>
+			<Stack.Screen
+				name="Notifications"
+				component={Screens.Notificatoins}
+				options={WithHeaderOption}
+			/>
 
 			<Stack.Group screenOptions={{ presentation: "modal" }}>
 				<Stack.Screen name="ScannerQR" component={Screens.ScannerQR} />
