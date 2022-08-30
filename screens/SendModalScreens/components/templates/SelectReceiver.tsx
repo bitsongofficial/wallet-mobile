@@ -62,22 +62,22 @@ export default observer(function SelectReceiver({
               ))}
             </View>
           </>}
-          <Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
-          <View style={styles.users}>
-            {contacts.starred.map((c) => (
-                <TouchableOpacity key={c.address} onPress={() =>
-                {
-                  console.log("aadsadf", c.address)
-                  setAddress(c)
-                }}>
-                  <User user={c} key={c.address} />
-                </TouchableOpacity>
-            ))}
-          </View>
-
+          {contacts.starred.length > 0 && <>
+            <Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
+            <View style={styles.users}>
+              {contacts.starred.map((c) => (
+                  <TouchableOpacity key={c.address} onPress={() =>
+                  {
+                    setAddress(c)
+                  }}>
+                    <User user={c} key={c.address} />
+                  </TouchableOpacity>
+              ))}
+            </View>
+          </>}
           <TouchableOpacity onPress={() =>
                 {
-                  setAddress(creater.coin?.info.address)
+                  creater.coin && setAddress(creater.coin?.info.address)
                 }}>
             <CardAdressSelf coin={creater.coin} style={styles.self} />
           </TouchableOpacity>

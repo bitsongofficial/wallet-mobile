@@ -68,15 +68,31 @@ export default observer<Props>(function ValidatorsListScreen({ navigation }) {
 			children: () => (
 				<Toolbar
 					style={{ marginHorizontal: 30 }}
-					onPressClaim={() => openClaimModal(validator)}
-					onPressStake={() => openDelegateWithValidator(validator, navigation)}
-					onPressUnstake={() => openUndelegateWithValidator(validator, navigation)}
-					onPressRestake={() => openRedelegateWithValidator(validator, navigation)}
+					onPressClaim={
+						validators.CanStake && validators.validatorReward(item) > 0 ?
+						(() => {openClaimModal(item)})
+						: undefined
+					}
+					onPressStake={
+						validators.CanStake ?
+						() => {openDelegateWithValidator(item, navigation)}
+						: undefined
+					}
+					onPressUnstake={
+						validators.CanStake && validators.validatorDelegations(item) > 0 ?
+						() => (openUndelegateWithValidator(item, navigation))
+						: undefined
+					}
+					onPressRestake={
+						validators.CanStake && validators.validatorDelegations(item) > 0 ?
+						() => (openRedelegateWithValidator(item, navigation))
+						: undefined
+					}
 				/>
 			),
 		})
 		requestAnimationFrame(() => gbs.snapToIndex(0))
-	}, [])
+	}, [validators.CanStake])
 
 	// -------------- Styles --------------
 
@@ -142,7 +158,6 @@ const styles = StyleSheet.create({
 	title: { marginBottom: 24 },
 	validator: { marginBottom: 20 },
 })
-
 const mock: Validator[] = [
 	{
 		id: "1",

@@ -18,9 +18,6 @@ export default class ControllerChangeWallet {
 	}
 
 	setEdited(profile: ProfileWallets | null) {
-		if (profile) {
-			this.steps.goTo("Edit Wallet")
-		}
 		this.edited = profile
 	}
 

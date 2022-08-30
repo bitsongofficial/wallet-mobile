@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { COLOR } from "utils";
 import { Button, Icon2 } from "components/atoms";
 import { Subtitle, Title } from "../atoms";
@@ -37,6 +37,8 @@ export default ({ onDone, authTypes, pin }: Props) => {
   }, [onDone]);
   const skip = useCallback(() => onDone(null), [onDone]);
 
+  const authName = method === "FaceID" ? (Platform.OS === "ios" ? "Face ID" : "Facial Recognition") : "Touch ID"
+
   return (
     <>
       <View style={styles.container}>
@@ -49,10 +51,10 @@ export default ({ onDone, authTypes, pin }: Props) => {
         />
 
         <Title style={styles.title}>
-          Enable {method === "FaceID" ? "Face ID" : "Touch ID"}
+          Enable {authName}
         </Title>
         <Subtitle style={styles.subtitle}>
-          Do you want to enable the touch ID so{"\n"}
+          Do you want to enable the {authName} so{"\n"}
           you will use this instead{"\n"}
           of the pin?
         </Subtitle>

@@ -47,6 +47,15 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 
 	const removeEdited = useCallback(() => setEdited(null), [])
 
+	const onPressDelete = useCallback(() =>
+	{
+		if(edited)
+		{
+			wallet.deleteProfile(edited)
+			close()
+		}
+	}, [edited])
+
 	// ------- FlatList ----------
 
 	const mapItemsRef = useMemo(
@@ -67,8 +76,8 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						wallet.deleteProfile(w)
 					}}
 					onPressEdit={(profile) => {
-						// steps.goTo("Edit Wallet")
 						setEdited(profile)
+						steps.goTo("Edit Wallet")
 					}}
 					mapItemsRef={mapItemsRef}
 				/>
@@ -130,7 +139,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						<View style={styles.headerRight} />
 					</View>
 					<Search
-						placeholder="Cerca Wallet"
+						placeholder="Modifica nome"
 						style={styles.search}
 						value={inputWalletName.value}
 						onChangeText={inputWalletName.set}
@@ -143,7 +152,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 								<ListButton
 									style={styles.listButton}
 									icon="eye"
-									text="View Mnemonics"
+									text="View Mnemonic"
 									arrow
 									onPress={onPressViewMnemonic}
 								/>
@@ -153,7 +162,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 								icon="power"
 								text="Disconnect Wallet"
 								arrow
-								onPress={() => edited && wallet.deleteProfile(edited)}
+								onPress={onPressDelete}
 							/>
 						</View>
 
@@ -221,6 +230,7 @@ export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, contr
 			)}
 			{controller.steps.active === 1 && (
 				<Button
+					disable={controller.inputWalletName.value.length < 4}
 					text="Save"
 					onPress={onPressSave}
 					textStyle={styles.buttonText}
