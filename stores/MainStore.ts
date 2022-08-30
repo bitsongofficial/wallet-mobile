@@ -35,8 +35,31 @@ export default class MainStore {
 		this.settings,
 		this.configs.remote,
 	)
-
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
+
+	// ------ MOCK Chain Store ???? ---------
+
+	chains: MockChain[] = mockChain
+	activeChain: MockChain = this.chains[0]
+	setActiveChain(chain: MockChain) {
+		this.activeChain = chain
+	}
 }
+
+export type MockChain = {
+	name: string
+	tokenName: string
+	logo: string
+	id: string
+}
+
+const mockChain: MockChain[] = [
+	{ id: "1", tokenName: "Adam Clay", name: "CLAY", logo: "" },
+	{ id: "2", tokenName: "Fasano", name: "FASANO", logo: "" },
+	{ id: "3", tokenName: "Vibranium", name: "VIBRA", logo: "" },
+	{ id: "4", tokenName: "Rowanne", name: "RWNN", logo: "" },
+	{ id: "5", tokenName: "N43 Records", name: "N43", logo: "" },
+	{ id: "6", tokenName: "Purolobo", name: "LOBO", logo: "" },
+]

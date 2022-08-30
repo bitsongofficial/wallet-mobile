@@ -4,7 +4,6 @@ import { FooterDelegate } from "./components/organisms"
 import { Delegate } from "./components/template"
 import { store } from "stores/Store"
 import { gbs } from "modals"
-import { BackHandler } from "react-native"
 import { SupportedCoins } from "constants/Coins"
 import { navigate } from "navigation/utils"
 
@@ -18,13 +17,12 @@ type Options = {
 const snapPoints = [[600], ["85%"], [450]]
 
 export default async function openDelegate({ onDone, onClose, onDismiss, controller }: Options) {
-	const status = {done: false}
+	const status = { done: false }
 	const { coin: coinStore } = store
 	const validator = controller.selectedValidator
-	if(validator)
-	{
+	if (validator) {
 		const coin = coinStore.findAssetWithCoin(validator.chain ?? SupportedCoins.BITSONG)
-		if(coin) controller.amountInput.setCoin(coin) // as example
+		if (coin) controller.amountInput.setCoin(coin) // as example
 	}
 
 	const { steps } = controller
@@ -54,12 +52,12 @@ export default async function openDelegate({ onDone, onClose, onDismiss, control
 					status.done = true
 					gbs.close()
 					navigate("Loader", {
-						// @ts-ignore
-						callback: async () => (
-							onDone ? (await onDone()) : false
-						),
+						callback: async () => (onDone ? await onDone() : false),
 					})
-				}} onPressBack={controller.disableBack ? undefined : goBack} steps={steps} />
+				}}
+				onPressBack={controller.disableBack ? undefined : goBack}
+				steps={steps}
+			/>
 		),
 		children: () => <Delegate controller={controller} />,
 	})

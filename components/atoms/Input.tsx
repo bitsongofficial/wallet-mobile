@@ -29,7 +29,7 @@ export default ({ inputStyle, style, autocomplite, bottomsheet, Right, ...props 
 			{autocomplite && (
 				<Text style={[theme.input.autocomplite, styles.autocomplite]}>{autocomplite}</Text>
 			)}
-			<View style={{ flexDirection: "row" }}>
+			<View style={styles.row}>
 				<Component
 					style={[theme.input.component, styles.component, inputStyle]}
 					placeholderTextColor={theme.input.placeholder}
@@ -46,6 +46,10 @@ const styles = StyleSheet.create({
 		borderRadius: 50,
 		overflow: "hidden",
 	},
+	row: {
+		flexDirection: "row",
+		flex: 1,
+	},
 	component: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		// https://stackoverflow.com/a/68458803
 		paddingHorizontal: 24,
-		marginVertical: 19,
+		paddingVertical: 19,
 		height: 18,
 		flex: 1,
 	},

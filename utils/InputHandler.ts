@@ -1,24 +1,27 @@
-import { makeAutoObservable } from "mobx";
-import { FormEvent } from "react";
+import { makeAutoObservable } from "mobx"
 
 export default class InputHandler {
-  isFocused = false;
-  constructor(public value: string = "") {
-    makeAutoObservable(this, {}, { autoBind: true });
-  }
+	isFocused = false
+	constructor(public value: string = "") {
+		makeAutoObservable(this, {}, { autoBind: true })
+	}
 
-  set(value: string = "") {
-    this.value = value;
-  }
+	get lowerCaseValue() {
+		return this.value.toLowerCase()
+	}
 
-  focusON() {
-    this.isFocused = true;
-  }
-  focusOFF() {
-    this.isFocused = false;
-  }
+	set(value: string = "") {
+		this.value = value
+	}
 
-  clear() {
-    this.value = "";
-  }
+	focusON() {
+		this.isFocused = true
+	}
+	focusOFF() {
+		this.isFocused = false
+	}
+
+	clear() {
+		this.value = ""
+	}
 }

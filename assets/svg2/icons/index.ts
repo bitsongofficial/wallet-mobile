@@ -1,4 +1,6 @@
 import chevron_right from "./chevron-right.svg"
+import chevron_down_fixed from "./chevron-down_fixed.svg"
+
 import chevron_left from "./chevron-left.svg"
 import chevron_down from "./chevron-down.svg"
 import eye_closed_gradient from "./eye-closed_gradient.svg"
@@ -46,11 +48,13 @@ import scan_1 from "./scan_1.svg"
 import scan_2 from "./scan_2.svg"
 import qr_code from "./qr_code.svg"
 import link_simple_horizontal from "./link_simple_horizontal.svg"
+import link from "./link.svg"
 import address_book_big from "./address_book_big.svg"
 import wallet_connect from "./wallet_connect.svg"
 import plus from "./plus.svg"
 import check_error from "./check_error.svg"
 import check_fulfilled from "./check_fulfilled.svg"
+import check_fulfilled_gradient from "./check_fulfilled_gradient.svg"
 import check_lock from "./check_lock.svg"
 import faceid_gradient from "./faceid.svg"
 import copy from "./copy.svg"
@@ -61,6 +65,16 @@ import restake_gradient from "./restake_gradient.svg"
 import unstake_gradient from "./unstake_gradient.svg"
 import loupe from "./loupe.svg"
 
+// need rename
+import XCircle_gradient from "./XCircle_gradient.svg"
+import ProhibitInset_gradient from "./ProhibitInset_gradient.svg"
+import MinusCircle_gradient from "./MinusCircle_gradient.svg"
+import CheckCircle_gradient from "./CheckCircle_gradient.svg"
+
+import ProhibitInset from "./ProhibitInset.svg"
+import MinusCircle from "./MinusCircle.svg"
+import XCircle from "./XCircle.svg"
+
 export default <const>{
 	eye_closed_gradient,
 	fingerprint_gradient,
@@ -68,6 +82,7 @@ export default <const>{
 	restake_gradient,
 	unstake_gradient,
 	chevron_right,
+	chevron_down_fixed,
 	chevron_left,
 	chevron_down,
 	eye,
@@ -98,6 +113,7 @@ export default <const>{
 	check_error,
 	check_lock,
 	check_fulfilled,
+	check_fulfilled_gradient,
 	faceid_gradient,
 	copy,
 	address_book,
@@ -123,4 +139,13 @@ export default <const>{
 	fingerprint_simple,
 	wallet_connect,
 	loupe,
+	link,
+	// ---------
+	XCircle_gradient,
+	ProhibitInset_gradient,
+	MinusCircle_gradient,
+	CheckCircle_gradient,
+	ProhibitInset,
+	MinusCircle,
+	XCircle,
 }

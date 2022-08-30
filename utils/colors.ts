@@ -1,5 +1,6 @@
 enum COLOR {
 	White = "#FFFFFF",
+	Transparent = "transparent",
 	Grey1 = "#6B6B84",
 
 	Dark1 = "#373764",
@@ -12,6 +13,7 @@ enum COLOR {
 	RoyalBlue3 = "#4C62E5",
 	RoyalBlue4 = "#535DDF",
 	RoyalBlue5 = "#4B62E6",
+	RoyalBlue6 = "#525EE0",
 
 	Lavender = "#D2D7F7",
 	Purple = "#9493DF",
@@ -26,6 +28,7 @@ enum COLOR {
 	PearlBlackberry = "#656476",
 	PaleBlue = "#EAEAEB",
 	PaleCornflowerBlue = "#ACACEC",
+	SlateBlue = "#6A50CC",
 }
 
 export default COLOR

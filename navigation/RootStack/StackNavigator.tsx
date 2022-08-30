@@ -38,6 +38,11 @@ export default () => (
 
 			<Stack.Screen name="Validator" component={Screens.Validator} options={WithHeaderOption} />
 			<Stack.Screen name="NewProposal" component={Screens.NewProposal} options={WithHeaderOption} />
+			<Stack.Screen
+				name="ProposalDetails"
+				component={Screens.ProposalDetails}
+				options={WithHeaderOption}
+			/>
 
 			<Stack.Group screenOptions={{ presentation: "modal" }}>
 				<Stack.Screen name="ScannerQR" component={Screens.ScannerQR} />

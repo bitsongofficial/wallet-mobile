@@ -2,7 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
-import { Image, ListRenderItem, Platform, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native"
+import {
+	Image,
+	ListRenderItem,
+	Platform,
+	RefreshControl,
+	SafeAreaView,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native"
 import { RootStackParamList } from "types"
 import { COLOR, hexAlpha } from "utils"
 import { CardAddress, CardClaim, CardDelegation, CardInfo } from "./components/moleculs"
@@ -12,24 +22,10 @@ import moment from "moment"
 import { ButtonBack } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Stat } from "./components/atoms"
-import {
-	openDelegateWithValidator,
-	openRedelegate,
-	openRedelegateWithValidator,
-	openUndelegate,
-	openClaim,
-	DelegateController,
-	RedelegateController,
-	UndelegateController,
-} from "modals/validator"
+import { openDelegateWithValidator, openRedelegateWithValidator, openClaim } from "modals/validator"
 import { useStore } from "hooks"
 import { SupportedCoins } from "constants/Coins"
 import * as Clipboard from "expo-clipboard"
-import { CoinClasses } from "core/types/coin/Dictionaries"
-import { CoinOperationEnum } from "core/types/coin/OperationTypes"
-import { DelegateData } from "core/types/coin/cosmos/DelegateData"
-import { convertRateFromDenom } from "core/utils/Coin"
-import { RedelegateData } from "core/types/coin/cosmos/RedelegateData"
 import { openUndelegateWithValidator } from "modals/validator/withValidator"
 import { formatNumber } from "utils/numbers"
 
@@ -41,21 +37,19 @@ type IData = {
 }
 
 export default observer<Props>(function Stacking({ navigation, route }) {
-
 	const { validators, wallet, settings } = useStore()
 	const validator = validators.resolveValidator(route.params.id) ?? validators.validators[0]
 	const [address, setAddress] = useState("")
 
-	useEffect(() =>
-	{
-		(async () =>
-		{
-			setAddress(await wallet.activeWallet?.wallets[validator.chain ?? SupportedCoins.BITSONG].Address())
+	useEffect(() => {
+		;(async () => {
+			setAddress(
+				await wallet.activeWallet?.wallets[validator.chain ?? SupportedCoins.BITSONG].Address(),
+			)
 		})()
 	}, [])
 
 	// --------- Modals --------------
-
 	const onPressClaim = async () => (await validators.claim(validator))
 
 	const openClaimModal = () => {
@@ -69,19 +63,27 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 
 	// --------- Modals --------------
 
-	const openDelegateModal = () => (openDelegateWithValidator(validator, navigation))
+	const openDelegateModal = () => openDelegateWithValidator(validator, navigation)
 
-	const openRedelegateModal = () => (openRedelegateWithValidator(validator, navigation))
+	const openRedelegateModal = () => openRedelegateWithValidator(validator, navigation)
 
-	const openUndelegateModal = () => (openUndelegateWithValidator(validator, navigation))
+	const openUndelegateModal = () => openUndelegateWithValidator(validator, navigation)
 
 	// =======================================
 
 	const data = useMemo<IData[]>(
 		() => [
 			{ title: "APR", value: `${validators.apr(validator).toFixed(2)}%` },
-			{ title: "VOTING POWER", value: `${validators.percentageVotingPower(validator).toFixed(1)}%` },
-			{ title: "TOTAL STAKE", value: `${settings.currency?.symbol}${formatNumber(validators.totalStakeAsFIAT(validator))}` },
+			{
+				title: "VOTING POWER",
+				value: `${validators.percentageVotingPower(validator).toFixed(1)}%`,
+			},
+			{
+				title: "TOTAL STAKE",
+				value: `${settings.currency?.symbol}${formatNumber(
+					validators.totalStakeAsFIAT(validator),
+				)}`,
+			},
 		],
 		[validator, validator.commission.rate.current, validator.tokens],
 	)
@@ -97,7 +99,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 
 	const insets = useSafeAreaInsets()
 
-	const source = validator.logo ? {uri: validator.logo} : undefined
+	const source = validator.logo ? { uri: validator.logo } : undefined
 
 	const [isRefreshing, setRefreshing] = useState(false)
 
@@ -114,21 +116,24 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 			<StatusBar style="light" />
 
 			<SafeAreaView style={styles.container}>
-				<ScrollView style={styles.scrollview} contentContainerStyle={styles.scrollviewContent}
-				refreshControl={
-					<RefreshControl
-						tintColor={COLOR.White}
-						refreshing={isRefreshing}
-						onRefresh={onRefresh}
-					/>
-				}>
+				<ScrollView
+					style={styles.scrollview}
+					contentContainerStyle={styles.scrollviewContent}
+					refreshControl={
+						<RefreshControl
+							tintColor={COLOR.White}
+							refreshing={isRefreshing}
+							onRefresh={onRefresh}
+						/>
+					}
+				>
 					<View style={styles.wrapper}>
 						<View style={styles.head}>
 							<View style={styles.avatarContainer}>
 								{source && <Image style={styles.avatar} source={source} />}
 							</View>
 
-							<View style={{ flexShrink: 1, justifyContent: "center"}}>
+							<View style={{ flexShrink: 1, justifyContent: "center" }}>
 								<View style={styles.validatorNameContainer}>
 									<Text style={styles.validatorName}>{validator.id}</Text>
 									<View style={styles.badge}>
@@ -136,12 +141,17 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 									</View>
 								</View>
 								<View>
-									<Text style={[styles.tag, {flex:1}]}>{validator.description}</Text>
+									<Text style={[styles.tag, { flex: 1 }]}>{validator.description}</Text>
 								</View>
 							</View>
 						</View>
 
-						<CardClaim style={styles.claim} onPressClaim={openClaimModal} value={validators.validatorReward(validator)} coin={validator.chain} />
+						<CardClaim
+							style={styles.claim}
+							onPressClaim={openClaimModal}
+							value={validators.validatorReward(validator)}
+							coin={validator.chain}
+						/>
 
 						<CardDelegation
 							value={validators.validatorDelegations(validator)}
