@@ -67,8 +67,8 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						wallet.deleteProfile(w)
 					}}
 					onPressEdit={(profile) => {
-						// steps.goTo("Edit Wallet")
 						setEdited(profile)
+						steps.goTo("Edit Wallet")
 					}}
 					mapItemsRef={mapItemsRef}
 				/>
@@ -130,7 +130,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						<View style={styles.headerRight} />
 					</View>
 					<Search
-						placeholder="Cerca Wallet"
+						placeholder="Modifica nome"
 						style={styles.search}
 						value={inputWalletName.value}
 						onChangeText={inputWalletName.set}

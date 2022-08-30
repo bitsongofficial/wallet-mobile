@@ -4,6 +4,7 @@ import { Footer } from "./components/atoms"
 import { StyleSheet, View } from "react-native"
 import Recap from "components/organisms/Recap"
 import { ICoin } from "classes/types"
+import { navigate } from "navigation/utils"
 
 type SendRecapConfig = {
 	amount: string
@@ -21,7 +22,12 @@ export async function openSendRecap({ from, to, amount, onDone, onReject }: Send
 	const send = () => {
 		try {
 			flags.accepted = true
-			onDone()
+			navigate("Loader", {
+				// @ts-ignore
+				callback: async () => (
+					onDone ? (await onDone()) : false
+				),
+			})
 		} catch (e) {
 			console.log(e)
 		}

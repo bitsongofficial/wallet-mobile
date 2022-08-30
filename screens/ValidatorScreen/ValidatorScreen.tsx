@@ -51,7 +51,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 
 	// --------- Modals --------------
 
-	const onPressClaim = () => validators.claim(validator)
+	const onPressClaim = async () => (await validators.claim(validator))
 
 	const openClaimModal = () => {
 		openClaim({
