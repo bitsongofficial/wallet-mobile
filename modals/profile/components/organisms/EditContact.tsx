@@ -1,111 +1,113 @@
-import { useCallback, useMemo, useState } from "react"
+import { useMemo } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import { observer } from "mobx-react-lite"
+import { RectButton } from "react-native-gesture-handler"
 import { COLOR, InputHandler } from "utils"
+import { makeAutoObservable } from "mobx"
+import { Steps } from "classes"
 import { Button, ButtonBack, Icon2 } from "components/atoms"
 import { Search, Title } from "../atoms"
-import { RectButton } from "react-native-gesture-handler"
-import { Steps } from "classes"
 import { ButtonAvatar } from "../moleculs"
 import { Contact } from "stores/ContactsStore"
-import { useStore } from "hooks"
+
+export class Controller {
+	steps = new Steps(["Data", "Photo"])
+	inputAddress = new InputHandler()
+	inputNickname = new InputHandler()
+	image: string | null = null
+
+	constructor() {
+		makeAutoObservable(this, {}, { autoBind: true })
+	}
+
+	setImage(image: string | null) {
+		this.image = image
+	}
+}
 
 type Props = {
 	contact: Contact | null
-	steps: Steps<"Data" | "Photo">
-	close(): void
+	controller: Controller
 	onPressScan(): void
-	inputAddress: InputHandler
-	inputNickname: InputHandler
 }
 
-export default observer<Props>(
-	({ close, contact, steps, onPressScan, inputAddress, inputNickname }) => {
-		const { contacts } = useStore()
+export default observer<Props>(({ contact, onPressScan, controller }) => {
+	const { steps, inputAddress, inputNickname, image } = controller
 
-		// ------- Image ----------
+	const source = useMemo(
+		() => (contact?.avatar || image ? { uri: image || contact?.avatar } : null),
+		[image],
+	)
 
-		const [image, setImage] = useState<string | null>(null)
+	return (
+		<View style={styles.container}>
+			{steps.title === "Data" && (
+				<>
+					<Title style={styles.title}>Edit Contact</Title>
 
-		const source = useMemo(
-			() => (contact?.avatar || image ? { uri: image || contact?.avatar } : null),
-			[image],
-		)
-
-		// -------------------------
-
-		const save = useCallback(() => {
-			if (contact) {
-				contacts.editAddress(contact, inputAddress.value)
-				contacts.editName(contact, inputNickname.value)
-				if (image) {
-					contacts.editAvatar(contact, image)
-				}
-			}
-			close()
-		}, [image])
-
-		return (
-			<View style={styles.container}>
-				{steps.title === "Data" && (
-					<>
-						<Title style={styles.title}>Edit Contact</Title>
-
-						<View style={{ marginBottom: 24 }}>
-							<Text style={styles.label}>Edit address</Text>
-							<Search
-								value={inputAddress.value}
-								onChangeText={inputAddress.set}
-								loupe={false}
-								Right={
-									<RectButton style={styles.button_qr} onPress={onPressScan}>
-										<Icon2 name="qr_code" stroke={COLOR.RoyalBlue} size={22} />
-									</RectButton>
-								}
-							/>
-						</View>
-
-						<View>
-							<Text style={styles.label}>Edit name</Text>
-							<Search value={inputNickname.value} onChangeText={inputNickname.set} loupe={false} />
-						</View>
-					</>
-				)}
-
-				{steps.title === "Photo" && (
-					<>
-						<Title style={styles.title}>Edit Profile Photo</Title>
-						<View style={styles.avatar}>
-							<ButtonAvatar source={source} onChange={setImage} />
-						</View>
-					</>
-				)}
-
-				<View style={styles.footer}>
-					<View style={styles.buttons}>
-						{/* <ButtonBack onPress={goBack} /> */}
-
-						{steps.title === "Data" ? (
-							<Button
-								text="Continue"
-								onPress={steps.next}
-								textStyle={styles.buttonText}
-								contentContainerStyle={styles.buttonContent}
-							/>
-						) : (
-							<Button
-								onPress={save}
-								text="Save"
-								textStyle={styles.buttonText}
-								contentContainerStyle={styles.buttonContent}
-							/>
-						)}
+					<View style={{ marginBottom: 24 }}>
+						<Text style={styles.label}>Edit address</Text>
+						<Search
+							value={inputAddress.value}
+							onChangeText={inputAddress.set}
+							loupe={false}
+							Right={
+								<RectButton style={styles.button_qr} onPress={onPressScan}>
+									<Icon2 name="qr_code" stroke={COLOR.RoyalBlue} size={22} />
+								</RectButton>
+							}
+						/>
 					</View>
-				</View>
-			</View>
-		)
-	},
-)
+
+					<View>
+						<Text style={styles.label}>Edit name</Text>
+						<Search value={inputNickname.value} onChangeText={inputNickname.set} loupe={false} />
+					</View>
+				</>
+			)}
+
+			{steps.title === "Photo" && (
+				<>
+					<Title style={styles.title}>Edit Profile Photo</Title>
+					<View style={styles.avatar}>
+						<ButtonAvatar source={source} onChange={controller.setImage} />
+					</View>
+				</>
+			)}
+		</View>
+	)
+})
+
+type FooterProps = {
+	steps: Steps
+	onPressBack(): void
+	onPressNext(): void
+	onPressDone(): void
+}
+
+export const Footer = observer(({ steps, onPressBack, onPressDone, onPressNext }: FooterProps) => (
+	<View style={styles.footer}>
+		<View style={styles.buttons}>
+			<ButtonBack onPress={onPressBack} />
+
+			{steps.title === "Data" ? (
+				<Button
+					text="Continue"
+					onPress={onPressNext}
+					textStyle={styles.buttonText}
+					contentContainerStyle={styles.buttonContent}
+				/>
+			) : (
+				<Button
+					onPress={onPressDone}
+					text="Save"
+					textStyle={styles.buttonText}
+					contentContainerStyle={styles.buttonContent}
+				/>
+			)}
+		</View>
+	</View>
+))
 
 const styles = StyleSheet.create({
 	container: {
@@ -139,6 +141,8 @@ const styles = StyleSheet.create({
 	footer: {
 		flexGrow: 1,
 		justifyContent: "flex-end",
+		marginHorizontal: 26,
+		marginBottom: 8,
 	},
 
 	button_qr: {

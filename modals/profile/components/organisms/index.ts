@@ -7,4 +7,8 @@ export { default as AddWatchAccount } from "./AddWatchAccount"
 export { default as ChangeAvatar } from "./ChangeAvatar"
 export { default as AddContact } from "./AddContact"
 export { default as RemoveContact } from "./RemoveContact"
-export { default as EditContact } from "./EditContact"
+export {
+	default as EditContact,
+	Footer as FooterEditContact,
+	Controller as ControllerEditContact,
+} from "./EditContact"

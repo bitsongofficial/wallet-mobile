@@ -1,12 +1,11 @@
 import { Keyboard } from "react-native"
 import { BottomSheetProps } from "@gorhom/bottom-sheet"
 import { gbs } from "modals"
-import { Steps } from "classes"
 import { reaction } from "mobx"
 import { Contact } from "stores/ContactsStore"
-import { EditContact } from "./components/organisms"
-import { InputHandler } from "utils"
+import { store } from "stores/Store"
 import { navigationRef } from "navigation/utils"
+import { EditContact, FooterEditContact, ControllerEditContact } from "./components/organisms"
 
 type Options = {
 	contact: Contact
@@ -14,18 +13,24 @@ type Options = {
 	onClose?(): void
 }
 
+const snapPoints = {
+	Data: [460],
+	Photo: [410],
+}
+
 export default async function openChangeAvatar({ props, onClose, contact }: Options) {
+	const { contacts } = store
+
 	const close = () => {
 		Keyboard.dismiss()
 		gbs.close()
 	}
 
-	const steps = new Steps(["Data", "Photo"])
+	const controller = new ControllerEditContact()
+
+	const { steps, inputAddress, inputNickname, image } = controller
 
 	const goBack = () => (steps.active > 0 ? steps.goBack() : close())
-
-	const inputAddress = new InputHandler(contact?.address)
-	const inputNickname = new InputHandler(contact?.name)
 
 	const scan = () => {
 		close()
@@ -35,26 +40,26 @@ export default async function openChangeAvatar({ props, onClose, contact }: Opti
 		})
 	}
 
+	const save = () => {
+		if (contact) {
+			contacts.editAddress(contact, inputAddress.value)
+			contacts.editName(contact, inputNickname.value)
+			if (image) {
+				contacts.editAvatar(contact, image)
+			}
+		}
+		close()
+	}
+
 	const disposer = reaction(
 		() => steps.title,
-		(title) => {
-			switch (title) {
-				case "Data":
-					gbs.updProps({ snapPoints: [460] })
-					break
-				case "Photo":
-				default:
-					gbs.updProps({ snapPoints: [410] })
-					break
-			}
-		},
+		(title) => gbs.updProps({ snapPoints: snapPoints[title] }),
 	)
 
-	gbs.backHandler = () => goBack()
-
 	const open = () => {
+		gbs.backHandler = () => goBack()
 		gbs.setProps({
-			snapPoints: [410],
+			snapPoints: snapPoints[steps.title],
 			...props,
 			onChange(index) {
 				if (index === -1) {
@@ -63,14 +68,20 @@ export default async function openChangeAvatar({ props, onClose, contact }: Opti
 					onClose && onClose()
 				}
 			},
+			footerComponent: () => (
+				<FooterEditContact
+					steps={steps}
+					onPressBack={goBack}
+					onPressDone={save}
+					onPressNext={steps.next}
+				/>
+			),
 			children: () => (
 				<EditContact
-					inputAddress={inputAddress}
-					inputNickname={inputNickname}
+					controller={controller}
 					onPressScan={scan}
-					close={close}
 					contact={contact}
-					steps={steps}
+					//
 				/>
 			),
 		})
