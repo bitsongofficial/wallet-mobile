@@ -78,6 +78,7 @@ import XCircle from "./XCircle.svg"
 import loader_done from "./loader_done.svg"
 import loader_error from "./loader_error.svg"
 import loader_lock from "./loader_lock.svg"
+import alert_circle from "./alert-circle.svg"
 
 export default <const>{
 	eye_closed_gradient,
@@ -156,4 +157,5 @@ export default <const>{
 	loader_done,
 	loader_error,
 	loader_lock,
+	alert_circle,
 }
