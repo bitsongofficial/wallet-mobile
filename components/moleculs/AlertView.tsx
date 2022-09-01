@@ -14,7 +14,7 @@ export default ({ message }: AlertViewProps) => {
 			style={[
 				styles.container,
 				{
-					height: 110 + insets.top,
+					height: "100%",
 					paddingTop: insets.top,
 				},
 			]}
