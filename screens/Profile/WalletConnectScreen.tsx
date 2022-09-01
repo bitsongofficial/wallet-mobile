@@ -63,7 +63,7 @@ export default observer<Props>(function WalletConnect({ navigation }) {
 				<SafeAreaView style={styles.safeArea}>
 					<Header
 						onPressBack={goBack}
-						style={[styles.header, styles.wrapper]}
+						style={styles.header}
 						title="Wallet Connect"
 						onPressScan={() => {}}
 					/>
@@ -134,6 +134,8 @@ const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	header: {
 		marginBottom: 25,
+		paddingVertical: 10,
+		paddingHorizontal: 20,
 	},
 
 	head: {

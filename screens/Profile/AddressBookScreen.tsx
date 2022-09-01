@@ -82,7 +82,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 					<Animated.View style={animStyle}>
 						<Header
 							onPressBack={goBack}
-							style={[styles.header, styles.wrapper]}
+							style={[styles.header]}
 							title="Address Book"
 							onPressPlus={openModal.addContact}
 						/>
@@ -164,7 +164,7 @@ const Header = ({ onPressBack, style, title, onPressPlus }: PropsHeader) => (
 const styles = StyleSheet.create({
 	container: { flex: 1 },
 	safeArea: { flex: 1 },
-	header: { marginBottom: 25 },
+	header: { marginBottom: 25, paddingVertical: 10, paddingHorizontal: 20 },
 
 	head: {
 		marginHorizontal: 25, // <- wrapper
