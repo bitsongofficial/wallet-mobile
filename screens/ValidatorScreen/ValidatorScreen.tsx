@@ -123,130 +123,121 @@ export default observer<Props>(function ValidatorScreen({ navigation, route }) {
 		<>
 			<StatusBar style="light" />
 
-			<SafeAreaView style={styles.container}>
-				<ScrollView
-					style={styles.scrollview}
-					contentContainerStyle={styles.scrollviewContent}
-					refreshControl={
-						<RefreshControl
-							tintColor={COLOR.White}
-							refreshing={isRefreshing}
-							onRefresh={onRefresh}
-						/>
-					}
-				>
-					<View style={styles.wrapper}>
-						<View style={styles.head}>
-							<View style={styles.avatarContainer}>
-								{source && <Image style={styles.avatar} source={source} />}
-							</View>
-
-							<View style={{ flexShrink: 1, justifyContent: "center" }}>
-								<View style={styles.validatorNameContainer}>
-									<Text style={styles.validatorName}>{validator.id}</Text>
-									<View style={styles.badge}>
-										<Text style={styles.badgeText}>{validator.status.statusDetailed}</Text>
-									</View>
-								</View>
-								<View>
-									<Text style={[styles.tag, { flex: 1 }]}>{validator.description}</Text>
-								</View>
-							</View>
+			<ScrollView
+				style={styles.scrollview}
+				contentContainerStyle={[styles.scrollviewContent, { paddingBottom: insets.bottom + 60 }]}
+				refreshControl={
+					<RefreshControl tintColor={COLOR.White} refreshing={isRefreshing} onRefresh={onRefresh} />
+				}
+			>
+				<View style={styles.wrapper}>
+					<View style={styles.head}>
+						<View style={styles.avatarContainer}>
+							{source && <Image style={styles.avatar} source={source} />}
 						</View>
 
-						<CardClaim
-							style={styles.claim}
-							onPressClaim={openClaimModal}
-							value={validators.validatorReward(validator)}
-							coin={validator.chain}
-						/>
-
-						<CardDelegation
-							value={validators.validatorDelegations(validator)}
-							coin={validator.chain}
-							style={styles.delegation}
-							onPressStake={openDelegateModal}
-							onPressUnstake={openUndelegateModal}
-							onPressRestake={openRedelegateModal}
-						/>
-
-						<Text style={styles.titleList}>Validator Info</Text>
+						<View style={{ flexShrink: 1, justifyContent: "center" }}>
+							<View style={styles.validatorNameContainer}>
+								<Text style={styles.validatorName}>{validator.id}</Text>
+								<View style={styles.badge}>
+									<Text style={styles.badgeText}>{validator.status.statusDetailed}</Text>
+								</View>
+							</View>
+							<View>
+								<Text style={[styles.tag, { flex: 1 }]}>{validator.description}</Text>
+							</View>
+						</View>
 					</View>
 
-					<FlatList
-						style={styles.flatlist}
-						contentContainerStyle={[styles.flatlistContent, styles.wrapper]}
-						horizontal
-						data={data}
-						renderItem={renderInfo}
+					<CardClaim
+						style={styles.claim}
+						onPressClaim={openClaimModal}
+						value={validators.validatorReward(validator)}
+						coin={validator.chain}
 					/>
 
-					<View style={styles.wrapper}>
-						<CardAddress
-							title="OPERATION ADDRESS"
-							onPress={() => {
-								Clipboard.setStringAsync(validator.operator)
-							}}
-							value={validator.operator}
-							style={styles.address}
-						/>
-						<CardAddress
-							title="ACCOUNT ADDRESS"
-							onPress={() => {
-								Clipboard.setStringAsync(validator.operator)
-							}}
-							value={address}
-							style={styles.address}
-						/>
+					<CardDelegation
+						value={validators.validatorDelegations(validator)}
+						coin={validator.chain}
+						style={styles.delegation}
+						onPressStake={openDelegateModal}
+						onPressUnstake={openUndelegateModal}
+						onPressRestake={openRedelegateModal}
+					/>
 
-						<View style={{ marginHorizontal: 10, marginTop: 10 }}>
-							{/* <Stat
+					<Text style={styles.titleList}>Validator Info</Text>
+				</View>
+
+				<FlatList
+					style={styles.flatlist}
+					contentContainerStyle={[styles.flatlistContent, styles.wrapper]}
+					horizontal
+					data={data}
+					renderItem={renderInfo}
+				/>
+
+				<View style={styles.wrapper}>
+					<CardAddress
+						title="OPERATION ADDRESS"
+						onPress={() => {
+							Clipboard.setStringAsync(validator.operator)
+						}}
+						value={validator.operator}
+						style={styles.address}
+					/>
+					<CardAddress
+						title="ACCOUNT ADDRESS"
+						onPress={() => {
+							Clipboard.setStringAsync(validator.operator)
+						}}
+						value={address}
+						style={styles.address}
+					/>
+
+					<View style={{ marginHorizontal: 10, marginTop: 10 }}>
+						{/* <Stat
 								style={styles.stat}
 								title="Uptime"
 								value={validator.uptime + "%"}
 								//
 							/> */}
-							<Stat
-								style={styles.stat}
-								title="Max Conversion Rate"
-								value={validator.commission.rate.max + "%"}
-							/>
-							<Stat
-								style={styles.stat}
-								title="Current Commission Rate"
-								value={validator.commission.rate.current + "%"}
-							/>
-							<Stat
-								style={styles.stat}
-								title="Last Commission Change"
-								value={moment(validator.commission.change.last).fromNow()}
-							/>
-						</View>
+						<Stat
+							style={styles.stat}
+							title="Max Conversion Rate"
+							value={validator.commission.rate.max + "%"}
+						/>
+						<Stat
+							style={styles.stat}
+							title="Current Commission Rate"
+							value={validator.commission.rate.current + "%"}
+						/>
+						<Stat
+							style={styles.stat}
+							title="Last Commission Change"
+							value={moment(validator.commission.change.last).fromNow()}
+						/>
 					</View>
-				</ScrollView>
-				<View style={[{ position: "absolute", bottom: insets.bottom }, styles.wrapper]}>
-					<ButtonBack
-						onPress={goBack}
-						style={styles.buttonBack}
-						textStyle={{ color: COLOR.Dark3 }}
-						stroke={COLOR.Dark3}
-					/>
 				</View>
-			</SafeAreaView>
+			</ScrollView>
+			<View style={[{ position: "absolute", bottom: insets.bottom + 8 }, styles.wrapper]}>
+				<ButtonBack
+					onPress={goBack}
+					style={styles.buttonBack}
+					textStyle={{ color: COLOR.Dark3 }}
+					stroke={COLOR.Dark3}
+				/>
+			</View>
 		</>
 	)
 })
 
 const styles = StyleSheet.create({
-	container: {
+	scrollview: {
 		flex: 1,
 		backgroundColor: COLOR.Dark3,
 	},
-	scrollview: {
-		flex: 1,
-	},
 	scrollviewContent: {
-		paddingBottom: Platform.OS === "ios" ? 40 : 110,
+		paddingTop: 28,
 	},
 
 	wrapper: {
