@@ -38,14 +38,6 @@ export default class MainStore {
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
-
-	// ------ MOCK Chain Store ???? ---------
-
-	chains: MockChain[] = mockChain
-	activeChain: MockChain = this.chains[0]
-	setActiveChain(chain: MockChain) {
-		this.activeChain = chain
-	}
 }
 
 export type MockChain = {

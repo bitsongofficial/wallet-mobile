@@ -2,9 +2,12 @@ import { Dimensions, Keyboard } from "react-native"
 import { gbs } from "modals"
 import { ChangeChain } from "./components/templates"
 import { InputHandler, wait } from "utils"
+import { Coin } from "classes"
+import { SupportedCoins } from "constants/Coins"
 
 type Options = {
 	onClose?(): void
+	setActiveChain?(chain: SupportedCoins): void
 }
 
 export default async function openChangeChain(options?: Options) {
@@ -32,7 +35,7 @@ export default async function openChangeChain(options?: Options) {
 					options?.onClose && options.onClose()
 				}
 			},
-			children: () => <ChangeChain searchInput={searchInput} />,
+			children: () => <ChangeChain setActiveChain={options?.setActiveChain} searchInput={searchInput} />,
 		})
 		requestAnimationFrame(() => gbs.expand())
 	}
