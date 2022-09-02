@@ -144,8 +144,8 @@ export default observer<Props>(({ navigation, route }) => {
 		<>
 			<StatusBar style="light" />
 
-			<SafeAreaView style={styles.container}>
-				<Header style={styles.header} />
+			<Header />
+			<View style={styles.container}>
 				{!isConfirm && !isBlocked && (
 					<View style={styles.wrapper}>
 						<Title text={title} style={styles.title} />
@@ -194,7 +194,7 @@ export default observer<Props>(({ navigation, route }) => {
 						</View>
 					</View>
 				)}
-			</SafeAreaView>
+			</View>
 		</>
 	)
 })
@@ -209,10 +209,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	confirm: { justifyContent: "space-evenly", flex: 1 },
-
-	header: {
-		height: 70,
-	},
 
 	icon: {
 		marginBottom: 45,
@@ -230,7 +226,7 @@ const styles = StyleSheet.create({
 	},
 	// ------ Text -------
 	title: {
-		marginTop: 30,
+		marginTop: 50,
 	},
 	title_confirmed: {
 		marginBottom: 16,
