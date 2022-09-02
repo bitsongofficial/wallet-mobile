@@ -206,9 +206,10 @@ type FooterProps = {
 
 export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, controller }) => {
 	const insent = useSafeAreaInsets()
-	const copyToClipboard = useCallback(async () => {
-		await Clipboard.setStringAsync(controller.seedPhrase.join(" "))
-	}, [])
+	const copyToClipboard = useCallback(
+		() => Clipboard.setStringAsync(controller.seedPhrase.join(" ")),
+		[],
+	)
 	return (
 		<View style={[styles.buttons, { bottom: insent.bottom }]}>
 			{controller.steps.active === 0 && (

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { StyleSheet, View } from "react-native"
 import * as Clipboard from "expo-clipboard"
 import { observer } from "mobx-react-lite"
@@ -6,40 +6,29 @@ import { InputHandler } from "utils"
 import { Steps } from "classes"
 import { Button } from "components/atoms"
 import { Search, Subtitle, Title } from "../atoms"
-import { useLoading, useStore } from "hooks"
 import { isValidAddress } from "core/utils/Address"
 
-type Props = {
-	close(): void
-	steps: Steps<"Add" | "Name">
+export class Controller {
+	inputWallet = new InputHandler()
+	inputName = new InputHandler()
+	steps = new Steps(["Address", "Name"])
 }
 
-export default observer<Props>(({ close, steps }) => {
-	// ----------- Input ----------
+type Props = {
+	controller: Controller
+}
 
-	const inputWallet = useMemo(() => new InputHandler(), [])
-	const inputName = useMemo(() => new InputHandler(), [])
-
-	const { wallet, settings } = useStore()
-	const loading = useLoading()
+export default observer<Props>(({ controller }) => {
+	const { inputName, inputWallet, steps } = controller
 
 	const pasteFromClipboard = useCallback(
 		async () => inputWallet.set(await Clipboard.getStringAsync()),
 		[],
 	)
 
-	const openStepName = useCallback(() => steps.goTo("Name"), [])
-
-	const saveWallet = async () => {
-		loading.open()
-		await wallet.newWatchWallet(inputName.value, inputWallet.value)
-		loading.close()
-		close()
-	}
-
 	return (
 		<View style={styles.container}>
-			{steps.title === "Add" && (
+			{steps.title === "Address" && (
 				<>
 					<Title style={styles.title}>Add Watch Account</Title>
 					<Search
@@ -73,28 +62,39 @@ export default observer<Props>(({ close, steps }) => {
 			)}
 
 			<Subtitle style={styles.subtitle}>
-				Insert the address you want to explore and discover data.
+				Insert the address you want to explore{"\n"} and discover data.
 			</Subtitle>
+		</View>
+	)
+})
 
-			<View style={styles.footer}>
-				{steps.title === "Add" && (
-					<Button
-						disable={!isValidAddress(inputWallet.value.trim())}
-						text="Proceed"
-						onPress={openStepName}
-						contentContainerStyle={styles.buttonContent}
-						textStyle={styles.buttonText}
-					/>
-				)}
-				{steps.title === "Name" && (
-					<Button
-						text="Add Account"
-						onPress={saveWallet}
-						contentContainerStyle={styles.buttonContent}
-						textStyle={styles.buttonText}
-					/>
-				)}
-			</View>
+type FooterProps = {
+	controller: Controller
+	onPressSave(): void
+}
+
+export const Footer = observer(({ controller, onPressSave }: FooterProps) => {
+	const { inputWallet, steps } = controller
+	return (
+		<View style={styles.footer}>
+			<View></View>
+			{steps.title === "Address" && (
+				<Button
+					disable={!isValidAddress(inputWallet.value.trim())}
+					text="Proceed"
+					onPress={() => steps.goTo("Name")}
+					contentContainerStyle={styles.buttonContent}
+					textStyle={styles.buttonText}
+				/>
+			)}
+			{steps.title === "Name" && (
+				<Button
+					text="Add Account"
+					onPress={onPressSave}
+					contentContainerStyle={styles.buttonContent}
+					textStyle={styles.buttonText}
+				/>
+			)}
 		</View>
 	)
 })
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginTop: 15,
 		marginHorizontal: 26,
+		flex: 1,
 	},
 	title: {
 		fontSize: 16,
@@ -138,9 +139,9 @@ const styles = StyleSheet.create({
 	},
 
 	footer: {
-		justifyContent: "flex-end",
-		flexGrow: 1,
-		marginTop: 20,
+		marginHorizontal: 26,
+		alignItems: "center",
+		marginBottom: 16,
 	},
 
 	buttonContent: {
