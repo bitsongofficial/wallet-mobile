@@ -1,14 +1,16 @@
 import { SupportedCoins, SupportedCoinsFullMap, SupportedCoinsMap } from "constants/Coins"
 import { CosmosWallet } from "core/storing/Wallet"
 import { DepositData } from "core/types/coin/cosmos/DepositData"
-import { Proposal } from "core/types/coin/cosmos/Proposal"
+import { Proposal, ProposalType } from "core/types/coin/cosmos/Proposal"
 import { ProposalVote } from "core/types/coin/cosmos/ProposalVote"
 import { SubmitProposalData } from "core/types/coin/cosmos/SubmitProposalData"
 import { CoinClasses } from "core/types/coin/Dictionaries"
+import { Amount, Denom } from "core/types/coin/Generic"
 import { CoinOperationEnum } from "core/types/coin/OperationTypes"
-import { convertRateFromDenom } from "core/utils/Coin"
+import { convertRateFromDenom, fromAmountToCoin } from "core/utils/Coin"
 import { ProposalStatus, VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
-import { autorun, get, makeAutoObservable, ObservableMap, runInAction, set, toJS, values } from "mobx"
+import { get, makeAutoObservable, runInAction, set, values } from "mobx"
+import moment from "moment"
 import ValidatorStore from "./ValidatorStore"
 import WalletStore from "./WalletStore"
 
@@ -16,8 +18,14 @@ type proposalIndexer = {coin: SupportedCoins, id: Long} | {coin: SupportedCoins,
 
 export default class ProposalsStore {
 	proposals: SupportedCoinsMap<Proposal[]> = {}
-	quorum: SupportedCoinsFullMap<number> = {
+	quorums: SupportedCoinsFullMap<number> = {
 		[SupportedCoins.BITSONG]: 0,
+	}
+	minDeposits: SupportedCoinsFullMap<Amount> = {
+		[SupportedCoins.BITSONG]: {
+			denom: Denom.UBTSG,
+			amount: "0",
+		},
 	}
 
 	constructor(private walletStore: WalletStore, private validatorsStore: ValidatorStore) {
@@ -33,13 +41,22 @@ export default class ProposalsStore {
 			try
 			{
 				const coin = CoinClasses[chain]
-				coin.explorer().get("/cosmos/gov/v1beta1/params/tallying").then(data =>
+				const explorer = coin.explorer()
+				explorer.get("/cosmos/gov/v1beta1/params/tallying").then(data =>
 					{
 						runInAction(() =>
 						{
-							this.quorum[chain] = parseFloat(data.data.tally_params.quorum) * 100
+							this.quorums[chain] = parseFloat(data.data.tally_params.quorum) * 100
 						})
 					})
+
+				explorer.get("/cosmos/gov/v1beta1/params/deposit").then(data =>
+				{
+					runInAction(() =>
+					{
+						this.minDeposits[chain] = data.data.deposit_params.min_deposit[0] as Amount
+					})
+				})
 				const prop:Proposal[] = await coin.Do(CoinOperationEnum.Proposals)
 				prop.sort((p1, p2) =>
 				{
@@ -117,14 +134,25 @@ export default class ProposalsStore {
 		return []
 	}
 
+	voted(proposal: proposalIndexer)
+	{
+		const p = this.resolveProposal(proposal)
+		if(p &&	p.result)
+		{
+			return (p.result.yes + p.result.noWithZero + p.result.no + p.result.abstain)
+		}
+		return 0
+	}
+
 	votedPercentage(proposal: proposalIndexer)
 	{
 		const p = this.resolveProposal(proposal)
 		if(p &&	p.result)
 		{
 			const coin = p.chain ?? SupportedCoins.BITSONG
-			const votingPower = this.validatorsStore.totalVotingPower[coin] / convertRateFromDenom(CoinClasses[coin].denom())
-			return (p.result.yes + p.result.noWithZero + p.result.no + p.result.abstain) / votingPower * 100
+			const votingPower = this.validatorsStore.totalVotingPower[coin]
+			const voted = this.voted(p)
+			return voted / votingPower * 100
 		}
 		return 0
 	}
@@ -134,9 +162,8 @@ export default class ProposalsStore {
 		const p = this.resolveProposal(proposal)
 		if(p &&	p.result)
 		{
-			const coin = p.chain ?? SupportedCoins.BITSONG
-			const votingPower = this.validatorsStore.totalVotingPower[coin] / convertRateFromDenom(CoinClasses[coin].denom())
-			const percentageRatio = votingPower * 100
+			const votingPower = values(p.result).reduce((tot, c) => tot + c, 0)
+			const percentageRatio = votingPower / 100
 			return {
 				yes: p.result.yes / percentageRatio,
 				no: p.result.no / percentageRatio,
@@ -147,13 +174,20 @@ export default class ProposalsStore {
 		return 0
 	}
 
+	quorum(proposal: proposalIndexer)
+	{
+		const p = this.resolveProposal(proposal)
+		if(p && p.chain) return this.quorums[p.chain]
+		return this.quorums[SupportedCoins.BITSONG]
+	}
+
 	quorumPercentage(proposal: proposalIndexer)
 	{
 		const p = this.resolveProposal(proposal)
 		if(p)
 		{
 			const voted = this.votedPercentage(p)
-			return voted / this.quorum[p.chain ?? SupportedCoins.BITSONG] * 100
+			return voted / this.quorums[p.chain ?? SupportedCoins.BITSONG] * 100
 		}
 
 		return 0
@@ -222,5 +256,79 @@ export default class ProposalsStore {
 			this.update()
 			return res
 		}
+	}
+
+	steps(proposal: proposalIndexer)
+	{
+		const steps = [
+			{
+				completed: false,
+				title: "Created",
+				date: moment().subtract(1, "month").toString(),
+			},
+			{
+				completed: false,
+				title: "Deposit Period Ends",
+				date: moment().subtract(1, "month").toString(),
+			},
+			{
+				completed: false,
+				title: "Voting Period Starts",
+				date: moment().subtract(1, "month").toString(),
+			},
+			{
+				completed: false,
+				title: "Voting Period Ends",
+				date: moment().subtract(1, "month").toString(),
+			},
+		]
+		const p = this.resolveProposal(proposal)
+		if(p)
+		{
+			const [ created, deposit, votingStart, votingEnd] = steps
+			created.completed = true
+			created.date = moment(p.submit).fromNow()
+			deposit.date = moment.min(moment(p.deposit), moment(p.voting?.start)).fromNow()
+			votingStart.date = moment(p.voting?.start).fromNow()
+			votingEnd.date = moment(p.voting?.end).fromNow()
+			if(p.status == ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED || p.status == ProposalStatus.UNRECOGNIZED) return steps
+			if(p.status != ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD)
+			{
+				deposit.completed = true
+				votingStart.completed = true
+				if(p.status != ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD)
+				{
+					votingEnd.completed = true
+				}
+			}
+		}
+		return steps
+	}
+
+	minDeposit(proposal: proposalIndexer)
+	{
+		const p = this.resolveProposal(proposal)
+		let deposit
+		if(p && p.chain) deposit = this.minDeposits[p.chain]
+		else deposit = this.minDeposits[SupportedCoins.BITSONG]
+		return fromAmountToCoin(deposit)
+	}
+
+	proposalTypeDescrition(proposal: proposalIndexer)
+	{
+		const p = this.resolveProposal(proposal)
+		if(p && p.type)
+		{
+			switch(p.type)
+			{
+				case ProposalType.TEXT:
+				case ProposalType.SOFTWARE_UPGRADE:
+				case ProposalType.PARAMETER_CHANGE:
+				case ProposalType.TREASURY:
+					return "This is a text proposal. Text proposals can be proposed by anyone and are used as a signalling mechanism for this community. If this proposal is accepted, nothing will change without community coordination."
+			}
+		}
+
+		return "This proposal type is not supported"
 	}
 }

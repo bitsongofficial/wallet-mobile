@@ -16,7 +16,7 @@ type Options = {
 
 const snapPoints = [[594], [445]]
 
-export default async function openVote({
+export default async function openDeposit({
 	controller = new DepositeController(),
 	onClose,
 	onDone,
