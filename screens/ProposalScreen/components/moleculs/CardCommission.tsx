@@ -28,7 +28,7 @@ export default memo(({ style, title, status, percentage }: Props) => {
 
 			<View style={styles.right}>
 				<View style={{ alignItems: "flex-end", marginBottom: 24 }}>
-					<Text style={styles.percent}>{percentage}%</Text>
+					<Text style={styles.percent}>{typeof percentage == "number" ? percentage.toFixed(2) : percentage}%</Text>
 					<Text style={styles.voted}>VOTED</Text>
 				</View>
 				<View style={styles.arrowContainer}>

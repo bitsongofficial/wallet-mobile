@@ -30,7 +30,6 @@ export default observer<Props>(function Stacking({ navigation }) {
 	// ------------ Tabs ----------------
 	const [activeTab, setActiveTab] = useState<ITab>("All")
 	const [activeChain, setActiveChain] = useState<SupportedCoins>()
-	console.log(activeChain)
 	const changeActiveTab = (tab: ITab) => setActiveTab(tab) // ????
 
 	const status = useMemo(() => {
@@ -63,7 +62,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 				style={styles.listItem}
 				onPress={() => navigation.navigate("ProposalDetails", { proposal: item })}
 			>
-				<CardCommission key={item.id.toString()} title={item.title} status={item.status} />
+				<CardCommission key={item.id.toString()} title={item.title} status={item.status} percentage={proposals.votedPercentage(item)} />
 			</TouchableOpacity>
 		),
 		[],
