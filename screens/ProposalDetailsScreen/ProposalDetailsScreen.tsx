@@ -22,6 +22,8 @@ import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 import { toJS } from "mobx"
 import Config from "react-native-config"
 import { formatNumber } from "utils/numbers"
+import { DepositeController } from "modals/proposal/components/templates"
+import { store } from "stores/Store"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ProposalDetails">
 
@@ -32,32 +34,16 @@ type ProposalEvent = {
 	date: string
 }
 
-function openVoteRecapAction()
+const ActionButton: React.FC<{proposal: Proposal, actionMap: {[k in ProposalStatus]?: () => any}}> = ({proposal, actionMap}) =>
 {
-	return openVoteRecap({
-		value: "yes",
-		chain: "Bitsong",
-	})
-}
-
-function openDepositAction()
-{
-	return openDeposit({})
-}
-
-const ActionButton: React.FC<{proposal: Proposal}> = ({proposal}) =>
-{
-	let action: () => any
 	let text: string
 	switch(proposal.status)
 	{
 		case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
 			text = "DEPOSIT"
-			action = openDepositAction
 			break
 		case ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD:
 			text = "VOTE"
-			action = openVoteRecapAction
 			break
 		default:
 			return null
@@ -72,7 +58,7 @@ const ActionButton: React.FC<{proposal: Proposal}> = ({proposal}) =>
 			paddingHorizontal: 33,
 			paddingVertical: 12,
 		}}
-		onPress={action}
+		onPress={actionMap[proposal.status] ?? (() => {})}
 		style={{ marginRight: 10 }}
 	/>
 }
@@ -88,6 +74,27 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 		() => proposals.steps(proposal),
 		[proposal],
 	)
+
+	const actionMap = useMemo(() => ({
+		[ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]: () =>
+		{
+			const controller = new DepositeController()
+			return openDeposit({
+				controller,
+				onDone: () =>
+				{
+					return proposals.deposit(proposal, parseInt(controller.amountInput.value))
+				}
+			})
+		},
+		[ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD]: () =>
+		{
+			return openVoteRecap({
+				value: "yes",
+				chain: "Bitsong",
+			})
+		}
+	}), [proposal])
 
 	const resultsPercents = useMemo(() => proposals.percentages(proposal), [proposal])
 
@@ -138,7 +145,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 						</View>
 
 						<View style={[{ flexDirection: "row" }, { marginBottom: 44 }]}>
-							<ActionButton proposal={proposal}></ActionButton>
+							<ActionButton proposal={proposal} actionMap={actionMap}></ActionButton>
 							<Button
 								mode="gradient_border"
 								contentContainerStyle={{
@@ -151,14 +158,16 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 								<Icon2 name="link" style={{ width: 24, height: 12 }} stroke={COLOR.White} />
 							</Button>
 						</View>
+						{proposal.status &&
+						!(proposal.status in [ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD, ProposalStatus.UNRECOGNIZED, ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]) &&
+						resultsPercents && 
+						(<>
+							<Text style={[styles.caption, { marginBottom: 22 }]}>Results</Text>
+							<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
+								<Stat name="VOTE" persent={proposals.votedPercentage(proposal).toFixed(2)} style={{ marginRight: 19 }} />
+								<Stat name="QUORUM" persent={proposals.quorum(proposal).toFixed(2)} />
+							</View>
 
-						<Text style={[styles.caption, { marginBottom: 22 }]}>Results</Text>
-						<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
-							<Stat name="VOTE" persent={proposals.votedPercentage(proposal).toFixed(2)} style={{ marginRight: 19 }} />
-							<Stat name="QUORUM" persent={proposals.quorum(proposal).toFixed(2)} />
-						</View>
-
-						{resultsPercents && (
 							<Card style={[{ padding: 11 }, { marginBottom: 44 }]}>
 								<Diagram {...resultsPercents} style={styles.diagram} />
 								<View>
@@ -188,7 +197,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 									/>
 								</View>
 							</Card>
-						)}
+						</>)}
 
 						<Text style={[styles.caption, { marginBottom: 22 }]}>Checklist</Text>
 					</View>

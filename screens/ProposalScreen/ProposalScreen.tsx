@@ -59,6 +59,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 	const renderProposals = useCallback<ListRenderItem<Proposal>>(
 		({ item }) => (
 			<TouchableOpacity
+				key={item.id.toString()}
 				style={styles.listItem}
 				onPress={() => navigation.navigate("ProposalDetails", { proposal: item })}
 			>
@@ -107,6 +108,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 				// ------------ Styles --------------------
 				style={styles.flatlist}
 				contentContainerStyle={flatlistContentStyle}
+				keyExtractor={(item) => item.id.toString()}
 			/>
 			<Shadow style={animStyles.bottomShadow} invert />
 		</>
