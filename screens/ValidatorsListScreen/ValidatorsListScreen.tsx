@@ -69,23 +69,23 @@ export default observer<Props>(function ValidatorsListScreen({ navigation }) {
 				<Toolbar
 					style={{ marginHorizontal: 30 }}
 					onPressClaim={
-						validators.CanStake && validators.validatorReward(item) > 0 ?
-						(() => {openClaimModal(item)})
+						validators.CanStake && validators.validatorReward(validator) > 0 ?
+						(() => {openClaimModal(validator)})
 						: undefined
 					}
 					onPressStake={
 						validators.CanStake ?
-						() => {openDelegateWithValidator(item, navigation)}
+						() => {openDelegateWithValidator(validator, navigation)}
 						: undefined
 					}
 					onPressUnstake={
-						validators.CanStake && validators.validatorDelegations(item) > 0 ?
-						() => (openUndelegateWithValidator(item, navigation))
+						validators.CanStake && validators.validatorDelegations(validator) > 0 ?
+						() => (openUndelegateWithValidator(validator, navigation))
 						: undefined
 					}
 					onPressRestake={
-						validators.CanStake && validators.validatorDelegations(item) > 0 ?
-						() => (openRedelegateWithValidator(item, navigation))
+						validators.CanStake && validators.validatorDelegations(validator) > 0 ?
+						() => (openRedelegateWithValidator(validator, navigation))
 						: undefined
 					}
 				/>
