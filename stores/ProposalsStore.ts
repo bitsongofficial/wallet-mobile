@@ -11,12 +11,14 @@ import { convertRateFromDenom, fromAmountToCoin } from "core/utils/Coin"
 import { ProposalStatus, VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 import { get, makeAutoObservable, runInAction, set, values } from "mobx"
 import moment from "moment"
+import LocalStorageManager from "./LocalStorageManager"
 import ValidatorStore from "./ValidatorStore"
 import WalletStore from "./WalletStore"
 
 type proposalIndexer = {coin: SupportedCoins, id: Long} | {coin: SupportedCoins, index: number} | Proposal
 
 export default class ProposalsStore {
+	localStorageManager?: LocalStorageManager
 	proposals: SupportedCoinsMap<Proposal[]> = {}
 	quorums: SupportedCoinsFullMap<number> = {
 		[SupportedCoins.BITSONG]: 0,
@@ -26,6 +28,12 @@ export default class ProposalsStore {
 			denom: Denom.UBTSG,
 			amount: "0",
 		},
+	}
+	proposalDraft?: {
+		chain: SupportedCoins,
+		title: string,
+		description: string,
+		deposit: number,
 	}
 
 	constructor(private walletStore: WalletStore, private validatorsStore: ValidatorStore) {
@@ -231,6 +239,7 @@ export default class ProposalsStore {
 			},
 		}
 		const res = await coin.Do(CoinOperationEnum.SubmitProposal, data)
+		this.proposalDraft = undefined
 		this.update()
 		return res
 	}
@@ -330,5 +339,16 @@ export default class ProposalsStore {
 		}
 
 		return "This proposal type is not supported"
+	}
+
+	saveProposalDraft(chain: SupportedCoins, title: string, description: string, initialDeposit = 0)
+	{
+		this.proposalDraft = {
+			chain,
+			title,
+			description,
+			deposit: initialDeposit,
+		}
+		this.localStorageManager?.saveProposals()
 	}
 }

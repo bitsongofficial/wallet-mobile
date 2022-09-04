@@ -4,7 +4,7 @@ import { TouchableOpacity } from "react-native-gesture-handler"
 import { Icon2, IconName, ThemedGradient } from "components/atoms"
 import { COLOR, hexAlpha } from "utils"
 
-export type VoteTypology = "text" | "software"
+export type VoteTypology = "text"
 
 type ButtonProps = {
 	typology: VoteTypology

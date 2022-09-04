@@ -10,15 +10,20 @@ import { Button, Icon2, Input } from "components/atoms"
 import { ViewProps } from "components/Themed"
 import { useHeaderHeight } from "@react-navigation/elements"
 import { openChangeVoteTypology } from "modals/proposal"
+import { useStore } from "hooks"
+import { SupportedCoins } from "constants/Coins"
 
-type Props = NativeStackScreenProps<RootStackParamList, "Validator">
+type Props = NativeStackScreenProps<RootStackParamList, "NewProposal">
 
-export default observer<Props>(function Stacking({ navigation }) {
+export default observer<Props>(function Stacking({ navigation, route })
+{
+	const { proposals } = useStore()
+	const savedProposal = proposals.proposalDraft
 	const goBack = useCallback(() => navigation.goBack(), [])
 
-	const nameInput = useMemo(() => new InputHandler("My super proposal"), [])
+	const nameInput = useMemo(() => new InputHandler(savedProposal ? savedProposal.title : "My super proposal"), [])
 
-	const [typology, setTypology] = useState<"text" | "software">("text")
+	const [typology, setTypology] = useState<"text">("text")
 	const openChooseProposalTypologyModal = useCallback(
 		() =>
 			openChangeVoteTypology({
@@ -27,10 +32,38 @@ export default observer<Props>(function Stacking({ navigation }) {
 			}),
 		[typology],
 	)
+	const inputDescription = useMemo(() => new InputHandler(savedProposal ? savedProposal.description : ""), [])
 
-	const inputDeposite = useMemo(() => new InputHandler(), [])
+	const inputDeposite = useMemo(() => new InputHandler(savedProposal ? savedProposal.deposit.toString() : ""), [])
 
 	const height = useHeaderHeight()
+
+	const saveProposalDraft = useCallback(() =>
+	{
+		proposals.saveProposalDraft(
+			route.params.chain ?? SupportedCoins.BITSONG,
+			nameInput.value,
+			inputDescription.value,
+			parseFloat(inputDeposite.value))
+		goBack()
+	}, [])
+
+	const submitProposal = useCallback(() =>
+	{
+		navigation.push("Loader", {
+			// @ts-ignore
+			callback: async () =>
+			{
+				const res = await proposals.submit(
+					route.params.chain ?? SupportedCoins.BITSONG,
+					nameInput.value,
+					inputDescription.value,
+					parseFloat(inputDeposite.value))
+				if(res) goBack()
+				return res				
+			},
+		})
+	}, [])
 
 	return (
 		<>
@@ -60,10 +93,11 @@ export default observer<Props>(function Stacking({ navigation }) {
 
 						<Text style={styles.label}>Name</Text>
 						<Input
-							value="My super proposal"
-							editable={false}
+							value={nameInput.value}
+							editable={true}
 							style={styles.inputContainer}
 							inputStyle={styles.input}
+							onChangeText={nameInput.set}
 						/>
 
 						<Text style={styles.label}>Typology</Text>
@@ -110,6 +144,8 @@ export default observer<Props>(function Stacking({ navigation }) {
 							keyboardAppearance="dark"
 							style={styles.textarea}
 							inputStyle={[styles.input, styles.textAreaInput]}
+							value={inputDescription.value}
+							onChangeText={inputDescription.set}
 						/>
 					</ScrollView>
 				</KeyboardAvoidingView>
@@ -119,11 +155,13 @@ export default observer<Props>(function Stacking({ navigation }) {
 						mode="fill"
 						textStyle={styles.buttonText}
 						contentContainerStyle={styles.buttonContentFill}
+						onPress={saveProposalDraft}
 					/>
 					<Button
 						text="Publish"
 						textStyle={styles.buttonText}
 						contentContainerStyle={styles.buttonContent}
+						onPress={submitProposal}
 					/>
 				</View>
 			</SafeAreaView>

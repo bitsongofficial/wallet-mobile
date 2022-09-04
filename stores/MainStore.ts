@@ -32,6 +32,7 @@ export default class MainStore {
 		this.wallet,
 		this.dapp,
 		this.contacts,
+		this.proposals,
 		this.settings,
 		this.configs.remote,
 	)

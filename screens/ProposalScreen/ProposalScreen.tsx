@@ -12,7 +12,7 @@ import { COLOR } from "utils"
 import { useStore } from "hooks"
 import { RootStackParamList, RootTabParamList } from "types"
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
-import { Proposal, ProposalType } from "core/types/coin/cosmos/Proposal"
+import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { SupportedCoins } from "constants/Coins"
 
 import { CardCommission, Head, ITab, Tabs } from "./components/moleculs"
@@ -29,7 +29,7 @@ type Props = CompositeScreenProps<
 export default observer<Props>(function Stacking({ navigation }) {
 	// ------------ Tabs ----------------
 	const [activeTab, setActiveTab] = useState<ITab>("All")
-	const [activeChain, setActiveChain] = useState<SupportedCoins>()
+	const [activeChain, setActiveChain] = useState<SupportedCoins>(SupportedCoins.BITSONG)
 	const changeActiveTab = (tab: ITab) => setActiveTab(tab) // ????
 
 	const status = useMemo(() => {
@@ -69,7 +69,9 @@ export default observer<Props>(function Stacking({ navigation }) {
 	)
 
 	// ------------- Actions --------------
-	const navToNew = useCallback(() => navigation.navigate("NewProposal"), [])
+	const navToNew = useCallback(() => navigation.navigate("NewProposal", {
+		chain: activeChain
+	}), [])
 	const openChangeChainModal = useCallback(() => openChangeChain({
 		setActiveChain
 	}), [])
