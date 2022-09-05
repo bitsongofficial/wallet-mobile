@@ -66,7 +66,15 @@ export type RootStackParamList = {
 		isBiometricAllowed?: boolean
 	}
 	Validator: { id: string }
-	NewProposal: { chain?: SupportedCoins}
+	NewProposal: {
+		chain?: SupportedCoins,
+		title?: string,
+		description?: string,
+		initialDeposit?: number,
+		passive?: boolean,
+		onDone?: () => any,
+		onDismiss?: () => any,
+	}
 	ProposalDetails: { proposal: Proposal }
 }
 

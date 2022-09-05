@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { StatusBar } from "expo-status-bar"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
+import { BackHandler, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
 import { RootStackParamList } from "types"
 import { COLOR, hexAlpha, InputHandler } from "utils"
 import { RectButton, ScrollView } from "react-native-gesture-handler"
@@ -17,11 +17,17 @@ type Props = NativeStackScreenProps<RootStackParamList, "NewProposal">
 
 export default observer<Props>(function Stacking({ navigation, route })
 {
+	console.log(route.params.initialDeposit)
 	const { proposals } = useStore()
 	const savedProposal = proposals.proposalDraft
-	const goBack = useCallback(() => navigation.goBack(), [])
+	const goBack = useCallback(() =>
+	{
+		if(route.params.onDismiss) route.params.onDismiss()
+		navigation.goBack()
+	}, [])
+	const passive = route.params.passive ?? false
 
-	const nameInput = useMemo(() => new InputHandler(savedProposal ? savedProposal.title : "My super proposal"), [])
+	const nameInput = useMemo(() => new InputHandler(route.params.title ?? (savedProposal ? savedProposal.title : "My super proposal")), [])
 
 	const [typology, setTypology] = useState<"text">("text")
 	const openChooseProposalTypologyModal = useCallback(
@@ -32,9 +38,9 @@ export default observer<Props>(function Stacking({ navigation, route })
 			}),
 		[typology],
 	)
-	const inputDescription = useMemo(() => new InputHandler(savedProposal ? savedProposal.description : ""), [])
+	const inputDescription = useMemo(() => new InputHandler(route.params.description ?? (savedProposal ? savedProposal.description : "")), [])
 
-	const inputDeposite = useMemo(() => new InputHandler(savedProposal ? savedProposal.deposit.toString() : ""), [])
+	const inputDeposite = useMemo(() => new InputHandler(route.params.initialDeposit?.toString() ?? (savedProposal ? savedProposal.deposit.toString() : "")), [])
 
 	const height = useHeaderHeight()
 
@@ -50,7 +56,8 @@ export default observer<Props>(function Stacking({ navigation, route })
 
 	const submitProposal = useCallback(() =>
 	{
-		navigation.push("Loader", {
+		if(route.params.onDone) route.params.onDone()
+		else navigation.push("Loader", {
 			// @ts-ignore
 			callback: async () =>
 			{
@@ -64,6 +71,14 @@ export default observer<Props>(function Stacking({ navigation, route })
 			},
 		})
 	}, [])
+
+	useEffect(() => {
+		const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+			goBack()
+			return true
+		})
+		return () => handler.remove()
+	}, [goBack])
 
 	return (
 		<>
@@ -94,7 +109,7 @@ export default observer<Props>(function Stacking({ navigation, route })
 						<Text style={styles.label}>Name</Text>
 						<Input
 							value={nameInput.value}
-							editable={true}
+							editable={!passive}
 							style={styles.inputContainer}
 							inputStyle={styles.input}
 							onChangeText={nameInput.set}
@@ -132,6 +147,7 @@ export default observer<Props>(function Stacking({ navigation, route })
 							onChangeText={inputDeposite.set}
 							style={styles.inputContainer}
 							inputStyle={styles.input}
+							editable={!passive}
 						/>
 
 						<Text style={styles.label}>Text Proposal</Text>
@@ -146,17 +162,18 @@ export default observer<Props>(function Stacking({ navigation, route })
 							inputStyle={[styles.input, styles.textAreaInput]}
 							value={inputDescription.value}
 							onChangeText={inputDescription.set}
+							editable={!passive}
 						/>
 					</ScrollView>
 				</KeyboardAvoidingView>
-				<View style={[styles.footer]}>
-					<Button
+				<View style={[styles.footer, passive ? {justifyContent: "flex-end"} : undefined]}>
+					{!passive && <Button
 						text="Save draft"
 						mode="fill"
 						textStyle={styles.buttonText}
 						contentContainerStyle={styles.buttonContentFill}
 						onPress={saveProposalDraft}
-					/>
+					/>}
 					<Button
 						text="Publish"
 						textStyle={styles.buttonText}
