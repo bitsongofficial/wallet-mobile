@@ -1,29 +1,29 @@
 import { StyleSheet, Text, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
-import { COLOR } from "utils"
 import { Title } from "../atoms"
-import { VoteValue } from "../moleculs"
 import { useMemo } from "react"
 import { Icon2 } from "components/atoms"
 import { Recap } from "modals/validator/components/moleculs"
 import { useVoteIcon } from "modals/proposal/hooks"
+import { SupportedCoins } from "constants/Coins"
+import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 
 type Props = {
-	value: VoteValue
-	chain: string
+	value: VoteOption
+	chain: SupportedCoins
 }
 
 export default observer<Props>(({ value, chain }) => {
 	const text = useMemo(() => {
 		switch (value) {
-			case "yes":
+			case VoteOption.VOTE_OPTION_YES:
 				return "Yes"
-			case "no":
+			case VoteOption.VOTE_OPTION_NO:
 				return "No"
-			case "no with veto":
+			case VoteOption.VOTE_OPTION_NO_WITH_VETO:
 				return "No Veto"
-			case "abstain":
+			case VoteOption.VOTE_OPTION_ABSTAIN:
 				return "Abstain"
 		}
 	}, [value])

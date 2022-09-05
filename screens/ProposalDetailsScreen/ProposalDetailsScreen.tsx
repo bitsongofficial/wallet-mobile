@@ -1,80 +1,118 @@
 import { useCallback, useMemo } from "react"
-import { ListRenderItem, StyleSheet, Text, View } from "react-native"
+import { ListRenderItem, Share, StyleSheet, Text, View } from "react-native"
 import { FlatList, ScrollView } from "react-native-gesture-handler"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import moment from "moment"
-import { openVoteRecap } from "modals/proposal"
+import { openDeposit, openVote, openVoteRecap } from "modals/proposal"
 import { COLOR, hexAlpha, round } from "utils"
 import { RootStackParamList } from "types"
 import { Button, ButtonBack, Icon2 } from "components/atoms"
 import { Card, Diagram, Stat } from "./components/atoms"
 import { CheckListItem, LegendItem } from "./components/moleculs"
 import { useProposalStatusName } from "screens/ProposalScreen/hook"
+import { rehydrateNewLines } from "utils/string"
+import { fromAmountToCoin, getAssetTag } from "core/utils/Coin"
+import { useStore } from "hooks"
+import { SupportedCoins } from "constants/Coins"
+import { Proposal } from "core/types/coin/cosmos/Proposal"
+import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
+import { toJS } from "mobx"
+import Config from "react-native-config"
+import { formatNumber } from "utils/numbers"
+import { DepositeController } from "modals/proposal/components/templates"
+import { store } from "stores/Store"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ProposalDetails">
 
 type ProposalEvent = {
 	// ???? naming? Is it Event? ???
-	complited: boolean
+	completed: boolean
 	title: string
 	date: string
 }
 
+const ActionButton: React.FC<{proposal: Proposal, actionMap: {[k in ProposalStatus]?: () => any}}> = ({proposal, actionMap}) =>
+{
+	let text: string
+	switch(proposal.status)
+	{
+		case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
+			text = "DEPOSIT"
+			break
+		case ProposalStatus.PROPOSAL_STATUS_REJECTED:
+			text = "VOTE"
+			break
+		default:
+			return null
+	}
+	return <Button
+		text={text}
+		textStyle={{
+			fontSize: 14,
+			lineHeight: 24,
+		}}
+		contentContainerStyle={{
+			paddingHorizontal: 33,
+			paddingVertical: 12,
+		}}
+		onPress={actionMap[proposal.status] ?? (() => {})}
+		style={{ marginRight: 10 }}
+	/>
+}
+
 export default observer<Props>(function ProposalDetailsScreen({ navigation, route }) {
+	const { proposals } = useStore()
 	const insets = useSafeAreaInsets()
 	const { proposal } = route.params
 
 	const goBack = useCallback(() => navigation.goBack(), [])
 
-	const openVoteModal = useCallback(() => {
-		openVoteRecap({
-			value: "yes",
-			chain: "Bitsong",
-		})
-	}, [])
-
 	const checklist: ProposalEvent[] = useMemo(
-		() => [
-			{
-				complited: true,
-				title: "Created",
-				date: moment().subtract(1, "month").toString(),
-			},
-			{
-				complited: false,
-				title: "Deposit Period Ends",
-				date: moment().subtract(1, "month").toString(),
-			},
-			{
-				complited: false,
-				title: "Deposit Period Ends",
-				date: moment().subtract(1, "month").toString(),
-			},
-		],
-		[],
+		() => proposals.steps(proposal),
+		[proposal],
 	)
 
-	const resultsPercents = useMemo(() => {
-		if (proposal.result) {
-			const { abstain, no, noWithZero, yes } = proposal.result
-			const proportion = 100 / (abstain + no + noWithZero + yes)
-
-			return {
-				abstain: round(abstain * proportion),
-				no: round(no * proportion),
-				noWithZero: round(noWithZero * proportion),
-				yes: round(yes * proportion),
-			}
+	const actionMap = useMemo(() => ({
+		[ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]: () =>
+		{
+			const controller = new DepositeController()
+			return openDeposit({
+				proposal,
+				controller,
+				onDone: () =>
+				{
+					return proposals.deposit(proposal, parseInt(controller.amountInput.value))
+				}
+			})
+		},
+		[ProposalStatus.PROPOSAL_STATUS_REJECTED]: () =>
+		{
+			return openVote({
+				onVote: (value) =>
+				{
+					openVoteRecap({
+						value,
+						chain: proposal.chain ?? SupportedCoins.BITSONG,
+						onDone: () =>
+						{
+							navigation.push("Loader",
+							{
+								callback: async () =>
+								{
+									return await proposals.vote(proposal, value)
+								}
+							})
+						}
+					})
+				}
+			})
 		}
-	}, [
-		proposal.result?.abstain,
-		proposal.result?.no,
-		proposal.result?.noWithZero,
-		proposal.result?.yes,
-	])
+	}), [proposal])
+
+	const resultsPercents = useMemo(() => proposals.percentages(proposal), [proposal])
 
 	const renderCheckListItem = useCallback<ListRenderItem<ProposalEvent>>(
 		({ item, index }) => (
@@ -85,6 +123,15 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 
 	const proposalStatus = useProposalStatusName(proposal.status)
 
+	const shareProposal = useCallback(() =>
+	{
+		const url = Config.BITSONG_MINTSCAN + (Config.BITSONG_MINTSCAN[Config.BITSONG_MINTSCAN.length-1] == "/" ? "" : "/") + "proposals/" + proposal.id.toString()
+		Share.share({
+			message: url,
+			url,
+		})
+	}, [proposal.id])
+
 	return (
 		<>
 			<StatusBar style="light" />
@@ -92,8 +139,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 				<ScrollView contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}>
 					<View style={styles.wrapper}>
 						<Text style={[styles.title, { marginBottom: 15, marginTop: 30 }]}>
-							Increase minimum {"\n"}
-							commission rate to 5%
+							{proposal.title}
 						</Text>
 
 						<View style={[{ flexDirection: "row" }, { marginBottom: 20 }]}>
@@ -104,29 +150,18 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 						</View>
 
 						<Text style={[styles.paragraph, { marginBottom: 14 }]}>
-							This is a text proposal. Text proposals can be proposed by anyone and are used as a
-							signalling mechanism for this community. If this proposal is accepted, nothing will
-							change without community coordination.
+							{proposals.proposalTypeDescrition(proposal)}
 						</Text>
 						<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
-							<Text style={[styles.paragraph, { marginRight: 16 }]}>Minimum Deposit</Text>
-							<Text style={styles.paragraph}>500 BTSG</Text>
+							{proposal.chain &&
+							<>
+								<Text style={[styles.paragraph, { marginRight: 16 }]}>Minimum Deposit</Text>
+								<Text style={styles.paragraph}>{proposals.minDeposit(proposal)} {getAssetTag(proposal.chain)}</Text>
+							</>}
 						</View>
 
 						<View style={[{ flexDirection: "row" }, { marginBottom: 44 }]}>
-							<Button
-								text="DEPOSIT"
-								textStyle={{
-									fontSize: 14,
-									lineHeight: 24,
-								}}
-								contentContainerStyle={{
-									paddingHorizontal: 33,
-									paddingVertical: 12,
-								}}
-								onPress={openVoteModal}
-								style={{ marginRight: 10 }}
-							/>
+							<ActionButton proposal={proposal} actionMap={actionMap}></ActionButton>
 							<Button
 								mode="gradient_border"
 								contentContainerStyle={{
@@ -134,48 +169,54 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 									paddingVertical: 16,
 									backgroundColor: COLOR.Dark3,
 								}}
+								onPress={shareProposal}
 							>
 								<Icon2 name="link" style={{ width: 24, height: 12 }} stroke={COLOR.White} />
 							</Button>
 						</View>
+						{proposal.status &&
+						!(proposal.status in [
+							ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
+							ProposalStatus.UNRECOGNIZED,
+							ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]) &&
+						resultsPercents && 
+						(<>
+							<Text style={[styles.caption, { marginBottom: 22 }]}>Results</Text>
+							<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
+								<Stat name="VOTE" persent={proposals.votedPercentage(proposal).toFixed(2)} style={{ marginRight: 19 }} />
+								<Stat name="QUORUM" persent={proposals.quorum(proposal).toFixed(2)} />
+							</View>
 
-						<Text style={[styles.caption, { marginBottom: 22 }]}>Recent</Text>
-						<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
-							<Stat name="VOTE" persent={24} style={{ marginRight: 19 }} />
-							<Stat name="QUORUM" persent={24} />
-						</View>
-
-						{resultsPercents && (
 							<Card style={[{ padding: 11 }, { marginBottom: 44 }]}>
-								<Diagram {...resultsPercents} style={styles.diagram} />
+								{resultsPercents.total > 0 && <Diagram {...resultsPercents} style={styles.diagram} />}
 								<View>
 									<LegendItem
 										style={styles.legendItem}
-										value={resultsPercents.yes}
+										value={resultsPercents.yes.toFixed(2)}
 										name="Yes"
 										color={COLOR.White}
 									/>
 									<LegendItem
 										style={styles.legendItem}
-										value={resultsPercents.no}
+										value={resultsPercents.no.toFixed(2)}
 										name="No"
 										color={COLOR.RoyalBlue}
 									/>
 									<LegendItem
 										style={styles.legendItem}
-										value={resultsPercents.noWithZero}
+										value={resultsPercents.noWithZero.toFixed(2)}
 										name="No With Veto"
 										color={COLOR.SlateBlue}
 									/>
 									<LegendItem
 										style={styles.legendItem}
-										value={resultsPercents.abstain}
+										value={resultsPercents.abstain.toFixed(2)}
 										name="Abstain"
 										color={COLOR.Dark3}
 									/>
 								</View>
 							</Card>
-						)}
+						</>)}
 
 						<Text style={[styles.caption, { marginBottom: 22 }]}>Checklist</Text>
 					</View>
@@ -192,14 +233,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 						<Text style={[styles.caption, { marginBottom: 22 }]}>Description</Text>
 						<Card style={styles.descriptionCard}>
 							<Text style={styles.description}>
-								Increase the minimum commission rate to 5%. This will help provide network stability
-								and stop 0% validators driving commissions down. It also ensures Validators are
-								earning enough to support secure and stable validation.
-								{"\n"}
-								{"\n"}
-								If this proposal is accepted, it will imply having to update the blockchain so that
-								it is possible to modify the commission of all validators automatically (see the
-								Osmosis and/or Stargaze fork)
+								{rehydrateNewLines(proposal.description ?? "")}
 							</Text>
 						</Card>
 					</View>

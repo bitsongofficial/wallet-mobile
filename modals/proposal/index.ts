@@ -1,5 +1,5 @@
 export { default as openChangeChain } from "./openChangeChain"
 export { default as openVote } from "./openVote"
 export { default as openVoteRecap } from "./openVoteRecap"
-export { default as openDeposite } from "./openDeposite"
+export { default as openDeposit } from "./openDeposit"
 export { default as openChangeVoteTypology } from "./openChangeVoteTypology"

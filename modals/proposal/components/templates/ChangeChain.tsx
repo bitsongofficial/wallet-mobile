@@ -9,19 +9,24 @@ import { useStore } from "hooks"
 import { MockChain } from "stores/MainStore"
 import { ListItemChain } from "../atoms"
 import { RectButton } from "react-native-gesture-handler"
+import { fromCoinToDefaultDenom, getAssetName } from "core/utils/Coin"
+import { Coin } from "classes"
+import { SupportedCoins } from "constants/Coins"
+import { Denom } from "core/types/coin/Generic"
 
 type Props = {
-	searchInput: InputHandler
+	searchInput: InputHandler,
+	setActiveChain?: (coin: SupportedCoins) => any
 }
 
-export default observer<Props>(({ searchInput }) => {
-	const { chains, setActiveChain } = useStore()
+export default observer<Props>(({ searchInput, setActiveChain }) => {
+	const chains = Object.values(SupportedCoins).map(c => ({coin: c, denom: fromCoinToDefaultDenom(c)}))
 
 	const filtredChains = useMemo(
 		() =>
 			searchInput.lowerCaseValue
 				? chains.filter((chain) =>
-						chain.tokenName //
+						getAssetName(chain.denom) //
 							.toLowerCase()
 							.includes(searchInput.lowerCaseValue),
 				  )
@@ -33,8 +38,8 @@ export default observer<Props>(({ searchInput }) => {
 		() =>
 			searchInput.lowerCaseValue
 				? // TODO: get Recent
-				  chains.filter((chain) =>
-						chain.tokenName //
+					chains.filter((chain) =>
+						getAssetName(chain.denom) //
 							.toLowerCase()
 							.includes(searchInput.lowerCaseValue),
 				  )
@@ -42,7 +47,7 @@ export default observer<Props>(({ searchInput }) => {
 		[searchInput.lowerCaseValue],
 	)
 
-	const keyExtractor = useCallback(({ id }: MockChain) => id, [])
+	const keyExtractor = useCallback((chain: {coin: SupportedCoins, denom: Denom}) => chain.denom, [])
 
 	return (
 		<BottomSheetView style={styles.container}>
@@ -65,7 +70,8 @@ export default observer<Props>(({ searchInput }) => {
 					keyExtractor={keyExtractor}
 					renderItem={({ item }) => (
 						<RectButton
-							onPress={() => setActiveChain(item)}
+							onPress={() => {
+								if(setActiveChain) setActiveChain(item.coin)}}
 							style={{
 								marginRight: 13,
 							}}
@@ -82,9 +88,10 @@ export default observer<Props>(({ searchInput }) => {
 				keyExtractor={keyExtractor}
 				renderItem={({ item }) => (
 					<ListItemChain
-						chain={item}
+						chain={item.coin}
 						style={styles.itemChain}
-						onPress={setActiveChain}
+						onPress={() => {
+							if(setActiveChain) setActiveChain(item.coin)}}
 						//
 					/>
 				)}

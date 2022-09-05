@@ -7,6 +7,7 @@ import { BottomTabHeaderProps, BottomTabScreenProps } from "@react-navigation/bo
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack"
 import TransactionCreater from "classes/Transaction/Creater"
+import { SupportedCoins } from "constants/Coins"
 import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { Validator } from "core/types/coin/cosmos/Validator"
 
@@ -65,7 +66,15 @@ export type RootStackParamList = {
 		isBiometricAllowed?: boolean
 	}
 	Validator: { id: string }
-	NewProposal: undefined
+	NewProposal: {
+		chain?: SupportedCoins,
+		title?: string,
+		description?: string,
+		initialDeposit?: number,
+		passive?: boolean,
+		onDone?: () => any,
+		onDismiss?: () => any,
+	}
 	ProposalDetails: { proposal: Proposal }
 }
 

@@ -3,17 +3,20 @@ import { SafeAreaInsetsContext } from "react-native-safe-area-context"
 import { COLOR, wait } from "utils"
 import { gbs } from "modals"
 import { Button, Footer } from "components/atoms"
-import { VoteValue } from "./components/moleculs"
 import { VoteRecap } from "./components/templates"
+import { SupportedCoins } from "constants/Coins"
+import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 
 type Options = {
-	value: VoteValue
-	chain: string // ?
+	value: VoteOption
+	chain: SupportedCoins
 	onClose?(): void
 	onDone?(): void
+	onDismiss?(): void
 }
 
 export default async function openVote(options: Options) {
+	const status = {done: false}
 	const close = async () => {
 		gbs.close()
 		await wait(400)
@@ -21,6 +24,7 @@ export default async function openVote(options: Options) {
 	}
 
 	const done = () => {
+		status.done = true
 		const { onDone } = options
 		onDone && onDone()
 		close()
@@ -40,6 +44,7 @@ export default async function openVote(options: Options) {
 				if (index === -1) {
 					gbs.removeBackHandler()
 					options?.onClose && options.onClose()
+					options?.onDismiss && !status.done && options?.onDismiss()
 				}
 			},
 			footerComponent: () => (

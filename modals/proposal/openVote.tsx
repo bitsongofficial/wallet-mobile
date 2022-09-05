@@ -4,11 +4,11 @@ import { gbs } from "modals"
 import { COLOR, wait } from "utils"
 import { Button, Footer } from "components/atoms"
 import { Vote, VoteController } from "./components/templates"
-import { VoteValue } from "./components/moleculs"
+import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 
 type Options = {
 	onClose?(): void
-	onVote?(vote: VoteValue): void
+	onVote?(vote: VoteOption): void
 }
 
 export default async function openVote(options?: Options) {

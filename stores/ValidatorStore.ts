@@ -11,6 +11,7 @@ import { CoinOperationEnum } from "core/types/coin/OperationTypes"
 import { WalletTypes } from "core/types/storing/Generic"
 import { convertRateFromDenom, fromAmountToCoin } from "core/utils/Coin"
 import { autorun, makeAutoObservable, runInAction, set, toJS } from "mobx"
+import { has } from "utils/mobx"
 import CoinStore from "./CoinStore"
 import WalletStore from "./WalletStore"
 
@@ -135,7 +136,6 @@ export default class ValidatorStore {
 
 	update()
 	{
-		console.log(this.walletStore.activeProfile ? this.walletStore.activeProfile.id : "")
 		return new Promise<void>((accept, reject) =>
 		{
 			runInAction(async () =>
@@ -165,9 +165,9 @@ export default class ValidatorStore {
 		const i = this.validators.indexOf(index as any)
 		if (i > -1) return index as Validator
 		if (typeof index == "string") return this.validators.find((v) => v.id == index) ?? null
-		if ("id" in index) return this.validators.find((v) => v.id == index.id) ?? null
-		if ("operator" in index)
-			return this.validators.find((v) => v.operator == index.operator) ?? null
+		if (has(index, "id")) return this.validators.find((v) => v.id == (index as Validator).id) ?? null
+		if (has(index, "operator"))
+			return this.validators.find((v) => v.operator == (index as Validator).operator) ?? null
 		return null
 	}
 
@@ -364,7 +364,10 @@ export default class ValidatorStore {
 	}
 
 	async refreshData() {
-		this.load()
-		this.coinStore.updateBalances()
+		runInAction(() =>
+		{
+			this.load()
+			this.coinStore.updateBalances()
+		})
 	}
 }

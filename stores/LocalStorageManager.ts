@@ -13,6 +13,7 @@ import { askPin } from "navigation/AskPin"
 import { Contact } from "stores/ContactsStore"
 import ContactsStore from "./ContactsStore"
 import { clearPin, isPinSaved, savePin } from "utils/biometrics"
+import ProposalsStore from "./ProposalsStore"
 
 const pin_hash_path = "pin_hash"
 const settings_location = "settings"
@@ -20,6 +21,7 @@ const connections_location = "wc_sessions"
 const stored_wallets_path = "stored_wallets"
 const contacts_location = "contacts"
 const active_wallet_id = "active_wallet"
+const proposal_draft_location = "proposal_draft"
 
 type connectionRaw = {
 	session: IWalletConnectSession,
@@ -35,6 +37,7 @@ export default class LocalStorageManager
 		private wallet: WalletStore,
 		private dappConnection: DappConnectionStore,
 		private contacts: ContactsStore,
+		private proposals: ProposalsStore,
 		private settings: SettingsStore,
 		private remoteConfigs: RemoteConfigsStore,
 	)
@@ -48,6 +51,7 @@ export default class LocalStorageManager
 		await this.loadSettings()
 		if(!this.settings.biometric_enable && await isPinSaved()) await clearPin()
 		this.loadContacts()
+		this.loadProposals()
 
 		this.connectionsLoadHandler = autorun(() =>
 		{
@@ -150,6 +154,7 @@ export default class LocalStorageManager
 			this.settings.localStorageManager = this
 			this.dappConnection.localStorageManager = this
 			this.wallet.localStorageManager = this
+			this.proposals.localStorageManager = this
 		})
 	}
 
@@ -356,5 +361,25 @@ export default class LocalStorageManager
 
 			}			
 		}
-	} 
+	}
+
+	saveProposals()
+	{
+		AsyncStorageLib.setItem(proposal_draft_location, JSON.stringify(this.proposals.proposalDraft))
+	}
+	async loadProposals()
+	{
+		const raw = await AsyncStorageLib.getItem(proposal_draft_location)
+		if(raw)
+		{
+			try
+			{
+				this.proposals.proposalDraft = JSON.parse(raw)
+			}
+			catch
+			{
+
+			}
+		}
+	}
 }

@@ -8,29 +8,29 @@ import { StyleProp } from "react-native"
 type Props = {
 	title: string
 	date: string
-	complited: boolean
+	completed: boolean
 	style?: StyleProp<ViewStyle>
 }
 
-export default ({ complited, date, title, style }: Props) => (
+export default ({ completed, date, title, style }: Props) => (
 	<Card style={[styles.container, style]}>
 		<Icon2
-			name={complited ? "check_fulfilled_gradient" : "check_fulfilled"}
+			name={completed ? "check_fulfilled_gradient" : "check_fulfilled"}
 			size={38}
-			stroke={!complited && hexAlpha(COLOR.White, 20)}
+			stroke={!completed && hexAlpha(COLOR.White, 20)}
 			style={{ marginBottom: 14 }}
 		/>
 		<View style={styles.data}>
-			<Text style={[styles.title, { color: complited ? COLOR.White : hexAlpha(COLOR.White, 20) }]}>
+			<Text style={[styles.title, { color: completed ? COLOR.White : hexAlpha(COLOR.White, 20) }]}>
 				{title}
 			</Text>
 			<Text
 				style={[
 					styles.dateFrom,
-					{ color: complited ? COLOR.RoyalBlue : hexAlpha(COLOR.White, 20) },
+					{ color: completed ? COLOR.RoyalBlue : hexAlpha(COLOR.White, 20) },
 				]}
 			>
-				{moment(date).fromNow()}
+				{date}
 			</Text>
 		</View>
 	</Card>

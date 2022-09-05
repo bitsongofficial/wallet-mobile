@@ -2,26 +2,31 @@ import { StyleSheet, Text, View } from "react-native"
 import { COLOR } from "utils"
 import { Button } from "components/atoms"
 import { Numpad } from "components/moleculs"
+import { useStore } from "hooks"
 
 
 type Props = {
 	onPressNum(num: string): void
 	onPressDelNum(): void
-  onPressMax(): void
-  amount: string
+	onPressMax(): void
+	amount: string
 }
 
-export default ({ onPressMax, onPressNum, onPressDelNum, amount }: Props) => (
-	<>
-		<View style={styles.row}>
-			<Text style={styles.usd}>{amount} {settings.currency?.symbol}</Text>
-			<View>
-				<Button text="MAX" onPress={onPressMax} contentContainerStyle={styles.maxButtonContent} />
+export default ({ onPressMax, onPressNum, onPressDelNum, amount }: Props) =>
+{
+	const { settings } = useStore()
+	return  (
+		<>
+			<View style={styles.row}>
+				<Text style={styles.usd}>{amount} {settings.currency?.symbol}</Text>
+				<View>
+					<Button text="MAX" onPress={onPressMax} contentContainerStyle={styles.maxButtonContent} />
+				</View>
 			</View>
-		</View>
-		<Numpad style={styles.numpad} onPress={onPressNum} onPressRemove={onPressDelNum} />
-	</>
-)
+			<Numpad style={styles.numpad} onPress={onPressNum} onPressRemove={onPressDelNum} />
+		</>
+	)
+}
 
 const styles = StyleSheet.create({
 	row: {
