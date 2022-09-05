@@ -15,9 +15,16 @@ import WalletStore, { ProfileWallets } from "./WalletStore";
 import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmount, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, SupportedFiats } from "core/utils/Coin";
 import SettingsStore from "./SettingsStore";
 import { ICoin } from "classes/types";
+import { isValidAddress } from "core/utils/Address";
+
+const maxRecentRecipients = 10
 
 export default class CoinStore {
 	coins: Coin[] = []
+	recentRecipients: {
+		address: string,
+		date: Date,
+	}[] = []
 	loading = {
 		balance: false,
 		send: false,
@@ -185,6 +192,7 @@ export default class CoinStore {
 				amount,
 			}
 			const res = await coinClass.Do(CoinOperationEnum.Send, data)
+			this.addToRecent(address)
 			runInAction(() =>
 			{
 				this.loading.send = false
@@ -255,5 +263,28 @@ export default class CoinStore {
 		}
 
 		return 0
+	}
+
+	addToRecent(address : string, date?: Date)
+	{
+		if(isValidAddress(address))
+		{
+			runInAction(() =>
+			{
+				const i = this.recentRecipients.findIndex(e => e.address == address)
+				if(i > -1)
+				{
+					this.recentRecipients.splice(i, 1)
+				}
+				this.recentRecipients.unshift(
+					{
+						address,
+						date: date ?? new Date(),
+					}
+				)
+				if(this.recentRecipients.length > maxRecentRecipients) this.recentRecipients.pop()
+				if(date) this.recentRecipients.sort((r1, r2) => (r1.date.getTime() - r2.date.getTime()))
+			})
+		}
 	}
 }

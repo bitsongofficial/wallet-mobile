@@ -14,6 +14,7 @@ import { Contact } from "stores/ContactsStore"
 import ContactsStore from "./ContactsStore"
 import { clearPin, isPinSaved, savePin } from "utils/biometrics"
 import ProposalsStore from "./ProposalsStore"
+import CoinStore from "./CoinStore"
 
 const pin_hash_path = "pin_hash"
 const settings_location = "settings"
@@ -22,6 +23,7 @@ const stored_wallets_path = "stored_wallets"
 const contacts_location = "contacts"
 const active_wallet_id = "active_wallet"
 const proposal_draft_location = "proposal_draft"
+const recentRecipientsLocation = "recent_recipients"
 
 type connectionRaw = {
 	session: IWalletConnectSession,
@@ -35,6 +37,7 @@ export default class LocalStorageManager
 	private walletsLoadHandler?: IReactionDisposer
 	constructor(
 		private wallet: WalletStore,
+		private coin: CoinStore,
 		private dappConnection: DappConnectionStore,
 		private contacts: ContactsStore,
 		private proposals: ProposalsStore,
@@ -50,6 +53,7 @@ export default class LocalStorageManager
 		const loadings: Promise<any>[] = []
 		await this.loadSettings()
 		if(!this.settings.biometric_enable && await isPinSaved()) await clearPin()
+		this.loadCoinStore()
 		this.loadContacts()
 		this.loadProposals()
 
@@ -70,6 +74,7 @@ export default class LocalStorageManager
 			}
 		})
 
+		this.saveCoinStore()
 		this.saveContacts()
 		this.saveSettings()
 		this.saveWallets()
@@ -109,6 +114,26 @@ export default class LocalStorageManager
 				history: 10,
 			})
 		}
+	}
+
+	async loadCoinStore()
+	{
+		const raw = await AsyncStorageLib.getItem(recentRecipientsLocation)
+		if(raw)
+		{
+			const recipients = JSON.parse(raw)
+			recipients.forEach((r: any) => {
+				this.coin.addToRecent(r.address, r.date)
+			})
+		} 
+	}
+
+	saveCoinStore()
+	{
+		reaction(
+			() => JSON.stringify(toJS(this.coin.recentRecipients)),
+			json => AsyncStorageLib.setItem(recentRecipientsLocation, json)
+		)
 	}
 
 	saveConnections()

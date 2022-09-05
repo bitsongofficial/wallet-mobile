@@ -1,19 +1,21 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import * as Clipboard from "expo-clipboard"
-import { COLOR } from "utils"
+import { COLOR, InputHandler } from "utils"
 import { Button, ButtonBack } from "components/atoms"
 import { InputWord } from "components/moleculs"
 import { BottomSheetFooter, BottomSheetFooterProps } from "@gorhom/bottom-sheet"
 import { ChooseStep, CreateStep, ImportStep, InputNameStep } from "../moleculs/AddAccount"
 import { ControllerAddAccount } from "modals/profile/controllers"
+import { useStore } from "hooks"
 
 type Props = {
 	controller: ControllerAddAccount
 }
 
 export default observer<Props>(({ controller }) => {
+	const { wallet } = useStore()
 	const { phrase, steps, nameInput } = controller
 	// --------- Steps ------------
 	const openCreate = useCallback(() => steps.goTo("Create"), [])
@@ -35,22 +37,6 @@ export default observer<Props>(({ controller }) => {
 			phrase.setActiveIndex(phrase.words.length - 1)
 		}
 	}, [phrase])
-
-	const handlePressGo = useCallback(() => {
-		phrase.inputSubmit()
-		phrase.isValid && steps.goTo("Name")
-	}, [])
-
-	// ---------- Name -----------
-
-	const input = useMemo(() => new InputHandler(), [])
-
-	const saveWallet = useCallback(() => {
-		if (input.value && phrase.isValid) {
-			close()
-			wallet.newCosmosWallet(input.value, phrase.words)
-		}
-	}, [])
 
 	return (
 		<View style={styles.wrapper}>
