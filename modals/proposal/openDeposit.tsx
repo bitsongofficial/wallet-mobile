@@ -12,6 +12,7 @@ type Options = {
 	controller?: DepositeController
 	onClose?(): void
 	onDone?(): void
+	onDismiss?(): void
 }
 
 const snapPoints = [[594], [445]]
@@ -20,7 +21,9 @@ export default async function openDeposit({
 	controller = new DepositeController(),
 	onClose,
 	onDone,
+	onDismiss,
 }: Options) {
+	const status = {done: false}
 	// const { coin: coinStore } = store
 	controller.amountInput.setCoin(new Coin(mock_2.BitSong))
 	controller.setMinDeposite(500)
@@ -36,6 +39,7 @@ export default async function openDeposit({
 	const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
 
 	const done = () => {
+		status.done = true
 		gbs.close()
 		if (onDone) {
 			navigate("Loader", { callback: onDone })
@@ -62,6 +66,7 @@ export default async function openDeposit({
 					gbs.removeBackHandler()
 					disposer()
 					onClose && onClose()
+					onDismiss && !status.done && onDismiss()
 				}
 			},
 			children: () => <Deposit controller={controller} />,
