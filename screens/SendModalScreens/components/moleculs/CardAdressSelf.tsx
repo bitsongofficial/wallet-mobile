@@ -5,16 +5,16 @@ import { useTheme } from "hooks";
 import { Coin } from "classes";
 import { COLOR } from "utils";
 import { trimAddress } from "utils/string";
+import moment from "moment";
 
 type Props = {
-  coin?: Coin | null;
+  address: string;
+  date?: Date;
   style?: StyleProp<ViewStyle>;
 };
 
-export default observer<Props>(function CardWallet({ coin, style }) {
+export default observer<Props>(function CardWallet({ address, date, style }) {
   const theme = useTheme();
-  if (!coin) return null;
-  const { address } = coin.info;
   const shortAd = trimAddress(address);
 
   return (
@@ -22,7 +22,7 @@ export default observer<Props>(function CardWallet({ coin, style }) {
       <Icon name="arrow_up" />
       <View style={styles.description}>
         <Text style={[theme.text.primary]}>{shortAd}</Text>
-        <Text style={[theme.text.secondary]}>Sent on Feb 15</Text>
+        {date && <Text style={[theme.text.secondary]}>Sent {moment(date).format("d MMMM")}</Text>}
       </View>
     </Card>
   );

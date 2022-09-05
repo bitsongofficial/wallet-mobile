@@ -31,6 +31,7 @@ export default class MainStore {
 	contacts = new ContactsStore()
 	localStorageManager = new LocalStorageManager(
 		this.wallet,
+		this.coin,
 		this.dapp,
 		this.contacts,
 		this.proposals,

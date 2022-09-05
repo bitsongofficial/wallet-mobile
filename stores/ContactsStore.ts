@@ -1,4 +1,4 @@
-import { makeAutoObservable, set } from "mobx";
+import { makeAutoObservable, runInAction, set } from "mobx";
 
 export type Contact = {
 	name: string,
