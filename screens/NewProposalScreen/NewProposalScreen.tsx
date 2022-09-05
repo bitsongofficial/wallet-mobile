@@ -11,9 +11,9 @@ import { ViewProps } from "components/Themed"
 import { useHeaderHeight } from "@react-navigation/elements"
 import { openChangeVoteTypology } from "modals/proposal"
 
-type Props = NativeStackScreenProps<RootStackParamList, "Validator">
+type Props = NativeStackScreenProps<RootStackParamList, "NewProposal">
 
-export default observer<Props>(function Stacking({ navigation }) {
+export default observer<Props>(function NewProposal({ navigation }) {
 	const goBack = useCallback(() => navigation.goBack(), [])
 
 	const nameInput = useMemo(() => new InputHandler("My super proposal"), [])
