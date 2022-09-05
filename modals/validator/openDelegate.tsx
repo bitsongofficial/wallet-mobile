@@ -34,8 +34,6 @@ export default async function openDelegate({ onDone, onClose, onDismiss, control
 
 	const goBack = () => (steps.history.length > 1 ? steps.goBack() : gbs.close())
 
-	gbs.backHandler = goBack
-
 	const close = () => {
 		disposer()
 		gbs.removeBackHandler()
@@ -43,23 +41,32 @@ export default async function openDelegate({ onDone, onClose, onDismiss, control
 		onDismiss && !status.done && onDismiss()
 	}
 
-	await gbs.setProps({
-		snapPoints: snapPoints[controller.steps.active],
-		onClose: close,
-		footerComponent: () => (
-			<FooterDelegate controller={controller} onPressDone={() =>
-				{
-					status.done = true
-					gbs.close()
-					navigate("Loader", {
-						callback: async () => (onDone ? await onDone() : false),
-					})
-				}}
-				onPressBack={controller.disableBack ? undefined : goBack}
-				steps={steps}
-			/>
-		),
-		children: () => <Delegate controller={controller} />,
-	})
-	requestAnimationFrame(() => gbs.expand())
+	const done = () => () => {
+		status.done = true
+		gbs.close()
+		navigate("Loader", {
+			callback: async () => (onDone ? await onDone() : false),
+		})
+	}
+
+	const open = async () => {
+		gbs.backHandler = goBack
+
+		await gbs.setProps({
+			snapPoints: snapPoints[controller.steps.active],
+			onClose: close,
+			children: () => <Delegate controller={controller} />,
+			footerComponent: () => (
+				<FooterDelegate
+					controller={controller}
+					onPressDone={done}
+					onPressBack={controller.disableBack ? undefined : goBack}
+					steps={steps}
+				/>
+			),
+		})
+		requestAnimationFrame(() => gbs.expand())
+	}
+
+	open()
 }
