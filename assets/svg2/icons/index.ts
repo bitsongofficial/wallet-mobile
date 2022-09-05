@@ -75,6 +75,10 @@ import ProhibitInset from "./ProhibitInset.svg"
 import MinusCircle from "./MinusCircle.svg"
 import XCircle from "./XCircle.svg"
 
+import loader_done from "./loader_done.svg"
+import loader_error from "./loader_error.svg"
+import loader_lock from "./loader_lock.svg"
+
 export default <const>{
 	eye_closed_gradient,
 	fingerprint_gradient,
@@ -148,4 +152,8 @@ export default <const>{
 	ProhibitInset,
 	MinusCircle,
 	XCircle,
+	//
+	loader_done,
+	loader_error,
+	loader_lock,
 }
