@@ -80,6 +80,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 		{
 			const controller = new DepositeController()
 			return openDeposit({
+				proposal,
 				controller,
 				onDone: () =>
 				{

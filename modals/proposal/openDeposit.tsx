@@ -7,8 +7,10 @@ import { store } from "stores/Store"
 import mock_2 from "classes/mock_2"
 import { Coin } from "classes"
 import { reaction } from "mobx"
+import { Proposal } from "core/types/coin/cosmos/Proposal"
 
 type Options = {
+	proposal: Proposal
 	controller?: DepositeController
 	onClose?(): void
 	onDone?(): void
@@ -19,6 +21,7 @@ const snapPoints = [[594], [445]]
 
 export default async function openDeposit({
 	controller = new DepositeController(),
+	proposal,
 	onClose,
 	onDone,
 	onDismiss,
@@ -69,7 +72,7 @@ export default async function openDeposit({
 					onDismiss && !status.done && onDismiss()
 				}
 			},
-			children: () => <Deposit controller={controller} />,
+			children: () => <Deposit controller={controller} proposal={proposal} />,
 			footerComponent: () => (
 				<FooterDeposit controller={controller} onPressBack={goBack} onPressDone={done} />
 			),

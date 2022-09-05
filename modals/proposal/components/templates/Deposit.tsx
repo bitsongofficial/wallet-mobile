@@ -8,6 +8,8 @@ import { makeAutoObservable } from "mobx"
 import { AmountInput, Steps } from "classes"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { Proposal } from "core/types/coin/cosmos/Proposal"
+import { SupportedCoins } from "constants/Coins"
 
 // -------------- Controller ---------------------
 
@@ -28,9 +30,12 @@ export class DepositeController {
 
 // -------------- Template ---------------------
 
-type Props = { controller: DepositeController }
+type Props = {
+	controller: DepositeController
+	proposal: Proposal
+}
 
-export default observer<Props>(({ controller }) => {
+export default observer<Props>(({ controller, proposal }) => {
 	const { steps, amountInput } = controller
 
 	return (
@@ -52,7 +57,11 @@ export default observer<Props>(({ controller }) => {
 				/>
 			)}
 
-			{steps.active === 1 && <StepDepositeRecap amount={controller.amountInput.value} />}
+			{steps.active === 1 &&
+				<StepDepositeRecap
+					amount={controller.amountInput.value}
+					chain={proposal.chain ?? SupportedCoins.BITSONG}
+					proposalId={proposal.id} />}
 		</BottomSheetView>
 	)
 })

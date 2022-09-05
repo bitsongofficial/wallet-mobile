@@ -273,6 +273,7 @@ export default class DappConnectionStore {
 			controller.amountInput.setAmount(fromAmountToCoin(data.amount).toString())
 			controller.steps.goTo("Deposit Recap")
 			openDeposit({
+				proposal,
 				controller,
 				onDone: async () =>
 				{
