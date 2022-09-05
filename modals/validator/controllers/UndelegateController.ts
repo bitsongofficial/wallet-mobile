@@ -8,8 +8,9 @@ export default class UndelegateController {
 	from: Validator | null = null
 	disableBack: boolean = false
 
-	constructor() {
+	constructor(options?: OptionsUndelegate) {
 		makeAutoObservable(this, {}, { autoBind: true })
+		this.amountInput.updMaxValue(options?.delegatedAmount)
 	}
 
 	setFrom(validator: Validator) {
@@ -20,4 +21,8 @@ export default class UndelegateController {
 		this.steps.clear()
 		this.amountInput.clear()
 	}
+}
+
+type OptionsUndelegate = {
+	delegatedAmount?: number | null
 }
