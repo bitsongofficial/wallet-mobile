@@ -9,6 +9,7 @@ import ContactsStore from "./ContactsStore"
 import ValidatorStore from "./ValidatorStore"
 import ProposalsStore from "./ProposalsStore"
 import BackgroundTimer from "react-native-background-timer"
+import NotificationsStore from "./NotificationsStore"
 
 export default class MainStore {
 	auth = null
@@ -38,6 +39,8 @@ export default class MainStore {
 		this.settings,
 		this.configs.remote,
 	)
+	notifications = new NotificationsStore()
+
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}

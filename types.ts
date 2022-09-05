@@ -76,6 +76,7 @@ export type RootStackParamList = {
 		onDismiss?: () => any,
 	}
 	ProposalDetails: { proposal: Proposal }
+	Notifications: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
