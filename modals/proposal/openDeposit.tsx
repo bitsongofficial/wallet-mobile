@@ -1,7 +1,7 @@
 import { Keyboard, StyleSheet } from "react-native"
 import { gbs } from "modals"
 import { COLOR, wait } from "utils"
-import { Deposit, DepositeController, FooterDeposit } from "./components/templates"
+import { Deposit, DepositController, FooterDeposit } from "./components/templates"
 import { navigate } from "navigation/utils"
 import { store } from "stores/Store"
 import mock_2 from "classes/mock_2"
@@ -11,7 +11,7 @@ import { Proposal } from "core/types/coin/cosmos/Proposal"
 
 type Options = {
 	proposal: Proposal
-	controller?: DepositeController
+	controller?: DepositController
 	onClose?(): void
 	onDone?(): void
 	onDismiss?(): void
@@ -20,16 +20,16 @@ type Options = {
 const snapPoints = [[594], [445]]
 
 export default async function openDeposit({
-	controller = new DepositeController(),
+	controller = new DepositController(),
 	proposal,
 	onClose,
 	onDone,
 	onDismiss,
 }: Options) {
-	const status = {done: false}
+	const status = { done: false }
 	// const { coin: coinStore } = store
 	controller.amountInput.setCoin(new Coin(mock_2.BitSong))
-	controller.setMinDeposite(500)
+	controller.setMinDeposit(500)
 
 	const close = async () => {
 		gbs.close()

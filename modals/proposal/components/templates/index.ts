@@ -1,5 +1,5 @@
 export { default as ChangeChain } from "./ChangeChain"
 export { default as ChangeVoteTypology } from "./ChangeVoteTypology"
 export { default as Vote, VoteController } from "./Vote"
-export { default as Deposit, DepositeController, FooterDeposit } from "./Deposit"
+export { default as Deposit, DepositController, FooterDeposit } from "./Deposit"
 export { default as VoteRecap } from "./VoteRecap"
