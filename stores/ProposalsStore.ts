@@ -171,12 +171,13 @@ export default class ProposalsStore {
 		if(p &&	p.result)
 		{
 			const votingPower = values(p.result).reduce((tot, c) => tot + c, 0)
-			const percentageRatio = votingPower / 100
+			const percentageRatio = (votingPower ? votingPower : 100) / 100
 			return {
 				yes: p.result.yes / percentageRatio,
 				no: p.result.no / percentageRatio,
 				noWithZero: p.result.noWithZero / percentageRatio,
 				abstain: p.result.abstain / percentageRatio,
+				total: votingPower,
 			}
 		}
 		return 0

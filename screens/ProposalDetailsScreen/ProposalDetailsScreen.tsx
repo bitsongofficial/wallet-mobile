@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import moment from "moment"
-import { openDeposit, openVoteRecap } from "modals/proposal"
+import { openDeposit, openVote, openVoteRecap } from "modals/proposal"
 import { COLOR, hexAlpha, round } from "utils"
 import { RootStackParamList } from "types"
 import { Button, ButtonBack, Icon2 } from "components/atoms"
@@ -42,7 +42,7 @@ const ActionButton: React.FC<{proposal: Proposal, actionMap: {[k in ProposalStat
 		case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
 			text = "DEPOSIT"
 			break
-		case ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD:
+		case ProposalStatus.PROPOSAL_STATUS_REJECTED:
 			text = "VOTE"
 			break
 		default:
@@ -87,11 +87,26 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 				}
 			})
 		},
-		[ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD]: () =>
+		[ProposalStatus.PROPOSAL_STATUS_REJECTED]: () =>
 		{
-			return openVoteRecap({
-				value: "yes",
-				chain: "Bitsong",
+			return openVote({
+				onVote: (value) =>
+				{
+					openVoteRecap({
+						value,
+						chain: proposal.chain ?? SupportedCoins.BITSONG,
+						onDone: () =>
+						{
+							navigation.push("Loader",
+							{
+								callback: async () =>
+								{
+									return await proposals.vote(proposal, value)
+								}
+							})
+						}
+					})
+				}
 			})
 		}
 	}), [proposal])
@@ -159,7 +174,10 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 							</Button>
 						</View>
 						{proposal.status &&
-						!(proposal.status in [ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD, ProposalStatus.UNRECOGNIZED, ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]) &&
+						!(proposal.status in [
+							ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
+							ProposalStatus.UNRECOGNIZED,
+							ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]) &&
 						resultsPercents && 
 						(<>
 							<Text style={[styles.caption, { marginBottom: 22 }]}>Results</Text>
@@ -169,7 +187,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 							</View>
 
 							<Card style={[{ padding: 11 }, { marginBottom: 44 }]}>
-								<Diagram {...resultsPercents} style={styles.diagram} />
+								{resultsPercents.total > 0 && <Diagram {...resultsPercents} style={styles.diagram} />}
 								<View>
 									<LegendItem
 										style={styles.legendItem}

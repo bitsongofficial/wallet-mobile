@@ -3,12 +3,13 @@ import { SafeAreaInsetsContext } from "react-native-safe-area-context"
 import { COLOR, wait } from "utils"
 import { gbs } from "modals"
 import { Button, Footer } from "components/atoms"
-import { VoteValue } from "./components/moleculs"
 import { VoteRecap } from "./components/templates"
+import { SupportedCoins } from "constants/Coins"
+import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 
 type Options = {
-	value: VoteValue
-	chain: string // ?
+	value: VoteOption
+	chain: SupportedCoins
 	onClose?(): void
 	onDone?(): void
 }
