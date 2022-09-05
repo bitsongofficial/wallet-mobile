@@ -7,8 +7,6 @@ import { StatusBar } from "expo-status-bar"
 import { useTheme } from "hooks"
 import { COLOR } from "utils"
 import { RootStackParamList } from "types"
-import { Icon2 } from "components/atoms"
-import { Button } from "./components/atoms"
 import { FooterSuccess } from "./components/moleculs"
 import { StepError, StepLoad, StepSuccess } from "./components/organisms"
 
@@ -18,8 +16,6 @@ export default function LoaderScreen({
 	navigation,
 	route,
 }: NativeStackScreenProps<RootStackParamList, "Loader">) {
-	const theme = useTheme()
-
 	const Header = route.params?.header
 	const goBack = useCallback(() => navigation.goBack(), [])
 
@@ -53,7 +49,7 @@ export default function LoaderScreen({
 	// ------------ Footer ---------------
 
 	const insets = useSafeAreaInsets()
-	const bottomShift = useSharedValue(0)
+	const bottomShift = useSharedValue(108 + insets.bottom)
 
 	useEffect(() => {
 		if (status === "fulfilled") {
@@ -96,18 +92,6 @@ export default function LoaderScreen({
 						onPressConfirm={goBack}
 						// onPressMintscan={() => {}}
 					/>
-
-					{status === "rejected" && (
-						<View style={styles.buttonContainer}>
-							<Button
-								text="Back to homescreen"
-								mode="fill"
-								disable={true}
-								onPress={goBack}
-								Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
-							/>
-						</View>
-					)}
 				</View>
 			</SafeAreaView>
 		</>
