@@ -24,6 +24,7 @@ export default class MainStore {
 		this.wallet,
 		this.coin,
 		this.validators,
+		this.proposals,
 		this.configs.remote,
 		this.settings,
 	)

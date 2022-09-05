@@ -12,9 +12,11 @@ type Options = {
 	chain: SupportedCoins
 	onClose?(): void
 	onDone?(): void
+	onDismiss?(): void
 }
 
 export default async function openVote(options: Options) {
+	const status = {done: false}
 	const close = async () => {
 		gbs.close()
 		await wait(400)
@@ -22,6 +24,7 @@ export default async function openVote(options: Options) {
 	}
 
 	const done = () => {
+		status.done = true
 		const { onDone } = options
 		onDone && onDone()
 		close()
@@ -41,6 +44,7 @@ export default async function openVote(options: Options) {
 				if (index === -1) {
 					gbs.removeBackHandler()
 					options?.onClose && options.onClose()
+					options?.onDismiss && !status.done && options?.onDismiss()
 				}
 			},
 			footerComponent: () => (
