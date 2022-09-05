@@ -9,8 +9,9 @@ import { Amount, Denom } from "core/types/coin/Generic"
 import { CoinOperationEnum } from "core/types/coin/OperationTypes"
 import { convertRateFromDenom, fromAmountToCoin } from "core/utils/Coin"
 import { ProposalStatus, VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
-import { get, has, makeAutoObservable, runInAction, set, values } from "mobx"
+import { get, makeAutoObservable, runInAction, set, values } from "mobx"
 import moment from "moment"
+import { has } from "utils/mobx"
 import LocalStorageManager from "./LocalStorageManager"
 import ValidatorStore from "./ValidatorStore"
 import WalletStore from "./WalletStore"
@@ -129,7 +130,7 @@ export default class ProposalsStore {
 		if(has(index, 'id') && has(index, 'coin'))
 		{
 			const proposals = get(this.proposals, (index as any).coin) as Proposal[]
-			if(proposals) return proposals.find(p => p.id == (index as any).id)
+			if(proposals) return proposals.find(p => p.id.equals((index as any).id))
 		}
 		return null
 	}
