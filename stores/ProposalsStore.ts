@@ -16,11 +16,14 @@ import LocalStorageManager from "./LocalStorageManager"
 import ValidatorStore from "./ValidatorStore"
 import WalletStore from "./WalletStore"
 
+const maxRecentChains = 5
+
 type proposalIndexer = {coin: SupportedCoins, id: Long} | {coin: SupportedCoins, index: number} | Proposal
 
 export default class ProposalsStore {
 	localStorageManager?: LocalStorageManager
 	proposals: SupportedCoinsMap<Proposal[]> = {}
+	recentChains: SupportedCoins[] = []
 	quorums: SupportedCoinsFullMap<number> = {
 		[SupportedCoins.BITSONG]: 0,
 	}
@@ -117,7 +120,7 @@ export default class ProposalsStore {
 
 		return proposals
 	}
-
+ 
 	resolveProposal(index: proposalIndexer)
 	{
 		const i = this.allProposals.indexOf(index as any)
@@ -352,5 +355,19 @@ export default class ProposalsStore {
 			deposit: initialDeposit,
 		}
 		this.localStorageManager?.saveProposals()
+	}
+
+	addToRecent(chain : SupportedCoins)
+	{
+		runInAction(() =>
+		{
+			const i = this.recentChains.indexOf(chain)
+			if(i > -1)
+			{
+				this.recentChains.splice(i, 1)
+			}
+			this.recentChains.unshift(chain)
+			if(this.recentChains.length > maxRecentChains) this.recentChains.pop()
+		})
 	}
 }

@@ -283,7 +283,7 @@ export default class CoinStore {
 					}
 				)
 				if(this.recentRecipients.length > maxRecentRecipients) this.recentRecipients.pop()
-				if(date) this.recentRecipients.sort((r1, r2) => (r1.date.getTime() - r2.date.getTime()))
+				if(date) this.recentRecipients.sort((r1, r2) => (r2.date.getTime() - r1.date.getTime()))
 			})
 		}
 	}

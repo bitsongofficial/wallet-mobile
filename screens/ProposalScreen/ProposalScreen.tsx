@@ -52,6 +52,13 @@ export default observer<Props>(function Stacking({ navigation }) {
 	// -------------- Data -------------
 	const { proposals } = useStore()
 	// const filterdProposals = useMemo<Proposal[]>(() => mock, [status])
+
+	const changeActiveChain = useCallback((chain:SupportedCoins) =>
+	{
+		proposals.addToRecent(chain)
+		setActiveChain(chain)
+	}, [])
+
 	const filterdProposals = useMemo(
 		() => proposals.filterByCoinAndType(activeChain ? activeChain: SupportedCoins.BITSONG, status).slice(),
 		[status, activeChain],
@@ -74,7 +81,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 		chain: activeChain
 	}), [])
 	const openChangeChainModal = useCallback(() => openChangeChain({
-		setActiveChain
+		setActiveChain: changeActiveChain
 	}), [])
 
 	// -------------- Styles --------------

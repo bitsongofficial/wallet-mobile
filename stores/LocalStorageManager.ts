@@ -23,7 +23,8 @@ const stored_wallets_path = "stored_wallets"
 const contacts_location = "contacts"
 const active_wallet_id = "active_wallet"
 const proposal_draft_location = "proposal_draft"
-const recentRecipientsLocation = "recent_recipients"
+const recent_recipients_location = "recent_recipients"
+const recent_proposal_chains_location = "recent_proposal_chains"
 
 type connectionRaw = {
 	session: IWalletConnectSession,
@@ -78,6 +79,7 @@ export default class LocalStorageManager
 		this.saveContacts()
 		this.saveSettings()
 		this.saveWallets()
+		this.saveProposalsInner()
 		return true
 	}
 
@@ -118,11 +120,15 @@ export default class LocalStorageManager
 
 	async loadCoinStore()
 	{
-		const raw = await AsyncStorageLib.getItem(recentRecipientsLocation)
+		const raw = await AsyncStorageLib.getItem(recent_recipients_location)
 		if(raw)
 		{
-			const recipients = JSON.parse(raw)
-			recipients.forEach((r: any) => {
+			const recipients: any[] = JSON.parse(raw, (k, v) =>
+			{
+				v.date = new Date(v.date)
+				return v
+			})
+			recipients.forEach(r => {
 				this.coin.addToRecent(r.address, r.date)
 			})
 		} 
@@ -132,7 +138,7 @@ export default class LocalStorageManager
 	{
 		reaction(
 			() => JSON.stringify(toJS(this.coin.recentRecipients)),
-			json => AsyncStorageLib.setItem(recentRecipientsLocation, json)
+			json => AsyncStorageLib.setItem(recent_recipients_location, json)
 		)
 	}
 
@@ -388,23 +394,54 @@ export default class LocalStorageManager
 		}
 	}
 
+	private saveProposalsInner()
+	{
+		reaction(
+			() => JSON.stringify(toJS(this.proposals.recentChains)),
+			json => AsyncStorageLib.setItem(recent_proposal_chains_location, json)	
+		)
+	}
+
 	saveProposals()
 	{
 		AsyncStorageLib.setItem(proposal_draft_location, JSON.stringify(this.proposals.proposalDraft))
 	}
+
 	async loadProposals()
 	{
-		const raw = await AsyncStorageLib.getItem(proposal_draft_location)
-		if(raw)
-		{
-			try
-			{
-				this.proposals.proposalDraft = JSON.parse(raw)
-			}
-			catch
-			{
-
-			}
-		}
+		return await Promise.allSettled(
+		[
+			AsyncStorageLib.getItem(proposal_draft_location).then(raw =>
+				{
+					if(raw)
+					{
+						try
+						{
+							this.proposals.proposalDraft = JSON.parse(raw)
+						}
+						catch
+						{
+			
+						}
+					}
+				}),
+			AsyncStorageLib.getItem(recent_proposal_chains_location).then(raw =>
+				{
+					if(raw)
+					{
+						try
+						{
+							const chains: any[] = JSON.parse(raw)
+							chains.reverse().forEach((e: any) => {
+								this.proposals.addToRecent(e)
+							})
+						}
+						catch
+						{
+			
+						}
+					}
+				}),
+		])
 	}
 }
