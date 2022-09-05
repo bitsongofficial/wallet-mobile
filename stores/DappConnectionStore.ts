@@ -14,9 +14,12 @@ import { operationToAminoType } from "core/coin/cosmos/operations/utils";
 import { DelegateController, openClaim, openDelegate, openRedelegate, openUndelegate, RedelegateController, UndelegateController } from "modals/validator";
 import ValidatorStore from "./ValidatorStore";
 import { SupportedCoins } from "constants/Coins";
-import { getMainNavigation } from "navigation/utils";
+import { getMainNavigation, navigate } from "navigation/utils";
 import { fromAmountToCoin, fromDenomToCoin } from "core/utils/Coin";
 import { formatNumber } from "utils/numbers";
+import ProposalsStore from "./ProposalsStore";
+import { openDeposit, openVoteRecap } from "modals/proposal";
+import { DepositeController } from "modals/proposal/components/templates";
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
@@ -30,7 +33,13 @@ export default class DappConnectionStore {
 	  return true;
 	}
 
-	constructor(private walletStore: WalletStore, private coinStore: CoinStore, private validatorsStore: ValidatorStore, private remoteConfigsStore: RemoteConfigsStore, private settingsStore: SettingsStore)
+	constructor(
+		private walletStore: WalletStore,
+		private coinStore: CoinStore,
+		private validatorsStore: ValidatorStore,
+		private proposalsStore: ProposalsStore,
+		private remoteConfigsStore: RemoteConfigsStore,
+		private settingsStore: SettingsStore)
 	{
 		makeAutoObservable(this, {}, { autoBind: true })
 		// AsyncStorageLib.removeItem(session_location)
@@ -82,6 +91,15 @@ export default class DappConnectionStore {
 			case operationToAminoType(CoinOperationEnum.Undelegate):
 				this.undelegateRequest(data, handler)
 				break
+			case operationToAminoType(CoinOperationEnum.SubmitProposal):
+				this.submitProposalRequest(data, handler)
+				break
+			case operationToAminoType(CoinOperationEnum.Deposit):
+				this.depositRequest(data, handler)
+				break
+			case operationToAminoType(CoinOperationEnum.Vote):
+				this.voteRequest(data, handler)
+				break
 			default:
 				confirmTransaction({
 					type,
@@ -99,8 +117,9 @@ export default class DappConnectionStore {
 			amount: formatNumber(this.coinStore.fromAmountToFIAT(data.amount[0])),
 			onDone: async () =>
 			{
-				await handler.accept()
+				const res = await handler.accept()
 				this.coinStore.updateBalances()
+				return res
 			},
 			onReject: () => {handler.reject()},
 		})
@@ -216,6 +235,84 @@ export default class DappConnectionStore {
 			},
 			onDismiss: handler.reject,
 			controller,
+		})
+	}
+
+	private submitProposalRequest(data: any, handler: acceptRejectType) {
+		navigate("NewProposal", {
+			title: data.proposal.title,
+			description: data.proposal.description,
+			initialDeposit: fromAmountToCoin(data.initialDeposit),
+			chain: (data.chain as SupportedCoins) ?? SupportedCoins.BITSONG,
+			passive: true,
+			onDone: async () =>
+			{
+				navigate("Loader", {
+					callback: async () =>
+					{
+						const res = await handler.accept()
+						if(res)
+						{
+							this.proposalsStore.update()
+							this.coinStore.updateBalances()
+						}
+						return res
+					}
+				})
+			},
+			onDismiss: handler.reject,
+		})
+	}
+	private depositRequest(data: any, handler: acceptRejectType) {
+		data.proposal.coin = data.chain ?? SupportedCoins.BITSONG
+		const proposal = this.proposalsStore.resolveProposal(data.proposal)
+		if(proposal)
+		{
+			const controller = new DepositeController()
+			controller.setMinDeposite(this.proposalsStore.minDeposit(proposal))
+			controller.amountInput.setAmount(fromAmountToCoin(data.amount).toString())
+			controller.steps.goTo("Deposit Recap")
+			openDeposit({
+				proposal,
+				controller,
+				onDone: async () =>
+				{
+					const res = await handler.accept()
+					if(res)
+					{
+						this.proposalsStore.update()
+						this.coinStore.updateBalances()
+					}
+					return res
+				},
+				onDismiss: handler.reject,
+			})
+		}
+		else
+		{
+			console.log("REJECT")
+			handler.reject()
+		}
+	}
+	private voteRequest(data: any, handler: acceptRejectType) {
+		openVoteRecap({
+			value: data.option,
+			chain: data.chain ?? SupportedCoins.BITSONG,
+			onDone: async () =>
+			{
+				navigate("Loader", {
+					callback: async () =>
+					{
+						const res = await handler.accept()
+						if(res)
+						{
+							this.proposalsStore.update()
+						}
+						return res
+					}
+				})
+			},
+			onDismiss: handler.reject
 		})
 	}
 

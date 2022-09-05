@@ -6,13 +6,12 @@ import { Icon2 } from "components/atoms"
 import { useVoteIcon } from "../../hooks"
 // TODO: need reorder components
 import { RadioButton } from "screens/Profile/components/atoms"
-
-export type VoteValue = "yes" | "no" | "no with veto" | "abstain"
+import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 
 type RadioProps = {
-	value: VoteValue
-	active: VoteValue
-	onPress(value: VoteValue): void
+	value: VoteOption
+	active: VoteOption
+	onPress(value: VoteOption): void
 	style?: StyleProp<ViewStyle>
 }
 
@@ -21,13 +20,13 @@ export default ({ active, onPress, value, style }: RadioProps) => {
 
 	const text = useMemo(() => {
 		switch (value) {
-			case "yes":
+			case VoteOption.VOTE_OPTION_YES:
 				return "Yes"
-			case "no":
+			case VoteOption.VOTE_OPTION_NO:
 				return "No"
-			case "no with veto":
+			case VoteOption.VOTE_OPTION_NO_WITH_VETO:
 				return "No with Veto"
-			case "abstain":
+			case VoteOption.VOTE_OPTION_ABSTAIN:
 				return "Abstain"
 		}
 	}, [value])

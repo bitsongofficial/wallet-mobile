@@ -13,9 +13,11 @@ export function askPin(options?: OptionsAskPin) {
   const defaultOptions: OptionsAskPin = {
     isHiddenCode: true,
     isRandomKeyboard: true,
+    isBiometricAllowed: true,
   };
   const { settings } = store
-  if(settings.biometric_enable) return new Promise<string>(async (resolve, reject) =>
+  const isBiometricAllowed = options?.isBiometricAllowed ?? defaultOptions.isBiometricAllowed
+  if(settings.biometric_enable && isBiometricAllowed) return new Promise<string>(async (resolve, reject) =>
   {
     const pin = await getPin()
     if(pin)

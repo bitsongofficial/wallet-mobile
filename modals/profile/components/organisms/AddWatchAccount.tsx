@@ -74,7 +74,7 @@ type FooterProps = {
 }
 
 export const Footer = observer(({ controller, onPressSave }: FooterProps) => {
-	const { inputWallet, steps } = controller
+	const { inputWallet, steps, inputName } = controller
 	return (
 		<View style={styles.footer}>
 			<View></View>
@@ -89,6 +89,7 @@ export const Footer = observer(({ controller, onPressSave }: FooterProps) => {
 			)}
 			{steps.title === "Name" && (
 				<Button
+					disable={inputName.value.length < 4}
 					text="Add Account"
 					onPress={onPressSave}
 					contentContainerStyle={styles.buttonContent}

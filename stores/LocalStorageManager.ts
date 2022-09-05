@@ -12,7 +12,9 @@ import { argon2Encode, argon2Verify } from "utils/argon"
 import { askPin } from "navigation/AskPin"
 import { Contact } from "stores/ContactsStore"
 import ContactsStore from "./ContactsStore"
-import { clearPin, isPinSaved } from "utils/biometrics"
+import { clearPin, isPinSaved, savePin } from "utils/biometrics"
+import ProposalsStore from "./ProposalsStore"
+import CoinStore from "./CoinStore"
 
 const pin_hash_path = "pin_hash"
 const settings_location = "settings"
@@ -20,6 +22,9 @@ const connections_location = "wc_sessions"
 const stored_wallets_path = "stored_wallets"
 const contacts_location = "contacts"
 const active_wallet_id = "active_wallet"
+const proposal_draft_location = "proposal_draft"
+const recent_recipients_location = "recent_recipients"
+const recent_proposal_chains_location = "recent_proposal_chains"
 
 type connectionRaw = {
 	session: IWalletConnectSession,
@@ -33,8 +38,10 @@ export default class LocalStorageManager
 	private walletsLoadHandler?: IReactionDisposer
 	constructor(
 		private wallet: WalletStore,
+		private coin: CoinStore,
 		private dappConnection: DappConnectionStore,
 		private contacts: ContactsStore,
+		private proposals: ProposalsStore,
 		private settings: SettingsStore,
 		private remoteConfigs: RemoteConfigsStore,
 	)
@@ -47,7 +54,9 @@ export default class LocalStorageManager
 		const loadings: Promise<any>[] = []
 		await this.loadSettings()
 		if(!this.settings.biometric_enable && await isPinSaved()) await clearPin()
+		this.loadCoinStore()
 		this.loadContacts()
+		this.loadProposals()
 
 		this.connectionsLoadHandler = autorun(() =>
 		{
@@ -66,9 +75,11 @@ export default class LocalStorageManager
 			}
 		})
 
+		this.saveCoinStore()
 		this.saveContacts()
 		this.saveSettings()
 		this.saveWallets()
+		this.saveProposalsInner()
 		return true
 	}
 
@@ -105,6 +116,30 @@ export default class LocalStorageManager
 				history: 10,
 			})
 		}
+	}
+
+	async loadCoinStore()
+	{
+		const raw = await AsyncStorageLib.getItem(recent_recipients_location)
+		if(raw)
+		{
+			const recipients: any[] = JSON.parse(raw, (k, v) =>
+			{
+				v.date = new Date(v.date)
+				return v
+			})
+			recipients.forEach(r => {
+				this.coin.addToRecent(r.address, r.date)
+			})
+		} 
+	}
+
+	saveCoinStore()
+	{
+		reaction(
+			() => JSON.stringify(toJS(this.coin.recentRecipients)),
+			json => AsyncStorageLib.setItem(recent_recipients_location, json)
+		)
 	}
 
 	saveConnections()
@@ -150,6 +185,7 @@ export default class LocalStorageManager
 			this.settings.localStorageManager = this
 			this.dappConnection.localStorageManager = this
 			this.wallet.localStorageManager = this
+			this.proposals.localStorageManager = this
 		})
 	}
 
@@ -296,6 +332,7 @@ export default class LocalStorageManager
 				if(result)
 				{
 					this.setPin(actualNewPin)
+					if(await isPinSaved()) savePin(actualNewPin)
 					await this.wallet.setSetUpsPin(actualNewPin)
 				}
 			}
@@ -355,5 +392,56 @@ export default class LocalStorageManager
 
 			}			
 		}
-	} 
+	}
+
+	private saveProposalsInner()
+	{
+		reaction(
+			() => JSON.stringify(toJS(this.proposals.recentChains)),
+			json => AsyncStorageLib.setItem(recent_proposal_chains_location, json)	
+		)
+	}
+
+	saveProposals()
+	{
+		AsyncStorageLib.setItem(proposal_draft_location, JSON.stringify(this.proposals.proposalDraft))
+	}
+
+	async loadProposals()
+	{
+		return await Promise.allSettled(
+		[
+			AsyncStorageLib.getItem(proposal_draft_location).then(raw =>
+				{
+					if(raw)
+					{
+						try
+						{
+							this.proposals.proposalDraft = JSON.parse(raw)
+						}
+						catch
+						{
+			
+						}
+					}
+				}),
+			AsyncStorageLib.getItem(recent_proposal_chains_location).then(raw =>
+				{
+					if(raw)
+					{
+						try
+						{
+							const chains: any[] = JSON.parse(raw)
+							chains.reverse().forEach((e: any) => {
+								this.proposals.addToRecent(e)
+							})
+						}
+						catch
+						{
+			
+						}
+					}
+				}),
+		])
+	}
 }

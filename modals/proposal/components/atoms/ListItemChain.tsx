@@ -1,22 +1,25 @@
 import { useCallback } from "react"
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
+import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import { COLOR } from "utils"
 import { MockChain } from "stores/MainStore"
+import { Coin } from "classes"
+import { getAssetName, getAssetTag, getAssetIcon } from "core/utils/Coin"
+import { SupportedCoins } from "constants/Coins"
 
 type Props = {
-	chain: MockChain
+	chain: SupportedCoins
 	style?: StyleProp<ViewStyle>
-	onPress(chain: MockChain): void
+	onPress(chain: SupportedCoins): any
 }
 
 export default ({ chain, style, onPress }: Props) => (
 	<RectButton style={style} onPress={useCallback(() => onPress(chain), [chain])}>
 		<View style={styles.container}>
-			<View style={styles.avatar} />
+			<Image source={{uri: getAssetIcon(chain)}} style={styles.avatar} />
 			<View style={styles.data}>
-				<Text style={styles.tokenName}>{chain.tokenName}</Text>
-				<Text style={styles.name}>{chain.name}</Text>
+				<Text style={styles.tokenName}>{getAssetName(chain)}</Text>
+				<Text style={styles.name}>{getAssetTag(chain)}</Text>
 			</View>
 		</View>
 	</RectButton>

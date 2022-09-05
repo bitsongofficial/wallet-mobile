@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react"
-import { StyleSheet, View, Text, TextProps, ListRenderItem } from "react-native"
+import { StyleSheet, View, Text, TextProps, ListRenderItem, Image } from "react-native"
 import { observer } from "mobx-react-lite"
 import { COLOR, hexAlpha, InputHandler } from "utils"
 import { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet"
@@ -9,19 +9,26 @@ import { useStore } from "hooks"
 import { MockChain } from "stores/MainStore"
 import { ListItemChain } from "../atoms"
 import { RectButton } from "react-native-gesture-handler"
+import { fromCoinToDefaultDenom, getAssetIcon, getAssetName } from "core/utils/Coin"
+import { Coin } from "classes"
+import { SupportedCoins } from "constants/Coins"
+import { Denom } from "core/types/coin/Generic"
+import { toJS } from "mobx"
 
 type Props = {
-	searchInput: InputHandler
+	searchInput: InputHandler,
+	setActiveChain?: (coin: SupportedCoins) => any
 }
 
-export default observer<Props>(({ searchInput }) => {
-	const { chains, setActiveChain } = useStore()
+export default observer<Props>(({ searchInput, setActiveChain }) => {
+	const { proposals } = useStore()
+	const chains: SupportedCoins[] = Object.values(SupportedCoins)
 
 	const filtredChains = useMemo(
 		() =>
 			searchInput.lowerCaseValue
 				? chains.filter((chain) =>
-						chain.tokenName //
+						getAssetName(chain) //
 							.toLowerCase()
 							.includes(searchInput.lowerCaseValue),
 				  )
@@ -29,20 +36,20 @@ export default observer<Props>(({ searchInput }) => {
 		[searchInput.lowerCaseValue],
 	)
 
-	const filtredRecent = useMemo(
+	const filteredRecent = useMemo(
 		() =>
 			searchInput.lowerCaseValue
 				? // TODO: get Recent
-				  chains.filter((chain) =>
-						chain.tokenName //
+					proposals.recentChains.filter((chain) =>
+						getAssetName(chain) //
 							.toLowerCase()
 							.includes(searchInput.lowerCaseValue),
 				  )
-				: chains,
-		[searchInput.lowerCaseValue],
+				: proposals.recentChains,
+		[searchInput.lowerCaseValue, proposals.recentChains],
 	)
 
-	const keyExtractor = useCallback(({ id }: MockChain) => id, [])
+	const keyExtractor = useCallback((chain: SupportedCoins) => chain, [])
 
 	return (
 		<BottomSheetView style={styles.container}>
@@ -56,25 +63,29 @@ export default observer<Props>(({ searchInput }) => {
 				style={styles.search}
 			/>
 
-			<Caption>Recent</Caption>
-			<BottomSheetView style={styles.recentView}>
-				<BottomSheetFlatList
-					horizontal
-					data={filtredRecent}
-					contentContainerStyle={styles.recentList}
-					keyExtractor={keyExtractor}
-					renderItem={({ item }) => (
-						<RectButton
-							onPress={() => setActiveChain(item)}
-							style={{
-								marginRight: 13,
-							}}
-						>
-							<View style={styles.recentAvatar} />
-						</RectButton>
-					)}
-				/>
-			</BottomSheetView>
+			{proposals.recentChains.length > 0 &&
+			<>
+				<Caption>Recent</Caption>
+				<BottomSheetView style={styles.recentView}>
+					<BottomSheetFlatList
+						horizontal
+						data={filteredRecent}
+						contentContainerStyle={styles.recentList}
+						keyExtractor={keyExtractor}
+						renderItem={({ item }) => (
+							<RectButton
+								onPress={() => {
+									if(setActiveChain) setActiveChain(item)}}
+								style={{
+									marginRight: 13,
+								}}
+							>
+								<Image style={styles.recentAvatar} source={{uri: getAssetIcon(item)}}/>
+							</RectButton>
+						)}
+					/>
+				</BottomSheetView>
+			</>}
 
 			<Caption style={styles.captionChain}>Chain</Caption>
 			<BottomSheetFlatList
@@ -84,7 +95,8 @@ export default observer<Props>(({ searchInput }) => {
 					<ListItemChain
 						chain={item}
 						style={styles.itemChain}
-						onPress={setActiveChain}
+						onPress={() => {
+							if(setActiveChain) setActiveChain(item)}}
 						//
 					/>
 				)}

@@ -21,6 +21,7 @@ export default observer<Props>(({ navigation, route }) => {
 		BarCodeScanner.requestPermissionsAsync()
 			//
 			.then(({ status }) => setHasPermission(status === "granted"))
+			.catch((error) => console.error("Catched", error))
 	}, [])
 
 	useEffect(() => route.params.onClose, [])

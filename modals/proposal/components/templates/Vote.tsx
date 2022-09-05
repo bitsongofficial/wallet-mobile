@@ -4,11 +4,12 @@ import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { COLOR, hexAlpha } from "utils"
 import { makeAutoObservable } from "mobx"
 import { Title } from "../atoms"
-import { ButtonRadioVote, VoteValue } from "../moleculs"
+import { ButtonRadioVote } from "../moleculs"
+import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 
 export class VoteController {
-	value: VoteValue = "yes"
-	setVoteValue(value: VoteValue) {
+	value: VoteOption = VoteOption.VOTE_OPTION_YES
+	setVoteValue(value: VoteOption) {
 		this.value = value
 	}
 	constructor() {
@@ -29,25 +30,25 @@ export default observer<Props>(({ controller = new VoteController() }) => (
 			style={styles.button}
 			onPress={controller.setVoteValue}
 			active={controller.value}
-			value="yes"
+			value={VoteOption.VOTE_OPTION_YES}
 		/>
 		<ButtonRadioVote
 			style={styles.button}
 			onPress={controller.setVoteValue}
 			active={controller.value}
-			value="no"
+			value={VoteOption.VOTE_OPTION_NO}
 		/>
 		<ButtonRadioVote
 			style={styles.button}
 			onPress={controller.setVoteValue}
 			active={controller.value}
-			value="no with veto"
+			value={VoteOption.VOTE_OPTION_NO_WITH_VETO}
 		/>
 		<ButtonRadioVote
 			style={styles.button}
 			onPress={controller.setVoteValue}
 			active={controller.value}
-			value="abstain"
+			value={VoteOption.VOTE_OPTION_ABSTAIN}
 		/>
 	</BottomSheetView>
 ))

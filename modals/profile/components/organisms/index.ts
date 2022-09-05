@@ -2,7 +2,7 @@ export { default as ChangeLanguage } from "./ChangeLanguage"
 export { default as ChangeCurrency } from "./ChangeCurrency"
 export { default as ChangeWallet, Footer as FooterChangeWallet } from "./ChangeWallet"
 export { default as GenerateMnenonic } from "./GenerateMnenonic"
-export { default as AddAccount } from "./AddAccount"
+export { default as AddAccount, Footer as FooterAddAccount } from "./AddAccount"
 export {
 	default as AddWatchAccount,
 	Footer as FooterAddWatchAccount,

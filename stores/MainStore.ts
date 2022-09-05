@@ -25,14 +25,17 @@ export default class MainStore {
 		this.wallet,
 		this.coin,
 		this.validators,
+		this.proposals,
 		this.configs.remote,
 		this.settings,
 	)
 	contacts = new ContactsStore()
 	localStorageManager = new LocalStorageManager(
 		this.wallet,
+		this.coin,
 		this.dapp,
 		this.contacts,
+		this.proposals,
 		this.settings,
 		this.configs.remote,
 	)
@@ -40,14 +43,6 @@ export default class MainStore {
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
-	}
-
-	// ------ MOCK Chain Store ???? ---------
-
-	chains: MockChain[] = mockChain
-	activeChain: MockChain = this.chains[0]
-	setActiveChain(chain: MockChain) {
-		this.activeChain = chain
 	}
 }
 

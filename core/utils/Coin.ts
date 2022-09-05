@@ -1,6 +1,7 @@
 import { SupportedCoins } from "constants/Coins"
 import { CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
+import { assets } from 'chain-registry'
 
 export enum SupportedFiats {
 	USD = "usd",
@@ -72,4 +73,35 @@ export function fromDenomToCoin(denom: Denom): SupportedCoins | undefined
 	}
 
 	return undefined
+}
+
+function resolveAsset(asset: string | SupportedCoins)
+{
+	const chain = asset as SupportedCoins
+	if(asset && Object.values(SupportedCoins).includes(asset as SupportedCoins)) return fromCoinToDefaultDenom(asset as SupportedCoins)
+	return asset
+}
+
+export function getAssetsInfos(asset: string | SupportedCoins)
+{
+	asset = resolveAsset(asset)
+	return assets.reduce((res: any[], a:any) => res.concat(a.assets), []).find((a: any)=>(a.base===asset))
+}
+
+export function getAssetName(asset: string | SupportedCoins)
+{
+	const infos = getAssetsInfos(asset)
+	return infos ? infos.name.replace("Fantoken", "") : "undefined"
+}
+
+export function getAssetTag(asset: string | SupportedCoins)
+{
+	const infos = getAssetsInfos(asset)
+	return infos ? infos.display.toUpperCase() : "Undefined"
+}
+
+export function getAssetIcon(asset: string | SupportedCoins)
+{
+	const infos = getAssetsInfos(asset)
+	return infos && infos.logo_URIs && infos.logo_URIs.png ? infos.logo_URIs.png : undefined
 }

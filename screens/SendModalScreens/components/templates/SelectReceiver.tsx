@@ -24,7 +24,7 @@ export default observer(function SelectReceiver({
   onPressRecap,
   onPressScanner,
 }: Props) {
-  const { contacts } = useStore()
+  const { contacts, coin } = useStore()
   const theme = useTheme();
   const { creater } = controller;
   const { addressInput } = creater;
@@ -62,24 +62,26 @@ export default observer(function SelectReceiver({
               ))}
             </View>
           </>}
-          <Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
-          <View style={styles.users}>
-            {contacts.starred.map((c) => (
-                <TouchableOpacity key={c.address} onPress={() =>
-                {
-                  console.log("aadsadf", c.address)
-                  setAddress(c)
-                }}>
-                  <User user={c} key={c.address} />
-                </TouchableOpacity>
-            ))}
-          </View>
+          {coin.recentRecipients.length > 0 && <>
+            <Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
+            <View style={[styles.users, {flexDirection: "column"}]}>
+              {coin.recentRecipients.map((c) => (
+                  <TouchableOpacity key={c.address} onPress={() =>
+                  {
+                    setAddress(c.address)
+                  }}>
+                    <CardAdressSelf address={c.address} date={c.date} style={styles.self} />
+                  </TouchableOpacity>
+              ))}
+            </View>
+          </>}
 
+          <Text style={[styles.subtitle, theme.text.primary]}>Self</Text>
           <TouchableOpacity onPress={() =>
                 {
-                  setAddress(creater.coin?.info.address)
+                  creater.coin && setAddress(creater.coin?.info.address)
                 }}>
-            <CardAdressSelf coin={creater.coin} style={styles.self} />
+            <CardAdressSelf address={creater.coin?.info.address ?? ""} style={styles.self} />
           </TouchableOpacity>
         </animated.View>
       </BottomSheetScrollView>

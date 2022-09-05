@@ -137,6 +137,8 @@ export default class SendController {
 	}
   setMax() {
     this.creater.setMax()
+    if(this.inverted) this.currentInput = this.fiat
+    else this.currentInput = this.balance
     // this.updateBalanceFromAmount()
   }
 }

@@ -12,7 +12,7 @@ import { COLOR } from "utils"
 import { useStore } from "hooks"
 import { RootStackParamList, RootTabParamList } from "types"
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
-import { Proposal, ProposalType } from "core/types/coin/cosmos/Proposal"
+import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { SupportedCoins } from "constants/Coins"
 
 import { CardCommission, Head, ITab, Tabs } from "./components/moleculs"
@@ -29,6 +29,7 @@ type Props = CompositeScreenProps<
 export default observer<Props>(function Stacking({ navigation }) {
 	// ------------ Tabs ----------------
 	const [activeTab, setActiveTab] = useState<ITab>("All")
+	const [activeChain, setActiveChain] = useState<SupportedCoins>(SupportedCoins.BITSONG)
 	const changeActiveTab = (tab: ITab) => setActiveTab(tab) // ????
 
 	const status = useMemo(() => {
@@ -51,25 +52,37 @@ export default observer<Props>(function Stacking({ navigation }) {
 	// -------------- Data -------------
 	const { proposals } = useStore()
 	// const filterdProposals = useMemo<Proposal[]>(() => mock, [status])
+
+	const changeActiveChain = useCallback((chain:SupportedCoins) =>
+	{
+		proposals.addToRecent(chain)
+		setActiveChain(chain)
+	}, [])
+
 	const filterdProposals = useMemo(
-		() => proposals.filterByCoinAndType(SupportedCoins.BITSONG, status).slice(),
-		[status],
+		() => proposals.filterByCoinAndType(activeChain ? activeChain: SupportedCoins.BITSONG, status).slice(),
+		[status, activeChain],
 	)
 	const renderProposals = useCallback<ListRenderItem<Proposal>>(
 		({ item }) => (
 			<TouchableOpacity
+				key={item.id.toString()}
 				style={styles.listItem}
 				onPress={() => navigation.navigate("ProposalDetails", { proposal: item })}
 			>
-				<CardCommission key={item.id.toString()} title={item.title} status={item.status} />
+				<CardCommission key={item.id.toString()} title={item.title} status={item.status} percentage={proposals.votedPercentage(item)} />
 			</TouchableOpacity>
 		),
 		[],
 	)
 
 	// ------------- Actions --------------
-	const navToNew = useCallback(() => navigation.navigate("NewProposal"), [])
-	const openChangeChainModal = useCallback(() => openChangeChain(), [])
+	const navToNew = useCallback(() => navigation.navigate("NewProposal", {
+		chain: activeChain
+	}), [])
+	const openChangeChainModal = useCallback(() => openChangeChain({
+		setActiveChain: changeActiveChain
+	}), [])
 
 	// -------------- Styles --------------
 	const insets = useSafeAreaInsets()
@@ -102,6 +115,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 				// ------------ Styles --------------------
 				style={styles.flatlist}
 				contentContainerStyle={flatlistContentStyle}
+				keyExtractor={(item) => item.id.toString()}
 			/>
 			<Shadow style={animStyles.bottomShadow} invert />
 		</>
@@ -121,66 +135,3 @@ const styles = StyleSheet.create({
 		marginHorizontal: 30,
 	},
 })
-
-const mock: Proposal[] = [
-	{
-		id: "1",
-		chain: SupportedCoins.BITSONG,
-		deposit: new Date(),
-		description: "description",
-		result: { yes: 23, abstain: 42, no: 87, noWithZero: 23 },
-		status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-		submit: new Date(),
-		title: "Increase minimum commission rate to 5%",
-		type: ProposalType.PARAMETER_CHANGE,
-		voting: { end: new Date(), start: new Date(), options: [] },
-	},
-	{
-		id: "1",
-		chain: SupportedCoins.BITSONG,
-		deposit: new Date(),
-		description: "description",
-		result: { yes: 23, abstain: 42, no: 87, noWithZero: 23 },
-		status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-		submit: new Date(),
-		title: "Increase minimum commission rate to 5%",
-		type: ProposalType.PARAMETER_CHANGE,
-		voting: { end: new Date(), start: new Date(), options: [] },
-	},
-	{
-		id: "1",
-		chain: SupportedCoins.BITSONG,
-		deposit: new Date(),
-		description: "description",
-		result: { yes: 23, abstain: 42, no: 87, noWithZero: 23 },
-		status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-		submit: new Date(),
-		title: "Increase minimum commission rate to 5%",
-		type: ProposalType.PARAMETER_CHANGE,
-		voting: { end: new Date(), start: new Date(), options: [] },
-	},
-	{
-		id: "1",
-		chain: SupportedCoins.BITSONG,
-		deposit: new Date(),
-		description: "description",
-		result: { yes: 23, abstain: 42, no: 87, noWithZero: 23 },
-		status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-		submit: new Date(),
-		title: "Increase minimum commission rate to 5%",
-		type: ProposalType.PARAMETER_CHANGE,
-		voting: { end: new Date(), start: new Date(), options: [] },
-	},
-	{
-		id: "1",
-		chain: SupportedCoins.BITSONG,
-		deposit: new Date(),
-		description: "description",
-		result: { yes: 23, abstain: 42, no: 87, noWithZero: 23 },
-		status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-		submit: new Date(),
-		title: "Increase minimum commission rate to 5%",
-		type: ProposalType.PARAMETER_CHANGE,
-		voting: { end: new Date(), start: new Date(), options: [] },
-	},
-]

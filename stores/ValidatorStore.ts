@@ -8,8 +8,10 @@ import { Validator, ValidatorStatus } from "core/types/coin/cosmos/Validator"
 import { CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 import { CoinOperationEnum } from "core/types/coin/OperationTypes"
+import { WalletTypes } from "core/types/storing/Generic"
 import { convertRateFromDenom, fromAmountToCoin } from "core/utils/Coin"
 import { autorun, makeAutoObservable, runInAction, set, toJS } from "mobx"
+import { has } from "utils/mobx"
 import CoinStore from "./CoinStore"
 import WalletStore from "./WalletStore"
 
@@ -41,18 +43,21 @@ export default class ValidatorStore {
 			},
 			{ autoBind: true },
 		)
-
-		autorun(() => {
-			this.update()
+		autorun(() =>
+		{
+			this.loadValidators()
+		})
+		autorun(() =>
+		{
+			this.loadRewardsAndDelegations()
 		})
 	}
 
-	private async load() {
+	private async loadValidators()
+	{
 		let validators: Validator[] = []
-		let rewards: any[] = []
-		let delegations: any[] = []
-		const wallet = this.walletStore.activeWallet
-		for (const chain of Object.values(SupportedCoins)) {
+		for(const chain of Object.values(SupportedCoins))
+		{
 			this.totalVotingPower[chain] = 0
 			try {
 				const coin = CoinClasses[chain]
@@ -72,10 +77,33 @@ export default class ValidatorStore {
 				val = val.filter((v) => v.status.status != ValidatorStatus.INACTIVE)
 				val.forEach((v) => {
 					v.chain = chain
-					console.log(v.id, v.identity)
 					this.totalVotingPower[chain] += v.tokens
 				})
 				validators = validators.concat(val)
+			}
+			catch(e)
+			{
+				console.error("Catched", e)
+			}
+		}
+		validators = validators.sort((v1, v2) => (v2.tokens - v1.tokens))
+		runInAction(() =>
+		{
+			this.validators.splice(0, this.validators.length, ...validators)
+		})
+	}
+
+	private async loadRewardsAndDelegations()
+	{
+		let rewards: any[] = []
+		let delegations: any[] = []
+		const wallet = this.walletStore.activeWallet
+		if(wallet == null) return
+		for(const chain of Object.values(SupportedCoins))
+		{
+			try
+			{
+				const coin = CoinClasses[chain]
 
 				if (wallet) {
 					const rewardsData: RewardsData = {
@@ -93,15 +121,25 @@ export default class ValidatorStore {
 				console.error("Catched", e)
 			}
 		}
-		validators = validators.sort((v1, v2) => v2.tokens - v1.tokens)
-		this.validators.splice(0, this.validators.length, ...validators)
-		this.rewards.splice(0, this.rewards.length, ...rewards)
-		this.delegations.splice(0, this.delegations.length, ...delegations)
+		runInAction(() =>
+		{
+			this.rewards.splice(0, this.rewards.length, ...rewards)
+			this.delegations.splice(0, this.delegations.length, ...delegations)
+		})
 	}
 
-	update() {
-		return new Promise<void>((accept, reject) => {
-			runInAction(async () => {
+	private async load()
+	{
+		await this.loadValidators()
+		this.loadRewardsAndDelegations()
+	}
+
+	update()
+	{
+		return new Promise<void>((accept, reject) =>
+		{
+			runInAction(async () =>
+			{
 				try {
 					await this.load()
 				} catch {
@@ -116,14 +154,20 @@ export default class ValidatorStore {
 		return this.validators.map((v) => v.id)
 	}
 
-	resolveValidator(index: validatorIndexer): Validator | null {
-		if (typeof index == "number") return this.validators[index] ?? null
+	get CanStake()
+	{
+		return this.walletStore.activeProfile?.type != WalletTypes.WATCH
+	}
+
+	resolveValidator(index: validatorIndexer): Validator | null
+	{
+		if(typeof index == "number") return this.validators[index] ?? null
 		const i = this.validators.indexOf(index as any)
 		if (i > -1) return index as Validator
 		if (typeof index == "string") return this.validators.find((v) => v.id == index) ?? null
-		if ("id" in index) return this.validators.find((v) => v.id == index.id) ?? null
-		if ("operator" in index)
-			return this.validators.find((v) => v.operator == index.operator) ?? null
+		if (has(index, "id")) return this.validators.find((v) => v.id == (index as Validator).id) ?? null
+		if (has(index, "operator"))
+			return this.validators.find((v) => v.operator == (index as Validator).operator) ?? null
 		return null
 	}
 
@@ -320,7 +364,10 @@ export default class ValidatorStore {
 	}
 
 	async refreshData() {
-		this.load()
-		this.coinStore.updateBalances()
+		runInAction(() =>
+		{
+			this.load()
+			this.coinStore.updateBalances()
+		})
 	}
 }

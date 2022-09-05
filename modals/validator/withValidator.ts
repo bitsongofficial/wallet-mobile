@@ -20,17 +20,13 @@ export function openDelegateWithValidator(validator: Validator, navigation: Nati
 	controller.setSelectedValidator(validator)
 	openDelegate({
 		controller: controller,
-		onDone() {
+		async onDone() {
 			if(controller.selectedValidator != null)
 			{
-				navigation.push("Loader", {
-					// @ts-ignore
-					callback: async () => {
-						if(controller.selectedValidator) await validators.delegate(controller.selectedValidator, parseFloat(controller.amountInput.value))
-					},
-				})
+				return await validators.delegate(controller.selectedValidator, parseFloat(controller.amountInput.value))
 			}
-	},
+			return false
+		},
 	})
 }
 
@@ -42,14 +38,10 @@ export function openRedelegateWithValidator(validator: Validator, navigation: Na
 
 	openRedelegate({
 		controller,
-		onDone() {
+		async onDone() {
 			const validators = store.validators
-			navigation.push("Loader", {
-				// @ts-ignore
-				callback: async () => {
-					if(controller.from && controller.to) await validators.redelegate(controller.from, controller.to, parseFloat(controller.amountInput.value))
-				},
-			})
+			if(controller.from && controller.to)
+				return await validators.redelegate(controller.from, controller.to, parseFloat(controller.amountInput.value))
 		},
 	})
 }
@@ -62,13 +54,9 @@ export function openUndelegateWithValidator(validator: Validator, navigation: Na
 
 	openUndelegate({
 		controller,
-		onDone() {
-			navigation.push("Loader", {
-				// @ts-ignore
-				callback: async () => {
-					if(controller.from) await validators.undelegate(controller.from, parseFloat(controller.amountInput.value))
-				},
-			})
+		async onDone() {
+			if(controller.from)
+				return await validators.undelegate(controller.from, parseFloat(controller.amountInput.value))
 		},
 	})
 }
