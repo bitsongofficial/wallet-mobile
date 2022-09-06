@@ -19,7 +19,7 @@ import { fromAmountToCoin, fromDenomToCoin } from "core/utils/Coin";
 import { formatNumber } from "utils/numbers";
 import ProposalsStore from "./ProposalsStore";
 import { openDeposit, openVoteRecap } from "modals/proposal";
-import { DepositeController } from "modals/proposal/components/templates";
+import { DepositController } from "modals/proposal/components/templates";
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
@@ -268,8 +268,8 @@ export default class DappConnectionStore {
 		const proposal = this.proposalsStore.resolveProposal(data.proposal)
 		if(proposal)
 		{
-			const controller = new DepositeController()
-			controller.setMinDeposite(this.proposalsStore.minDeposit(proposal))
+			const controller = new DepositController()
+			controller.setMinDeposit(this.proposalsStore.minDeposit(proposal))
 			controller.amountInput.setAmount(fromAmountToCoin(data.amount).toString())
 			controller.steps.goTo("Deposit Recap")
 			openDeposit({
