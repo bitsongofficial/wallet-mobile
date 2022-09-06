@@ -4,7 +4,6 @@ import { Undelegate } from "./components/template"
 import { UndelegateController } from "./controllers"
 import { store } from "stores/Store"
 import { gbs } from "modals"
-import { BackHandler } from "react-native"
 import { SupportedCoins } from "constants/Coins"
 import { navigate } from "navigation/utils"
 
@@ -19,13 +18,12 @@ type Options = {
 const snapPoints = [[600], [450]]
 
 export default async function openUndelegate({ controller, onClose, onDone, onDismiss }: Options) {
-	const status = {done: false}
+	const status = { done: false }
 	const { coin: coinStore } = store
 	const validator = controller.from
-	if(validator)
-	{
+	if (validator) {
 		const coin = coinStore.findAssetWithCoin(validator.chain ?? SupportedCoins.BITSONG)
-		if(coin) controller.amountInput.setCoin(coin)
+		if (coin) controller.amountInput.setCoin(coin)
 	}
 
 	const { steps } = controller
@@ -37,8 +35,6 @@ export default async function openUndelegate({ controller, onClose, onDone, onDi
 
 	const goBack = () => (steps.history.length > 1 ? steps.goBack() : gbs.close())
 
-	gbs.backHandler = goBack
-
 	const close = () => {
 		disposer()
 		gbs.removeBackHandler()
@@ -46,23 +42,32 @@ export default async function openUndelegate({ controller, onClose, onDone, onDi
 		onDismiss && !status.done && onDismiss()
 	}
 
-	await gbs.setProps({
-		snapPoints: snapPoints[controller.steps.active],
-		onClose: close,
-		footerComponent: () => (
-			<FooterUndelegate onPressDone={() =>
-				{
-					status.done = true
-					gbs.close()
-					navigate("Loader", {
-						// @ts-ignore
-						callback: async () => (
-							onDone ? (await onDone()) : false
-						),
-					})
-				}} onPressBack={controller.disableBack ? undefined : goBack} steps={steps} />
-		),
-		children: () => <Undelegate controller={controller} />,
-	})
-	requestAnimationFrame(() => gbs.expand())
+	const done = () => {
+		status.done = true
+		gbs.close()
+		navigate("Loader", {
+			// @ts-ignore
+			callback: async () => (onDone ? await onDone() : false),
+		})
+	}
+
+	const open = async () => {
+		gbs.backHandler = goBack
+
+		await gbs.setProps({
+			snapPoints: snapPoints[controller.steps.active],
+			onClose: close,
+			children: () => <Undelegate controller={controller} />,
+			footerComponent: () => (
+				<FooterUndelegate
+					onPressDone={done}
+					onPressBack={controller.disableBack ? undefined : goBack}
+					steps={steps}
+				/>
+			),
+		})
+		requestAnimationFrame(() => gbs.expand())
+	}
+
+	open()
 }

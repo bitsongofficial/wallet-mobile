@@ -40,7 +40,14 @@ export default observer<Props>(function Stacking({ navigation, route })
 	)
 	const inputDescription = useMemo(() => new InputHandler(route.params.description ?? (savedProposal ? savedProposal.description : "")), [])
 
-	const inputDeposite = useMemo(() => new InputHandler(route.params.initialDeposit?.toString() ?? (savedProposal ? savedProposal.deposit.toString() : "")), [])
+	const inputDeposit = useMemo(
+		() =>
+			new InputHandler(
+				route.params.initialDeposit?.toString() ??
+					(savedProposal ? savedProposal.deposit.toString() : ""),
+			),
+		[],
+	)
 
 	const height = useHeaderHeight()
 
@@ -50,26 +57,27 @@ export default observer<Props>(function Stacking({ navigation, route })
 			route.params.chain ?? SupportedCoins.BITSONG,
 			nameInput.value,
 			inputDescription.value,
-			parseFloat(inputDeposite.value))
+			parseFloat(inputDeposit.value),
+		)
 		goBack()
 	}, [])
 
-	const submitProposal = useCallback(() =>
-	{
-		if(route.params.onDone) route.params.onDone()
-		else navigation.push("Loader", {
-			// @ts-ignore
-			callback: async () =>
-			{
-				const res = await proposals.submit(
-					route.params.chain ?? SupportedCoins.BITSONG,
-					nameInput.value,
-					inputDescription.value,
-					parseFloat(inputDeposite.value))
-				if(res) goBack()
-				return res				
-			},
-		})
+	const submitProposal = useCallback(() => {
+		if (route.params.onDone) route.params.onDone()
+		else
+			navigation.push("Loader", {
+				// @ts-ignore
+				callback: async () => {
+					const res = await proposals.submit(
+						route.params.chain ?? SupportedCoins.BITSONG,
+						nameInput.value,
+						inputDescription.value,
+						parseFloat(inputDeposit.value),
+					)
+					if (res) goBack()
+					return res
+				},
+			})
 	}, [])
 
 	useEffect(() => {
@@ -143,8 +151,8 @@ export default observer<Props>(function Stacking({ navigation, route })
 							}
 							keyboardAppearance="dark"
 							keyboardType="decimal-pad"
-							value={inputDeposite.value}
-							onChangeText={inputDeposite.set}
+							value={inputDeposit.value}
+							onChangeText={inputDeposit.set}
 							style={styles.inputContainer}
 							inputStyle={styles.input}
 							editable={!passive}
