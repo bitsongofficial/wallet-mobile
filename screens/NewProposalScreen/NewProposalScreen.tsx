@@ -2,7 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { StatusBar } from "expo-status-bar"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { BackHandler, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, View } from "react-native"
+import {
+	BackHandler,
+	KeyboardAvoidingView,
+	Platform,
+	SafeAreaView,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native"
 import { RootStackParamList } from "types"
 import { COLOR, hexAlpha, InputHandler } from "utils"
 import { RectButton, ScrollView } from "react-native-gesture-handler"
@@ -15,19 +23,23 @@ import { SupportedCoins } from "constants/Coins"
 
 type Props = NativeStackScreenProps<RootStackParamList, "NewProposal">
 
-export default observer<Props>(function Stacking({ navigation, route })
-{
+export default observer<Props>(function Stacking({ navigation, route }) {
 	console.log(route.params.initialDeposit)
 	const { proposals } = useStore()
 	const savedProposal = proposals.proposalDraft
-	const goBack = useCallback(() =>
-	{
-		if(route.params.onDismiss) route.params.onDismiss()
+	const goBack = useCallback(() => {
+		if (route.params.onDismiss) route.params.onDismiss()
 		navigation.goBack()
 	}, [])
 	const passive = route.params.passive ?? false
 
-	const nameInput = useMemo(() => new InputHandler(route.params.title ?? (savedProposal ? savedProposal.title : "My super proposal")), [])
+	const nameInput = useMemo(
+		() =>
+			new InputHandler(
+				route.params.title ?? (savedProposal ? savedProposal.title : "My super proposal"),
+			),
+		[],
+	)
 
 	const [typology, setTypology] = useState<"text">("text")
 	const openChooseProposalTypologyModal = useCallback(
@@ -38,7 +50,13 @@ export default observer<Props>(function Stacking({ navigation, route })
 			}),
 		[typology],
 	)
-	const inputDescription = useMemo(() => new InputHandler(route.params.description ?? (savedProposal ? savedProposal.description : "")), [])
+	const inputDescription = useMemo(
+		() =>
+			new InputHandler(
+				route.params.description ?? (savedProposal ? savedProposal.description : ""),
+			),
+		[],
+	)
 
 	const inputDeposit = useMemo(
 		() =>
@@ -51,8 +69,7 @@ export default observer<Props>(function Stacking({ navigation, route })
 
 	const height = useHeaderHeight()
 
-	const saveProposalDraft = useCallback(() =>
-	{
+	const saveProposalDraft = useCallback(() => {
 		proposals.saveProposalDraft(
 			route.params.chain ?? SupportedCoins.BITSONG,
 			nameInput.value,
@@ -174,14 +191,16 @@ export default observer<Props>(function Stacking({ navigation, route })
 						/>
 					</ScrollView>
 				</KeyboardAvoidingView>
-				<View style={[styles.footer, passive ? {justifyContent: "flex-end"} : undefined]}>
-					{!passive && <Button
-						text="Save draft"
-						mode="fill"
-						textStyle={styles.buttonText}
-						contentContainerStyle={styles.buttonContentFill}
-						onPress={saveProposalDraft}
-					/>}
+				<View style={[styles.footer, passive ? { justifyContent: "flex-end" } : undefined]}>
+					{!passive && (
+						<Button
+							text="Save draft"
+							mode="fill"
+							textStyle={styles.buttonText}
+							contentContainerStyle={styles.buttonContentFill}
+							onPress={saveProposalDraft}
+						/>
+					)}
 					<Button
 						text="Publish"
 						textStyle={styles.buttonText}

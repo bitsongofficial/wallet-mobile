@@ -11,6 +11,7 @@ import {
 import { TextInput } from "react-native-gesture-handler"
 import { useTheme } from "hooks"
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet"
+import { COLOR } from "utils"
 
 type Props = TextInputProps & {
 	style?: StyleProp<ViewStyle>
@@ -18,39 +19,76 @@ type Props = TextInputProps & {
 	autocomplite?: string | null
 	bottomsheet?: boolean
 	Right?: JSX.Element
+
+	errorMessage?: string | false
 }
 
-export default ({ inputStyle, style, autocomplite, bottomsheet, Right, ...props }: Props) => {
+const LINE_HEIGHT = 18
+const BORDER_RADIUS = 50
+
+export default ({
+	inputStyle,
+	style,
+	autocomplite,
+	bottomsheet,
+	Right,
+	errorMessage,
+	...props
+}: Props) => {
 	const theme = useTheme()
 	const Component = useMemo(() => (bottomsheet ? BottomSheetTextInput : TextInput), [bottomsheet])
 
+	const autocomplitPosition = useMemo(
+		() =>
+			inputStyle?.height
+				? {
+						top: inputStyle?.height / 2 - LINE_HEIGHT / 2,
+				  }
+				: undefined,
+		[inputStyle?.height],
+	)
+
+	const errorBorder = useMemo<false | ViewStyle>(
+		() =>
+			!!errorMessage && {
+				borderWidth: 1,
+				borderColor: COLOR.Pink3,
+			},
+		[errorMessage],
+	)
+
 	return (
-		<View style={[styles.container, theme.input.container, style]}>
+		<View style={[styles.container, theme.input.container, errorBorder, style]}>
 			{autocomplite && (
-				<Text style={[theme.input.autocomplite, styles.autocomplite]}>{autocomplite}</Text>
+				<Text style={[theme.input.autocomplite, styles.autocomplite, autocomplitPosition]}>
+					{autocomplite}
+				</Text>
 			)}
+
 			<View style={styles.row}>
 				<Component
-					style={[theme.input.component, styles.component, inputStyle]}
+					style={[theme.input.component, styles.input, inputStyle]}
 					placeholderTextColor={theme.input.placeholder}
 					{...props}
 				/>
 				{Right}
 			</View>
+
+			<Text style={styles.error}>{errorMessage}</Text>
 		</View>
 	)
 }
 
 const styles = StyleSheet.create({
 	container: {
-		borderRadius: 50,
-		overflow: "hidden",
+		borderRadius: BORDER_RADIUS,
+		width: "100%",
 	},
 	row: {
 		flexDirection: "row",
-		flex: 1,
+		overflow: "hidden",
 	},
-	component: {
+	input: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
@@ -58,7 +96,7 @@ const styles = StyleSheet.create({
 		// https://stackoverflow.com/a/68458803
 		paddingHorizontal: 24,
 		paddingVertical: 19,
-		height: 18,
+		height: LINE_HEIGHT,
 		flex: 1,
 	},
 	autocomplite: {
@@ -67,8 +105,22 @@ const styles = StyleSheet.create({
 		fontStyle: "normal",
 		fontWeight: "400",
 		fontSize: 14,
-		lineHeight: 18,
+		lineHeight: LINE_HEIGHT,
 		top: 19,
 		left: 25,
+	},
+
+	error: {
+		position: "absolute",
+		bottom: -24,
+		left: 24,
+
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "500",
+		fontSize: 12,
+		lineHeight: 15,
+
+		color: COLOR.Pink2,
 	},
 })

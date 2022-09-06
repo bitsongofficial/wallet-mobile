@@ -1,6 +1,6 @@
 import { FC, forwardRef, useCallback } from "react"
 import { StyleSheet, View } from "react-native"
-import { observer } from "mobx-react-lite"
+import { Observer, observer } from "mobx-react-lite"
 import {
 	BottomSheetModalMethods,
 	BottomSheetMethods,
@@ -14,6 +14,7 @@ import DefaultBottomSheet, {
 } from "@gorhom/bottom-sheet"
 import { useTheme } from "hooks"
 import { COLOR } from "utils"
+import { gav } from "modals"
 
 type PropsModal = BottomSheetModalProps
 
@@ -57,11 +58,15 @@ export const BottomSheetObserver = observer(
 
 		const renderBackdrop = useCallback<FC<BottomSheetBackdropProps>>(
 			(bProps) => (
-				<BottomSheetBackdrop
-					{...bProps}
-					disappearsOnIndex={-1}
-					appearsOnIndex={0}
-					style={[styles.backdrop, bProps.style]}
+				<Observer
+					render={() => (
+						<BottomSheetBackdrop
+							{...bProps}
+							disappearsOnIndex={gav.isShow ? 0 : -1}
+							appearsOnIndex={0}
+							style={[styles.backdrop, bProps.style]}
+						/>
+					)}
 				/>
 			),
 			[],

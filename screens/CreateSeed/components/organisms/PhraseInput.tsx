@@ -1,102 +1,102 @@
-import { useEffect, useRef } from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { observer } from "mobx-react-lite";
-import { COLOR } from "utils";
-import { Phrase } from "classes";
-import { Input, Word } from "components/atoms";
+import { useEffect, useRef } from "react"
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
+import { ScrollView } from "react-native-gesture-handler"
+import { observer } from "mobx-react-lite"
+import { COLOR } from "utils"
+import { Phrase } from "classes"
+import { Input, Word } from "components/atoms"
 
 type Props = {
-  phrase: Phrase;
-  inputStyle?: StyleProp<ViewStyle>;
-  scrollStyle?: StyleProp<ViewStyle>;
-  bottomsheet?: boolean;
-};
+	phrase: Phrase
+	inputStyle?: StyleProp<ViewStyle>
+	scrollStyle?: StyleProp<ViewStyle>
+	bottomsheet?: boolean
+}
 
-export default observer(
-  ({ phrase, inputStyle, scrollStyle, bottomsheet }: Props) => {
-    const scrollview = useRef<ScrollView>(null);
+export default observer(({ phrase, inputStyle, scrollStyle, bottomsheet }: Props) => {
+	const scrollview = useRef<ScrollView>(null)
 
-    useEffect(() => {
-      const lastLenght = phrase.words.length;
+	useEffect(() => {
+		const lastLenght = phrase.words.length
 
-      return () => {
-        if (lastLenght < phrase.words.length) {
-          scrollview.current?.scrollToEnd(); // TODO: fix for full end
-        }
-      };
-    }, [phrase.words.length]);
+		return () => {
+			if (lastLenght < phrase.words.length) {
+				scrollview.current?.scrollToEnd() // TODO: fix for full end
+			}
+		}
+	}, [phrase.words.length])
 
-    return (
-      <>
-        <View style={scrollStyle}>
-          {!!phrase.words.length && (
-            <ScrollView
-              horizontal
-              ref={scrollview}
-              style={styles.scrollview}
-              contentContainerStyle={styles.scrollviewContent}
-            >
-              {phrase.words.map((word, index) => (
-                <Word
-                  text={word}
-                  style={styles.word}
-                  index={index + 1}
-                  key={index}
-                  isActive={index === phrase.activeIndex}
-                  onPress={() => phrase.setActiveIndex(index)}
-                />
-              ))}
-            </ScrollView>
-          )}
-        </View>
-        <View style={inputStyle}>
-          <Text style={styles.text}>Word #{phrase.words.length + 1}</Text>
-          <Input
-            blurOnSubmit={false}
-            bottomsheet={bottomsheet}
-            value={phrase.inputValue}
-            onChangeText={phrase.inputSet}
-            onSubmitEditing={phrase.inputSubmit}
-            keyboardAppearance="dark" // TODO: theme me
-            autocomplite={phrase.hint}
-            autoCorrect={false}
-            autoCapitalize="none"
-            autoCompleteType="off"
-            autoFocus
-          />
-        </View>
-      </>
-    );
-  }
-);
+	return (
+		<>
+			<View style={scrollStyle}>
+				{!!phrase.words.length && (
+					<ScrollView
+						horizontal
+						ref={scrollview}
+						style={styles.scrollview}
+						contentContainerStyle={styles.scrollviewContent}
+					>
+						{phrase.words.map((word, index) => (
+							<Word
+								text={word}
+								style={styles.word}
+								index={index + 1}
+								key={index}
+								isActive={index === phrase.activeIndex}
+								onPress={() => phrase.setActiveIndex(index)}
+							/>
+						))}
+					</ScrollView>
+				)}
+			</View>
+			<View style={inputStyle}>
+				<Text style={styles.text}>Word #{phrase.words.length + 1}</Text>
+				<Input
+					blurOnSubmit={false}
+					bottomsheet={bottomsheet}
+					value={phrase.inputValue}
+					onChangeText={phrase.inputSet}
+					onSubmitEditing={phrase.inputSubmit}
+					keyboardAppearance="dark" // TODO: theme me
+					autocomplite={phrase.hint}
+					inputStyle={{ height: 62 }}
+					style={{ borderRadius: 20 }}
+					autoCorrect={false}
+					autoCapitalize="none"
+					autoCompleteType="off"
+					autoFocus
+				/>
+			</View>
+		</>
+	)
+})
 
 const styles = StyleSheet.create({
-  paste: {
-    width: 65,
-    marginTop: 24,
-    marginBottom: 40,
-  },
+	paste: {
+		width: 65,
+		marginTop: 24,
+		marginBottom: 40,
+	},
 
-  scrollview: {
-    paddingVertical: 5,
-    marginBottom: 35,
-    flexGrow: 1,
-  },
-  scrollviewContent: {
-    paddingHorizontal: 30,
-    height: 50,
-  },
+	scrollview: {
+		paddingVertical: 5,
+		marginBottom: 35,
+		flexGrow: 1,
+	},
+	scrollviewContent: {
+		paddingHorizontal: 30,
+		height: 50,
+	},
 
-  word: { marginRight: 10 },
+	word: { marginRight: 10 },
 
-  text: {
-    fontFamily: "CircularStd",
-    fontStyle: "normal",
-    fontWeight: "400",
-    fontSize: 12,
-    lineHeight: 15,
-    color: COLOR.Marengo,
-    marginBottom: 12,
-  },
-});
+	text: {
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "400",
+		fontSize: 12,
+		lineHeight: 15,
+		color: COLOR.Marengo,
+		marginBottom: 12,
+	},
+})

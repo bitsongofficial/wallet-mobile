@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react"
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { RectButton, Swipeable } from "react-native-gesture-handler"
-import { BottomSheetFlatList, BottomSheetScrollView } from "@gorhom/bottom-sheet"
+import { FlatList, RectButton, Swipeable } from "react-native-gesture-handler"
+import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet"
 import { observable } from "mobx"
 import { observer } from "mobx-react-lite"
 import { useStore } from "hooks"
@@ -47,10 +47,8 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 
 	const removeEdited = useCallback(() => setEdited(null), [])
 
-	const onPressDelete = useCallback(() =>
-	{
-		if(edited)
-		{
+	const onPressDelete = useCallback(() => {
+		if (edited) {
 			wallet.deleteProfile(edited)
 			close()
 		}
@@ -87,7 +85,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 	)
 
 	return (
-		<View style={styles.container}>
+		<BottomSheetView style={styles.container}>
 			{steps.active === 0 && (
 				<>
 					<View style={styles.wrapper}>
@@ -109,7 +107,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
                   <Switch gradient />
                 </View> */}
 
-					<BottomSheetFlatList
+					<FlatList
 						data={filtred}
 						keyExtractor={keyExtractor}
 						renderItem={renderWallets}
@@ -203,7 +201,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 					</BottomSheetScrollView>
 				</View>
 			)}
-		</View>
+		</BottomSheetView>
 	)
 })
 
@@ -215,9 +213,10 @@ type FooterProps = {
 
 export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, controller }) => {
 	const insent = useSafeAreaInsets()
-	const copyToClipboard = useCallback(async () => {
-		await Clipboard.setStringAsync(controller.seedPhrase.join(" "))
-	}, [])
+	const copyToClipboard = useCallback(
+		() => Clipboard.setStringAsync(controller.seedPhrase.join(" ")),
+		[],
+	)
 	return (
 		<View style={[styles.buttons, { bottom: insent.bottom }]}>
 			{controller.steps.active === 0 && (
@@ -248,7 +247,7 @@ export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, contr
 
 const styles = StyleSheet.create({
 	container: {
-		flexGrow: 1,
+		flex: 1,
 		height: Dimensions.get("screen").height * 0.9,
 		marginTop: 15,
 	},
@@ -331,7 +330,7 @@ const styles = StyleSheet.create({
 	},
 	scrollContent: {
 		paddingTop: 9,
-		paddingBottom: 50,
+		paddingBottom: 70,
 	},
 
 	phrase: {

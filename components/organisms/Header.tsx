@@ -8,18 +8,21 @@ import { COLOR } from "utils"
 import { useStore } from "hooks"
 import { RootStackParamList } from "types"
 import { Icon } from "components/atoms"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 type Props = {
 	style?: StyleProp<ViewStyle>
-	navigation: NativeStackNavigationProp<RootStackParamList>
+	navigation?: NativeStackNavigationProp<RootStackParamList>
 } & (BottomTabHeaderProps | NativeStackHeaderProps)
 
-export default observer(function Header({ navigation, style, options, ...props }: Props) {
+export default observer(function Header({ navigation, style }: Props) {
 	const { wallet } = useStore()
 	const openProfile = useCallback(() => navigation?.navigate("Profile"), [])
 
+	const insets = useSafeAreaInsets()
+
 	return (
-		<Animated.View style={[styles.container, options?.headerStyle, style]}>
+		<Animated.View style={[styles.container, style, { paddingTop: insets.top }]}>
 			<View style={styles.header}>
 				<View style={styles.right}>
 					<Icon name="cosmo" size={40} />
@@ -47,15 +50,13 @@ export default observer(function Header({ navigation, style, options, ...props }
 
 const styles = StyleSheet.create({
 	container: {
-		width: "100%",
 		backgroundColor: COLOR.Dark3,
-		justifyContent: "flex-end",
 	},
 	header: {
 		flexDirection: "row",
 		paddingHorizontal: 25,
 		justifyContent: "space-between",
-		paddingVertical: 15,
+		paddingVertical: 10,
 	},
 	right: {},
 	center: {

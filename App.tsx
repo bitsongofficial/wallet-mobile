@@ -1,7 +1,7 @@
 import "./shim"
 
 import { StatusBar } from "expo-status-bar"
-import { Platform, StyleSheet, View, BackHandler } from "react-native"
+import { Platform, StyleSheet, View, BackHandler, Text } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { configure, toJS } from "mobx"
@@ -15,7 +15,8 @@ import FullscreenOverlay from "components/atoms/FullscreenOverlay"
 import { Loader } from "components/atoms"
 import { useGlobalBottomsheet, useLoading, useTheme } from "hooks"
 import { observer } from "mobx-react-lite"
-import { BottomSheet } from "components/moleculs"
+import { AlertView, BottomSheet } from "components/moleculs"
+import { gav as globalAlert } from "modals"
 
 configure({ useProxies: "ifavailable" })
 
@@ -51,8 +52,8 @@ const App = observer(() => {
 		return (
 			<GestureHandlerRootView style={[styles.gestureHandler, theme.appBackground]}>
 				<SafeAreaProvider>
-					<Navigation colorScheme={colorScheme} />
 					<StatusBar />
+					<Navigation colorScheme={colorScheme} />
 
 					<FullscreenOverlay showing={loading.isOpen}>
 						<View style={styles.loaderContainer}>
@@ -60,6 +61,7 @@ const App = observer(() => {
 						</View>
 					</FullscreenOverlay>
 
+					{globalAlert.isShow && <AlertView message={globalAlert.message} />}
 					<BottomSheet
 						{...toJS(bottomsheet.defaultProps)}
 						{...toJS(bottomsheet.props)}

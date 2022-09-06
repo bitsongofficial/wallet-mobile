@@ -23,6 +23,8 @@ enum COLOR {
 	GreenCrayola = "#12A481",
 	BlueCrayola = "#9B9BC1",
 	Pink = "#DC004F",
+	Pink2 = "#EC0259",
+	Pink3 = "#FF015C",
 
 	LightGreyBlue = "#67BAB0",
 	PearlBlackberry = "#656476",

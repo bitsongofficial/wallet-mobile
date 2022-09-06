@@ -23,9 +23,6 @@ export default () => (
 			tabBar={(props) => <MainTabBar {...props} />}
 			screenOptions={{
 				header: (props) => <Header {...props} />,
-				headerStyle: {
-					height: 110,
-				},
 				headerTransparent: true,
 				tabBarStyle: { position: "absolute" },
 				tabBarShowLabel: false,

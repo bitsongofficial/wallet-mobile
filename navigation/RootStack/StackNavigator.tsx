@@ -17,9 +17,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 
 const WithHeaderOption: NativeStackNavigationOptions = {
 	headerShown: true,
-	headerStyle: {
-		height: 110,
-	},
 	header: (props: NativeStackHeaderProps) => <Header {...props} />,
 }
 

@@ -4,7 +4,7 @@ import {
 	StyleProp,
 	StyleSheet,
 	Text,
-	TouchableOpacity,
+	TouchableWithoutFeedback,
 	View,
 	ViewStyle,
 } from "react-native"
@@ -29,7 +29,7 @@ export default ({ index, text, style, hidden, onPress, isActive }: Props) => {
 		[text, onPress],
 	)
 	return (
-		<TouchableOpacity onPress={handlePress}>
+		<TouchableWithoutFeedback onPress={handlePress}>
 			<View
 				style={[
 					styles.container,
@@ -41,7 +41,7 @@ export default ({ index, text, style, hidden, onPress, isActive }: Props) => {
 				<Text style={[styles.index, hidden && styles.hidden]}>{index}.</Text>
 				<Text style={[styles.text, hidden && styles.hidden]}>{text}</Text>
 			</View>
-		</TouchableOpacity>
+		</TouchableWithoutFeedback>
 	)
 }
 
