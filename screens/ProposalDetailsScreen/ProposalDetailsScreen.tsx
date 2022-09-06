@@ -22,7 +22,7 @@ import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 import { toJS } from "mobx"
 import Config from "react-native-config"
 import { formatNumber } from "utils/numbers"
-import { DepositeController } from "modals/proposal/components/templates"
+import { DepositController } from "modals/proposal/components/templates"
 import { store } from "stores/Store"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ProposalDetails">
@@ -78,7 +78,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 	const actionMap = useMemo(() => ({
 		[ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]: () =>
 		{
-			const controller = new DepositeController()
+			const controller = new DepositController()
 			return openDeposit({
 				proposal,
 				controller,

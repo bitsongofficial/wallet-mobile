@@ -2,7 +2,7 @@ import { StyleProp, StyleSheet, ViewStyle } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { COLOR } from "utils"
-import { StepDepositeSetAmount, StepDepositeRecap } from "../moleculs"
+import { StepDepositSetAmount, StepDepositRecap } from "../moleculs"
 import { BottomSheetHeader, Pagination } from "components/moleculs"
 import { makeAutoObservable } from "mobx"
 import { AmountInput, Steps } from "classes"
@@ -13,25 +13,25 @@ import { SupportedCoins } from "constants/Coins"
 
 // -------------- Controller ---------------------
 
-export class DepositeController {
+export class DepositController {
 	steps = new Steps(["Deposit", "Deposit Recap"])
 	amountInput = new AmountInput()
 
-	minDeposite: null | number = null
+	minDeposit: null | number = null
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
-	setMinDeposite(value: number) {
-		this.minDeposite = value
+	setMinDeposit(value: number) {
+		this.minDeposit = value
 	}
 }
 
 // -------------- Template ---------------------
 
 type Props = {
-	controller: DepositeController
+	controller: DepositController
 	proposal: Proposal
 }
 
@@ -47,8 +47,8 @@ export default observer<Props>(({ controller, proposal }) => {
 			/>
 
 			{steps.active === 0 && amountInput.coin && (
-				<StepDepositeSetAmount
-					min={controller.minDeposite}
+				<StepDepositSetAmount
+					min={controller.minDeposit}
 					coin={amountInput.coin}
 					amount={amountInput.value}
 					onPressDelNum={amountInput.removeAmountNumber}
@@ -57,11 +57,13 @@ export default observer<Props>(({ controller, proposal }) => {
 				/>
 			)}
 
-			{steps.active === 1 &&
-				<StepDepositeRecap
+			{steps.active === 1 && (
+				<StepDepositRecap
 					amount={controller.amountInput.value}
 					chain={proposal.chain ?? SupportedCoins.BITSONG}
-					proposalId={proposal.id} />}
+					proposalId={proposal.id}
+				/>
+			)}
 		</BottomSheetView>
 	)
 })
@@ -72,13 +74,13 @@ type FooterProps = {
 	onPressBack(): void
 	onPressDone(): void
 	style?: StyleProp<ViewStyle>
-	controller: DepositeController
+	controller: DepositController
 }
 
 export const FooterDeposit = observer(
 	({ onPressBack, onPressDone, controller, style }: FooterProps) => {
 		const insets = useSafeAreaInsets()
-		const { steps, minDeposite, amountInput } = controller
+		const { steps, minDeposit, amountInput } = controller
 		return (
 			<Footer
 				style={[{ marginBottom: insets.bottom + 16 }, style]}
@@ -97,7 +99,7 @@ export const FooterDeposit = observer(
 					steps.active === 0 && (
 						<Button
 							text="Continue"
-							disable={!!minDeposite && Number(amountInput.value) < minDeposite}
+							disable={!!minDeposit && Number(amountInput.value) < minDeposit}
 							contentContainerStyle={styles.buttonContent}
 							textStyle={styles.buttonText}
 							onPress={steps.next}

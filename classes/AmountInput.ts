@@ -3,12 +3,24 @@ import { makeAutoObservable } from "mobx"
 
 export default class AmountInput {
 	coin: Coin | null = null
-	value: string = "" // usd
 
-	constructor() {
+	/**
+	 *	value of type string, because the class is designed
+	 *  to interact with the component components/molecules/Numpad
+	 */
+	value: string = "" // usd
+	constructor(
+		/** Explicitly specified maximum input value  */
+		public maxValue: number | null = null,
+	) {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
+	updMaxValue(value?: number | null) {
+		if (value) {
+			this.maxValue = value
+		}
+	}
 	setCoin(coin: Coin) {
 		this.coin = coin
 	}
@@ -16,7 +28,9 @@ export default class AmountInput {
 		this.value = value
 	}
 	setMax() {
-		if (this.coin?.balance) {
+		if (this.maxValue) {
+			this.value = this.maxValue.toString()
+		} else if (this.coin?.balance) {
 			this.value = this.coin.balance.toString()
 		}
 	}
@@ -29,11 +43,14 @@ export default class AmountInput {
 			const nextAmount = value + num
 			const balance = coin?.balance
 
-			balance == undefined || balance < Number(nextAmount)
-				?
+			if (
+				(this.maxValue !== null && this.maxValue < Number(nextAmount)) ||
+				(balance !== undefined && balance < Number(nextAmount))
+			) {
 				this.setMax()
-				:
+			} else {
 				this.setAmount(nextAmount)
+			}
 		}
 	}
 

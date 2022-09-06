@@ -58,7 +58,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 		[],
 	)
 
-	const inputDeposite = useMemo(
+	const inputDeposit = useMemo(
 		() =>
 			new InputHandler(
 				route.params.initialDeposit?.toString() ??
@@ -74,7 +74,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 			route.params.chain ?? SupportedCoins.BITSONG,
 			nameInput.value,
 			inputDescription.value,
-			parseFloat(inputDeposite.value),
+			parseFloat(inputDeposit.value),
 		)
 		goBack()
 	}, [])
@@ -89,7 +89,7 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 						route.params.chain ?? SupportedCoins.BITSONG,
 						nameInput.value,
 						inputDescription.value,
-						parseFloat(inputDeposite.value),
+						parseFloat(inputDeposit.value),
 					)
 					if (res) goBack()
 					return res
@@ -168,8 +168,8 @@ export default observer<Props>(function Stacking({ navigation, route }) {
 							}
 							keyboardAppearance="dark"
 							keyboardType="decimal-pad"
-							value={inputDeposite.value}
-							onChangeText={inputDeposite.set}
+							value={inputDeposit.value}
+							onChangeText={inputDeposit.set}
 							style={styles.inputContainer}
 							inputStyle={styles.input}
 							editable={!passive}
