@@ -17,8 +17,8 @@ import { observable, toJS } from "mobx"
 import { RootStackParamList } from "types"
 import { useStore } from "hooks"
 import { COLOR, hexAlpha, InputHandler } from "utils"
-import { Button, Icon2, ThemedGradient } from "components/atoms"
-import { Circles, Search, Subtitle, Title } from "./components/atoms"
+import { Button, Icon2, Input, ThemedGradient } from "components/atoms"
+import { Circles, Subtitle, Title } from "./components/atoms"
 import { ContactItem } from "./components/moleculs"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
 import { useBottomSheetModals } from "./hooks"
@@ -87,11 +87,18 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 							onPressPlus={openModal.addContact}
 						/>
 						<View style={[styles.wrapper]}>
-							<Search
+							<Input
 								value={inputSearch.value}
 								onChangeText={inputSearch.set}
 								placeholder="Search Address"
-								bottomsheet={false}
+								style={styles.search}
+								inputStyle={styles.searchInput}
+								placeholderTextColor={COLOR.PaleCornflowerBlue}
+								Right={
+									<View style={styles.searchIconContainer}>
+										<Icon2 name="loupe" stroke={COLOR.PaleCornflowerBlue} size={21} />
+									</View>
+								}
 							/>
 						</View>
 
@@ -232,5 +239,18 @@ const styles = StyleSheet.create({
 	bottomSheetBackground: {
 		backgroundColor: COLOR.Dark3,
 		paddingTop: 30,
+	},
+	//
+	search: {
+		backgroundColor: hexAlpha(COLOR.Lavender, 10),
+		borderRadius: 20,
+	},
+	searchInput: {
+		height: 62,
+	},
+	searchIconContainer: {
+		paddingHorizontal: 25,
+		alignItems: "center",
+		justifyContent: "center",
 	},
 })
