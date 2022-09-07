@@ -6,6 +6,7 @@ import { CheckMethod, NotifSettings } from "./type"
 import LocalStorageManager from "./LocalStorageManager"
 import { clearPin, savePin } from "utils/biometrics"
 import { askPin } from "navigation/AskPin"
+import { TimerCountdown } from "classes"
 
 export default class SettingsStore {
 	localStorageManager?: LocalStorageManager
@@ -21,8 +22,18 @@ export default class SettingsStore {
 		history: 10,
 	}
 
+	blockingTimer = new TimerCountdown()
+
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
+
+		// timer
+		// this.localStorageManager?.loadBlockingDate().then((date) => {
+		// 	if (date) {
+		// 		this.blockingTimer.setFinish(date)
+		// 		this.blockingTimer.start()
+		// 	}
+		// })
 	}
 
 	setTheme(theme: "light" | "dark") {
@@ -61,5 +72,19 @@ export default class SettingsStore {
 			const res = await clearPin()
 			if (res) this.setBiometricInternal(biometric_enable)
 		}
+	}
+
+	blockApp(value: Date | number) {
+		if (value instanceof Date) {
+			this.blockingTimer.setFinish(value)
+		} else {
+			this.blockingTimer.setFinishTime(value)
+		}
+		this.blockingTimer.start()
+		// this.localStorageManager?.saveBlockingEndDate(this.blockingTimer.finish?.toDate())
+	}
+
+	get isAppBlock() {
+		return this.blockingTimer.isActive
 	}
 }
