@@ -3,16 +3,18 @@ import { COLOR } from "utils"
 import { Button } from "components/atoms"
 import { Numpad } from "components/moleculs"
 import { Coin } from "classes"
+import { getAssetTag } from "core/utils/Coin"
 
 type Props = {
 	onPressNum(num: string): void
 	onPressDelNum(): void
 	onPressMax(): void
 	amount: string
+	available?: string
 	coin: Coin
 }
 
-export default ({ onPressMax, onPressNum, onPressDelNum, amount, coin }: Props) => {
+export default ({ onPressMax, onPressNum, onPressDelNum, amount, coin, available }: Props) => {
 	return (
 		<>
 			<View>
@@ -26,7 +28,7 @@ export default ({ onPressMax, onPressNum, onPressDelNum, amount, coin }: Props) 
 						/>
 					</View>
 				</View>
-				<Text style={styles.avalibale}>Available: {coin.balance} BTSG</Text>
+				{available && <Text style={styles.avalibale}>Available: {available} {getAssetTag(coin.info.coin)}</Text>}
 			</View>
 			<Numpad style={styles.numpad} onPress={onPressNum} onPressRemove={onPressDelNum} />
 		</>
