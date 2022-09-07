@@ -11,15 +11,17 @@ import {
 } from "@react-navigation/native";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
+import { RootStackParamList } from "types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import RootStack from "./RootStack";
 import { navigationRef } from "./utils";
 
 type Props = {
   colorScheme: ColorSchemeName;
+  initialRouteName?: keyof RootStackParamList
 };
 
-export default function Navigation({ colorScheme }: Props) {
+export default function Navigation({ colorScheme, initialRouteName }: Props) {
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
@@ -27,7 +29,7 @@ export default function Navigation({ colorScheme }: Props) {
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
       ref={navigationRef}
     >
-      <RootStack />
+      <RootStack initialRouteName={initialRouteName} />
     </NavigationContainer>
   );
 }

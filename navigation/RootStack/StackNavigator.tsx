@@ -20,9 +20,9 @@ const WithHeaderOption: NativeStackNavigationOptions = {
 	header: (props: NativeStackHeaderProps) => <Header {...props} />,
 }
 
-export default () => (
+export default ({initialRouteName}: {initialRouteName?:keyof RootStackParamList}) => (
 	<BottomSheetModalProvider>
-		<Stack.Navigator screenOptions={{ headerShown: false }}>
+		<Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRouteName}>
 			{/* not auth */}
 			<Stack.Screen name="Splash" component={Screens.Splash} />
 			<Stack.Screen name="Start" component={Screens.Start} />
