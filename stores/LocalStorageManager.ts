@@ -25,6 +25,7 @@ const active_wallet_id = "active_wallet"
 const proposal_draft_location = "proposal_draft"
 const recent_recipients_location = "recent_recipients"
 const recent_proposal_chains_location = "recent_proposal_chains"
+const blocking_date = "blocking_date"
 
 type connectionRaw = {
 	session: IWalletConnectSession,
@@ -443,5 +444,21 @@ export default class LocalStorageManager
 					}
 				}),
 		])
+	}
+	
+	// for example
+	saveBlockingEndDate(date?: Date | null) {
+		AsyncStorageLib.setItem(blocking_date, JSON.stringify(date))
+	}
+
+	async loadBlockingDate() {
+		const row = await AsyncStorageLib.getItem(blocking_date)
+		if (row) {
+			try {
+				return new Date(JSON.parse(row))
+			} catch (error) {
+				return null
+			}
+		}
 	}
 }
