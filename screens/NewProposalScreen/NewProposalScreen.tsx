@@ -24,7 +24,6 @@ import { SupportedCoins } from "constants/Coins"
 type Props = NativeStackScreenProps<RootStackParamList, "NewProposal">
 
 export default observer<Props>(function Stacking({ navigation, route }) {
-	console.log(route.params.initialDeposit)
 	const { proposals } = useStore()
 	const savedProposal = proposals.proposalDraft
 	const goBack = useCallback(() => {

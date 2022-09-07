@@ -60,7 +60,7 @@ export default class SettingsStore {
     if(!this.biometric_enable && biometric_enable)
     {
       const actualPin = pin ?? await askPin()
-      if(actualPin != "")
+      if(actualPin !== "")
       {
         await savePin(actualPin)
         this.setBiometricInternal(biometric_enable)

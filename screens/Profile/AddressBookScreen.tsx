@@ -69,8 +69,6 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 	const inputSearch = useMemo(() => new InputHandler(), [])
 	const sectionData = contacts.labelContacts(contacts.contacts, inputSearch.value)
 
-	console.log(toJS(contacts.contacts))
-
 	useEffect(() => inputSearch.clear, [])
 
 	return (
