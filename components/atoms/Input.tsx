@@ -13,7 +13,7 @@ import { useTheme } from "hooks"
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet"
 import { COLOR } from "utils"
 
-type Props = TextInputProps & {
+export type Props = TextInputProps & {
 	style?: StyleProp<ViewStyle>
 	inputStyle?: StyleProp<TextStyle>
 	autocomplite?: string | null
@@ -58,7 +58,7 @@ export default ({
 	)
 
 	return (
-		<View style={[styles.container, theme.input.container, errorBorder, style]}>
+		<View style={[styles.container, theme.input.container, style, errorBorder]}>
 			{autocomplite && (
 				<Text style={[theme.input.autocomplite, styles.autocomplite, autocomplitPosition]}>
 					{autocomplite}
@@ -74,10 +74,16 @@ export default ({
 				{Right}
 			</View>
 
-			<Text style={styles.error}>{errorMessage}</Text>
+			{errorMessage && <ErrorMessage message={errorMessage} />}
 		</View>
 	)
 }
+
+type ErrorMessageProps = {
+	message: string
+}
+
+const ErrorMessage = ({ message }: ErrorMessageProps) => <Text style={styles.error}>{message}</Text>
 
 const styles = StyleSheet.create({
 	container: {
@@ -112,7 +118,7 @@ const styles = StyleSheet.create({
 
 	error: {
 		position: "absolute",
-		bottom: -24,
+		bottom: -19,
 		left: 24,
 
 		fontFamily: "CircularStd",
