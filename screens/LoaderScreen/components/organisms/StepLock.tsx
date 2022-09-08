@@ -1,25 +1,34 @@
 import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
-import { Timer } from "classes"
+import { TimerCountdown } from "classes"
 import { COLOR } from "utils"
 import { Title, Caption } from "../atoms"
 import { observer } from "mobx-react-lite"
+import { useEffect, useState } from "react"
 
 type Props = {
-	timer: Timer
+	timer: TimerCountdown
 	style?: StyleProp<ViewStyle>
 }
 
-export default observer(({ timer, style }: Props) => (
-	<View style={[styles.container, style]}>
-		<Image source={require("assets/images/lock.png")} style={styles.icon} />
-		<Title style={styles.title}>Wallet app is blocked</Title>
-		<Caption style={styles.caption}>Too many PIN attempts</Caption>
-		<View style={styles.timerContainer}>
-			<Caption style={styles.caption}>Try again in:</Caption>
-			<Text style={styles.timer}>{timer.time}</Text>
+export default observer(({ timer, style }: Props) => {
+	const [showNumber, setShowNumber] = useState(false)
+
+	useEffect(() =>
+	{
+		if(timer.diffSec) setShowNumber(true)
+	}, [timer.isActive])
+	return (
+		<View style={[styles.container, style]}>
+			<Image source={require("assets/images/lock.png")} style={styles.icon} />
+			<Title style={styles.title}>Wallet app is blocked</Title>
+			<Caption style={styles.caption}>Too many PIN attempts</Caption>
+			<View style={styles.timerContainer}>
+				<Caption style={styles.caption}>Try again in:</Caption>
+				{showNumber && <Text style={styles.timer}>{timer.diffSec}</Text>}
+			</View>
 		</View>
-	</View>
-))
+	)
+})
 
 const styles = StyleSheet.create({
 	container: { alignItems: "center" },

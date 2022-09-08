@@ -23,6 +23,7 @@ import Animated, {
 } from "react-native-reanimated"
 import { StepLock, StepSuccess } from "./LoaderScreen/components/organisms"
 import { Button } from "./LoaderScreen/components/atoms"
+import moment from "moment"
 
 type Props = NativeStackScreenProps<RootStackParamList, "PinRequest">
 
@@ -39,7 +40,7 @@ export default observer<Props>(({ navigation, route }) => {
 		disableVerification = false,
 		isRandomKeyboard = true,
 	} = route.params
-	const { wallet } = useStore()
+	const { wallet, settings } = useStore()
 
 	const goBack = useCallback(() => navigation.goBack(), [])
 
@@ -49,7 +50,6 @@ export default observer<Props>(({ navigation, route }) => {
 	const [countError, setErrorCount] = useState(0)
 
 	const isError = isConfirm !== null && !isConfirm
-	const isBlocked = countError === errorMax
 
 	// --------- Check -------------
 	const { localStorageManager } = useStore()
@@ -90,20 +90,14 @@ export default observer<Props>(({ navigation, route }) => {
 	}, [goBack])
 
 	// ---------- Block -----------
-	const timer = useMemo(() => new Timer(), [])
-
-	useEffect(
-		() =>
-			timer.emmiter.on("stop", () => {
-				setErrorCount(0)
-				pin.clear()
-			}),
-		[],
-	)
 
 	useEffect(() => {
-		if (isBlocked) timer.start(30)
-	}, [isBlocked])
+		if (countError === errorMax)
+		{
+			settings.blockApp(moment().add(30, "second").toDate())
+			setErrorCount(0)
+		}
+	}, [countError])
 
 	// ---------- Anim Error------------
 
@@ -146,7 +140,7 @@ export default observer<Props>(({ navigation, route }) => {
 
 			<Header />
 			<View style={styles.container}>
-				{!isConfirm && !isBlocked && (
+				{!isConfirm && !settings.isAppBlock && (
 					<View style={styles.wrapper}>
 						<Title text={title} style={styles.title} />
 						<Subtitle style={styles.subtitle}>
@@ -172,7 +166,7 @@ export default observer<Props>(({ navigation, route }) => {
 						/>
 					</View>
 				)}
-				{isConfirm && !isBlocked && (
+				{isConfirm && !settings.isAppBlock && (
 					<View style={styles.confirm}>
 						<StepSuccess
 							title="Operation Confirmed"
@@ -180,14 +174,14 @@ export default observer<Props>(({ navigation, route }) => {
 						/>
 					</View>
 				)}
-				{isBlocked && (
+				{settings.isAppBlock && (
 					<View style={styles.block}>
-						<StepLock timer={timer} />
+						<StepLock timer={settings.blockingTimer} />
 						<View style={styles.buttonBackContainer}>
 							<Button
 								text="Back to homescreen"
 								mode="fill"
-								disable={timer.time !== null && timer.time !== 0}
+								disable={settings.blockingTimer.isActive}
 								onPress={goBack}
 								Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
 							/>

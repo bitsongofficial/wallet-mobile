@@ -41,7 +41,7 @@ export default async function openDelegate({ onDone, onClose, onDismiss, control
 		onDismiss && !status.done && onDismiss()
 	}
 
-	const done = () => () => {
+	const done = () => {
 		status.done = true
 		gbs.close()
 		navigate("Loader", {
