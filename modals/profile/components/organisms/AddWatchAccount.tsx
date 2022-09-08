@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite"
 import { InputHandler } from "utils"
 import { Steps } from "classes"
 import { Button } from "components/atoms"
-import { Search, Subtitle, Title } from "../atoms"
+import { StyledInput, Subtitle, Title } from "../atoms"
 import { isValidAddress } from "core/utils/Address"
 
 export class Controller {
@@ -31,8 +31,7 @@ export default observer<Props>(({ controller }) => {
 			{steps.title === "Address" && (
 				<>
 					<Title style={styles.title}>Add Watch Account</Title>
-					<Search
-						loupe={false}
+					<StyledInput
 						style={styles.search}
 						placeholder="Public Address"
 						value={inputWallet.value}
@@ -51,8 +50,7 @@ export default observer<Props>(({ controller }) => {
 			{steps.title === "Name" && (
 				<>
 					<Title style={styles.title}>Name your Wallet</Title>
-					<Search
-						loupe={false}
+					<StyledInput
 						value={inputName.value}
 						onChangeText={inputName.set}
 						style={styles.search}

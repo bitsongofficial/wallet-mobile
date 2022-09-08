@@ -6,7 +6,7 @@ import { COLOR, InputHandler } from "utils"
 import { makeAutoObservable } from "mobx"
 import { Steps } from "classes"
 import { Button, ButtonBack, Icon2 } from "components/atoms"
-import { Search, Title } from "../atoms"
+import { StyledInput, Title } from "../atoms"
 import { ButtonAvatar } from "../moleculs"
 import { Contact } from "stores/ContactsStore"
 
@@ -47,10 +47,9 @@ export default observer<Props>(({ contact, onPressScan, controller }) => {
 
 					<View style={{ marginBottom: 24 }}>
 						<Text style={styles.label}>Edit address</Text>
-						<Search
+						<StyledInput
 							value={inputAddress.value}
 							onChangeText={inputAddress.set}
-							loupe={false}
 							Right={
 								<RectButton style={styles.button_qr} onPress={onPressScan}>
 									<Icon2 name="qr_code" stroke={COLOR.RoyalBlue} size={22} />
@@ -61,7 +60,7 @@ export default observer<Props>(({ contact, onPressScan, controller }) => {
 
 					<View>
 						<Text style={styles.label}>Edit name</Text>
-						<Search value={inputNickname.value} onChangeText={inputNickname.set} loupe={false} />
+						<StyledInput value={inputNickname.value} onChangeText={inputNickname.set} />
 					</View>
 				</>
 			)}

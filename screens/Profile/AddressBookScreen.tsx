@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react"
 import {
+	Keyboard,
 	ListRenderItem,
 	SectionList,
 	StyleProp,
@@ -71,6 +72,11 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 
 	useEffect(() => inputSearch.clear, [])
 
+	const addContact = useCallback(() => {
+		openModal.addContact()
+		Keyboard.dismiss()
+	}, [])
+
 	return (
 		<>
 			<StatusBar style="light" />
@@ -80,9 +86,9 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 					<Animated.View style={animStyle}>
 						<Header
 							onPressBack={goBack}
-							style={[styles.header]}
+							style={styles.header}
 							title="Address Book"
-							onPressPlus={openModal.addContact}
+							onPressPlus={addContact}
 						/>
 						<View style={[styles.wrapper]}>
 							<Input

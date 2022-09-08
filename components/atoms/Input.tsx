@@ -13,14 +13,14 @@ import { useTheme } from "hooks"
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet"
 import { COLOR } from "utils"
 
-type Props = TextInputProps & {
+export type Props = TextInputProps & {
 	style?: StyleProp<ViewStyle>
 	inputStyle?: StyleProp<TextStyle>
 	autocomplite?: string | null
 	bottomsheet?: boolean
 	Right?: JSX.Element
 
-	errorMessage?: string | false
+	errorMessage?: string | string[] | false
 }
 
 const LINE_HEIGHT = 18
@@ -57,8 +57,13 @@ export default ({
 		[errorMessage],
 	)
 
+	const errorText = useMemo(
+		() => (Array.isArray(errorMessage) ? errorMessage[0] : errorMessage),
+		[errorMessage],
+	)
+
 	return (
-		<View style={[styles.container, theme.input.container, errorBorder, style]}>
+		<View style={[styles.container, theme.input.container, style, errorBorder]}>
 			{autocomplite && (
 				<Text style={[theme.input.autocomplite, styles.autocomplite, autocomplitPosition]}>
 					{autocomplite}
@@ -74,10 +79,12 @@ export default ({
 				{Right}
 			</View>
 
-			<Text style={styles.error}>{errorMessage}</Text>
+			{errorText && <ErrorMessage message={errorText} />}
 		</View>
 	)
 }
+
+const ErrorMessage = ({ message }: { message: string }) => <Text style={styles.error}>{message}</Text>
 
 const styles = StyleSheet.create({
 	container: {
@@ -112,7 +119,7 @@ const styles = StyleSheet.create({
 
 	error: {
 		position: "absolute",
-		bottom: -24,
+		bottom: -19,
 		left: 24,
 
 		fontFamily: "CircularStd",
