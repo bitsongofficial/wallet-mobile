@@ -61,7 +61,8 @@ const App = observer(() => {
 						</View>
 					</FullscreenOverlay>
 
-					{globalAlert.isShow && <AlertView message={globalAlert.message} />}
+					{!!globalAlert.text && <AlertView message={globalAlert.text} />}
+
 					<BottomSheet
 						{...toJS(bottomsheet.defaultProps)}
 						{...toJS(bottomsheet.props)}

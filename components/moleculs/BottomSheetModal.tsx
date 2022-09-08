@@ -63,7 +63,7 @@ export const BottomSheetObserver = observer(
 						<BottomSheetBackdrop
 							{...bProps}
 							disappearsOnIndex={gav.isShow ? 0 : -1}
-							appearsOnIndex={0}
+							appearsOnIndex={gav.isShow ? -1 : 0}
 							style={[styles.backdrop, bProps.style]}
 						/>
 					)}
@@ -71,6 +71,11 @@ export const BottomSheetObserver = observer(
 			),
 			[],
 		)
+
+		const handleChange = useCallback((index: number) => {
+			index === -1 && gav.close()
+			props.onChange && props.onChange(index)
+		}, [])
 
 		return (
 			<DefaultBottomSheet
@@ -83,6 +88,7 @@ export const BottomSheetObserver = observer(
 				backgroundStyle={[styles.background, theme.bottomsheet.background, backgroundStyle]}
 				{...props}
 				ref={ref}
+				onChange={handleChange}
 			/>
 		)
 	}),
