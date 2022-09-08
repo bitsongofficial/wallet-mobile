@@ -50,7 +50,6 @@ export default observer<Props>(({ navigation, route }) => {
 	const [countError, setErrorCount] = useState(0)
 
 	const isError = isConfirm !== null && !isConfirm
-	const isBlocked = countError === errorMax
 
 	// --------- Check -------------
 	const { localStorageManager } = useStore()
@@ -92,19 +91,13 @@ export default observer<Props>(({ navigation, route }) => {
 
 	// ---------- Block -----------
 
-	useEffect(
-		() =>
-			settings.blockingTimer.emmiter.on("stop", () => {
-				setErrorCount(0)
-				pin.clear()
-			}),
-		[],
-	)
-
 	useEffect(() => {
-		if (isBlocked) settings.blockApp(moment().add(30, "second").toDate())
-		// if (isBlocked) settings.blockApp(30)
-	}, [isBlocked])
+		if (countError === errorMax)
+		{
+			settings.blockApp(moment().add(30, "second").toDate())
+			setErrorCount(0)
+		}
+	}, [countError])
 
 	// ---------- Anim Error------------
 
@@ -147,7 +140,7 @@ export default observer<Props>(({ navigation, route }) => {
 
 			<Header />
 			<View style={styles.container}>
-				{!isConfirm && !isBlocked && (
+				{!isConfirm && !settings.isAppBlock && (
 					<View style={styles.wrapper}>
 						<Title text={title} style={styles.title} />
 						<Subtitle style={styles.subtitle}>
@@ -173,7 +166,7 @@ export default observer<Props>(({ navigation, route }) => {
 						/>
 					</View>
 				)}
-				{isConfirm && !isBlocked && (
+				{isConfirm && !settings.isAppBlock && (
 					<View style={styles.confirm}>
 						<StepSuccess
 							title="Operation Confirmed"
@@ -181,7 +174,7 @@ export default observer<Props>(({ navigation, route }) => {
 						/>
 					</View>
 				)}
-				{isBlocked && (
+				{settings.isAppBlock && (
 					<View style={styles.block}>
 						<StepLock timer={settings.blockingTimer} />
 						<View style={styles.buttonBackContainer}>

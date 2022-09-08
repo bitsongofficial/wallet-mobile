@@ -3,6 +3,7 @@ import { TimerCountdown } from "classes"
 import { COLOR } from "utils"
 import { Title, Caption } from "../atoms"
 import { observer } from "mobx-react-lite"
+import { useEffect, useState } from "react"
 
 type Props = {
 	timer: TimerCountdown
@@ -10,6 +11,12 @@ type Props = {
 }
 
 export default observer(({ timer, style }: Props) => {
+	const [showNumber, setShowNumber] = useState(false)
+
+	useEffect(() =>
+	{
+		if(timer.diffSec) setShowNumber(true)
+	}, [timer.isActive])
 	return (
 		<View style={[styles.container, style]}>
 			<Image source={require("assets/images/lock.png")} style={styles.icon} />
@@ -17,7 +24,7 @@ export default observer(({ timer, style }: Props) => {
 			<Caption style={styles.caption}>Too many PIN attempts</Caption>
 			<View style={styles.timerContainer}>
 				<Caption style={styles.caption}>Try again in:</Caption>
-				<Text style={styles.timer}>{timer.diffSec}</Text>
+				{showNumber && <Text style={styles.timer}>{timer.diffSec}</Text>}
 			</View>
 		</View>
 	)

@@ -26,14 +26,6 @@ export default class SettingsStore {
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
-
-		// timer
-		// this.localStorageManager?.loadBlockingDate().then((date) => {
-		// 	if (date) {
-		// 		this.blockingTimer.setFinish(date)
-		// 		this.blockingTimer.start()
-		// 	}
-		// })
 	}
 
 	setTheme(theme: "light" | "dark") {
@@ -80,7 +72,6 @@ export default class SettingsStore {
 		} else {
 			this.blockingTimer.setFinishTime(value)
 		}
-		this.blockingTimer.start()
 		// this.localStorageManager?.saveBlockingEndDate(this.blockingTimer.finish?.toDate())
 	}
 

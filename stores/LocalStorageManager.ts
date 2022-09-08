@@ -94,6 +94,7 @@ export default class LocalStorageManager
 			checkMethod: this.settings.checkMethod,
 			theme: this.settings.theme,
 			notification_enable: this.settings.notifications.enable,
+			block: this.settings.blockingTimer.finish,
 		}),
 		(raw) =>
 		{
@@ -116,6 +117,7 @@ export default class LocalStorageManager
 				enable: settings.notification_enable,
 				history: 10,
 			})
+			if(settings.block) this.settings.blockApp(new Date(settings.block))
 		}
 	}
 

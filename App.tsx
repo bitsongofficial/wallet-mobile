@@ -1,7 +1,7 @@
 import "./shim"
 
 import { StatusBar } from "expo-status-bar"
-import { Platform, StyleSheet, View, BackHandler, Text } from "react-native"
+import { Platform, StyleSheet, View, BackHandler } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { configure, toJS } from "mobx"
