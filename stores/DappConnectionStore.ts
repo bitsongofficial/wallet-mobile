@@ -290,7 +290,6 @@ export default class DappConnectionStore {
 		}
 		else
 		{
-			console.log("REJECT")
 			handler.reject()
 		}
 	}

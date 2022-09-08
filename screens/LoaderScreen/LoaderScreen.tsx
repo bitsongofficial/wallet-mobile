@@ -23,27 +23,32 @@ export default function LoaderScreen({
 
 	const result = useRef()
 	const error = useRef()
-
 	useEffect(() => {
-		route.params
-			?.callback()
-			.then((r) => {
-				result.current = r
-				if (r) setStatus("fulfilled")
-				else setStatus("rejected")
-			})
-			.catch((e) => {
-				error.current = e
-				setStatus("rejected")
-			})
-
-		return () => {
-			if (route.params) {
-				const { onError, onSucceess } = route.params
-				onError && onError(error.current)
-				onSucceess && onSucceess(result.current)
-			}
-		}
+		const unsubscribe = navigation.addListener('transitionEnd', (e) => {
+			setTimeout(() =>
+			{
+				route.params
+					?.callback()
+					.then((r) => {
+						result.current = r
+						if (r) setStatus("fulfilled")
+						else setStatus("rejected")
+					})
+					.catch((e) => {
+						error.current = e
+						setStatus("rejected")
+					})
+	
+				return () => {
+					if (route.params) {
+						const { onError, onSucceess } = route.params
+						onError && onError(error.current)
+						onSucceess && onSucceess(result.current)
+					}
+				}
+			}, 500)
+		})
+		return unsubscribe
 	}, [])
 
 	// ------------ Footer ---------------

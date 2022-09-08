@@ -22,6 +22,7 @@ export default observer<Props>(({ controller }) => {
 				<StepSetAmount
 					coin={amountInput.coin}
 					amount={amountInput.value}
+					available={amountInput.maxValue?.toString()}
 					onPressDelNum={amountInput.removeAmountNumber}
 					onPressMax={amountInput.setMax}
 					onPressNum={amountInput.addAmountNumber}
