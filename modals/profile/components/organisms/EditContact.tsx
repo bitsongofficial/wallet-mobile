@@ -9,6 +9,7 @@ import { Button, ButtonBack, Icon2 } from "components/atoms"
 import { Search, Title } from "../atoms"
 import { ButtonAvatar } from "../moleculs"
 import { Contact } from "stores/ContactsStore"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 export class Controller {
 	steps = new Steps(["Data", "Photo"])
@@ -85,29 +86,32 @@ type FooterProps = {
 	onPressDone(): void
 }
 
-export const Footer = observer(({ steps, onPressBack, onPressDone, onPressNext }: FooterProps) => (
-	<View style={styles.footer}>
-		<View style={styles.buttons}>
-			<ButtonBack onPress={onPressBack} />
+export const Footer = observer(({ steps, onPressBack, onPressDone, onPressNext }: FooterProps) => {
+	const insets = useSafeAreaInsets()
+	return (
+		<View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
+			<View style={styles.buttons}>
+				<ButtonBack onPress={onPressBack} />
 
-			{steps.title === "Data" ? (
-				<Button
-					text="Continue"
-					onPress={onPressNext}
-					textStyle={styles.buttonText}
-					contentContainerStyle={styles.buttonContent}
-				/>
-			) : (
-				<Button
-					onPress={onPressDone}
-					text="Save"
-					textStyle={styles.buttonText}
-					contentContainerStyle={styles.buttonContent}
-				/>
-			)}
+				{steps.title === "Data" ? (
+					<Button
+						text="Continue"
+						onPress={onPressNext}
+						textStyle={styles.buttonText}
+						contentContainerStyle={styles.buttonContent}
+					/>
+				) : (
+					<Button
+						onPress={onPressDone}
+						text="Save"
+						textStyle={styles.buttonText}
+						contentContainerStyle={styles.buttonContent}
+					/>
+				)}
+			</View>
 		</View>
-	</View>
-))
+	)
+})
 
 const styles = StyleSheet.create({
 	container: {
@@ -139,10 +143,8 @@ const styles = StyleSheet.create({
 	// ------ Footer ----------
 
 	footer: {
-		flexGrow: 1,
 		justifyContent: "flex-end",
 		marginHorizontal: 26,
-		marginBottom: 8,
 	},
 
 	button_qr: {
