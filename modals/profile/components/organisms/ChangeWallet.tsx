@@ -7,7 +7,7 @@ import { observer } from "mobx-react-lite"
 import { useStore } from "hooks"
 import { COLOR, hexAlpha } from "utils"
 import { Button, Icon2 } from "components/atoms"
-import { Search, Title } from "../atoms"
+import { StyledInput, Title } from "../atoms"
 import { Phrase as PhraseView } from "components/moleculs"
 import * as Clipboard from "expo-clipboard"
 import { WalletItemEdited } from "../moleculs"
@@ -94,7 +94,8 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 								<Title style={styles.title}>Seleziona Wallet</Title>
 							</View>
 						</View>
-						<Search
+
+						<StyledInput
 							placeholder="Cerca Wallet"
 							style={styles.search}
 							value={inputSearch.value}
@@ -136,13 +137,14 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						</View>
 						<View style={styles.headerRight} />
 					</View>
-					<Search
+
+					<StyledInput
 						placeholder="Modifica nome"
 						style={styles.search}
 						value={inputWalletName.value}
 						onChangeText={inputWalletName.set}
-						loupe={false}
 					/>
+
 					<View style={styles.editMenu}>
 						<Text style={styles.editTitle}>Safety</Text>
 						<View style={styles.buttons_list}>

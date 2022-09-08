@@ -1,5 +1,5 @@
 export { default as Title } from "./Title"
 export { default as Subtitle } from "./Subtitle"
-export { default as Search } from "./Search"
+export { default as StyledInput } from "./StyledInput"
 export { default as RadioButton } from "./RadioButton"
 export { default as SwipeActions } from "./SwipeActions"

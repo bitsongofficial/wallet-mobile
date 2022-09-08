@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from "react-native"
 import { observer } from "mobx-react-lite"
 import { COLOR, InputHandler } from "utils"
-import { Search, Subtitle, Title } from "../../atoms"
+import { StyledInput, Subtitle, Title } from "../../atoms"
 
 type InputNameStepProps = {
 	input: InputHandler
@@ -15,8 +15,7 @@ export default observer(({ input }: InputNameStepProps) => (
 			recover your account.Please onPressAddstore it {"\n"}
 			somewhere safe!
 		</Text>
-		<Search
-			loupe={false}
+		<StyledInput
 			value={input.value}
 			onChangeText={input.set}
 			placeholder="Write a name"
