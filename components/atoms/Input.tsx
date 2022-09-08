@@ -20,7 +20,7 @@ export type Props = TextInputProps & {
 	bottomsheet?: boolean
 	Right?: JSX.Element
 
-	errorMessage?: string | false
+	errorMessage?: string | string[] | false
 }
 
 const LINE_HEIGHT = 18
@@ -57,6 +57,11 @@ export default ({
 		[errorMessage],
 	)
 
+	const errorText = useMemo(
+		() => (Array.isArray(errorMessage) ? errorMessage[0] : errorMessage),
+		[errorMessage],
+	)
+
 	return (
 		<View style={[styles.container, theme.input.container, style, errorBorder]}>
 			{autocomplite && (
@@ -74,16 +79,12 @@ export default ({
 				{Right}
 			</View>
 
-			{errorMessage && <ErrorMessage message={errorMessage} />}
+			{errorText && <ErrorMessage message={errorText} />}
 		</View>
 	)
 }
 
-type ErrorMessageProps = {
-	message: string
-}
-
-const ErrorMessage = ({ message }: ErrorMessageProps) => <Text style={styles.error}>{message}</Text>
+const ErrorMessage = ({ message }: { message: string }) => <Text style={styles.error}>{message}</Text>
 
 const styles = StyleSheet.create({
 	container: {
