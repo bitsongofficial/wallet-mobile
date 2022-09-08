@@ -23,6 +23,7 @@ import Animated, {
 } from "react-native-reanimated"
 import { StepLock, StepSuccess } from "./LoaderScreen/components/organisms"
 import { Button } from "./LoaderScreen/components/atoms"
+import moment from "moment"
 
 type Props = NativeStackScreenProps<RootStackParamList, "PinRequest">
 
@@ -39,7 +40,7 @@ export default observer<Props>(({ navigation, route }) => {
 		disableVerification = false,
 		isRandomKeyboard = true,
 	} = route.params
-	const { wallet } = useStore()
+	const { wallet, settings } = useStore()
 
 	const goBack = useCallback(() => navigation.goBack(), [])
 
@@ -90,11 +91,10 @@ export default observer<Props>(({ navigation, route }) => {
 	}, [goBack])
 
 	// ---------- Block -----------
-	const timer = useMemo(() => new Timer(), [])
 
 	useEffect(
 		() =>
-			timer.emmiter.on("stop", () => {
+			settings.blockingTimer.emmiter.on("stop", () => {
 				setErrorCount(0)
 				pin.clear()
 			}),
@@ -102,7 +102,8 @@ export default observer<Props>(({ navigation, route }) => {
 	)
 
 	useEffect(() => {
-		if (isBlocked) timer.start(30)
+		if (isBlocked) settings.blockApp(moment().add(30, "second").toDate())
+		// if (isBlocked) settings.blockApp(30)
 	}, [isBlocked])
 
 	// ---------- Anim Error------------
@@ -182,12 +183,12 @@ export default observer<Props>(({ navigation, route }) => {
 				)}
 				{isBlocked && (
 					<View style={styles.block}>
-						<StepLock timer={timer} />
+						<StepLock timer={settings.blockingTimer} />
 						<View style={styles.buttonBackContainer}>
 							<Button
 								text="Back to homescreen"
 								mode="fill"
-								disable={timer.time !== null && timer.time !== 0}
+								disable={settings.blockingTimer.isActive}
 								onPress={goBack}
 								Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
 							/>
