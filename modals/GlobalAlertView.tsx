@@ -1,32 +1,35 @@
 import { makeAutoObservable } from "mobx"
 
-/**
- * @example
- * const showError = async () => {
- *    gav.open("Test Error")
- *    await wait(2000)
- *    gav.close()
- * }
- */
+type GlobalAlertErrorMessage = string | string[] | null
 
 export default class GlobalAlertView {
-	isShow = false
-	message: string | null = null
+	message: GlobalAlertErrorMessage = null
 
 	constructor() {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
-	setMessage(message: string | null) {
-		this.message = message
-	}
-
-	open(message?: string | null) {
-		message && this.setMessage(message)
-		this.isShow = true
+	setMessage(message: GlobalAlertErrorMessage) {
+		this.message = message || null
 	}
 
 	close() {
-		this.isShow = false
+		this.setMessage(null)
+	}
+
+	get isShow() {
+		return !!this.text
+	}
+
+	get text() {
+		if (this.message) {
+			if (Array.isArray(this.message)) {
+				return this.message.length > 0 ? this.message[0] : null
+			} else {
+				return this.message
+			}
+		} else {
+			return null
+		}
 	}
 }
