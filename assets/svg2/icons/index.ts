@@ -30,6 +30,7 @@ import file_text from "./file_text.svg"
 import moon from "./moon.svg"
 import star_shield from "./star_shield.svg"
 import star from "./star.svg"
+import star_2 from "./star_2.svg"
 import translate from "./translate.svg"
 import wallet from "./wallet.svg"
 import circle_dollar from "./circle_dollar.svg"
@@ -128,6 +129,7 @@ export default <const>{
 	moon,
 	star_shield,
 	star,
+	star_2,
 	translate,
 	wallet,
 	circle_dollar,
