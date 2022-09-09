@@ -21,6 +21,7 @@ export type Props = TextInputProps & {
 	Right?: JSX.Element
 
 	errorMessage?: string | string[] | false
+	errorStyle?: StyleProp<ViewStyle>
 }
 
 const LINE_HEIGHT = 18
@@ -33,6 +34,7 @@ export default ({
 	bottomsheet,
 	Right,
 	errorMessage,
+	errorStyle,
 	...props
 }: Props) => {
 	const theme = useTheme()
@@ -79,12 +81,19 @@ export default ({
 				{Right}
 			</View>
 
-			{errorText && <ErrorMessage message={errorText} />}
+			{errorText && <ErrorMessage message={errorText} style={errorStyle} />}
 		</View>
 	)
 }
 
-const ErrorMessage = ({ message }: { message: string }) => <Text style={styles.error}>{message}</Text>
+type ErrorProps = {
+	message: string
+	style?: StyleProp<ViewStyle>
+}
+
+const ErrorMessage = ({ message, style }: ErrorProps) => (
+	<Text style={[styles.error, style]}>{message}</Text>
+)
 
 const styles = StyleSheet.create({
 	container: {
