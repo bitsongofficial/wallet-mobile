@@ -1,18 +1,24 @@
 import { useCallback } from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { ListRenderItem, StyleSheet, Text, ViewStyle, StyleProp } from "react-native"
 import { useStore, useTheme } from "hooks"
 import { ButtonBack } from "components/atoms"
-import { ButtonCoinSelect } from "../moleculs"
-import { SendController } from "../../controllers"
 import { SupportedCoins } from "constants/Coins"
 import { Coin } from "classes"
+import { COLOR } from "utils"
+import { FlatList } from "react-native-gesture-handler"
+import { BottomSheetView } from "@gorhom/bottom-sheet"
+import { SendController } from "../../controllers"
+import { ButtonCoinSelect } from "../moleculs"
 
 type Props = {
 	controller: SendController
 	onBack(): void
+	style?: StyleProp<ViewStyle>
 }
 
-export default function SelectCoin({ controller, onBack }: Props) {
+const HORISONTAL_WRAPPER = 30
+
+export default function SelectCoin({ controller, onBack, style }: Props) {
 	const theme = useTheme()
 	const { coin } = useStore()
 
@@ -26,35 +32,65 @@ export default function SelectCoin({ controller, onBack }: Props) {
 	const coinsFromSupported = Object.values(SupportedCoins).map((sc) => coin.findAssetWithCoin(sc))
 	const availableCoins = coinsFromSupported.filter((c) => c != undefined) as Coin[]
 
+	const renderCoin = useCallback<ListRenderItem<Coin>>(
+		({ item }) => <ButtonCoinSelect key={item?.info._id} coin={item} onPress={selectCoin} />,
+		[],
+	)
+
 	return (
-		<View style={styles.container}>
-			<ButtonBack onPress={onBack} />
-			<Text style={[styles.title, theme.text.primary]}>Select Coin</Text>
-			<Text style={[styles.subtitle, theme.text.secondary]}>
-				Select also the chain where your coin come from
+		<BottomSheetView style={[styles.container, style]}>
+			<ButtonBack onPress={onBack} style={styles.back} />
+			<Text style={[styles.title, theme.text.primary]}>Select coin</Text>
+			<Text style={styles.caption}>
+				Select also the chain where your coin{"\n"}
+				come from
 			</Text>
 
-			{availableCoins.map((c) => (
-				<ButtonCoinSelect key={c?.info._id} coin={c} onPress={selectCoin} />
-			))}
-		</View>
+			<FlatList
+				renderItem={renderCoin}
+				data={availableCoins}
+				style={styles.flatList}
+				contentContainerStyle={styles.flatlistContent}
+			/>
+		</BottomSheetView>
 	)
 }
 
 const styles = StyleSheet.create({
-	container: {
-		marginTop: 15,
+	container: { flexGrow: 1 },
+
+	back: {
+		marginBottom: 24,
+		marginHorizontal: HORISONTAL_WRAPPER,
 	},
 	title: {
-		fontSize: 18,
-		lineHeight: 23,
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "500",
+		fontSize: 20,
+		lineHeight: 25,
 
-		marginTop: 24,
+		textAlign: "center",
+		marginBottom: 8,
 	},
-	subtitle: {
-		fontSize: 14,
-		lineHeight: 18,
-		marginTop: 10,
-		width: "80%",
+
+	caption: {
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "500",
+		fontSize: 16,
+		lineHeight: 20,
+
+		color: COLOR.Marengo,
+		textAlign: "center",
+	},
+
+	flatList: {
+		marginHorizontal: HORISONTAL_WRAPPER / 2,
+		flex: 1,
+	},
+	flatlistContent: {
+		paddingBottom: 40,
+		paddingHorizontal: HORISONTAL_WRAPPER / 2,
 	},
 })

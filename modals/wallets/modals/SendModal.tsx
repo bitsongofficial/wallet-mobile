@@ -73,55 +73,53 @@ export default observer<Props>(function SendModal({ close, controller, onPressSc
 
 	return (
 		<BottomSheetView style={[styles.container]}>
-			<View style={styles.wrapper}>
-				{isShowHeader && (
-					<Header
-						title={title}
-						subtitle={subtitle}
-						Pagination={<Pagination acitveIndex={steps.active} count={3} />}
-						style={styles.header}
-					/>
-				)}
-				{hasCoins && (
-					<>
-						{steps.title === "Insert Import" && (
-							<InsertImport
-								controller={controller}
-								onPressNext={() => steps.goTo("Select Receiver")}
-								onPressBack={close}
-								onPressSelectCoin={() => steps.goTo("Select coin")}
-							/>
-						)}
-						{steps.title === "Select Receiver" && (
-							<SelectReceiver
-								controller={controller}
-								onPressBack={goBack}
-								onPressRecap={() => steps.goTo("Send Recap")}
-								onPressScanner={onPressScanQRReciver}
-							/>
-						)}
-						{steps.title === "Send Recap" && (
-							<SendRecap controller={controller} onPressBack={goBack} onPressSend={send} />
-						)}
-						{steps.title === "Select coin" && (
-							<SelectCoin controller={controller} onBack={goBack} />
-						)}
-					</>
-				)}
-				{!hasCoins && (
-					<View style={styles.verticallyCentered}>
-						<Text style={{ color: COLOR.White }}>No assets available to send</Text>
-					</View>
-				)}
-			</View>
+			{/* <View style={styles.wrapper}> */}
+			{isShowHeader && (
+				<Header
+					title={title}
+					subtitle={subtitle}
+					Pagination={<Pagination acitveIndex={steps.active} count={3} />}
+					style={styles.header}
+				/>
+			)}
+			{hasCoins && (
+				<>
+					{steps.title === "Insert Import" && (
+						<InsertImport
+							controller={controller}
+							onPressNext={() => steps.goTo("Select Receiver")}
+							onPressBack={close}
+							onPressSelectCoin={() => steps.goTo("Select coin")}
+						/>
+					)}
+					{steps.title === "Select Receiver" && (
+						<SelectReceiver
+							controller={controller}
+							onPressBack={goBack}
+							onPressRecap={() => steps.goTo("Send Recap")}
+							onPressScanner={onPressScanQRReciver}
+						/>
+					)}
+					{steps.title === "Send Recap" && (
+						<SendRecap controller={controller} onPressBack={goBack} onPressSend={send} />
+					)}
+					{steps.title === "Select coin" && <SelectCoin controller={controller} onBack={goBack} />}
+				</>
+			)}
+			{!hasCoins && (
+				<View style={styles.verticallyCentered}>
+					<Text style={{ color: COLOR.White }}>No assets available to send</Text>
+				</View>
+			)}
+			{/* </View> */}
 		</BottomSheetView>
 	)
 })
 
 const styles = StyleSheet.create({
-	container: { flexGrow: 1 },
+	container: { flex: 1 },
 	wrapper: {
-		marginHorizontal: 30,
+		// marginHorizontal: 30,
 		flex: 1,
 	},
 	verticallyCentered: {
@@ -131,4 +129,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	header: { marginTop: 10 },
+
+	//
+	selectCoin: { marginTop: 15 },
 })
