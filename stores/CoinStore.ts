@@ -160,6 +160,10 @@ export default class CoinStore {
 	  )
 	}
 
+	get hasCoins() {
+		return this.coins.length > 0
+	}
+
 	get CanSend()
 	{
 		return this.walletStore.activeProfile?.type != WalletTypes.WATCH

@@ -5,11 +5,14 @@ import { StyleProp, ViewStyle } from "react-native"
 import { SendController } from "./controllers"
 import { SendModal } from "./modals"
 import { store } from "stores/Store"
+import { toJS } from "mobx"
+import { wait } from "utils"
 
 export default function openSendModal(style: StyleProp<ViewStyle>) {
 	const { coin } = store
 	const controller = new SendController()
-	controller.creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
+	const { creater } = controller
+	creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
 
 	const scanReciver = async () => {
 		await gbs.close()
@@ -17,6 +20,21 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 			onBarCodeScanned: async (result) => controller.creater.addressInput.set(result),
 			onClose: open,
 		})
+	}
+
+	const send = () => {
+		const { coin, addressInput, balance } = creater
+		if (store.coin.hasCoins && coin && addressInput && balance) {
+			navigate("Loader", {
+				// @ts-ignore
+				callback: async () => {
+					await wait(2000) // for example
+					return true
+					// return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
+				},
+			})
+		}
+		close()
 	}
 
 	const close = () => {
@@ -30,7 +48,12 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 			$modal: true,
 			keyboardBehavior: "fillParent",
 			children: () => (
-				<SendModal close={close} controller={controller} onPressScanQRReciver={scanReciver} />
+				<SendModal
+					close={close}
+					controller={controller}
+					onPressScanQRReciver={scanReciver}
+					onPressSend={send}
+				/>
 			),
 		})
 		gbs.expand()

@@ -14,13 +14,17 @@ import { toJS } from "mobx"
 type Props = {
 	close(): void
 	controller: SendController
+	onPressSend(): void
 	onPressScanQRReciver(): void
 }
 
-export default observer<Props>(function SendModal({ close, controller, onPressScanQRReciver }) {
+export default observer<Props>(function SendModal({
+	close,
+	controller,
+	onPressScanQRReciver,
+	onPressSend,
+}) {
 	const store = useStore()
-	const [backHandler, setBackHandler] = useState<NativeEventSubscription | null>(null)
-
 	// console.log("store.coin.coins.length :>> ", store.coin.coins.length)
 
 	const hasCoins = toJS(store.coin.coins).length > 0
@@ -37,30 +41,6 @@ export default observer<Props>(function SendModal({ close, controller, onPressSc
 		() => (steps.title === "Insert Import" ? close() : steps.goBack()),
 		[steps, close],
 	)
-
-	const send = () => {
-		const { coin, addressInput, balance } = creater
-		if (coin && addressInput && balance) {
-			backHandler?.remove()
-			navigate("Loader", {
-				// @ts-ignore
-				callback: async () => {
-					// await wait(2000); // for example
-					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
-				},
-			})
-		}
-		close()
-	}
-
-	useEffect(() => {
-		const handler = BackHandler.addEventListener("hardwareBackPress", () => {
-			goBack()
-			return true
-		})
-		setBackHandler(handler)
-		return () => handler.remove()
-	}, [goBack])
 
 	// --------- Header --------------
 	const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets"
@@ -101,7 +81,7 @@ export default observer<Props>(function SendModal({ close, controller, onPressSc
 						/>
 					)}
 					{steps.title === "Send Recap" && (
-						<SendRecap controller={controller} onPressBack={goBack} onPressSend={send} />
+						<SendRecap controller={controller} onPressBack={goBack} onPressSend={onPressSend} />
 					)}
 					{steps.title === "Select coin" && <SelectCoin controller={controller} onBack={goBack} />}
 				</>
