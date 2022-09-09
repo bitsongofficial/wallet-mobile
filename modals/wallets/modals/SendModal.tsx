@@ -2,33 +2,28 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { BackHandler, NativeEventSubscription, StyleSheet, Text, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { useStore } from "hooks"
-import { RootStackParamList } from "types"
 import { Pagination } from "components/moleculs"
-import { SendController } from "./classes"
-import { Header } from "./components/atoms"
-import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "./components/templates"
+import { SendController } from "../controllers"
+import { Header } from "../components/atoms"
+import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "../components/templates"
 import { COLOR } from "utils"
+import { navigate } from "navigation/utils"
 import { toJS } from "mobx"
 
 type Props = {
 	close(): void
-	navigation: NativeStackNavigationProp<RootStackParamList>
 	controller: SendController
 	onPressScanQRReciver(): void
 }
 
-export default observer<Props>(function SendModal({
-	close,
-	navigation,
-	controller,
-	onPressScanQRReciver,
-}) {
+export default observer<Props>(function SendModal({ close, controller, onPressScanQRReciver }) {
 	const store = useStore()
 	const [backHandler, setBackHandler] = useState<NativeEventSubscription | null>(null)
 
-	const hasCoins = store.coin.coins.length > 0
+	// console.log("store.coin.coins.length :>> ", store.coin.coins.length)
+
+	const hasCoins = toJS(store.coin.coins).length > 0
 
 	const steps = hasCoins
 		? controller.steps
@@ -36,17 +31,18 @@ export default observer<Props>(function SendModal({
 
 	const creater = hasCoins
 		? controller.creater
-		: { coin: undefined, addressInput: undefined, balance: undefined, }
+		: { coin: undefined, addressInput: undefined, balance: undefined }
 
 	const goBack = useCallback(
 		() => (steps.title === "Insert Import" ? close() : steps.goBack()),
 		[steps, close],
 	)
+
 	const send = () => {
 		const { coin, addressInput, balance } = creater
 		if (coin && addressInput && balance) {
 			backHandler?.remove()
-			navigation.push("Loader", {
+			navigate("Loader", {
 				// @ts-ignore
 				callback: async () => {
 					// await wait(2000); // for example

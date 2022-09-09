@@ -20,12 +20,12 @@ import { COLOR, wait } from "utils"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import ReceiveModal from "screens/SendModalScreens/ReceiveModal"
-import { useSendModal } from "screens/SendModalScreens/components/hooks"
+import { ReceiveModal } from "modals/wallets/modals"
 import { SupportedCoins } from "constants/Coins"
 import { Button } from "components/atoms"
 import { openClaim } from "modals/validator"
 import { formatNumber } from "utils/numbers"
+import { openSend } from "modals/wallets"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -53,8 +53,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		[safeAreaInsets.bottom],
 	)
 
-	const openSendInner = useSendModal(sendCoinContainerStyle)
-	const openSend = coin.CanSend ? openSendInner : undefined
+	const openSendModal = useCallback(() => openSend(sendCoinContainerStyle), [])
+
 	const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
 	const openReceive = useCallback(async () => {
@@ -112,7 +112,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 			children: () => (
 				<ToolbarFull
 					style={styles.toolbar_full}
-					onPressSend={openSend}
+					onPressSend={openSendModal}
 					onPressReceive={openReceive}
 					onPressInquire={undefined}
 					onPressScan={onPressScann}
@@ -184,7 +184,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						onPressInquire={undefined}
 						onPressReceive={openReceive}
 						onPressScan={openScanner}
-						onPressSend={openSend}
+						onPressSend={openSendModal}
 					/>
 					<Tabs
 						values={tabs}

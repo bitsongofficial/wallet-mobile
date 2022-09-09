@@ -1,13 +1,8 @@
-import { useDimensions } from "@react-native-community/hooks";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Button } from "components/atoms";
 import { gbs } from "modals";
 import { navigate } from "navigation/utils";
 import { StyleSheet } from "react-native";
-import { useSharedValue } from "react-native-reanimated";
-import { Data } from "screens/SendModalScreens/components/organisms";
-import { RootStackParamList } from "types";
+import { Data } from "modals/wallets/components/organisms";
 import { COLOR } from "utils";
 
 type Props = {

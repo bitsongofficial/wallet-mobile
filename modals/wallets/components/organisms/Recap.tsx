@@ -6,7 +6,7 @@ import { useStore, useTheme } from "hooks";
 import { IPerson } from "classes/types";
 import { Coin, Transaction } from "classes";
 import { COLOR, InputHandler } from "utils";
-import { SendController } from "screens/SendModalScreens/classes";
+import { SendController } from "../../controllers";
 import { fromAmountToCoin, fromCoinToDefaultDenom } from "core/utils/Coin";
 import { trimAddress } from "utils/string";
 import { SupportedCoins } from "constants/Coins";
