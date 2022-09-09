@@ -1,21 +1,32 @@
-import { useEffect } from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { useCallback, useEffect } from "react"
+import {
+	ListRenderItem,
+	StyleProp,
+	StyleSheet,
+	Text,
+	View,
+	ViewStyle,
+	TouchableOpacity,
+} from "react-native"
 import { observer } from "mobx-react-lite"
 import { animated, useSpring } from "@react-spring/native"
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet"
 import { useStore, useTheme } from "hooks"
+import { isValidAddress } from "core/utils/Address"
+import { FlatList } from "react-native-gesture-handler"
+import { Contact } from "stores/ContactsStore"
+import { HORIZONTAL_WRAPPER } from "modals/wallets/constants"
 import { SendController } from "../../controllers"
 import { CardAddress, CardAdressSelf } from "../moleculs"
-import { Footer, User } from "../atoms"
-import { isValidAddress } from "core/utils/Address"
-import { TouchableOpacity } from "react-native-gesture-handler"
-import { Contact } from "stores/ContactsStore"
+import { Footer, Contact as ContactItem } from "../atoms"
 
 type Props = {
 	controller: SendController
 	onPressRecap(): void
 	onPressScanner(): void
 	onPressBack(): void
+
+	style?: StyleProp<ViewStyle>
 }
 
 export default observer(function SelectReceiver({
@@ -23,8 +34,9 @@ export default observer(function SelectReceiver({
 	onPressBack,
 	onPressRecap,
 	onPressScanner,
+	style,
 }: Props) {
-	const { contacts, coin } = useStore()
+	const { contacts: contactsStore, coin } = useStore()
 	const theme = useTheme()
 	const { creater } = controller
 	const { addressInput } = creater
@@ -32,81 +44,80 @@ export default observer(function SelectReceiver({
 	const hidden = useSpring({ opacity: addressInput.isFocused ? 0.1 : 1 })
 	useEffect(() => addressInput.focusOFF, [])
 
-	const setAddress = (contact: Contact | string) => {
-		if (typeof contact == "string") addressInput.set(contact)
-		else addressInput.set(contact.address)
+	const setAddress = (contact?: Contact | string) => {
+		if (contact) {
+			if (typeof contact == "string") addressInput.set(contact)
+			else addressInput.set(contact.address)
+		}
 	}
 
+	const renderContacts = useCallback<ListRenderItem<Contact>>(
+		({ item, index }) => (
+			<TouchableOpacity
+				key={item.address}
+				onPress={() => setAddress(item)}
+				style={index !== contactsStore.contacts.length - 1 && styles.touchContact}
+			>
+				<ContactItem user={item} isActive={addressInput.value === item.address} />
+			</TouchableOpacity>
+		),
+		[contactsStore.contacts.length],
+	)
+
 	return (
-		<>
+		<View style={style}>
 			<BottomSheetScrollView style={{ flexGrow: 1 }}>
-				<CardAddress input={addressInput} onPressQR={onPressScanner} style={styles.input} />
+				<CardAddress
+					input={addressInput}
+					onPressQR={onPressScanner}
+					style={[styles.input, styles.wrapper]}
+				/>
 
 				<animated.View style={hidden}>
-					{contacts.starred.length > 0 && (
-						<>
-							<Text style={[styles.subtitle, theme.text.primary]}>Prefered</Text>
-
-							<View style={styles.users}>
-								{contacts.starred.map((c) => (
-									<TouchableOpacity
-										key={c.address}
-										onPress={() => {
-											setAddress(c)
-										}}
-									>
-										<User user={c} />
-									</TouchableOpacity>
-								))}
-							</View>
-						</>
-					)}
-					{coin.recentRecipients.length > 0 && (
-						<>
-							<Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
-							<View style={[styles.users, { flexDirection: "column" }]}>
-								{coin.recentRecipients.map((c) => (
-									<TouchableOpacity
-										key={c.address}
-										onPress={() => {
-											setAddress(c.address)
-										}}
-									>
-										<CardAdressSelf address={c.address} date={c.date} style={styles.self} />
-									</TouchableOpacity>
-								))}
-							</View>
-						</>
+					{contactsStore.contacts.length > 0 && (
+						<View style={styles.contacts}>
+							<Text style={[styles.subtitle, styles.wrapper, theme.text.primary]}>Contacts</Text>
+							<FlatList
+								horizontal
+								scrollEnabled={!addressInput.isFocused}
+								data={contactsStore.contacts}
+								renderItem={renderContacts}
+								style={styles.contactList}
+								contentContainerStyle={styles.contactListContent}
+							/>
+						</View>
 					)}
 
-					<Text style={[styles.subtitle, theme.text.primary]}>Self</Text>
-					<TouchableOpacity
-						onPress={() => {
-							creater.coin && setAddress(creater.coin?.info.address)
-						}}
-					>
-						<CardAdressSelf address={creater.coin?.info.address ?? ""} style={styles.self} />
-					</TouchableOpacity>
+					<View style={styles.wrapper}>
+						<Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
+						<TouchableOpacity onPress={() => setAddress(creater.coin?.info.address)}>
+							<CardAdressSelf address={creater.coin?.info.address ?? ""} style={styles.self} />
+						</TouchableOpacity>
+					</View>
 				</animated.View>
 			</BottomSheetScrollView>
-			<Footer
-				onPressBack={onPressBack}
-				onPressCenter={onPressRecap}
-				isActiveCenter={addressInput.value != "" && isValidAddress(addressInput.value)}
-				centerTitle="Preview Send"
-			/>
-		</>
+
+			<View style={styles.wrapper}>
+				<Footer
+					onPressBack={onPressBack}
+					onPressCenter={onPressRecap}
+					isActiveCenter={addressInput.value != "" && isValidAddress(addressInput.value)}
+					centerTitle="Preview Send"
+				/>
+			</View>
+		</View>
 	)
 })
 
 const styles = StyleSheet.create({
 	container: { flexGrow: 1 },
+
+	wrapper: { marginHorizontal: HORIZONTAL_WRAPPER },
 	input: {
 		marginTop: 31,
 		marginBottom: 26,
 	},
 	hidden: { opacity: 0.1 },
-
 	self: { marginTop: 21 },
 
 	users: {
@@ -122,4 +133,64 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		lineHeight: 20,
 	},
+
+	touchContact: { marginRight: 22 },
+	contacts: { marginBottom: 32 },
+	contactList: { marginTop: 24 },
+	contactListContent: {
+		paddingHorizontal: HORIZONTAL_WRAPPER,
+		paddingBottom: 8,
+	},
 })
+
+// const mockContacts: Contact[] = [
+// 	{
+// 		name: "Delogu",
+// 		address: "bitsong1",
+// 		avatar: "test",
+// 		starred: true,
+// 	},
+// 	{
+// 		name: "Vacchi",
+// 		address: "bitsong2",
+// 		avatar: "test",
+// 		starred: true,
+// 	},
+// 	{
+// 		name: "Aleandri",
+// 		address: "bitsong3",
+// 		avatar: "test",
+// 		starred: false,
+// 	},
+// 	{
+// 		name: "Rossi",
+// 		address: "bitsong4",
+// 		avatar: "test",
+// 		starred: false,
+// 	},
+
+// 	{
+// 		name: "Delogu",
+// 		address: "bitsong1",
+// 		avatar: "test",
+// 		starred: true,
+// 	},
+// 	{
+// 		name: "Vacchi",
+// 		address: "bitsong2",
+// 		avatar: "test",
+// 		starred: true,
+// 	},
+// 	{
+// 		name: "Aleandri",
+// 		address: "bitsong3",
+// 		avatar: "test",
+// 		starred: false,
+// 	},
+// 	{
+// 		name: "Rossi",
+// 		address: "bitsong4",
+// 		avatar: "test",
+// 		starred: false,
+// 	},
+// ]
