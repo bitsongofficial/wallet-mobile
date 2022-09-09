@@ -1,0 +1,1 @@
+export const HORIZONTAL_WRAPPER = 30

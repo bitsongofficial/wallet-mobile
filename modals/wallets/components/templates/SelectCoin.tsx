@@ -9,14 +9,13 @@ import { FlatList } from "react-native-gesture-handler"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { SendController } from "../../controllers"
 import { ButtonCoinSelect } from "../moleculs"
+import { HORIZONTAL_WRAPPER } from "modals/wallets/constants"
 
 type Props = {
 	controller: SendController
 	onBack(): void
 	style?: StyleProp<ViewStyle>
 }
-
-const HORISONTAL_WRAPPER = 30
 
 export default function SelectCoin({ controller, onBack, style }: Props) {
 	const theme = useTheme()
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
 
 	back: {
 		marginBottom: 24,
-		marginHorizontal: HORISONTAL_WRAPPER,
+		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 	title: {
 		fontFamily: "CircularStd",
@@ -86,11 +85,11 @@ const styles = StyleSheet.create({
 	},
 
 	flatList: {
-		marginHorizontal: HORISONTAL_WRAPPER / 2,
+		marginHorizontal: HORIZONTAL_WRAPPER / 2,
 		flex: 1,
 	},
 	flatlistContent: {
 		paddingBottom: 40,
-		paddingHorizontal: HORISONTAL_WRAPPER / 2,
+		paddingHorizontal: HORIZONTAL_WRAPPER / 2,
 	},
 })

@@ -10,6 +10,7 @@ import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "../componen
 import { COLOR } from "utils"
 import { navigate } from "navigation/utils"
 import { toJS } from "mobx"
+import { HORIZONTAL_WRAPPER } from "../constants"
 
 type Props = {
 	close(): void
@@ -67,6 +68,7 @@ export default observer<Props>(function SendModal({
 							onPressNext={() => steps.goTo("Select Receiver")}
 							onPressBack={onPressBack}
 							onPressSelectCoin={() => steps.goTo("Select coin")}
+							style={styles.insertImport}
 						/>
 					)}
 					{steps.title === "Select Receiver" && (
@@ -75,6 +77,7 @@ export default observer<Props>(function SendModal({
 							onPressBack={onPressBack}
 							onPressRecap={() => steps.goTo("Send Recap")}
 							onPressScanner={onPressScanQRReciver}
+							style={styles.selectReceiver}
 						/>
 					)}
 					{steps.title === "Send Recap" && (
@@ -111,8 +114,11 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	header: { marginTop: 10 },
-
+	header: { marginTop: 10, marginHorizontal: HORIZONTAL_WRAPPER },
 	//
 	selectCoin: { marginTop: 15 },
+	insertImport: { marginHorizontal: HORIZONTAL_WRAPPER },
+	selectReceiver: {
+		flex: 1,
+	},
 })
