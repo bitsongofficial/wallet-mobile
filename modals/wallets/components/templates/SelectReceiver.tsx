@@ -66,12 +66,19 @@ export default observer(function SelectReceiver({
 
 	return (
 		<View style={style}>
-			<BottomSheetScrollView style={{ flexGrow: 1 }}>
-				<CardAddress
-					input={addressInput}
-					onPressQR={onPressScanner}
-					style={[styles.input, styles.wrapper]}
-				/>
+			<BottomSheetScrollView style={{ flexGrow: 1 }} scrollEnabled={!addressInput.isFocused}>
+				<View style={styles.wrapper}>
+					<CardAddress
+						input={addressInput}
+						onPressQR={onPressScanner}
+						style={styles.input}
+						isError={
+							addressInput.value != "" &&
+							!addressInput.isFocused &&
+							!isValidAddress(addressInput.value)
+						}
+					/>
+				</View>
 
 				<animated.View style={hidden}>
 					{contactsStore.contacts.length > 0 && (
@@ -115,7 +122,7 @@ const styles = StyleSheet.create({
 	wrapper: { marginHorizontal: HORIZONTAL_WRAPPER },
 	input: {
 		marginTop: 31,
-		marginBottom: 26,
+		marginBottom: 40,
 	},
 	hidden: { opacity: 0.1 },
 	self: { marginTop: 21 },
@@ -136,7 +143,7 @@ const styles = StyleSheet.create({
 
 	touchContact: { marginRight: 22 },
 	contacts: { marginBottom: 32 },
-	contactList: { marginTop: 24 },
+	contactList: { marginTop: 18 },
 	contactListContent: {
 		paddingHorizontal: HORIZONTAL_WRAPPER,
 		paddingBottom: 8,

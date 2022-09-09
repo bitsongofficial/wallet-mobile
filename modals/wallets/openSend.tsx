@@ -1,7 +1,7 @@
 import { SupportedCoins } from "constants/Coins"
 import { gbs } from "modals"
 import { navigate } from "navigation/utils"
-import { StyleProp, ViewStyle } from "react-native"
+import { Keyboard, StyleProp, ViewStyle } from "react-native"
 import { SendController } from "./controllers"
 import { SendModal } from "./modals"
 import { store } from "stores/Store"
@@ -38,6 +38,7 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 	}
 
 	const close = () => {
+		Keyboard.dismiss()
 		gbs.close()
 		controller.clear()
 	}
