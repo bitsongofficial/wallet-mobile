@@ -11,7 +11,7 @@ import { wait } from "utils"
 export default function openSendModal(style: StyleProp<ViewStyle>) {
 	const { coin } = store
 	const controller = new SendController()
-	const { creater } = controller
+	const { creater, steps } = controller
 	creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
 
 	const scanReciver = async () => {
@@ -28,9 +28,9 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 			navigate("Loader", {
 				// @ts-ignore
 				callback: async () => {
-					await wait(2000) // for example
-					return true
-					// return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
+					// await wait(2000) // for example
+					// return true
+					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
 				},
 			})
 		}
@@ -42,7 +42,11 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 		controller.clear()
 	}
 
+	const goBack = () => (steps.active > 0 ? steps.goBack() : close())
+
 	const open = async () => {
+		gbs.backHandler = goBack
+
 		await gbs.setProps({
 			snapPoints: ["85%"],
 			$modal: true,
@@ -53,10 +57,12 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 					controller={controller}
 					onPressScanQRReciver={scanReciver}
 					onPressSend={send}
+					onPressBack={goBack}
 				/>
 			),
 		})
-		gbs.expand()
+
+		requestAnimationFrame(() => gbs.expand())
 	}
 
 	coin.CanSend && open()

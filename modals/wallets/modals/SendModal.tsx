@@ -16,6 +16,7 @@ type Props = {
 	controller: SendController
 	onPressSend(): void
 	onPressScanQRReciver(): void
+	onPressBack(): void
 }
 
 export default observer<Props>(function SendModal({
@@ -23,10 +24,9 @@ export default observer<Props>(function SendModal({
 	controller,
 	onPressScanQRReciver,
 	onPressSend,
+	onPressBack,
 }) {
 	const store = useStore()
-	// console.log("store.coin.coins.length :>> ", store.coin.coins.length)
-
 	const hasCoins = toJS(store.coin.coins).length > 0
 
 	const steps = hasCoins
@@ -37,18 +37,15 @@ export default observer<Props>(function SendModal({
 		? controller.creater
 		: { coin: undefined, addressInput: undefined, balance: undefined }
 
-	const goBack = useCallback(
-		() => (steps.title === "Insert Import" ? close() : steps.goBack()),
-		[steps, close],
-	)
-
 	// --------- Header --------------
+
 	const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets"
 	const title = useMemo(() => (steps.title === "Send Recap" ? steps.title : "Send"), [steps.title])
 	const subtitle = useMemo(
 		() => (steps.title !== "Send Recap" ? steps.title : undefined),
 		[steps.title],
 	)
+
 	// =======================
 
 	return (
@@ -68,22 +65,28 @@ export default observer<Props>(function SendModal({
 						<InsertImport
 							controller={controller}
 							onPressNext={() => steps.goTo("Select Receiver")}
-							onPressBack={close}
+							onPressBack={onPressBack}
 							onPressSelectCoin={() => steps.goTo("Select coin")}
 						/>
 					)}
 					{steps.title === "Select Receiver" && (
 						<SelectReceiver
 							controller={controller}
-							onPressBack={goBack}
+							onPressBack={onPressBack}
 							onPressRecap={() => steps.goTo("Send Recap")}
 							onPressScanner={onPressScanQRReciver}
 						/>
 					)}
 					{steps.title === "Send Recap" && (
-						<SendRecap controller={controller} onPressBack={goBack} onPressSend={onPressSend} />
+						<SendRecap
+							controller={controller}
+							onPressBack={onPressBack}
+							onPressSend={onPressSend}
+						/>
 					)}
-					{steps.title === "Select coin" && <SelectCoin controller={controller} onBack={goBack} />}
+					{steps.title === "Select coin" && (
+						<SelectCoin controller={controller} onBack={onPressBack} />
+					)}
 				</>
 			)}
 			{!hasCoins && (
