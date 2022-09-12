@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback, useMemo, useState, useEffect } from "react"
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { observer } from "mobx-react-lite"
 import * as Clipboard from "expo-clipboard"
@@ -6,12 +6,9 @@ import QRCode from "react-native-qrcode-svg"
 import { useDimensions } from "@react-native-community/hooks"
 import { useStore } from "hooks"
 import { COLOR, hexAlpha, wait } from "utils"
-import { Button, Icon2 } from "components/atoms"
+import { Icon2 } from "components/atoms"
 import { Header } from "../components/atoms"
 import { BottomSheetView, TouchableOpacity } from "@gorhom/bottom-sheet"
-import { useState } from "react"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useEffect } from "react"
 import { trimAddress } from "utils/string"
 
 type Props = {
@@ -23,8 +20,6 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 	const { wallet } = useStore()
 	const { screen } = useDimensions()
 	const [address, setAddress] = useState("")
-
-	const insets = useSafeAreaInsets()
 
 	const [isCopied, setCopied] = useState(false)
 
