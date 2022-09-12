@@ -15,11 +15,13 @@ export default ({ Center, Left, Right, style }: Props) => (
 	</View>
 )
 
+export const FOOTER_HEIGHT = 56
+
 const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
 		marginHorizontal: 30,
-		height: 56,
+		height: FOOTER_HEIGHT,
 		alignItems: "center",
 		justifyContent: "space-between",
 	},
