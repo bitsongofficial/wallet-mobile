@@ -9,6 +9,7 @@ export default class TransactionCreater {
   receiver?: IPerson | null = null; //
 
   addressInput = new InputHandler();
+  memo = new InputHandler()
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
