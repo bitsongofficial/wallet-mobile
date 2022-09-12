@@ -1,39 +1,27 @@
-import { useMemo } from "react"
 import { StyleSheet, Text, View, ViewStyle } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { observer } from "mobx-react-lite"
-import { Coin } from "classes"
-import { COLOR, round } from "utils"
+import { COLOR } from "utils"
 import { useStore, useTheme } from "hooks"
 import { Button, Icon2 } from "components/atoms"
 import { Numpad } from "components/moleculs"
 import { SendController } from "../../controllers"
 import { CardSelectCoin } from "../moleculs"
-import { Footer } from "../atoms"
-import { useState } from "react"
 import { TransactionCreater } from "classes/Transaction"
-import { toJS } from "mobx"
 import { StyleProp } from "react-native"
 
 type Props = {
 	controller: SendController
 	onPressSelectCoin(): void
-	onPressNext(): void
-	onPressBack(): void
 	style?: StyleProp<ViewStyle>
 }
 
-export default observer<Props>(function InsertImport({
-	controller,
-	onPressSelectCoin,
-	onPressNext,
-	onPressBack,
-	style,
-}) {
+export default observer<Props>(function InsertImport({ controller, onPressSelectCoin, style }) {
 	const theme = useTheme()
 	const { settings } = useStore()
 	const creater: TransactionCreater = controller.creater
 	const fiatSymbol = settings.currency?.symbol
+
 	return (
 		<View style={style}>
 			<View style={styles.row}>
@@ -68,16 +56,6 @@ export default observer<Props>(function InsertImport({
 				onPress={controller.addNumber}
 				onPressRemove={controller.removeNumber}
 				style={styles.numpad}
-			/>
-
-			<Footer
-				onPressCenter={onPressNext}
-				onPressBack={onPressBack}
-				isActiveCenter={
-					Number(creater.balance) <= (creater.coin ? creater.coin.balance : 0) &&
-					Number(creater.balance) > 0
-				}
-				centerTitle="Continue"
 			/>
 		</View>
 	)

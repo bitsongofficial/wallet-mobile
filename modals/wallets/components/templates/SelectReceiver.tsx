@@ -18,24 +18,16 @@ import { Contact } from "stores/ContactsStore"
 import { HORIZONTAL_WRAPPER } from "modals/wallets/constants"
 import { SendController } from "../../controllers"
 import { CardAddress, CardAdressSelf } from "../moleculs"
-import { Footer, Contact as ContactItem } from "../atoms"
+import { Contact as ContactItem } from "../atoms"
+import { FOOTER_HEIGHT } from "components/atoms"
 
 type Props = {
 	controller: SendController
-	onPressRecap(): void
 	onPressScanner(): void
-	onPressBack(): void
-
 	style?: StyleProp<ViewStyle>
 }
 
-export default observer(function SelectReceiver({
-	controller,
-	onPressBack,
-	onPressRecap,
-	onPressScanner,
-	style,
-}: Props) {
+export default observer(function SelectReceiver({ controller, onPressScanner, style }: Props) {
 	const { contacts: contactsStore, coin } = useStore()
 	const theme = useTheme()
 	const { creater } = controller
@@ -66,7 +58,13 @@ export default observer(function SelectReceiver({
 
 	return (
 		<View style={style}>
-			<BottomSheetScrollView style={{ flexGrow: 1 }} scrollEnabled={!addressInput.isFocused}>
+			<BottomSheetScrollView
+				style={{ flexGrow: 1 }}
+				contentContainerStyle={{
+					paddingBottom: FOOTER_HEIGHT + 16,
+				}}
+				scrollEnabled={!addressInput.isFocused}
+			>
 				<View style={styles.wrapper}>
 					<CardAddress
 						input={addressInput}
@@ -103,15 +101,6 @@ export default observer(function SelectReceiver({
 					</View>
 				</animated.View>
 			</BottomSheetScrollView>
-
-			<View style={styles.wrapper}>
-				<Footer
-					onPressBack={onPressBack}
-					onPressCenter={onPressRecap}
-					isActiveCenter={addressInput.value != "" && isValidAddress(addressInput.value)}
-					centerTitle="Preview Send"
-				/>
-			</View>
 		</View>
 	)
 })
