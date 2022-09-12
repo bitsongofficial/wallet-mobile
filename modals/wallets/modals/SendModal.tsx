@@ -1,106 +1,155 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { BackHandler, NativeEventSubscription, StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 import { observer } from "mobx-react-lite"
-import { BottomSheetView } from "@gorhom/bottom-sheet"
-import { useStore } from "hooks"
+import { BottomSheetFooter, BottomSheetFooterProps, BottomSheetView } from "@gorhom/bottom-sheet"
 import { Pagination } from "components/moleculs"
 import { SendController } from "../controllers"
 import { Header } from "../components/atoms"
 import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "../components/templates"
 import { COLOR } from "utils"
-import { navigate } from "navigation/utils"
-import { toJS } from "mobx"
 import { HORIZONTAL_WRAPPER } from "../constants"
+import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
+import { FOOTER_HEIGHT } from "components/atoms/Footer"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { isValidAddress } from "core/utils/Address"
+import { useKeyboard } from "@react-native-community/hooks"
+import { useStore } from "hooks"
+import { toJS } from "mobx"
 
 type Props = {
-	close(): void
 	controller: SendController
-	onPressSend(): void
 	onPressScanQRReciver(): void
 	onPressBack(): void
 }
 
 export default observer<Props>(function SendModal({
-	close,
 	controller,
 	onPressScanQRReciver,
-	onPressSend,
 	onPressBack,
 }) {
 	const store = useStore()
 	const hasCoins = toJS(store.coin.coins).length > 0
 
-	const steps = hasCoins
-		? controller.steps
-		: { title: "No available assets", goBack: close, active: 0, goTo: () => {} }
-
-	const creater = hasCoins
-		? controller.creater
-		: { coin: undefined, addressInput: undefined, balance: undefined }
-
-	// --------- Header --------------
-
-	const isShowHeader = steps.title !== "Select coin" && steps.title !== "No available assets"
-	const title = useMemo(() => (steps.title === "Send Recap" ? steps.title : "Send"), [steps.title])
-	const subtitle = useMemo(
-		() => (steps.title !== "Send Recap" ? steps.title : undefined),
-		[steps.title],
-	)
-
-	// =======================
+	const { steps } = controller
 
 	return (
-		<BottomSheetView style={[styles.container]}>
-			{/* <View style={styles.wrapper}> */}
-			{isShowHeader && (
-				<Header
-					title={title}
-					subtitle={subtitle}
-					Pagination={<Pagination acitveIndex={steps.active} count={3} />}
-					style={styles.header}
-				/>
-			)}
-			{hasCoins && (
+		<BottomSheetView style={styles.container}>
+			{hasCoins ? (
 				<>
-					{steps.title === "Insert Import" && (
-						<InsertImport
-							controller={controller}
-							onPressNext={() => steps.goTo("Select Receiver")}
-							onPressBack={onPressBack}
-							onPressSelectCoin={() => steps.goTo("Select coin")}
-							style={styles.insertImport}
-						/>
-					)}
-					{steps.title === "Select Receiver" && (
-						<SelectReceiver
-							controller={controller}
-							onPressBack={onPressBack}
-							onPressRecap={() => steps.goTo("Send Recap")}
-							onPressScanner={onPressScanQRReciver}
-							style={styles.selectReceiver}
-						/>
-					)}
-					{steps.title === "Send Recap" && (
-						<SendRecap
-							controller={controller}
-							onPressBack={onPressBack}
-							onPressSend={onPressSend}
-						/>
-					)}
-					{steps.title === "Select coin" && (
+					{steps.title === "Select coin" ? (
 						<SelectCoin controller={controller} onBack={onPressBack} />
+					) : (
+						<>
+							<Header
+								title={steps.title === "Send Recap" ? steps.title : "Send"}
+								subtitle={steps.title !== "Send Recap" ? steps.title : undefined}
+								Pagination={<Pagination acitveIndex={steps.active} count={3} />}
+								style={styles.header}
+							/>
+							{steps.title === "Insert Import" && (
+								<InsertImport
+									controller={controller}
+									onPressSelectCoin={() => steps.goTo("Select coin")}
+									style={styles.insertImport}
+								/>
+							)}
+							{steps.title === "Select Receiver" && (
+								<SelectReceiver
+									controller={controller}
+									onPressScanner={onPressScanQRReciver}
+									style={styles.selectReceiver}
+								/>
+							)}
+							{steps.title === "Send Recap" && <SendRecap controller={controller} />}
+						</>
 					)}
 				</>
-			)}
-			{!hasCoins && (
+			) : (
 				<View style={styles.verticallyCentered}>
 					<Text style={{ color: COLOR.White }}>No assets available to send</Text>
 				</View>
 			)}
-			{/* </View> */}
 		</BottomSheetView>
 	)
 })
+
+type FooterProps = BottomSheetFooterProps & {
+	controller: SendController
+	onPressBack(): void
+	onPressSend(): void
+}
+
+export const FooterSendModal = observer(
+	({ controller, onPressBack, onPressSend, animatedFooterPosition }: FooterProps) => {
+		const { steps, creater } = controller
+		const { addressInput } = creater
+
+		const insets = useSafeAreaInsets()
+		const keyboard = useKeyboard()
+
+		const store = useStore()
+		const hasCoins = toJS(store.coin.coins).length > 0
+
+		if (!hasCoins) return null
+		if (steps.title === "Send Recap" && keyboard.keyboardShown) return null
+
+		return (
+			<BottomSheetFooter
+				animatedFooterPosition={animatedFooterPosition}
+				style={{ paddingBottom: 16 }}
+				bottomInset={insets.bottom}
+			>
+				<Footer
+					Left={<ButtonBack onPress={onPressBack} />}
+					Center={
+						<>
+							{steps.title === "Select Receiver" && (
+								<Button
+									text="Preview Send"
+									onPress={() => steps.goTo("Send Recap")}
+									disable={addressInput.value != "" && isValidAddress(addressInput.value)}
+									contentContainerStyle={styles.buttonPreviewSend}
+									textStyle={styles.buttonText}
+								/>
+							)}
+							{steps.title === "Send Recap" && (
+								<Button
+									text="Send"
+									onPress={onPressSend}
+									contentContainerStyle={styles.buttonSend}
+									textStyle={styles.buttonText}
+								/>
+							)}
+						</>
+					}
+					Right={
+						<>
+							{steps.title === "Insert Import" && (
+								<Button
+									text="Continue"
+									onPress={() => steps.goTo("Select Receiver")}
+									disable={
+										Number(creater.balance) <= (creater.coin?.balance || 0) &&
+										Number(creater.balance) > 0
+									}
+									contentContainerStyle={styles.buttonContinue}
+									textStyle={styles.buttonText}
+									Right={
+										<Icon2
+											name="chevron_right_2"
+											stroke={COLOR.White}
+											size={18}
+											style={{ marginLeft: 24 }}
+										/>
+									}
+								/>
+							)}
+						</>
+					}
+				/>
+			</BottomSheetFooter>
+		)
+	},
+)
 
 const styles = StyleSheet.create({
 	container: { flex: 1 },
@@ -114,11 +163,34 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	header: { marginTop: 10, marginHorizontal: HORIZONTAL_WRAPPER },
+	header: {
+		marginTop: 10,
+		marginHorizontal: HORIZONTAL_WRAPPER,
+	},
 	//
 	selectCoin: { marginTop: 15 },
-	insertImport: { marginHorizontal: HORIZONTAL_WRAPPER },
-	selectReceiver: {
+	insertImport: {
 		flex: 1,
+		marginHorizontal: HORIZONTAL_WRAPPER,
+		marginBottom: FOOTER_HEIGHT,
+	},
+	selectReceiver: { flex: 1 },
+
+	// footer
+	buttonText: {
+		fontSize: 16,
+		lineHeight: 20,
+	},
+	buttonContinue: {
+		paddingHorizontal: 24,
+		paddingVertical: 18,
+	},
+	buttonPreviewSend: {
+		paddingHorizontal: 40,
+		paddingVertical: 18,
+	},
+	buttonSend: {
+		paddingHorizontal: 46,
+		paddingVertical: 18,
 	},
 })
