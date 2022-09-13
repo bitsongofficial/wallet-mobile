@@ -26,6 +26,7 @@ import { Button } from "components/atoms"
 import { openClaim } from "modals/validator"
 import { formatNumber } from "utils/numbers"
 import { openSend } from "modals/wallets"
+import { s, vs } from "react-native-size-matters"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -221,69 +222,72 @@ export default observer<Props>(function MainScreen({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		flexShrink: 1,
+		// flexShrink: 1,
 		backgroundColor: COLOR.Dark3,
 	},
 
 	scrollviewContent: {
-		marginTop: 40,
-		paddingTop: 40,
+		marginTop: vs(40),
+		paddingTop: vs(40),
 		flex: 1,
 		flexShrink: 1,
 	},
 	info: {
-		marginRight: 22,
-		marginLeft: 32,
-		marginBottom: 60,
+		marginRight: s(22),
+		marginLeft: s(32),
+		marginBottom: vs(60),
 	},
 	balance: {
-		marginBottom: 34,
+		marginBottom: vs(34),
 	},
 	balance_title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 18,
-		lineHeight: 23,
+		fontSize: s(18),
+		lineHeight: s(23),
 		color: COLOR.RoyalBlue2,
 
-		marginBottom: 10,
+		marginBottom: vs(10),
 	},
 	balance_value: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 42,
-		lineHeight: 53,
+		fontSize: s(42),
+		lineHeight: s(53),
 		color: COLOR.White,
 
-		marginBottom: 6,
+		marginBottom: vs(6),
 	},
 	balance_variation: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: COLOR.White,
 		opacity: 0.5,
 	},
 
-	reward: {},
+	reward: {
+		backgroundColor: "red",
+	},
 	reward_title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.RoyalBlue2,
-		marginBottom: 10,
+		marginBottom: vs(10),
+		backgroundColor: "orange",
 	},
 	reward_value: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 30,
+		fontSize: s(30),
 		color: COLOR.White,
 	},
 
@@ -294,7 +298,7 @@ const styles = StyleSheet.create({
 
 	toolbar_short: {
 		marginHorizontal: 24,
-		marginBottom: 40,
+		marginBottom: vs(40),
 	},
 	toolbar_full: {
 		padding: 24,
@@ -308,7 +312,7 @@ const styles = StyleSheet.create({
 	},
 	coins: {
 		flex: 1,
-		paddingTop: 8,
+		paddingTop: vs(8),
 		paddingBottom: 64,
 		marginHorizontal: 14,
 	},
