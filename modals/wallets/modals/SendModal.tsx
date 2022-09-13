@@ -14,6 +14,7 @@ import { isValidAddress } from "core/utils/Address"
 import { useKeyboard } from "@react-native-community/hooks"
 import { useStore } from "hooks"
 import { toJS } from "mobx"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	controller: SendController
@@ -152,7 +153,7 @@ export const FooterSendModal = observer(
 )
 
 const styles = StyleSheet.create({
-	container: { flex: 1 },
+	container: { flexGrow: 1 },
 	wrapper: {
 		// marginHorizontal: 30,
 		flex: 1,
@@ -164,33 +165,34 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	header: {
-		marginTop: 10,
+		marginTop: vs(10),
 		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 	//
 	selectCoin: { marginTop: 15 },
 	insertImport: {
-		flex: 1,
+		// flexGrow: 1,
 		marginHorizontal: HORIZONTAL_WRAPPER,
-		marginBottom: FOOTER_HEIGHT,
+		// marginBottom: FOOTER_HEIGHT + 100,
+		backgroundColor: "orange",
 	},
 	selectReceiver: { flex: 1 },
 
 	// footer
 	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 	},
 	buttonContinue: {
-		paddingHorizontal: 24,
-		paddingVertical: 18,
+		paddingHorizontal: s(24),
+		paddingVertical: s(18),
 	},
 	buttonPreviewSend: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
+		paddingHorizontal: s(40),
+		paddingVertical: s(18),
 	},
 	buttonSend: {
-		paddingHorizontal: 46,
-		paddingVertical: 18,
+		paddingHorizontal: s(46),
+		paddingVertical: s(18),
 	},
 })

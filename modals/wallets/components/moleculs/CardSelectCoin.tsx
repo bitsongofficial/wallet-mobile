@@ -4,6 +4,7 @@ import { Coin } from "classes"
 import { useTheme } from "hooks"
 import { COLOR, hexAlpha } from "utils"
 import { Card, Icon2 } from "components/atoms"
+import { mvs, s, vs } from "react-native-size-matters"
 
 type Props = {
 	coin?: Coin | null
@@ -37,9 +38,9 @@ export default observer<Props>(function CardWallet({ coin, style }) {
 const styles = StyleSheet.create({
 	card: {
 		backgroundColor: COLOR.Dark3,
-		height: 70,
+		height: vs(70),
 		alignItems: "center",
-		padding: 23,
+		padding: vs(23),
 		flexDirection: "row",
 		justifyContent: "space-between",
 	},
@@ -49,22 +50,22 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "space-between",
 
-		marginRight: 16,
+		marginRight: s(16),
 	},
 	image: {
-		width: 27,
-		height: 27,
-		marginLeft: 16,
+		width: s(27),
+		height: s(27),
+		marginLeft: s(16),
 		tintColor: hexAlpha(COLOR.White, 20),
 	},
 	title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 15,
-		lineHeight: 19,
+		fontSize: vs(15),
+		lineHeight: vs(19),
 
-		marginRight: 17,
+		marginRight: vs(17),
 	},
 	balance: {
 		color: COLOR.RoyalBlue,

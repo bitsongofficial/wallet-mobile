@@ -1,1 +1,3 @@
-export const HORIZONTAL_WRAPPER = 30
+import { s } from "react-native-size-matters"
+
+export const HORIZONTAL_WRAPPER = s(30)

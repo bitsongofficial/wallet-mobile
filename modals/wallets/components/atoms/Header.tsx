@@ -1,6 +1,7 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { observer } from "mobx-react-lite"
 import { useTheme } from "hooks"
+import { vs } from "react-native-size-matters"
 
 type Props = {
 	title: string
@@ -32,17 +33,17 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 21,
+		fontSize: vs(21),
 		// lineHeight: 27,
 	},
 	caption: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 16,
+		fontSize: vs(16),
 		// lineHeight: 18,
 
-		marginTop: 8,
+		marginTop: vs(8),
 	},
 	left: {},
 	right: {},
