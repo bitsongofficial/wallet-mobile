@@ -8,6 +8,7 @@ import { useCallback, useRef } from "react"
 import { Button } from "components/atoms"
 import * as Clipboard from "expo-clipboard"
 import { useKeyboard } from "@react-native-community/hooks"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	phrase: Phrase
@@ -69,17 +70,17 @@ export default observer<Props>(({ phrase, onPressBack, onPressNext, isDisableNex
 })
 
 const styles = StyleSheet.create({
-	title: { marginTop: 50 },
-	subtitle: { marginTop: 8 },
-	text: { paddingHorizontal: 30, marginBottom: 32 },
+	title: { marginTop: vs(50) },
+	subtitle: { marginTop: vs(8) },
+	text: { paddingHorizontal: s(30), marginBottom: vs(32) },
 
-	mh30: { marginHorizontal: 30 },
+	mh30: { marginHorizontal: s(30) },
 
 	scrollview: { flex: 1 },
 	scrollviewContent: {
 		flexGrow: 1,
-		paddingBottom: 16,
-		paddingTop: 40,
+		paddingBottom: vs(16),
+		paddingTop: vs(40),
 	},
 	paste: {
 		width: 65,

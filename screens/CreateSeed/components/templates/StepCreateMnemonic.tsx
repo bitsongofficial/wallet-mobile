@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite"
 import { Subtitle, Title } from "../atoms"
 import { Footer, CreateSeed } from "../organisms"
 import { Phrase } from "classes"
+import { vs } from "react-native-size-matters"
 
 type Props = {
 	phrase: Phrase
@@ -14,14 +15,12 @@ type Props = {
 
 export default observer<Props>(({ isHidden, onPressToggle, phrase, onPressBack, onPressNext }) => (
 	<>
-		<View>
-			<Title style={styles.title}>Create New Mnemonic</Title>
-			<Subtitle style={styles.subtitle}>
-				This is the only way you will be able to {"\n"}
-				recover your account. Please store it{"\n"}
-				somewhere safe!
-			</Subtitle>
-		</View>
+		<Title style={styles.title}>Create New Mnemonic</Title>
+		<Subtitle style={styles.subtitle}>
+			This is the only way you will be able to {"\n"}
+			recover your account. Please store it{"\n"}
+			somewhere safe!
+		</Subtitle>
 
 		{phrase.words && (
 			<CreateSeed
@@ -41,6 +40,6 @@ export default observer<Props>(({ isHidden, onPressToggle, phrase, onPressBack, 
 ))
 
 const styles = StyleSheet.create({
-	title: { marginTop: 50 },
-	subtitle: { marginTop: 8 },
+	title: { marginTop: vs(50) },
+	subtitle: { marginTop: vs(8) },
 })

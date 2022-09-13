@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite"
 import { Numpad } from "components/moleculs"
 import { Pin } from "classes"
 import { PinCode } from "../moleculs"
+import { s } from "react-native-size-matters"
 
 type Props = { pin: Pin }
 
@@ -18,10 +19,10 @@ export default observer(({ pin }: Props) => {
 })
 
 const styles = StyleSheet.create({
-	pin: { flex: 1 },
+	pin: { flex: 2 },
 	numpad: {
-		marginHorizontal: 15,
-		flex: 2,
+		marginHorizontal: s(15),
+		flex: 5,
 		justifyContent: "space-between",
 	},
 })

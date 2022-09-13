@@ -3,6 +3,7 @@ import { ScrollView } from "react-native-gesture-handler"
 import { Phrase } from "classes"
 import { Phrase as PhraseView } from "components/moleculs"
 import { ButtonToggle } from "../moleculs"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	isHidden: boolean
@@ -23,16 +24,16 @@ export default ({ isHidden, phrase, onPressToggle }: Props) => (
 
 const styles = StyleSheet.create({
 	toggle: {
-		marginTop: 24,
-		width: 173,
+		marginTop: vs(24),
+		width: s(173),
 	},
 	scrollview: {
 		flex: 1,
-		marginTop: 16,
-		marginBottom: 16,
+		marginTop: vs(16),
+		marginBottom: vs(16),
 	},
 	scrollviewContainer: {
-		paddingTop: 15,
-		paddingBottom: 6,
+		paddingTop: vs(15),
+		paddingBottom: vs(6),
 	},
 })

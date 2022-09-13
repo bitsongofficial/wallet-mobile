@@ -3,6 +3,7 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { Pin } from "classes"
 import { COLOR } from "utils"
 import { useTheme } from "hooks"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	value?: Pin["value"]
@@ -52,8 +53,8 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	item: {
-		width: 30,
-		height: 60,
+		width: s(30),
+		height: s(60),
 		alignItems: "center",
 		justifyContent: "center",
 	},
@@ -61,12 +62,12 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 40,
+		fontSize: s(40),
 	},
 	placeholder: {
-		width: 6,
-		height: 10,
-		borderRadius: 50,
+		width: s(6),
+		height: s(10),
+		borderRadius: s(50),
 		backgroundColor: COLOR.White,
 		opacity: 0.15,
 	},

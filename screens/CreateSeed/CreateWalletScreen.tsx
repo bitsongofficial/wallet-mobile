@@ -19,6 +19,7 @@ import {
 	StepPinSet,
 } from "./components/templates"
 import { FaceID } from "./components/organisms"
+import { WRAPPER } from "./constants"
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">
 
@@ -126,7 +127,7 @@ export default observer<Props>(({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: COLOR.Dark3,
-		paddingHorizontal: 30,
+		paddingHorizontal: WRAPPER,
 		flexGrow: 1,
 	},
 	keyboardAvoiding: { flexGrow: 1 },

@@ -4,6 +4,7 @@ import { Subtitle, Title } from "../atoms"
 import { Footer, SetPin } from "../organisms"
 import { ScrollView } from "react-native-gesture-handler"
 import { Pin } from "classes"
+import { vs } from "react-native-size-matters"
 
 type Props = {
 	pin: Pin
@@ -14,14 +15,12 @@ type Props = {
 
 export default observer<Props>(({ pin, isDisableNext, onPressBack, onPressNext }) => (
 	<>
-		<View>
-			<Title style={styles.title}>Confirm PIN</Title>
-			<Subtitle style={styles.subtitle}>
-				This is the only way you will be able to {"\n"}
-				recover your account. Please store it{"\n"}
-				somewhere safe!
-			</Subtitle>
-		</View>
+		<Title style={styles.title}>Confirm PIN</Title>
+		<Subtitle style={styles.subtitle}>
+			This is the only way you will be able to {"\n"}
+			recover your account. Please store it{"\n"}
+			somewhere safe!
+		</Subtitle>
 
 		<View style={styles.content}>
 			<SetPin pin={pin} />
@@ -37,11 +36,7 @@ export default observer<Props>(({ pin, isDisableNext, onPressBack, onPressNext }
 ))
 
 const styles = StyleSheet.create({
-	title: { marginTop: 50 },
-	subtitle: { marginTop: 8 },
-	content: {
-		flex: 1,
-		paddingTop: 50,
-		paddingBottom: 35,
-	},
+	title: { marginTop: vs(50) },
+	subtitle: { marginTop: vs(8) },
+	content: { flex: 1 },
 })
