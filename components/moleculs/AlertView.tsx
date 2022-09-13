@@ -3,25 +3,15 @@ import { StyleSheet, Text, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { COLOR } from "utils"
 
-type AlertViewProps = {
-	message?: string | null
-}
+type AlertViewProps = { message: string }
 
 export default ({ message }: AlertViewProps) => {
 	const insets = useSafeAreaInsets()
 	return (
-		<View
-			style={[
-				styles.container,
-				{
-					height: "100%",
-					paddingTop: insets.top,
-				},
-			]}
-		>
+		<View style={[styles.container, { paddingTop: insets.top }]}>
 			<View style={styles.content}>
 				<Icon2 name="alert_circle" size={24} stroke={COLOR.White} style={styles.icon} />
-				<Text style={styles.message}>{message || "Error"}</Text>
+				<Text style={styles.message}>{message}</Text>
 			</View>
 		</View>
 	)
@@ -33,6 +23,7 @@ const styles = StyleSheet.create({
 		position: "absolute",
 		top: 0,
 		width: "100%",
+		height: "100%",
 		paddingHorizontal: 20,
 		borderBottomLeftRadius: 20,
 		borderBottomRightRadius: 20,
