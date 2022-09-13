@@ -72,20 +72,23 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
-	const openScannerMemorized = useCallback(() => (navigation.navigate("ScannerQR", {
-		onBarCodeScanned: (uri: string) => {
-			try {
-				if (uri.startsWith("wc")) {
-					dapp.connect(uri)
-				}
-			} catch (e) {
-				console.error("Catched", e)
-			}
-		},
-	})), [])
+	const openScannerMemorized = useCallback(
+		() =>
+			navigation.navigate("ScannerQR", {
+				onBarCodeScanned: (uri: string) => {
+					try {
+						if (uri.startsWith("wc")) {
+							dapp.connect(uri)
+						}
+					} catch (e) {
+						console.error("Catched", e)
+					}
+				},
+			}),
+		[],
+	)
 
-	const onPressClaim = () =>
-	{
+	const onPressClaim = () => {
 		navigation.push("Loader", {
 			// @ts-ignore
 			callback: async () => {
@@ -133,7 +136,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		openClaim({
 			amount: validators.totalReward,
 			coinName: "BTSG",
-			onDone: async () => (await validators.claimAll()),
+			onDone: async () => await validators.claimAll(),
 			navigation,
 		})
 	}, [validators.totalReward])
@@ -166,15 +169,21 @@ export default observer<Props>(function MainScreen({ navigation }) {
 					<View style={styles.info}>
 						<View style={styles.balance}>
 							<Text style={styles.balance_title}>Total Balance</Text>
-							<Text style={styles.balance_value}>{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}</Text>
+							<Text style={styles.balance_value}>
+								{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}
+							</Text>
 							{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}
 						</View>
 
 						<View style={styles.reward}>
 							<Text style={styles.reward_title}>Reward</Text>
 							<View style={styles.reward_row}>
-								<Text style={styles.reward_value}>{formatNumber(rewards)} {settings.currency?.symbol}</Text>
-								<Button disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>CLAIM</Button>
+								<Text style={styles.reward_value}>
+									{formatNumber(rewards)} {settings.currency?.symbol}
+								</Text>
+								<Button disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>
+									CLAIM
+								</Button>
 							</View>
 						</View>
 					</View>
@@ -219,7 +228,7 @@ const styles = StyleSheet.create({
 	scrollviewContent: {
 		marginTop: 40,
 		paddingTop: 40,
-		flex:1,
+		flex: 1,
 		flexShrink: 1,
 	},
 	info: {
