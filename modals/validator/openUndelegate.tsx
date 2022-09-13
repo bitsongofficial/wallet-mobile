@@ -19,14 +19,16 @@ const snapPoints = [[600], [450]]
 
 export default async function openUndelegate({ controller, onClose, onDone, onDismiss }: Options) {
 	const status = { done: false }
-	const { coin: coinStore } = store
+	const { coin: coinStore, validators } = store
 	const validator = controller.from
 	if (validator) {
 		const coin = coinStore.findAssetWithCoin(validator.chain ?? SupportedCoins.BITSONG)
 		if (coin) controller.amountInput.setCoin(coin)
 	}
 
-	const { steps } = controller
+	const { steps, amountInput } = controller
+
+	amountInput.maxValue = validators.validatorDelegations(validator)
 
 	const disposer = reaction(
 		() => steps.active,

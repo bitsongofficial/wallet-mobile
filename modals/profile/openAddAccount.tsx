@@ -41,8 +41,6 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 
 	const goBack = () => (controller.steps.history.length > 1 ? controller.steps.goBack() : close())
 
-	gbs.backHandler = () => goBack()
-
 	const saveWallet = () => {
 		const { nameInput, phrase } = controller
 		const { wallet } = store
@@ -53,6 +51,8 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 	}
 
 	const open = async () => {
+		gbs.backHandler = () => goBack()
+
 		const disposer = reaction(() => controller.steps.title, onChangeTitle)
 
 		await gbs.setProps({

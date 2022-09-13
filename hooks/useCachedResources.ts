@@ -1,6 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
 import * as Font from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 
 export default function useCachedResources() {
@@ -11,7 +10,6 @@ export default function useCachedResources() {
     async function loadResourcesAndDataAsync() {
       try {
         await Promise.all([
-          SplashScreen.preventAutoHideAsync(),
           Font.loadAsync({
             ...FontAwesome.font,
             "space-mono": require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -25,7 +23,6 @@ export default function useCachedResources() {
         console.warn(e);
       } finally {
         setLoadingComplete(true);
-        SplashScreen.hideAsync();
       }
     }
 

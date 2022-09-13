@@ -5,7 +5,7 @@ import { COLOR, InputHandler } from "utils"
 import * as Clipboard from "expo-clipboard"
 import { Steps } from "classes"
 import { Button, ButtonBack, Icon2 } from "components/atoms"
-import { Search, Subtitle, Title } from "../atoms"
+import { StyledInput, Subtitle, Title } from "../atoms"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { ButtonAvatar } from "../moleculs"
 import { useStore } from "hooks"
@@ -60,8 +60,7 @@ export default observer<Props>(
 				{steps.title === "Add" && (
 					<>
 						<Title style={styles.title}>Add Contact</Title>
-						<Search
-							loupe={false}
+						<StyledInput
 							style={styles.search}
 							placeholder="Public Address"
 							value={inputWallet.value}
@@ -82,8 +81,7 @@ export default observer<Props>(
 				{steps.title === "Name" && (
 					<>
 						<Title style={styles.title}>Name your Contact</Title>
-						<Search
-							loupe={false}
+						<StyledInput
 							value={inputName.value}
 							onChangeText={inputName.set}
 							style={styles.search}
@@ -112,7 +110,10 @@ export default observer<Props>(
 						{steps.title !== "Avatar" ? (
 							<Button
 								text="Continue"
-								disable={(steps.title === "Name" && inputName.value.length < 4) || (steps.title === "Add" && !isValidAddress(inputWallet.value.trim()))}
+								disable={
+									(steps.title === "Name" && inputName.value.length < 4) ||
+									(steps.title === "Add" && !isValidAddress(inputWallet.value.trim()))
+								}
 								onPress={next}
 								contentContainerStyle={styles.buttonContent}
 								textStyle={styles.buttonText}

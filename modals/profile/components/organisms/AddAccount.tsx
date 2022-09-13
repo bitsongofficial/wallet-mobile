@@ -1,21 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import * as Clipboard from "expo-clipboard"
-import { COLOR, InputHandler } from "utils"
+import { COLOR } from "utils"
 import { Button, ButtonBack } from "components/atoms"
 import { InputWord } from "components/moleculs"
 import { BottomSheetFooter, BottomSheetFooterProps } from "@gorhom/bottom-sheet"
 import { ChooseStep, CreateStep, ImportStep, InputNameStep } from "../moleculs/AddAccount"
 import { ControllerAddAccount } from "modals/profile/controllers"
-import { useStore } from "hooks"
 
 type Props = {
 	controller: ControllerAddAccount
 }
 
 export default observer<Props>(({ controller }) => {
-	const { wallet } = useStore()
 	const { phrase, steps, nameInput } = controller
 	// --------- Steps ------------
 	const openCreate = useCallback(() => steps.goTo("Create"), [])

@@ -48,6 +48,7 @@ export default class WalletStore {
   loading = false
   firstLoad = false
   loadedFromMemory = false
+  pinAsked = false
 
   private setUpWalletsHandler?: IReactionDisposer
 
@@ -242,6 +243,7 @@ export default class WalletStore {
   {
     if(!this.loadedFromMemory) return
     if(!this.remoteConfigs.firstLoad) return
+    this.pinAsked = false
     runInAction(() =>
     {
       this.loading = true
@@ -251,6 +253,7 @@ export default class WalletStore {
       const wallets: ProfileWallets[] = []
       const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
+      this.pinAsked = true
       await Promise.all(toJS(this.profiles).map(async (profile, index) =>
       {
         switch(profile.type)
