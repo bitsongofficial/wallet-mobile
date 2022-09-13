@@ -81,7 +81,7 @@ const App = observer(() => {
 
 	useEffect(() =>
 	{
-		if(isLoadingComplete && wallet.pinAsked && startRoute)
+		if(isLoadingComplete && ((wallet.pinAsked && startRoute == "Root") || startRoute == "Start"))
 		{
 			navigate(startRoute)
 		}
