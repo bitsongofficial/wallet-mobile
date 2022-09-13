@@ -81,7 +81,7 @@ const App = observer(() => {
 
 	useEffect(() =>
 	{
-		if(isLoadingComplete && wallet.pinAsked && startRoute)
+		if(isLoadingComplete && ((wallet.pinAsked && startRoute == "Root") || startRoute == "Start"))
 		{
 			navigate(startRoute)
 		}
@@ -110,8 +110,7 @@ const App = observer(() => {
 						<Loader size={60} />
 					</View>
 				</FullscreenOverlay>
-
-				{globalAlert.isShow && <AlertView message={globalAlert.message} />}
+				{!!globalAlert.text && <AlertView message={globalAlert.text} />}
 				<BottomSheet
 					{...toJS(bottomsheet.defaultProps)}
 					{...toJS(bottomsheet.props)}
