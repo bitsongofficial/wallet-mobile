@@ -2,6 +2,7 @@ import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-n
 import ThemedGradient from "./ThemedGradient"
 import { useTheme } from "hooks"
 import { TouchableOpacity } from "react-native-gesture-handler"
+import { s } from "react-native-size-matters"
 
 type Mode = "gradient" | "fill" | "gradient_border"
 
@@ -56,26 +57,26 @@ export default ({
 
 const styles = StyleSheet.create({
 	container: {
-		borderRadius: 50,
+		borderRadius: s(50),
 		overflow: "hidden",
 	},
 	content: {
-		paddingVertical: 9,
-		paddingHorizontal: 24,
+		paddingVertical: s(9),
+		paddingHorizontal: s(24),
 		justifyContent: "center",
 		alignItems: "center",
 		flexDirection: "row",
-		borderRadius: 50,
+		borderRadius: s(50),
 	},
 	border: {
-		padding: 2,
+		padding: s(2),
 	},
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 11,
-		lineHeight: 14,
+		fontSize: s(11),
+		// lineHeight: 14,
 	},
 	disable: {
 		opacity: 0.5,

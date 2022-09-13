@@ -10,6 +10,7 @@ import {
 import { useTheme } from "hooks"
 import Icon2 from "./Icon2"
 import { COLOR } from "utils"
+import { s } from "react-native-size-matters"
 
 type ButtonProps = {
 	onPress?(): void
@@ -44,8 +45,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
-		marginLeft: 4,
+		fontSize: s(16),
+		lineHeight: s(20),
+		marginLeft: s(4),
 	},
 })
