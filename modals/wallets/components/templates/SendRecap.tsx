@@ -8,9 +8,8 @@ import { SendController } from "../../controllers"
 import { Data } from "../organisms"
 import { SupportedCoins } from "constants/Coins"
 import { formatNumber } from "utils/numbers"
-import { HORIZONTAL_WRAPPER } from "modals/wallets/constants"
-import { FOOTER_HEIGHT } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { FOOTER_HEIGHT, HORIZONTAL_WRAPPER } from "utils/constants"
 
 type ValueTabs = "Details" | "Data"
 const tabs: ValueTabs[] = ["Details", "Data"]
@@ -69,7 +68,6 @@ export default observer(function SelectReceiver({ controller }: Props) {
 const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
-
 		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 	self: { marginTop: 19 },

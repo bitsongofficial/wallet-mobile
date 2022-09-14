@@ -1,5 +1,6 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 import { s, vs } from "react-native-size-matters"
+import { FOOTER_HEIGHT } from "utils/constants"
 
 type Props = {
 	Right?: JSX.Element | boolean
@@ -15,8 +16,6 @@ export default ({ Center, Left, Right, style }: Props) => (
 		<View style={styles.right}>{Right}</View>
 	</View>
 )
-
-export const FOOTER_HEIGHT = vs(56)
 
 const styles = StyleSheet.create({
 	container: {

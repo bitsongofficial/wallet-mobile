@@ -3,7 +3,7 @@ import { TouchableOpacity } from "react-native-gesture-handler"
 import { observer } from "mobx-react-lite"
 import { COLOR } from "utils"
 import { useStore, useTheme } from "hooks"
-import { Button, FOOTER_HEIGHT, Icon2 } from "components/atoms"
+import { Button, Icon2 } from "components/atoms"
 import { Numpad } from "components/moleculs"
 import { SendController } from "../../controllers"
 import { CardSelectCoin } from "../moleculs"
@@ -11,6 +11,7 @@ import { TransactionCreater } from "classes/Transaction"
 import { StyleProp } from "react-native"
 import { mvs, vs } from "react-native-size-matters"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
+import { FOOTER_HEIGHT } from "utils/constants"
 
 type Props = {
 	controller: SendController
@@ -103,7 +104,6 @@ const styles = StyleSheet.create({
 	},
 
 	numpad: {
-		marginBottom: FOOTER_HEIGHT + 1000,
-		// backgroundColor: "red",
+		marginBottom: FOOTER_HEIGHT,
 	},
 })
