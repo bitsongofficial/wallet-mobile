@@ -53,14 +53,16 @@ export default observer<Props>(function Stacking({ navigation }) {
 	const { proposals } = useStore()
 	// const filterdProposals = useMemo<Proposal[]>(() => mock, [status])
 
-	const changeActiveChain = useCallback((chain:SupportedCoins) =>
-	{
+	const changeActiveChain = useCallback((chain: SupportedCoins) => {
 		proposals.addToRecent(chain)
 		setActiveChain(chain)
 	}, [])
 
 	const filterdProposals = useMemo(
-		() => proposals.filterByCoinAndType(activeChain ? activeChain: SupportedCoins.BITSONG, status).slice(),
+		() =>
+			proposals
+				.filterByCoinAndType(activeChain ? activeChain : SupportedCoins.BITSONG, status)
+				.slice(),
 		[status, activeChain],
 	)
 	const renderProposals = useCallback<ListRenderItem<Proposal>>(
@@ -70,19 +72,32 @@ export default observer<Props>(function Stacking({ navigation }) {
 				style={styles.listItem}
 				onPress={() => navigation.navigate("ProposalDetails", { proposal: item })}
 			>
-				<CardCommission key={item.id.toString()} title={item.title} status={item.status} percentage={proposals.votedPercentage(item)} />
+				<CardCommission
+					key={item.id.toString()}
+					title={item.title}
+					status={item.status}
+					percentage={proposals.votedPercentage(item)}
+				/>
 			</TouchableOpacity>
 		),
 		[],
 	)
 
 	// ------------- Actions --------------
-	const navToNew = useCallback(() => navigation.navigate("NewProposal", {
-		chain: activeChain
-	}), [])
-	const openChangeChainModal = useCallback(() => openChangeChain({
-		setActiveChain: changeActiveChain
-	}), [])
+	const navToNew = useCallback(
+		() =>
+			navigation.navigate("NewProposal", {
+				chain: activeChain,
+			}),
+		[],
+	)
+	const openChangeChainModal = useCallback(
+		() =>
+			openChangeChain({
+				setActiveChain: changeActiveChain,
+			}),
+		[],
+	)
 
 	// -------------- Styles --------------
 	const insets = useSafeAreaInsets()
