@@ -4,6 +4,7 @@ import { Word } from "components/atoms"
 import { Phrase } from "classes"
 import { ScrollView } from "react-native-gesture-handler"
 import { observer } from "mobx-react-lite"
+import { s, vs } from "react-native-size-matters"
 
 type Props = ScrollViewProps & {
 	phrase: Phrase
@@ -47,12 +48,12 @@ export default observer(({ phrase, ...props }: Props) => {
 
 const styles = StyleSheet.create({
 	scrollview: {
-		paddingVertical: 5,
-		marginBottom: 35,
+		paddingVertical: vs(5),
+		marginBottom: vs(35),
 		flexGrow: 1,
 	},
 	scrollviewContent: {
-		height: 50,
+		height: vs(50),
 	},
-	word: { marginRight: 10 },
+	word: { marginRight: s(10) },
 })

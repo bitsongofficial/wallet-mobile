@@ -10,6 +10,7 @@ import {
 	View,
 	ViewStyle,
 } from "react-native"
+import { s, vs } from "react-native-size-matters"
 import { COLOR } from "utils"
 
 type Props = TextInputProps & {
@@ -26,7 +27,8 @@ export default observer(({ phrase, style, inputStyle, bottomsheet, ...props }: P
 			<Input
 				blurOnSubmit={false}
 				bottomsheet={bottomsheet}
-				style={inputStyle}
+				style={[styles.input, inputStyle]}
+				inputStyle={styles.textInput}
 				value={phrase.inputValue}
 				onChangeText={phrase.inputSet}
 				onSubmitEditing={phrase.inputSubmit}
@@ -48,9 +50,16 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 12,
-		lineHeight: 15,
+		fontSize: vs(12),
+		lineHeight: vs(15),
 		color: COLOR.Marengo,
-		marginBottom: 12,
+		marginBottom: s(12),
+	},
+
+	input: {
+		borderRadius: s(20),
+	},
+	textInput: {
+		height: s(62),
 	},
 })
