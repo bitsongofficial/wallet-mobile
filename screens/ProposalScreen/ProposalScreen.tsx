@@ -20,6 +20,8 @@ import { useAnimateFlatlist } from "hooks"
 import { openChangeChain } from "modals/proposal"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { Shadow } from "components/atoms"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { vs } from "react-native-size-matters"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
@@ -125,7 +127,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 					</View>
 				}
 				// ------------- List -------------------
-				data={filterdProposals}
+				data={[{ id: 1, title: "title", status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD }]}
 				renderItem={renderProposals}
 				// ------------ Styles --------------------
 				style={styles.flatlist}
@@ -142,11 +144,11 @@ const styles = StyleSheet.create({
 	flatlist: { backgroundColor: COLOR.Dark3 },
 	listHeader: {
 		backgroundColor: COLOR.Dark3,
-		paddingTop: Platform.OS === "ios" ? 75 : 110,
+		paddingTop: vs(Platform.OS === "ios" ? 75 : 110),
 	},
-	tabs: { paddingHorizontal: 30 },
+	tabs: { paddingHorizontal: HORIZONTAL_WRAPPER },
 	listItem: {
 		marginTop: 20,
-		marginHorizontal: 30,
+		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 })
