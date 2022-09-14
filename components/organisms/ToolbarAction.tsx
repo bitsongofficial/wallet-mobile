@@ -2,6 +2,7 @@ import { memo, ReactNode } from "react"
 import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native"
 import ThemedGradient from "components/atoms/ThemedGradient"
 import { COLOR, hexAlpha } from "utils"
+import { s } from "react-native-size-matters"
 
 type Mode = "gradient" | "fill"
 
@@ -38,8 +39,8 @@ export default memo(
 		backgroundStyle,
 	}: Props) => {
 		const sizeStyle: ViewStyle = {
-			width: size,
-			height: size,
+			width: s(size),
+			height: s(size),
 		}
 
 		const Background = mode === "gradient" ? ThemedGradient : View
@@ -75,17 +76,15 @@ const styles = StyleSheet.create({
 	container: {
 		justifyContent: "center",
 		alignItems: "center",
-		backgroundColor: "red",
 	},
 	disabled: {
 		opacity: 0.2,
 	},
 	button: {
-		marginBottom: 16,
-		borderRadius: 50,
+		marginBottom: s(10),
+		borderRadius: s(50),
 		overflow: "hidden",
 	},
-
 	fill_color: {
 		backgroundColor: hexAlpha(COLOR.White, 10),
 	},
@@ -98,14 +97,14 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		borderRadius: 50,
+		borderRadius: s(50),
 	},
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 13,
-		lineHeight: 16,
+		fontSize: s(13),
+		lineHeight: s(16),
 		color: COLOR.White,
 	},
 })
