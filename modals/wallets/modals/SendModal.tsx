@@ -6,15 +6,14 @@ import { SendController } from "../controllers"
 import { Header } from "../components/atoms"
 import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "../components/templates"
 import { COLOR } from "utils"
-import { HORIZONTAL_WRAPPER } from "../constants"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
-import { FOOTER_HEIGHT } from "components/atoms/Footer"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { isValidAddress } from "core/utils/Address"
 import { useKeyboard } from "@react-native-community/hooks"
 import { useStore } from "hooks"
 import { toJS } from "mobx"
 import { s, vs } from "react-native-size-matters"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = {
 	controller: SendController
@@ -171,9 +170,7 @@ const styles = StyleSheet.create({
 	//
 	selectCoin: { marginTop: 15 },
 	insertImport: {
-		// flexGrow: 1,
 		marginHorizontal: HORIZONTAL_WRAPPER,
-		// marginBottom: FOOTER_HEIGHT + 100,
 		backgroundColor: "orange",
 	},
 	selectReceiver: { flex: 1 },
