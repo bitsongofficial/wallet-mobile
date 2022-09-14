@@ -1,6 +1,7 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs"
 import { ThemedGradient } from "components/atoms"
 import { StyleSheet, View } from "react-native"
+import { s } from "react-native-size-matters"
 import TabButton from "./TabButton"
 
 export default function MyTabBar(props: BottomTabBarProps) {
@@ -45,24 +46,19 @@ export default function MyTabBar(props: BottomTabBarProps) {
 const styles = StyleSheet.create({
 	container: {
 		position: "absolute",
-		height: 56,
-		bottom: 34,
+		height: s(56),
+		bottom: s(34),
 		left: 0,
 		right: 0,
-		marginHorizontal: 64,
-		borderRadius: 50,
+		marginHorizontal: "15%",
+		borderRadius: s(50),
 		overflow: "hidden",
 	},
 	gradient: {
+		flex: 1,
 		flexDirection: "row",
 		justifyContent: "space-evenly",
-		paddingHorizontal: 36,
-		paddingVertical: 18,
-		flex: 1,
-	},
-	button: {
-		flex: 1,
 		alignItems: "center",
-		justifyContent: "center",
+		paddingHorizontal: s(36),
 	},
 })

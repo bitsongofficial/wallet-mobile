@@ -1,6 +1,8 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs"
 import { useCallback } from "react"
-import { StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet } from "react-native"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import { s } from "react-native-size-matters"
 
 type TabButtonProps = BottomTabBarProps & {
 	route: any
@@ -36,8 +38,9 @@ export default ({ state, descriptors, index, route, onPress, onLongPress }: TabB
 
 const styles = StyleSheet.create({
 	touchable: {
-		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
+		padding: s(10),
+		borderRadius: s(50),
 	},
 })
