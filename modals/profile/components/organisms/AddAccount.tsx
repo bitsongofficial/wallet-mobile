@@ -8,10 +8,9 @@ import { InputWord } from "components/moleculs"
 import { BottomSheetFooter, BottomSheetFooterProps } from "@gorhom/bottom-sheet"
 import { ChooseStep, CreateStep, ImportStep, InputNameStep } from "../moleculs/AddAccount"
 import { ControllerAddAccount } from "modals/profile/controllers"
+import { s, vs } from "react-native-size-matters"
 
-type Props = {
-	controller: ControllerAddAccount
-}
+type Props = { controller: ControllerAddAccount }
 
 export default observer<Props>(({ controller }) => {
 	const { phrase, steps, nameInput } = controller
@@ -20,7 +19,6 @@ export default observer<Props>(({ controller }) => {
 	const openImport = useCallback(() => steps.goTo("Import"), [])
 
 	// --------- Phrase ----------
-
 	const [isHidden, setHidden] = useState(true)
 	const toggle = useCallback(() => setHidden((value) => !value), [])
 
@@ -78,7 +76,7 @@ export const Footer = observer(
 								bottomsheet
 								onSubmitEditing={() => {
 									phrase.inputSubmit()
-									phrase.isValid && steps.goTo("Name") // TODO: need upd. isValid
+									// phrase.isValid && steps.goTo("Name") // TODO: need upd. isValid
 								}}
 								phrase={phrase}
 							/>
@@ -119,19 +117,19 @@ export const Footer = observer(
 
 const styles = StyleSheet.create({
 	wrapper: {
-		marginTop: 15,
-		marginHorizontal: 26,
+		marginTop: vs(15),
+		marginHorizontal: s(26),
 		flex: 1,
 	},
 	title: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		textAlign: "center",
-		marginBottom: 30,
+		marginBottom: vs(30),
 	},
 	subtitle: {
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		textAlign: "center",
 		opacity: 0.3,
 	},
@@ -139,12 +137,12 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 
 		textAlign: "center",
 		color: COLOR.Marengo,
-		marginBottom: 26,
+		marginBottom: vs(26),
 	},
 	// ------ Footer -----
 
@@ -154,11 +152,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	buttonContinueContent: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
+		paddingHorizontal: s(40),
+		paddingVertical: s(18),
 	},
 	buttonContinueText: {
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 	},
 })

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react"
-import { Dimensions, ListRenderItem, StyleSheet, View } from "react-native"
+import { ListRenderItem, StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet"
 import { useStore } from "hooks"
@@ -9,6 +9,7 @@ import { LanguageItem } from "../moleculs"
 import languages from "constants/languages"
 import { ILang } from "screens/Profile/type"
 import { Icon2 } from "components/atoms"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	close(): void
@@ -76,33 +77,32 @@ export default observer<Props>(({ close }) => {
 const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
-		height: Dimensions.get("screen").height * 0.9,
-		marginTop: 15,
-		marginHorizontal: 26,
+		marginTop: vs(15),
+		marginHorizontal: s(26),
 	},
 	title: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 
-		marginBottom: 30,
+		marginBottom: vs(30),
 		textAlign: "center",
 	},
 	search: {
-		marginBottom: 9,
+		marginBottom: vs(9),
 	},
 
 	scroll: {
-		height: 100,
+		height: vs(100),
 		flexGrow: 1,
 	},
 	scrollContent: {
-		paddingTop: 9,
-		paddingBottom: 50,
+		paddingTop: vs(9),
+		paddingBottom: vs(50),
 	},
 
 	//
 	iconContainer: {
-		paddingHorizontal: 25,
+		paddingHorizontal: s(25),
 		alignItems: "center",
 		justifyContent: "center",
 	},

@@ -1,6 +1,7 @@
 import { StyleProp, StyleSheet, Text, TextStyle } from "react-native"
 import { useTheme } from "hooks"
 import { animated } from "@react-spring/native"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	text?: string
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 28,
-		lineHeight: 35,
+		fontSize: s(28),
+		lineHeight: s(35),
 	},
 })

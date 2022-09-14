@@ -1,6 +1,7 @@
 import { useCallback } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import { TouchableWithoutFeedback } from "react-native-gesture-handler"
+import { s, vs } from "react-native-size-matters"
 import { ICurrency } from "screens/Profile/type"
 import { COLOR, hexAlpha } from "utils"
 import { RadioButton } from "../atoms"
@@ -26,10 +27,10 @@ export default ({ value, isActive, onPress }: Props) => {
 
 const styles = StyleSheet.create({
 	container: {
-		height: 55,
+		height: vs(55),
 		marginBottom: 4,
-		paddingLeft: 25,
-		paddingRight: 15,
+		paddingLeft: s(25),
+		paddingRight: s(15),
 		alignItems: "center",
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -39,8 +40,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 13,
-		lineHeight: 50,
+		fontSize: s(13),
+		lineHeight: s(50),
 		color: COLOR.RoyalBlue3,
 	},
 
@@ -48,11 +49,11 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 15,
-		lineHeight: 50,
+		fontSize: s(15),
+		lineHeight: s(50),
 		color: hexAlpha(COLOR.White, 40),
 		flex: 1,
-		marginLeft: 42,
+		marginLeft: s(42),
 	},
 	text_active: {
 		color: COLOR.White,
