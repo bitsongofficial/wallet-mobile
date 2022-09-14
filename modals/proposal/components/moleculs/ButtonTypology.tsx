@@ -3,11 +3,12 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { Icon2, IconName, ThemedGradient } from "components/atoms"
 import { COLOR, hexAlpha } from "utils"
+import { s, vs } from "react-native-size-matters"
 
 export type VoteTypology = "text"
 
 type ButtonProps = {
-	typology: VoteTypology
+	typology?: VoteTypology
 	active: VoteTypology
 	onPress(typology: VoteTypology): void
 	style?: StyleProp<ViewStyle>
@@ -60,38 +61,38 @@ export default ({ onPress, style, typology, active }: ButtonProps) => {
 
 const styles = StyleSheet.create({
 	container: {
-		borderRadius: 20,
+		borderRadius: s(20),
 		overflow: "hidden",
 	},
 	content: {
-		paddingVertical: 19,
-		paddingHorizontal: 22,
+		paddingVertical: s(19),
+		paddingHorizontal: s(22),
 		flexDirection: "row",
-		borderRadius: 18,
+		borderRadius: s(18),
 		backgroundColor: hexAlpha(COLOR.Lavender, 10),
 	},
 	content_active: {
 		backgroundColor: COLOR.Dark2,
 	},
 	border: {
-		padding: 2,
+		padding: s(2),
 	},
 	title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: COLOR.White,
 
-		marginBottom: 7,
+		marginBottom: vs(7),
 	},
 	caption: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 12,
-		lineHeight: 15,
+		fontSize: s(12),
+		lineHeight: s(15),
 		color: hexAlpha(COLOR.White, 50),
 	},
 })

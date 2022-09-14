@@ -1,6 +1,7 @@
 import { gbs } from "modals"
 import { ChangeVoteTypology } from "./components/templates"
 import { VoteTypology } from "./components/moleculs"
+import { vs } from "react-native-size-matters"
 
 type Options = {
 	typology: VoteTypology
@@ -19,7 +20,7 @@ export default async function openChangeChain(options: Options) {
 			gbs.close()
 		}
 		await gbs.setProps({
-			snapPoints: [350],
+			snapPoints: [vs(350)],
 			enableContentPanningGesture: false,
 			onChange(index) {
 				if (index === -1) {

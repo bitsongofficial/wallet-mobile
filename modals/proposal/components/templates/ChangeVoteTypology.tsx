@@ -3,44 +3,44 @@ import { observer } from "mobx-react-lite"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { ButtonTypology, VoteTypology } from "../moleculs"
 import { COLOR } from "utils"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	typology: VoteTypology
 	onPress(typology: VoteTypology): void
 }
 
-export default observer<Props>(({ typology, onPress }) => {
-	return (
-		<BottomSheetView style={styles.container}>
-			<Text style={styles.title}>Proposal typology</Text>
-			<ButtonTypology active={typology} style={styles.button} onPress={onPress} typology="text" />
-			<ButtonTypology active={typology} onPress={onPress} typology="software" />
-		</BottomSheetView>
-	)
-})
+export default observer<Props>(({ typology, onPress }) => (
+	<BottomSheetView style={styles.container}>
+		<Text style={styles.title}>Proposal typology</Text>
+		<ButtonTypology active={typology} style={styles.button} onPress={onPress} typology="text" />
+		<ButtonTypology active={typology} onPress={onPress} />
+	</BottomSheetView>
+))
 
 const styles = StyleSheet.create({
 	container: {
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,
-		paddingTop: 15,
+		paddingTop: vs(15),
 	},
 	title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		textAlign: "center",
 		color: COLOR.White,
 
-		marginBottom: 35,
+		marginBottom: vs(25),
 	},
 	button: {
-		marginBottom: 18,
+		marginBottom: vs(18),
 	},
 
 	border: {
-		padding: 2,
+		padding: s(2),
 	},
 })
