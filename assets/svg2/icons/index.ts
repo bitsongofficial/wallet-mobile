@@ -36,6 +36,7 @@ import translate from "./translate.svg"
 import wallet from "./wallet.svg"
 import circle_dollar from "./circle_dollar.svg"
 import bell from "./bell.svg"
+import bell_1 from "./bell_1.svg"
 import close from "./close.svg"
 import magnifying_glass from "./magnifying_glass.svg"
 import trash from "./trash.svg"
@@ -136,6 +137,7 @@ export default <const>{
 	wallet,
 	circle_dollar,
 	bell,
+	bell_1,
 	trash,
 	plus,
 
