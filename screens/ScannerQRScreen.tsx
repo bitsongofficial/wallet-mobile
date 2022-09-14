@@ -10,6 +10,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { RootStackParamList } from "types"
 import { observer } from "mobx-react-lite"
 import { COLOR, hexAlpha } from "utils"
+import { s, vs } from "react-native-size-matters"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ScannerQR">
 
@@ -55,9 +57,7 @@ export default observer<Props>(({ navigation, route }) => {
 				<View style={styles.vertical} />
 				<View>
 					<View style={styles.horizontal} />
-					<View>
-						<View style={styles.fake}></View>
-					</View>
+					<View style={styles.fake} />
 					<View style={styles.horizontal}>
 						<Text style={styles.text}>
 							QR code will be detected{"\n"}
@@ -70,14 +70,12 @@ export default observer<Props>(({ navigation, route }) => {
 			</View>
 
 			<View style={[styles.footer, { marginBottom: insets.bottom }]}>
-				<View style={styles.buttonContainer}>
-					<ButtonBack
-						stroke={COLOR.Dark3}
-						style={styles.button}
-						textStyle={styles.buttonText}
-						onPress={goBack}
-					/>
-				</View>
+				<ButtonBack
+					stroke={COLOR.Dark3}
+					style={styles.button}
+					textStyle={styles.buttonText}
+					onPress={goBack}
+				/>
 			</View>
 		</>
 	)
@@ -110,38 +108,37 @@ const styles = StyleSheet.create({
 	},
 
 	fake: {
-		height: 260,
-		width: 260,
-		borderRadius: 30,
+		height: s(260),
+		width: s(260),
+		borderRadius: s(30),
 		// backgroundColor: "magenta",
 	},
 
 	footer: {
-		marginHorizontal: 30,
+		marginHorizontal: HORIZONTAL_WRAPPER,
 		position: "absolute",
 		bottom: 0,
+		flexDirection: "row",
 	},
 
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
-		marginTop: 23,
+		fontSize: vs(14),
+		lineHeight: vs(18),
+		marginTop: vs(23),
 		textAlign: "center",
 
 		color: COLOR.White,
 	},
 
-	buttonContainer: { flexDirection: "row" },
-
 	button: {
 		backgroundColor: COLOR.White,
-		borderRadius: 50,
-		paddingHorizontal: 24,
-		paddingVertical: 18,
-		marginBottom: 16,
+		borderRadius: s(50),
+		paddingHorizontal: s(24),
+		paddingVertical: s(18),
+		marginBottom: s(16),
 	},
 	buttonText: {
 		color: COLOR.Dark3,
