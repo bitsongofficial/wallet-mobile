@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react"
 import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
+import { observer } from "mobx-react-lite"
+import { s, vs } from "react-native-size-matters"
 import { TimerCountdown } from "classes"
 import { COLOR } from "utils"
 import { Title, Caption } from "../atoms"
-import { observer } from "mobx-react-lite"
-import { useEffect, useState } from "react"
 
 type Props = {
 	timer: TimerCountdown
@@ -13,10 +14,10 @@ type Props = {
 export default observer(({ timer, style }: Props) => {
 	const [showNumber, setShowNumber] = useState(false)
 
-	useEffect(() =>
-	{
-		if(timer.diffSec) setShowNumber(true)
+	useEffect(() => {
+		if (timer.diffSec) setShowNumber(true)
 	}, [timer.isActive])
+
 	return (
 		<View style={[styles.container, style]}>
 			<Image source={require("assets/images/lock.png")} style={styles.icon} />
@@ -33,32 +34,27 @@ export default observer(({ timer, style }: Props) => {
 const styles = StyleSheet.create({
 	container: { alignItems: "center" },
 	icon: {
-		marginBottom: 45,
-		width: 205,
-		height: 205,
+		marginBottom: vs(25),
+		width: vs(205),
+		height: vs(205),
 	},
-	title: {
-		marginBottom: 16,
-	},
-	caption: {
-		textAlign: "center",
-	},
+	title: { marginBottom: vs(8) },
+	caption: { textAlign: "center" },
 	timerContainer: {
-		marginTop: 50,
-		width: 187,
-		height: 177,
+		marginTop: vs(25),
+		width: vs(187),
+		height: vs(177),
 		backgroundColor: COLOR.Dark2,
-		borderRadius: 20,
+		borderRadius: s(20),
 		alignItems: "center",
 		justifyContent: "center",
 	},
-
 	timer: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 80,
-		lineHeight: 101,
+		fontSize: vs(80),
+		lineHeight: vs(101),
 		color: COLOR.White,
 	},
 })
