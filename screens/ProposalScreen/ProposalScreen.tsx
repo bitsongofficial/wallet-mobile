@@ -127,7 +127,8 @@ export default observer<Props>(function Stacking({ navigation }) {
 					</View>
 				}
 				// ------------- List -------------------
-				data={[{ id: 1, title: "title", status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD }]}
+				data={filterdProposals}
+				// data={[{ id: 1, title: "title", status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD }]}
 				renderItem={renderProposals}
 				// ------------ Styles --------------------
 				style={styles.flatlist}
