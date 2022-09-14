@@ -6,10 +6,8 @@ import { RootStackParamList } from "types"
 import { COLOR } from "utils"
 import { Icon2 } from "components/atoms"
 import { Header } from "components/organisms"
-import { Subtitle, Title } from "./CreateSeed/components/atoms"
-import { SafeAreaView } from "react-native-safe-area-context"
 import { StatusBar } from "expo-status-bar"
-import { Pin, Timer } from "classes"
+import { Pin } from "classes"
 import { useStore } from "hooks"
 import { PinCode } from "./CreateSeed/components/moleculs"
 import { Numpad } from "components/moleculs"
@@ -22,8 +20,11 @@ import Animated, {
 	withTiming,
 } from "react-native-reanimated"
 import { StepLock, StepSuccess } from "./LoaderScreen/components/organisms"
-import { Button } from "./LoaderScreen/components/atoms"
+import { Button, Caption, Title } from "./LoaderScreen/components/atoms"
 import moment from "moment"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { vs } from "react-native-size-matters"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 type Props = NativeStackScreenProps<RootStackParamList, "PinRequest">
 
@@ -92,8 +93,7 @@ export default observer<Props>(({ navigation, route }) => {
 	// ---------- Block -----------
 
 	useEffect(() => {
-		if (countError === errorMax)
-		{
+		if (countError === errorMax) {
 			settings.blockApp(moment().add(30, "second").toDate())
 			setErrorCount(0)
 		}
@@ -134,6 +134,8 @@ export default observer<Props>(({ navigation, route }) => {
 		[route.params.isRandomKeyboard],
 	)
 
+	const insets = useSafeAreaInsets()
+
 	return (
 		<>
 			<StatusBar style="light" />
@@ -143,11 +145,11 @@ export default observer<Props>(({ navigation, route }) => {
 				{!isConfirm && !settings.isAppBlock && (
 					<View style={styles.wrapper}>
 						<Title text={title} style={styles.title} />
-						<Subtitle style={styles.subtitle}>
+						<Caption style={styles.caption}>
 							This is the only way you will be able to {"\n"}
 							recover your account. Please store it {"\n"}
 							somewhere safe!
-						</Subtitle>
+						</Caption>
 
 						<Animated.View style={[animErrorStyle, styles.pin]}>
 							<PinCode
@@ -175,18 +177,18 @@ export default observer<Props>(({ navigation, route }) => {
 					</View>
 				)}
 				{settings.isAppBlock && (
-					<View style={styles.block}>
-						<StepLock timer={settings.blockingTimer} />
-						<View style={styles.buttonBackContainer}>
+					<>
+						<StepLock timer={settings.blockingTimer} style={styles.lock} />
+						<View style={[styles.buttonBackContainer, { bottom: insets.bottom }]}>
 							<Button
 								text="Back to homescreen"
 								mode="fill"
 								disable={settings.blockingTimer.isActive}
 								onPress={goBack}
-								Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
+								Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
 							/>
 						</View>
-					</View>
+					</>
 				)}
 			</View>
 		</>
@@ -199,89 +201,37 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	wrapper: {
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,
 	},
-	confirm: { justifyContent: "space-evenly", flex: 1 },
-
-	icon: {
-		marginBottom: 45,
-	},
-	button: {
-		height: 60,
-		justifyContent: "center",
-	},
-
-	scrollview: { flex: 1 },
-	scrollviewContent: {
-		flexGrow: 1,
-		paddingTop: 50,
-		paddingBottom: 16,
+	confirm: {
+		justifyContent: "space-evenly",
+		flex: 1,
 	},
 	// ------ Text -------
 	title: {
-		marginTop: 50,
+		marginTop: vs(50),
+		textAlign: "left",
 	},
-	title_confirmed: {
-		marginBottom: 16,
-		fontSize: 20,
-	},
-	subtitle: {
-		marginTop: 8,
+	caption: {
+		marginTop: vs(8),
 		color: COLOR.Marengo,
+		textAlign: "left",
 	},
-	subtitle_confirmed: {
-		textAlign: "center",
-		color: COLOR.Marengo,
-		fontSize: 16,
-		lineHeight: 20,
-	},
-
 	// ------- Pin Code -------
+	pin: { flex: 2 },
 	numpad: {
+		flex: 5,
 		marginHorizontal: 15,
-		flex: 1,
 		justifyContent: "space-between",
 		marginBottom: 30,
 	},
-	pin: { flex: 1 },
-
-	// -------- Button -------
-	buttonContent: {
-		paddingVertical: 18,
-	},
-	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
-	},
-
 	// ------------ Block -----------
-
-	timerContainer: {
-		marginTop: 50,
-		width: 187,
-		height: 177,
-		backgroundColor: COLOR.Dark2,
-		borderRadius: 20,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-
-	timer: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: 80,
-		lineHeight: 101,
-		color: COLOR.White,
-	},
 	buttonBackContainer: {
 		justifyContent: "center",
 		alignItems: "center",
 		position: "absolute",
-		bottom: 8,
 		width: "100%",
 	},
-
-	block: { flex: 1, justifyContent: "space-evenly" },
+	lock: { marginTop: vs(25) },
 })
