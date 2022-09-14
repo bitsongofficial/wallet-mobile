@@ -27,6 +27,7 @@ import { openClaim } from "modals/validator"
 import { formatNumber } from "utils/numbers"
 import { openSend } from "modals/wallets"
 import { s, vs } from "react-native-size-matters"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -222,7 +223,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		// flexShrink: 1,
 		backgroundColor: COLOR.Dark3,
 	},
 
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
 	},
 
 	reward: {
-		backgroundColor: "red",
+		// backgroundColor: "red",
 	},
 	reward_title: {
 		fontFamily: "CircularStd",
@@ -281,7 +281,6 @@ const styles = StyleSheet.create({
 		lineHeight: s(20),
 		color: COLOR.RoyalBlue2,
 		marginBottom: vs(10),
-		backgroundColor: "orange",
 	},
 	reward_value: {
 		fontFamily: "CircularStd",
@@ -297,18 +296,17 @@ const styles = StyleSheet.create({
 	},
 
 	toolbar_short: {
-		marginHorizontal: 24,
+		marginHorizontal: s(24),
 		marginBottom: vs(40),
 	},
 	toolbar_full: {
-		padding: 24,
-		...StyleSheet.absoluteFillObject,
-		zIndex: 10,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
+		flex: 1,
 	},
 
 	tabs: {
-		paddingHorizontal: 30,
-		marginBottom: 18,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
+		marginBottom: vs(18),
 	},
 	coins: {
 		flex: 1,
