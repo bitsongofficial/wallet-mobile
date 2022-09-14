@@ -12,6 +12,7 @@ import { Icon2, Switch, ThemedGradient } from "components/atoms"
 import { COLOR, InputHandler } from "utils"
 import { ListButton, Subtitle } from "./components/atoms"
 import { askPin } from "navigation/AskPin"
+import { s, vs } from "react-native-size-matters"
 
 type Props = NativeStackScreenProps<RootStackParamList, "SettingsSecurity">
 
@@ -98,7 +99,7 @@ const Header = ({ onPressBack, style }: PropsHeader) => (
 		<TouchableOpacity
 			onPress={onPressBack}
 			style={{
-				padding: 5,
+				padding: s(5),
 				borderRadius: 20,
 			}}
 		>
@@ -110,27 +111,27 @@ const Header = ({ onPressBack, style }: PropsHeader) => (
 const styles = StyleSheet.create({
 	container: { flex: 1 },
 	header: {
-		marginBottom: 25,
+		marginBottom: vs(25),
 	},
 
 	head: {
-		marginHorizontal: 25, // <- wrapper
-		marginBottom: 30,
+		marginHorizontal: s(25), // <- wrapper
+		marginBottom: vs(30),
 	},
 
-	wrapper: { marginHorizontal: 34 },
+	wrapper: { marginHorizontal: s(34) },
 	wrapper_opacity: { opacity: 0.1 },
-	agreement: { marginBottom: 54, marginTop: 25 },
-	title: { marginBottom: 38 },
-	section: { marginBottom: 35 },
-	subtitle: { marginBottom: 22 },
+	agreement: { marginBottom: vs(54), marginTop: vs(25) },
+	title: { marginBottom: vs(38) },
+	section: { marginBottom: vs(35) },
+	subtitle: { marginBottom: vs(22) },
 
-	listButton: { marginTop: 4 },
+	listButton: { marginTop: vs(4) },
 
 	button: { backgroundColor: COLOR.Dark3 },
-	buttonContent: { paddingVertical: 18 },
+	buttonContent: { paddingVertical: s(18) },
 	buttonText: {
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 	},
 })

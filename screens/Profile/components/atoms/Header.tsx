@@ -8,6 +8,7 @@ import Animated, {
 	SharedValue,
 	useAnimatedStyle,
 } from "react-native-reanimated"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	onPressClose(): void
@@ -40,7 +41,7 @@ export default ({ onPressClose, style, animtedValue }: Props) => {
 
 const styles = StyleSheet.create({
 	container: {
-		height: 55,
+		height: s(55),
 
 		flexDirection: "row",
 		alignItems: "center",
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		backgroundColor: hexAlpha(COLOR.White, 10),
-		padding: 13,
-		borderRadius: 35,
+		padding: s(13),
+		borderRadius: s(35),
 	},
 })

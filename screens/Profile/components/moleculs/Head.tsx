@@ -14,6 +14,7 @@ import Animated, {
 	SharedValue,
 	useAnimatedStyle,
 } from "react-native-reanimated"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	style: StyleProp<ViewStyle>
@@ -74,7 +75,7 @@ export default observer<Props>(
 							<TextInput
 								// editable={editable}
 								ref={inputRef}
-								style={[styles.input]}
+								style={styles.input}
 								value={input.value}
 								onChangeText={input.set}
 								onPressIn={(e) => e.preventDefault()}
@@ -116,14 +117,14 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	avatar: {
-		marginRight: 18,
+		marginRight: s(18),
 	},
 	input: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 28,
-		lineHeight: 35,
+		fontSize: s(28),
+		lineHeight: s(35),
 		color: COLOR.White,
 	},
 
@@ -131,11 +132,11 @@ const styles = StyleSheet.create({
 		backgroundColor: hexAlpha(COLOR.Lavender, 10),
 	},
 	buttonContent: {
-		paddingHorizontal: 18,
-		paddingVertical: 9,
+		paddingHorizontal: s(18),
+		paddingVertical: s(9),
 	},
 	buttonText: {
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 	},
 })

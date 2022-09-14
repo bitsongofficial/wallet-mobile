@@ -6,6 +6,7 @@ import { Icon2 } from "components/atoms"
 import { trimAddress } from "utils/string"
 import { ProfileWallets } from "stores/WalletStore"
 import { WalletTypes } from "core/types/storing/Generic"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	wallet: ProfileWallets | null
@@ -17,10 +18,11 @@ export default ({ onPress, wallet, style }: Props) => {
 	const handlePress = useCallback(() => onPress(wallet), [onPress, wallet])
 	const [address, setAddress] = useState("")
 	useEffect(() => {
-		;(async () => {
-			const a = await wallet?.wallets.btsg.Address()
-			setAddress(trimAddress(a))
-		})()
+		wallet?.wallets.btsg
+			//
+			.Address()
+			.then(trimAddress)
+			.then(setAddress)
 	})
 	return (
 		<RectButton onPress={handlePress} style={style}>
@@ -43,30 +45,30 @@ export default ({ onPress, wallet, style }: Props) => {
 
 const styles = StyleSheet.create({
 	container: {
-		height: 73,
+		height: s(73),
 		backgroundColor: COLOR.Dark3,
-		paddingLeft: 24,
-		paddingRight: 24,
-		borderRadius: 20,
+		paddingLeft: s(24),
+		paddingRight: s(24),
+		borderRadius: s(20),
 		flexDirection: "row",
 		alignItems: "center",
 	},
-	icon: { marginRight: 16 },
+	icon: { marginRight: s(16) },
 	info: { flex: 1 },
 	name: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: COLOR.White,
 	},
 	address: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 12,
-		lineHeight: 15,
+		fontSize: s(12),
+		lineHeight: s(15),
 		color: COLOR.RoyalBlue4,
 	},
 })
