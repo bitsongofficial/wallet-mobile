@@ -4,6 +4,7 @@ import { RectButton } from "react-native-gesture-handler"
 import * as ImagePicker from "expo-image-picker"
 import { COLOR, hexAlpha } from "utils"
 import { Icon2 } from "components/atoms"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	source: ImageSourcePropType | undefined | null
@@ -29,7 +30,7 @@ export default ({ source, onChange }: Props) => {
 		<RectButton onPress={pickImage} style={styles.button}>
 			<View style={styles.avatar}>
 				{source ? (
-					<Image source={source} width={107} height={107} style={styles.image} />
+					<Image source={source} width={s(107)} height={s(107)} style={styles.image} />
 				) : (
 					<View style={styles.iconContainer}>
 						<Icon2 name="plus" size={33} />
@@ -42,14 +43,14 @@ export default ({ source, onChange }: Props) => {
 
 const styles = StyleSheet.create({
 	button: {
-		width: 129,
-		height: 129,
-		borderRadius: 129,
+		width: s(129),
+		height: s(129),
+		borderRadius: s(129),
 	},
 	avatar: {
-		width: 129,
-		height: 129,
-		borderRadius: 129,
+		width: s(129),
+		height: s(129),
+		borderRadius: s(129),
 		backgroundColor: hexAlpha(COLOR.Silver, 5),
 		alignItems: "center",
 		justifyContent: "center",
@@ -57,15 +58,15 @@ const styles = StyleSheet.create({
 		marginBottom: 24,
 	},
 	image: {
-		width: 107,
-		height: 107,
-		borderRadius: 107,
+		width: s(107),
+		height: s(107),
+		borderRadius: s(107),
 	},
 
 	iconContainer: {
-		width: 89,
-		height: 89,
-		borderRadius: 89,
+		width: s(89),
+		height: s(89),
+		borderRadius: s(89),
 		alignItems: "center",
 		justifyContent: "center",
 		backgroundColor: hexAlpha(COLOR.Silver, 10),

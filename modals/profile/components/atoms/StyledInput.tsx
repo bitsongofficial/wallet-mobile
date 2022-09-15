@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
 		borderRadius: s(20),
 	},
 	container_focused: {
-		borderWidth: 2,
+		borderWidth: s(2),
 		borderColor: COLOR.Marengo,
 	},
 	input: {

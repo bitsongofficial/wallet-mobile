@@ -2,9 +2,9 @@ import { Keyboard } from "react-native"
 import { BottomSheetProps } from "@gorhom/bottom-sheet"
 import { gbs } from "modals"
 import { navigationRef } from "navigation/utils"
-import { Steps } from "classes"
-import { InputHandler } from "utils"
-import { AddContact } from "./components/organisms"
+import { AddContact, FooterAddContact, ControllerAddContact } from "./components/organisms"
+import { s } from "react-native-size-matters"
+import { store } from "stores/Store"
 
 type Options = {
 	props?: Omit<Partial<BottomSheetProps>, "onClose" | " children">
@@ -17,15 +17,12 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 		gbs.close()
 	}
 
-	const steps = new Steps(["Add", "Name", "Avatar"])
-	const inputWallet = new InputHandler()
-	const inputName = new InputHandler()
+	const { contacts } = store
+
+	const controller = new ControllerAddContact()
+	const { steps, inputName, inputWallet } = controller
 
 	const goBack = () => (steps.history.length > 1 ? steps.goBack() : close())
-
-	const setBackHandler = () => {
-		gbs.backHandler = () => goBack()
-	}
 
 	const scan = () => {
 		close()
@@ -35,21 +32,27 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 		})
 	}
 
-	const children = () => (
-		<AddContact
-			inputWallet={inputWallet}
-			inputName={inputName}
-			onPressScan={scan}
-			close={close}
-			steps={steps}
-			onPressBack={goBack}
-		/>
-	)
+	const createContact = () => {
+		contacts.addContact({
+			address: inputWallet.value.trim(),
+			name: inputName.value.trim(),
+			avatar: controller.image || undefined, //  if skip create avatar neededr
+		})
+		close()
+	}
+
+	const next = () => {
+		if (steps.title === "Add") {
+			steps.goTo("Name")
+		} else if (steps.title === "Name") {
+			steps.goTo("Avatar")
+		}
+	}
 
 	const open = () => {
-		setBackHandler()
+		gbs.backHandler = () => goBack()
 		gbs.setProps({
-			snapPoints: [350],
+			snapPoints: [s(350)],
 			...props,
 			onChange(index) {
 				if (index === -1) {
@@ -57,7 +60,21 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 					onClose && onClose()
 				}
 			},
-			children,
+			children: () => (
+				<AddContact
+					onPressScan={scan}
+					controller={controller}
+					//
+				/>
+			),
+			footerComponent: () => (
+				<FooterAddContact
+					controller={controller}
+					onPressBack={goBack}
+					onPressSave={createContact}
+					onPressNext={next}
+				/>
+			),
 		})
 		requestAnimationFrame(() => gbs.expand())
 	}
