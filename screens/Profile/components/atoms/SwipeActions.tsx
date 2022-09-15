@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import { Button, Icon2 } from "components/atoms"
 import { COLOR, hexAlpha } from "utils"
-import { ProfileWallets } from "stores/WalletStore"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	item: any
@@ -32,17 +32,17 @@ export default memo(({ onPressEdit, onPressTrash, item, style, edited = true }: 
 
 const styles = StyleSheet.create({
 	container: {
-		width: 100,
+		width: s(100),
 		flexDirection: "row",
 		alignItems: "center",
 	},
 
 	button: {
-		marginRight: 15,
+		marginRight: s(15),
 	},
 	buttonContent: {
 		backgroundColor: hexAlpha(COLOR.Lavender, 10),
-		paddingHorizontal: 14,
-		paddingVertical: 8,
+		paddingHorizontal: s(14),
+		paddingVertical: s(8),
 	},
 })
