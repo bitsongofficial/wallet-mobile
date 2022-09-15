@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { RectButton, Swipeable } from "react-native-gesture-handler"
 import { COLOR, hexAlpha } from "utils"
 import { Icon2 } from "components/atoms"
 import SwipeActions from "./SwipeActions"
+import { ms, s } from "react-native-size-matters"
 
 type ID = string
 
@@ -17,6 +18,7 @@ type Props = {
 	onPressEdit?(id: ID): void
 	mapItemsRef: Map<ID, React.RefObject<Swipeable>>
 	style?: StyleProp<ViewStyle>
+	wrapper?: number
 }
 
 export default ({
@@ -29,6 +31,7 @@ export default ({
 	onPressEdit,
 	mapItemsRef,
 	style,
+	wrapper,
 }: Props) => {
 	const handlePress = useCallback(() => onPress(id), [onPress, id])
 
@@ -43,13 +46,19 @@ export default ({
 		[id, mapItemsRef],
 	)
 
+	const wrapperStyle = useMemo<ViewStyle>(() => ({ paddingHorizontal: wrapper || 26 }), [wrapper])
+	const actionStyle = useMemo<ViewStyle>(
+		() => ({ marginRight: wrapper || 26, width: s(50) }),
+		[wrapper],
+	)
+
 	const renderRightActions = () => (
 		<SwipeActions
 			id={id}
 			edited={edited}
 			onPressEdit={onPressEdit}
 			onPressTrash={onPressDelete}
-			style={styles.actions}
+			style={actionStyle}
 		/>
 	)
 
@@ -59,11 +68,16 @@ export default ({
 			onSwipeableRightWillOpen={closeOther}
 			renderRightActions={renderRightActions}
 		>
-			<View style={styles.wrapper}>
+			<View style={wrapperStyle}>
 				<View style={[styles.container, style]}>
 					<RectButton onPress={handlePress}>
 						<View style={styles.inner}>
-							<Icon2 name="link_simple_horizontal" size={24} style={styles.icon} />
+							<Icon2
+								name="link_simple_horizontal"
+								size={24}
+								style={styles.icon}
+								stroke={COLOR.AbsoluteBlack}
+							/>
 							<View style={styles.text}>
 								<Text style={styles.name}>{name}</Text>
 								<Text style={styles.date}>{date}</Text>
@@ -79,31 +93,30 @@ export default ({
 const styles = StyleSheet.create({
 	container: {
 		overflow: "hidden",
-		borderRadius: 22,
-		// backgroundColor: hexAlpha(COLOR.Lavender, 10),
+		borderRadius: ms(22, 1.5),
 	},
 	active: {
-		padding: 2,
-		borderRadius: 20,
+		padding: ms(2, 1.5),
+		borderRadius: ms(20, 1.5),
 		justifyContent: "center",
 	},
 	not_active: {
-		padding: 1,
-		borderRadius: 20,
+		padding: ms(1, 1.5),
+		borderRadius: ms(20, 1.5),
 		justifyContent: "center",
 	},
 
 	inner: {
-		height: 65,
-		paddingHorizontal: 21,
+		height: ms(65, 1.5),
+		paddingHorizontal: ms(21, 1.5),
 		alignItems: "center",
 		flexDirection: "row",
 		backgroundColor: "#5a6de5",
-		borderRadius: 20,
+		borderRadius: ms(20, 1.5),
 	},
 
 	icon: {
-		marginRight: 14,
+		marginRight: ms(14, 1.5),
 	},
 
 	text: {
@@ -117,8 +130,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 15,
-		lineHeight: 19,
+		fontSize: ms(15, 1.5),
+		lineHeight: ms(19, 1.5),
 		color: COLOR.White,
 	},
 
@@ -127,8 +140,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 12,
-		lineHeight: 15,
+		fontSize: ms(12, 1.5),
+		lineHeight: ms(15, 1.5),
 
 		color: hexAlpha(COLOR.White, 50),
 	},
@@ -136,7 +149,4 @@ const styles = StyleSheet.create({
 	name_active: {
 		color: COLOR.White,
 	},
-
-	actions: { marginRight: 26, width: 50 },
-	wrapper: { paddingHorizontal: 26 },
 })

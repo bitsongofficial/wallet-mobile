@@ -1,19 +1,11 @@
-import {
-	Image,
-	ImageSourcePropType,
-	ImageURISource,
-	StyleProp,
-	StyleSheet,
-	Text,
-	View,
-	ViewStyle,
-} from "react-native"
+import { Image, ImageURISource, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { COLOR, hexAlpha } from "utils"
 import Coin from "classes/Coin"
 import { observer } from "mobx-react-lite"
 import { assets } from "chain-registry"
 import { useStore } from "hooks"
 import { toJS } from "mobx"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	coin: Coin
@@ -60,10 +52,10 @@ export default observer(({ coin, style }: Props) => {
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: hexAlpha(COLOR.White, 10),
-		height: 70,
-		paddingHorizontal: 20,
-		paddingVertical: 18,
-		borderRadius: 20,
+		height: s(70),
+		paddingHorizontal: s(20),
+		paddingVertical: s(18),
+		borderRadius: s(20),
 		flex: 1,
 		flexDirection: "row",
 	},
@@ -74,14 +66,14 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 	},
 	imageContainer: {
-		marginRight: 14,
-		width: 30,
-		height: 30,
+		marginRight: s(14),
+		width: s(30),
+		height: s(30),
 	},
 	image: {
-		width: 30,
-		height: 30,
-		borderRadius: 30,
+		width: s(30),
+		height: s(30),
+		borderRadius: s(30),
 	},
 	texts: {
 		flex: 1,
@@ -96,8 +88,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 	},
 	secondary: {
 		color: COLOR.White,
@@ -105,7 +97,7 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 12,
+		fontSize: s(12),
 		// lineHeight: '111.1%',
 	},
 })
