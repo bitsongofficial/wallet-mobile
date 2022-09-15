@@ -1,5 +1,6 @@
 enum COLOR {
 	White = "#FFFFFF",
+	AbsoluteBlack = "#000000",
 	Transparent = "transparent",
 	Grey1 = "#6B6B84",
 
