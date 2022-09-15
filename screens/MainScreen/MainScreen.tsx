@@ -309,9 +309,8 @@ const styles = StyleSheet.create({
 		marginBottom: vs(18),
 	},
 	coins: {
-		flex: 1,
 		paddingTop: vs(8),
-		paddingBottom: 64,
-		marginHorizontal: 14,
+		paddingBottom: vs(164),
+		marginHorizontal: s(14),
 	},
 })
