@@ -34,11 +34,12 @@ type ProposalEvent = {
 	date: string
 }
 
-const ActionButton: React.FC<{proposal: Proposal, actionMap: {[k in ProposalStatus]?: () => any}}> = ({proposal, actionMap}) =>
-{
+const ActionButton: React.FC<{
+	proposal: Proposal
+	actionMap: { [k in ProposalStatus]?: () => any }
+}> = ({ proposal, actionMap }) => {
 	let text: string
-	switch(proposal.status)
-	{
+	switch (proposal.status) {
 		case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
 			text = "DEPOSIT"
 			break
@@ -48,19 +49,21 @@ const ActionButton: React.FC<{proposal: Proposal, actionMap: {[k in ProposalStat
 		default:
 			return null
 	}
-	return <Button
-		text={text}
-		textStyle={{
-			fontSize: 14,
-			lineHeight: 24,
-		}}
-		contentContainerStyle={{
-			paddingHorizontal: 33,
-			paddingVertical: 12,
-		}}
-		onPress={actionMap[proposal.status] ?? (() => {})}
-		style={{ marginRight: 10 }}
-	/>
+	return (
+		<Button
+			text={text}
+			textStyle={{
+				fontSize: 14,
+				lineHeight: 24,
+			}}
+			contentContainerStyle={{
+				paddingHorizontal: 33,
+				paddingVertical: 12,
+			}}
+			onPress={actionMap[proposal.status] ?? (() => {})}
+			style={{ marginRight: 10 }}
+		/>
+	)
 }
 
 export default observer<Props>(function ProposalDetailsScreen({ navigation, route }) {
@@ -70,47 +73,40 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 
 	const goBack = useCallback(() => navigation.goBack(), [])
 
-	const checklist: ProposalEvent[] = useMemo(
-		() => proposals.steps(proposal),
+	const checklist: ProposalEvent[] = useMemo(() => proposals.steps(proposal), [proposal])
+
+	const actionMap = useMemo(
+		() => ({
+			[ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]: () => {
+				const controller = new DepositController()
+				return openDeposit({
+					proposal,
+					controller,
+					onDone: () => {
+						return proposals.deposit(proposal, parseInt(controller.amountInput.value))
+					},
+				})
+			},
+			[ProposalStatus.PROPOSAL_STATUS_REJECTED]: () => {
+				return openVote({
+					onVote: (value) => {
+						openVoteRecap({
+							value,
+							chain: proposal.chain ?? SupportedCoins.BITSONG,
+							onDone: () => {
+								navigation.push("Loader", {
+									callback: async () => {
+										return await proposals.vote(proposal, value)
+									},
+								})
+							},
+						})
+					},
+				})
+			},
+		}),
 		[proposal],
 	)
-
-	const actionMap = useMemo(() => ({
-		[ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]: () =>
-		{
-			const controller = new DepositController()
-			return openDeposit({
-				proposal,
-				controller,
-				onDone: () =>
-				{
-					return proposals.deposit(proposal, parseInt(controller.amountInput.value))
-				}
-			})
-		},
-		[ProposalStatus.PROPOSAL_STATUS_REJECTED]: () =>
-		{
-			return openVote({
-				onVote: (value) =>
-				{
-					openVoteRecap({
-						value,
-						chain: proposal.chain ?? SupportedCoins.BITSONG,
-						onDone: () =>
-						{
-							navigation.push("Loader",
-							{
-								callback: async () =>
-								{
-									return await proposals.vote(proposal, value)
-								}
-							})
-						}
-					})
-				}
-			})
-		}
-	}), [proposal])
 
 	const resultsPercents = useMemo(() => proposals.percentages(proposal), [proposal])
 
@@ -123,9 +119,12 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 
 	const proposalStatus = useProposalStatusName(proposal.status)
 
-	const shareProposal = useCallback(() =>
-	{
-		const url = Config.BITSONG_MINTSCAN + (Config.BITSONG_MINTSCAN[Config.BITSONG_MINTSCAN.length-1] == "/" ? "" : "/") + "proposals/" + proposal.id.toString()
+	const shareProposal = useCallback(() => {
+		const url =
+			Config.BITSONG_MINTSCAN +
+			(Config.BITSONG_MINTSCAN[Config.BITSONG_MINTSCAN.length - 1] == "/" ? "" : "/") +
+			"proposals/" +
+			proposal.id.toString()
 		Share.share({
 			message: url,
 			url,
@@ -153,11 +152,14 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 							{proposals.proposalTypeDescrition(proposal)}
 						</Text>
 						<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
-							{proposal.chain &&
-							<>
-								<Text style={[styles.paragraph, { marginRight: 16 }]}>Minimum Deposit</Text>
-								<Text style={styles.paragraph}>{proposals.minDeposit(proposal)} {getAssetTag(proposal.chain)}</Text>
-							</>}
+							{proposal.chain && (
+								<>
+									<Text style={[styles.paragraph, { marginRight: 16 }]}>Minimum Deposit</Text>
+									<Text style={styles.paragraph}>
+										{proposals.minDeposit(proposal)} {getAssetTag(proposal.chain)}
+									</Text>
+								</>
+							)}
 						</View>
 
 						<View style={[{ flexDirection: "row" }, { marginBottom: 44 }]}>
@@ -175,48 +177,59 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 							</Button>
 						</View>
 						{proposal.status &&
-						!(proposal.status in [
-							ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-							ProposalStatus.UNRECOGNIZED,
-							ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]) &&
-						resultsPercents && 
-						(<>
-							<Text style={[styles.caption, { marginBottom: 22 }]}>Results</Text>
-							<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
-								<Stat name="VOTE" persent={proposals.votedPercentage(proposal).toFixed(2)} style={{ marginRight: 19 }} />
-								<Stat name="QUORUM" persent={proposals.quorum(proposal).toFixed(2)} />
-							</View>
+							!(
+								proposal.status in
+								[
+									ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
+									ProposalStatus.UNRECOGNIZED,
+									ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+								]
+							) &&
+							resultsPercents && (
+								<>
+									<Text style={[styles.caption, { marginBottom: 22 }]}>Results</Text>
+									<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
+										<Stat
+											name="VOTE"
+											persent={proposals.votedPercentage(proposal).toFixed(2)}
+											style={{ marginRight: 19 }}
+										/>
+										<Stat name="QUORUM" persent={proposals.quorum(proposal).toFixed(2)} />
+									</View>
 
-							<Card style={[{ padding: 11 }, { marginBottom: 44 }]}>
-								{resultsPercents.total > 0 && <Diagram {...resultsPercents} style={styles.diagram} />}
-								<View>
-									<LegendItem
-										style={styles.legendItem}
-										value={resultsPercents.yes.toFixed(2)}
-										name="Yes"
-										color={COLOR.White}
-									/>
-									<LegendItem
-										style={styles.legendItem}
-										value={resultsPercents.no.toFixed(2)}
-										name="No"
-										color={COLOR.RoyalBlue}
-									/>
-									<LegendItem
-										style={styles.legendItem}
-										value={resultsPercents.noWithZero.toFixed(2)}
-										name="No With Veto"
-										color={COLOR.SlateBlue}
-									/>
-									<LegendItem
-										style={styles.legendItem}
-										value={resultsPercents.abstain.toFixed(2)}
-										name="Abstain"
-										color={COLOR.Dark3}
-									/>
-								</View>
-							</Card>
-						</>)}
+									<Card style={[{ padding: 11 }, { marginBottom: 44 }]}>
+										{resultsPercents.total > 0 && (
+											<Diagram {...resultsPercents} style={styles.diagram} />
+										)}
+										<View>
+											<LegendItem
+												style={styles.legendItem}
+												value={resultsPercents.yes.toFixed(2)}
+												name="Yes"
+												color={COLOR.White}
+											/>
+											<LegendItem
+												style={styles.legendItem}
+												value={resultsPercents.no.toFixed(2)}
+												name="No"
+												color={COLOR.RoyalBlue}
+											/>
+											<LegendItem
+												style={styles.legendItem}
+												value={resultsPercents.noWithZero.toFixed(2)}
+												name="No With Veto"
+												color={COLOR.SlateBlue}
+											/>
+											<LegendItem
+												style={styles.legendItem}
+												value={resultsPercents.abstain.toFixed(2)}
+												name="Abstain"
+												color={COLOR.Dark3}
+											/>
+										</View>
+									</Card>
+								</>
+							)}
 
 						<Text style={[styles.caption, { marginBottom: 22 }]}>Checklist</Text>
 					</View>
