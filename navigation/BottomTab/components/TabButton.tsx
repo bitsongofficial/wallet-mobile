@@ -1,7 +1,6 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs"
 import { useCallback } from "react"
-import { StyleSheet } from "react-native"
-import { TouchableOpacity } from "react-native-gesture-handler"
+import { StyleSheet, TouchableOpacity } from "react-native"
 import { s } from "react-native-size-matters"
 
 type TabButtonProps = BottomTabBarProps & {
