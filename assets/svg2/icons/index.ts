@@ -1,4 +1,5 @@
 import chevron_right from "./chevron-right.svg"
+import chevron_right_2 from "./chevron-right_2.svg"
 import chevron_down_fixed from "./chevron-down_fixed.svg"
 
 import chevron_left from "./chevron-left.svg"
@@ -30,6 +31,7 @@ import file_text from "./file_text.svg"
 import moon from "./moon.svg"
 import star_shield from "./star_shield.svg"
 import star from "./star.svg"
+import star_2 from "./star_2.svg"
 import translate from "./translate.svg"
 import wallet from "./wallet.svg"
 import circle_dollar from "./circle_dollar.svg"
@@ -87,6 +89,7 @@ export default <const>{
 	restake_gradient,
 	unstake_gradient,
 	chevron_right,
+	chevron_right_2,
 	chevron_down_fixed,
 	chevron_left,
 	chevron_down,
@@ -128,6 +131,7 @@ export default <const>{
 	moon,
 	star_shield,
 	star,
+	star_2,
 	translate,
 	wallet,
 	circle_dollar,

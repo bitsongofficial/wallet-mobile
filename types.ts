@@ -67,13 +67,13 @@ export type RootStackParamList = {
 	}
 	Validator: { id: string }
 	NewProposal: {
-		chain?: SupportedCoins,
-		title?: string,
-		description?: string,
-		initialDeposit?: number,
-		passive?: boolean,
-		onDone?: () => any,
-		onDismiss?: () => any,
+		chain?: SupportedCoins
+		title?: string
+		description?: string
+		initialDeposit?: number
+		passive?: boolean
+		onDone?: () => any
+		onDismiss?: () => any
 	}
 	ProposalDetails: { proposal: Proposal }
 	Notifications: undefined

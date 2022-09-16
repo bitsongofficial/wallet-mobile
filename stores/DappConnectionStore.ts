@@ -1,6 +1,6 @@
 import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1";
 import { makeAutoObservable } from "mobx";
-import { openSendRecap } from "screens/SendModalScreens/OpenSendRecap";
+import { openSendRecap } from "modals/wallets";
 import CoinStore from "./CoinStore";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
