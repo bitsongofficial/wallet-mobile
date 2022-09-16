@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
 		fontStyle: "normal",
 		fontWeight: "500",
 		fontSize: s(11),
-		// lineHeight: 14,
 	},
 	disable: {
 		opacity: 0.5,

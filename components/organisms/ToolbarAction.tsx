@@ -1,5 +1,13 @@
 import { memo, ReactNode } from "react"
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native"
+import {
+	StyleProp,
+	StyleSheet,
+	Text,
+	TextStyle,
+	TouchableOpacity,
+	View,
+	ViewStyle,
+} from "react-native"
 import ThemedGradient from "components/atoms/ThemedGradient"
 import { COLOR, hexAlpha } from "utils"
 import { s } from "react-native-size-matters"
@@ -18,7 +26,7 @@ type Props = {
 	style?: StyleProp<ViewStyle>
 	buttonStyle?: StyleProp<ViewStyle>
 	iconContainerStyle?: StyleProp<ViewStyle>
-	textStyle?: StyleProp<ViewStyle>
+	textStyle?: StyleProp<TextStyle>
 	backgroundStyle?: StyleProp<ViewStyle>
 }
 

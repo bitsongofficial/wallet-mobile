@@ -1,5 +1,5 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
-import { s, vs } from "react-native-size-matters"
+import { s } from "react-native-size-matters"
 import { FOOTER_HEIGHT } from "utils/constants"
 
 type Props = {
@@ -25,11 +25,23 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "space-between",
 	},
-	left: { position: "absolute", left: 0, zIndex: 1 },
+	left: {
+		position: "absolute",
+		left: 0,
+		zIndex: 1,
+		alignItems: "center",
+	},
 	center: {
 		...StyleSheet.absoluteFillObject,
 		flexDirection: "row",
+		alignItems: "center",
+
 		justifyContent: "center",
 	},
-	right: { position: "absolute", right: 0, zIndex: 1 },
+	right: {
+		position: "absolute",
+		right: 0,
+		zIndex: 1,
+		alignItems: "center",
+	},
 })

@@ -39,16 +39,10 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 		// 		return true
 		// 	},
 		// })
-		close()
-	}
-
-	const close = async () => {
-		Keyboard.dismiss()
 		gbs.close()
-		controller.clear()
 	}
 
-	const goBack = () => (steps.active > 0 ? steps.goBack() : close())
+	const goBack = () => (steps.active > 0 ? steps.goBack() : gbs.close())
 
 	const open = async () => {
 		gbs.backHandler = () => {
@@ -59,6 +53,13 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 			snapPoints: ["85%"],
 			keyboardBehavior: "interactive",
 			enableContentPanningGesture: false,
+			onChange(index) {
+				if (index === -1) {
+					Keyboard.dismiss()
+					controller.clear()
+					gbs.removeBackHandler()
+				}
+			},
 			children: () => (
 				<SendModal
 					controller={controller}
