@@ -1,4 +1,5 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
+import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 
 type Props = {
@@ -12,7 +13,7 @@ export default function Card({ children, style }: Props) {
 
 const styles = StyleSheet.create({
 	container: {
-		borderRadius: 20,
+		borderRadius: s(20),
 		backgroundColor: COLOR.Dark2,
 	},
 })

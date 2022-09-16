@@ -1,4 +1,5 @@
 import { StyleProp, StyleSheet, Text, ViewStyle } from "react-native"
+import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 import { Caption, Card } from "../atoms"
 
@@ -19,18 +20,18 @@ export default ({ style, title, value }: Props) => {
 
 const styles = StyleSheet.create({
 	container: {
-		padding: 24,
+		padding: s(24),
 		justifyContent: "space-between",
 	},
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 24,
-		lineHeight: 30,
+		fontSize: s(24),
+		lineHeight: s(30),
 		color: COLOR.White,
 	},
 	caption: {
 		marginBottom: 10,
-	}
+	},
 })
