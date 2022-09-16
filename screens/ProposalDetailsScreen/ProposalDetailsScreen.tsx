@@ -7,23 +7,22 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import moment from "moment"
 import { openDeposit, openVote, openVoteRecap } from "modals/proposal"
-import { COLOR, hexAlpha, round } from "utils"
+import { COLOR, hexAlpha } from "utils"
 import { RootStackParamList } from "types"
 import { Button, ButtonBack, Icon2 } from "components/atoms"
 import { Card, Diagram, Stat } from "./components/atoms"
 import { CheckListItem, LegendItem } from "./components/moleculs"
 import { useProposalStatusName } from "screens/ProposalScreen/hook"
 import { rehydrateNewLines } from "utils/string"
-import { fromAmountToCoin, getAssetTag } from "core/utils/Coin"
+import { getAssetTag } from "core/utils/Coin"
 import { useStore } from "hooks"
 import { SupportedCoins } from "constants/Coins"
 import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
-import { toJS } from "mobx"
 import Config from "react-native-config"
-import { formatNumber } from "utils/numbers"
 import { DepositController } from "modals/proposal/components/templates"
-import { store } from "stores/Store"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { s, vs } from "react-native-size-matters"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ProposalDetails">
 
@@ -53,15 +52,15 @@ const ActionButton: React.FC<{
 		<Button
 			text={text}
 			textStyle={{
-				fontSize: 14,
-				lineHeight: 24,
+				fontSize: s(14),
+				lineHeight: s(24),
 			}}
 			contentContainerStyle={{
-				paddingHorizontal: 33,
-				paddingVertical: 12,
+				paddingHorizontal: s(33),
+				paddingVertical: s(12),
 			}}
 			onPress={actionMap[proposal.status] ?? (() => {})}
-			style={{ marginRight: 10 }}
+			style={{ marginRight: s(10) }}
 		/>
 	)
 }
@@ -82,28 +81,19 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 				return openDeposit({
 					proposal,
 					controller,
-					onDone: () => {
-						return proposals.deposit(proposal, parseInt(controller.amountInput.value))
-					},
+					onDone: () => proposals.deposit(proposal, parseInt(controller.amountInput.value)),
 				})
 			},
-			[ProposalStatus.PROPOSAL_STATUS_REJECTED]: () => {
-				return openVote({
-					onVote: (value) => {
+			[ProposalStatus.PROPOSAL_STATUS_REJECTED]: () =>
+				openVote({
+					onVote: (value) =>
 						openVoteRecap({
 							value,
 							chain: proposal.chain ?? SupportedCoins.BITSONG,
-							onDone: () => {
-								navigation.push("Loader", {
-									callback: async () => {
-										return await proposals.vote(proposal, value)
-									},
-								})
-							},
-						})
-					},
-				})
-			},
+							onDone: () =>
+								navigation.push("Loader", { callback: () => proposals.vote(proposal, value) }),
+						}),
+				}),
 		}),
 		[proposal],
 	)
@@ -112,7 +102,7 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 
 	const renderCheckListItem = useCallback<ListRenderItem<ProposalEvent>>(
 		({ item, index }) => (
-			<CheckListItem {...item} style={checklist.length !== index + 1 && { marginRight: 13 }} />
+			<CheckListItem {...item} style={checklist.length !== index + 1 && styles.mr13} />
 		),
 		[checklist.length],
 	)
@@ -125,11 +115,23 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 			(Config.BITSONG_MINTSCAN[Config.BITSONG_MINTSCAN.length - 1] == "/" ? "" : "/") +
 			"proposals/" +
 			proposal.id.toString()
-		Share.share({
-			message: url,
-			url,
-		})
+		Share.share({ message: url, url })
 	}, [proposal.id])
+
+	const isShowResults = useMemo(
+		() =>
+			proposal.status &&
+			!(
+				proposal.status in
+				[
+					ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
+					ProposalStatus.UNRECOGNIZED,
+					ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+				]
+			) &&
+			resultsPercents,
+		[proposal.status, resultsPercents],
+	)
 
 	return (
 		<>
@@ -137,24 +139,22 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 			<View style={styles.container}>
 				<ScrollView contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}>
 					<View style={styles.wrapper}>
-						<Text style={[styles.title, { marginBottom: 15, marginTop: 30 }]}>
-							{proposal.title}
-						</Text>
+						<Text style={styles.title}>{proposal.title}</Text>
 
-						<View style={[{ flexDirection: "row" }, { marginBottom: 20 }]}>
+						<View style={[styles.row, styles.mb20]}>
 							<Button
 								text={proposalStatus.toUpperCase()}
 								contentContainerStyle={styles.buttonPassedContent}
 							/>
 						</View>
 
-						<Text style={[styles.paragraph, { marginBottom: 14 }]}>
+						<Text style={[styles.paragraph, styles.mb14]}>
 							{proposals.proposalTypeDescrition(proposal)}
 						</Text>
-						<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
+						<View style={[styles.row, styles.mb29]}>
 							{proposal.chain && (
 								<>
-									<Text style={[styles.paragraph, { marginRight: 16 }]}>Minimum Deposit</Text>
+									<Text style={[styles.paragraph, styles.mr16]}>Minimum Deposit</Text>
 									<Text style={styles.paragraph}>
 										{proposals.minDeposit(proposal)} {getAssetTag(proposal.chain)}
 									</Text>
@@ -162,88 +162,75 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 							)}
 						</View>
 
-						<View style={[{ flexDirection: "row" }, { marginBottom: 44 }]}>
-							<ActionButton proposal={proposal} actionMap={actionMap}></ActionButton>
+						<View style={[styles.row, styles.mb44]}>
+							<ActionButton proposal={proposal} actionMap={actionMap} />
 							<Button
 								mode="gradient_border"
-								contentContainerStyle={{
-									paddingHorizontal: 20,
-									paddingVertical: 16,
-									backgroundColor: COLOR.Dark3,
-								}}
+								contentContainerStyle={styles.buttonShareProposal}
 								onPress={shareProposal}
 							>
-								<Icon2 name="link" style={{ width: 24, height: 12 }} stroke={COLOR.White} />
+								<Icon2 name="link" style={styles.iconLink} stroke={COLOR.White} />
 							</Button>
 						</View>
-						{proposal.status &&
-							!(
-								proposal.status in
-								[
-									ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-									ProposalStatus.UNRECOGNIZED,
-									ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-								]
-							) &&
-							resultsPercents && (
-								<>
-									<Text style={[styles.caption, { marginBottom: 22 }]}>Results</Text>
-									<View style={[{ flexDirection: "row" }, { marginBottom: 29 }]}>
-										<Stat
-											name="VOTE"
-											persent={proposals.votedPercentage(proposal).toFixed(2)}
-											style={{ marginRight: 19 }}
+						{isShowResults && (
+							<>
+								<Text style={[styles.caption, styles.mb22]}>Results</Text>
+								<View style={[styles.row, styles.mb29]}>
+									<Stat
+										name="VOTE"
+										persent={proposals.votedPercentage(proposal).toFixed(2)}
+										style={styles.statVote}
+									/>
+									<Stat name="QUORUM" persent={proposals.quorum(proposal).toFixed(2)} />
+								</View>
+
+								<Card style={[styles.cardDiagram, styles.mb44]}>
+									{resultsPercents.total > 0 && (
+										<Diagram {...resultsPercents} style={styles.diagram} />
+									)}
+									<View>
+										<LegendItem
+											style={styles.legendItem}
+											value={resultsPercents.yes.toFixed(2)}
+											name="Yes"
+											color={COLOR.White}
 										/>
-										<Stat name="QUORUM" persent={proposals.quorum(proposal).toFixed(2)} />
+										<LegendItem
+											style={styles.legendItem}
+											value={resultsPercents.no.toFixed(2)}
+											name="No"
+											color={COLOR.RoyalBlue}
+										/>
+										<LegendItem
+											style={styles.legendItem}
+											value={resultsPercents.noWithZero.toFixed(2)}
+											name="No With Veto"
+											color={COLOR.SlateBlue}
+										/>
+										<LegendItem
+											style={styles.legendItem}
+											value={resultsPercents.abstain.toFixed(2)}
+											name="Abstain"
+											color={COLOR.Dark3}
+										/>
 									</View>
+								</Card>
+							</>
+						)}
 
-									<Card style={[{ padding: 11 }, { marginBottom: 44 }]}>
-										{resultsPercents.total > 0 && (
-											<Diagram {...resultsPercents} style={styles.diagram} />
-										)}
-										<View>
-											<LegendItem
-												style={styles.legendItem}
-												value={resultsPercents.yes.toFixed(2)}
-												name="Yes"
-												color={COLOR.White}
-											/>
-											<LegendItem
-												style={styles.legendItem}
-												value={resultsPercents.no.toFixed(2)}
-												name="No"
-												color={COLOR.RoyalBlue}
-											/>
-											<LegendItem
-												style={styles.legendItem}
-												value={resultsPercents.noWithZero.toFixed(2)}
-												name="No With Veto"
-												color={COLOR.SlateBlue}
-											/>
-											<LegendItem
-												style={styles.legendItem}
-												value={resultsPercents.abstain.toFixed(2)}
-												name="Abstain"
-												color={COLOR.Dark3}
-											/>
-										</View>
-									</Card>
-								</>
-							)}
-
-						<Text style={[styles.caption, { marginBottom: 22 }]}>Checklist</Text>
+						<Text style={[styles.caption, styles.mb22]}>Checklist</Text>
 					</View>
 
 					<FlatList
 						horizontal
 						data={checklist}
-						style={{ marginBottom: 44 }}
-						contentContainerStyle={{ paddingHorizontal: 30 }}
+						style={styles.mb44}
+						contentContainerStyle={styles.checkListContent}
 						renderItem={renderCheckListItem}
 					/>
 
 					<View style={styles.wrapper}>
-						<Text style={[styles.caption, { marginBottom: 22 }]}>Description</Text>
+						<Text style={[styles.caption, styles.mb22]}>Description</Text>
 						<Card style={styles.descriptionCard}>
 							<Text style={styles.description}>
 								{rehydrateNewLines(proposal.description ?? "")}
@@ -269,52 +256,79 @@ export default observer<Props>(function ProposalDetailsScreen({ navigation, rout
 
 const styles = StyleSheet.create({
 	container: { backgroundColor: COLOR.Dark3, flex: 1 },
-	wrapper: { marginHorizontal: 30 },
+	wrapper: { marginHorizontal: HORIZONTAL_WRAPPER },
 	title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 18,
-		lineHeight: 24,
+		fontSize: s(18),
+		lineHeight: s(24),
 		color: COLOR.White,
+
+		marginBottom: vs(15),
+		marginTop: vs(30),
 	},
+	row: { flexDirection: "row" },
+	mb20: { marginBottom: vs(20) },
+	mb14: { marginBottom: vs(14) },
+	mb29: { marginBottom: vs(29) },
+	mb44: { marginBottom: vs(44) },
+	mb22: { marginBottom: vs(22) },
+
+	mr16: { marginRight: s(16) },
+	mr13: { marginRight: 13 },
+
+	statVote: { marginRight: s(19) },
+	iconLink: {
+		width: s(24),
+		height: s(12),
+	},
+	buttonShareProposal: {
+		paddingHorizontal: s(20),
+		paddingVertical: s(16),
+		backgroundColor: COLOR.Dark3,
+	},
+
+	cardDiagram: { padding: s(11) },
+
+	checkListContent: { paddingHorizontal: HORIZONTAL_WRAPPER },
 	buttonPassedContent: {
-		paddingHorizontal: 16,
-		paddingVertical: 8,
+		paddingHorizontal: s(16),
+		paddingVertical: s(8),
 	},
 	caption: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
+		fontSize: s(16),
 		color: COLOR.White,
 	},
 	paragraph: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 13,
-		lineHeight: 16,
+		fontSize: s(13),
+		lineHeight: s(16),
 		color: COLOR.Grey1,
 	},
 
-	legendItem: { marginBottom: 5 },
-	diagram: { marginVertical: 70 },
+	legendItem: { marginBottom: s(5) },
+	diagram: { marginVertical: s(70) },
 	descriptionCard: {
-		paddingHorizontal: 26,
-		paddingVertical: 33,
+		paddingHorizontal: s(26),
+		paddingVertical: s(33),
 	},
 	description: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: hexAlpha(COLOR.White, 50),
 	},
 
 	footer: {
-		marginHorizontal: 30,
+		marginHorizontal: HORIZONTAL_WRAPPER,
 		position: "absolute",
 		bottom: 0,
 	},
@@ -323,10 +337,10 @@ const styles = StyleSheet.create({
 
 	button: {
 		backgroundColor: COLOR.White,
-		borderRadius: 50,
-		paddingHorizontal: 24,
-		paddingVertical: 18,
-		marginBottom: 16,
+		borderRadius: s(50),
+		paddingHorizontal: s(24),
+		paddingVertical: s(18),
+		marginBottom: s(16),
 	},
 	buttonText: {
 		color: COLOR.Dark3,

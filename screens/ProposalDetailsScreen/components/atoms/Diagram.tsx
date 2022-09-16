@@ -1,4 +1,5 @@
 import { StyleProp, ViewStyle } from "react-native"
+import { s } from "react-native-size-matters"
 import { PieChart, PieChartData } from "react-native-svg-charts"
 import { COLOR } from "utils"
 
@@ -34,5 +35,5 @@ export default ({ abstain, no, noWithZero, yes, style }: Props) => {
 		},
 	]
 
-	return <PieChart style={[{ height: 240 }, style]} data={data} />
+	return <PieChart style={[{ height: s(240) }, style]} data={data} />
 }

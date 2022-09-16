@@ -1,4 +1,5 @@
 import { StyleSheet, ViewStyle, StyleProp, Text, View } from "react-native"
+import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 
 type PropsStat = {
@@ -20,15 +21,15 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 12,
+		fontSize: s(12),
 		color: COLOR.RoyalBlue,
-		marginRight: 10,
+		marginRight: s(10),
 	},
 	percent: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
+		fontSize: s(16),
 		color: COLOR.White,
 	},
 })
