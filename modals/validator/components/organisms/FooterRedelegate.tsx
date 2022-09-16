@@ -4,6 +4,7 @@ import { Steps } from "classes"
 import { COLOR } from "utils"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	onPressBack?(): void
@@ -54,19 +55,19 @@ export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
 
 const styles = StyleSheet.create({
 	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 	},
 
 	icon: {
-		marginLeft: 24,
+		marginLeft: s(24),
 	},
 	buttonContent: {
-		paddingHorizontal: 24,
-		paddingVertical: 18,
+		paddingHorizontal: s(24),
+		paddingVertical: s(18),
 	},
 	buttonContentCenter: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
+		paddingHorizontal: s(40),
+		paddingVertical: s(18),
 	},
 })

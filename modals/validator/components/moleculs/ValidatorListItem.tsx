@@ -1,5 +1,6 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
+import { s } from "react-native-size-matters"
 import { RadioButton } from "screens/Profile/components/atoms" // TODO: make common component
 import { COLOR } from "utils"
 
@@ -26,31 +27,31 @@ export default ({ avatar, name, style, isActive, onPress }: Props) => (
 
 const styles = StyleSheet.create({
 	container: {
-		borderRadius: 10,
+		borderRadius: s(10),
 		overflow: "hidden",
 	},
 	button: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		paddingVertical: 10,
-		paddingHorizontal: 8,
+		paddingVertical: s(10),
+		paddingHorizontal: s(8),
 	},
 	row: { flexDirection: "row", alignItems: "center" },
 	avatar: {
-		width: 32,
-		height: 32,
-		borderRadius: 32,
+		width: s(32),
+		height: s(32),
+		borderRadius: s(32),
 		backgroundColor: COLOR.Dark3,
 
-		marginRight: 40,
+		marginRight: s(40),
 	},
 	name: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 15,
-		lineHeight: 19,
+		fontSize: s(15),
+		lineHeight: s(19),
 		color: COLOR.White,
 	},
 })

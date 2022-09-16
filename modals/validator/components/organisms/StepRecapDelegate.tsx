@@ -1,8 +1,8 @@
 import { StyleSheet } from "react-native"
 import { Coin } from "classes"
 import { Validator } from "core/types/coin/cosmos/Validator"
-import { COLOR } from "utils"
 import { Recap } from "../moleculs"
+import { vs } from "react-native-size-matters"
 
 type Props = {
 	selectedValidator?: Validator | null
@@ -29,12 +29,5 @@ export default ({ amount, coin, selectedValidator }: Props) => (
 )
 
 const styles = StyleSheet.create({
-	container: {
-		backgroundColor: COLOR.Dark3,
-		paddingVertical: 32,
-		paddingHorizontal: 20,
-		borderRadius: 20,
-		marginTop: 36,
-	},
-	stat: { marginBottom: 16 },
+	stat: { marginBottom: vs(16) },
 })

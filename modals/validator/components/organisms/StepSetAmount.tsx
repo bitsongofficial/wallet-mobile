@@ -4,6 +4,7 @@ import { Button } from "components/atoms"
 import { Numpad } from "components/moleculs"
 import { Coin } from "classes"
 import { getAssetTag } from "core/utils/Coin"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	onPressNum(num: string): void
@@ -14,60 +15,58 @@ type Props = {
 	coin: Coin
 }
 
-export default ({ onPressMax, onPressNum, onPressDelNum, amount, coin, available }: Props) => {
-	return (
-		<>
-			<View>
-				<View style={styles.row}>
-					<Text style={styles.usd}>{amount || 0}</Text>
-					<View>
-						<Button
-							text="MAX"
-							onPress={onPressMax}
-							contentContainerStyle={styles.maxButtonContent}
-						/>
-					</View>
+export default ({ onPressMax, onPressNum, onPressDelNum, amount, coin, available }: Props) => (
+	<>
+		<View>
+			<View style={styles.row}>
+				<Text style={styles.usd}>{amount || 0}</Text>
+				<View>
+					<Button text="MAX" onPress={onPressMax} contentContainerStyle={styles.maxButtonContent} />
 				</View>
-				{available && <Text style={styles.avalibale}>Available: {available} {getAssetTag(coin.info.coin)}</Text>}
 			</View>
-			<Numpad style={styles.numpad} onPress={onPressNum} onPressRemove={onPressDelNum} />
-		</>
-	)
-}
+			{available && (
+				<Text style={styles.avalibale}>
+					Available: {available} {getAssetTag(coin.info.coin)}
+				</Text>
+			)}
+		</View>
+		<Numpad style={styles.numpad} onPress={onPressNum} onPressRemove={onPressDelNum} />
+	</>
+)
 
 const styles = StyleSheet.create({
 	row: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		marginTop: 24,
+		marginTop: vs(24),
 	},
 	usd: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 42,
-		lineHeight: 53,
+		fontSize: s(42),
+		lineHeight: s(53),
 		color: COLOR.White,
 	},
 	numpad: {
 		flexGrow: 1,
 		justifyContent: "space-around",
-		padding: 15,
-		marginBottom: 35,
+		padding: s(15),
+		marginBottom: vs(35),
 	},
 
 	maxButtonContent: {
-		paddingHorizontal: 8,
-		paddingVertical: 8,
+		paddingHorizontal: s(8),
+		paddingVertical: s(8),
 	},
 
 	avalibale: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.RoyalBlue,
 	},
 })

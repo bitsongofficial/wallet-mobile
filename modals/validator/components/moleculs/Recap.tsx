@@ -1,5 +1,6 @@
 import { PureComponent } from "react"
 import { StyleProp, StyleSheet, Text, TextProps, View, ViewProps, ViewStyle } from "react-native"
+import { s, vs } from "react-native-size-matters"
 import { COLOR } from "utils"
 
 export default class Recap extends PureComponent<ViewProps> {
@@ -48,10 +49,10 @@ export default class Recap extends PureComponent<ViewProps> {
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: COLOR.Dark3,
-		paddingVertical: 32,
-		paddingHorizontal: 20,
-		borderRadius: 20,
-		marginTop: 36,
+		paddingVertical: s(32),
+		paddingHorizontal: s(20),
+		borderRadius: s(20),
+		marginTop: s(36),
 	},
 
 	stats: {
@@ -63,33 +64,33 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.RoyalBlue2,
 
-		marginBottom: 12,
+		marginBottom: vs(12),
 	},
 	amount: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 42,
-		lineHeight: 53,
+		fontSize: s(42),
+		lineHeight: s(53),
 		color: COLOR.White,
 
-		marginBottom: 8,
+		marginBottom: vs(8),
 	},
 
 	statContainer: {
 		flexDirection: "row",
 	},
 	name: {
-		width: 74,
+		width: s(74),
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: COLOR.RoyalBlue2,
 	},
 
@@ -100,18 +101,18 @@ const styles = StyleSheet.create({
 	},
 
 	value: {
-		width: 64,
+		width: s(64),
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 15,
-		lineHeight: 19,
+		fontSize: s(15),
+		lineHeight: s(19),
 		color: COLOR.White,
 	},
 	avatar: {
-		width: 24,
-		height: 24,
-		borderRadius: 24,
-		backgroundColor: "red",
+		width: s(24),
+		height: s(24),
+		borderRadius: s(24),
+		backgroundColor: COLOR.Dark1,
 	},
 })

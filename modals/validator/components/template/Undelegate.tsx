@@ -3,6 +3,8 @@ import { observer } from "mobx-react-lite"
 import { BottomSheetHeader, Pagination } from "components/moleculs"
 import { StepRecapUndelegate, StepSetAmount } from "../organisms"
 import { UndelegateController } from "../../controllers"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	controller: UndelegateController
@@ -38,8 +40,8 @@ export default observer<Props>(({ controller }) => {
 
 const styles = StyleSheet.create({
 	container: {
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,
-		paddingTop: 25,
+		paddingTop: s(25),
 	},
 })

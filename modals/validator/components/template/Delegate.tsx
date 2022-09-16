@@ -3,6 +3,8 @@ import { observer } from "mobx-react-lite"
 import { BottomSheetHeader, Pagination } from "components/moleculs"
 import { StepRecapDelegate, StepSetAmount, StepValidatorSelection } from "../organisms"
 import { DelegateController } from "../../controllers"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { vs } from "react-native-size-matters"
 
 type Props = {
 	controller: DelegateController
@@ -49,8 +51,8 @@ export default observer<Props>(({ controller }) => {
 
 const styles = StyleSheet.create({
 	container: {
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,
-		paddingTop: 25,
+		paddingTop: vs(25),
 	},
 })

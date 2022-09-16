@@ -1,9 +1,10 @@
 import { StyleProp, StyleSheet, ViewStyle } from "react-native"
 import { observer } from "mobx-react-lite"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { s } from "react-native-size-matters"
 import { Steps } from "classes"
 import { COLOR } from "utils"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 type Props = {
 	onPressBack?(): void
@@ -16,7 +17,7 @@ export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
 	const insets = useSafeAreaInsets()
 	return (
 		<Footer
-			style={{ bottom: insets.bottom, marginBottom: 8 }}
+			style={[{ bottom: insets.bottom, marginBottom: 8 }, style]}
 			Left={onPressBack && <ButtonBack onPress={onPressBack} />}
 			Center={
 				steps.active === 1 ? (
@@ -47,19 +48,17 @@ export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
 
 const styles = StyleSheet.create({
 	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 	},
+	icon: { marginLeft: s(24) },
 
-	icon: {
-		marginLeft: 24,
-	},
 	buttonContent: {
-		paddingHorizontal: 24,
-		paddingVertical: 18,
+		paddingHorizontal: s(24),
+		paddingVertical: s(18),
 	},
 	buttonContentCenter: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
+		paddingHorizontal: s(40),
+		paddingVertical: s(18),
 	},
 })
