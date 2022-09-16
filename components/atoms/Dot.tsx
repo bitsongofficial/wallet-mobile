@@ -1,5 +1,6 @@
 import { useSpring, animated } from "@react-spring/native"
 import { StyleProp, StyleSheet, ViewStyle } from "react-native"
+import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 
 type DotProps = {
@@ -9,7 +10,7 @@ type DotProps = {
 
 export default ({ active, style }: DotProps) => {
 	const isActive = useSpring({
-		width: active ? 19 : 8,
+		width: active ? s(19) : s(8),
 		backgroundColor: active ? COLOR.White : COLOR.Marengo,
 	})
 
@@ -22,7 +23,7 @@ export default ({ active, style }: DotProps) => {
 
 const styles = StyleSheet.create({
 	view: {
-		height: 8,
-		borderRadius: 30,
+		height: s(8),
+		borderRadius: s(30),
 	},
 })

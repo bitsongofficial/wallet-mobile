@@ -7,6 +7,7 @@ import { Validator, ValidatorStatus, SignerInfo } from "core/types/coin/cosmos/V
 import { useStore } from "hooks"
 import { validatorIdentity } from "core/rest/keybase"
 import { SupportedCoins } from "constants/Coins"
+import { s } from "react-native-size-matters"
 
 type ValidatorProps = {
 	item: Validator
@@ -42,7 +43,7 @@ export default ({ item, onPressKebab, style }: ValidatorProps) => {
 
 	return (
 		<View style={[styles.container, style]}>
-			<View style={[styles.row, { marginBottom: 14 }]}>
+			<View style={[styles.row, { marginBottom: s(14) }]}>
 				<View style={styles.info}>
 					{source && <Image style={styles.avatar} source={source} />}
 					<Text style={styles.title}>{validator.name}</Text>
@@ -69,10 +70,10 @@ export default ({ item, onPressKebab, style }: ValidatorProps) => {
 
 const styles = StyleSheet.create({
 	container: {
-		height: 160,
-		borderRadius: 20,
+		height: s(160),
+		borderRadius: s(20),
 		backgroundColor: COLOR.Dark2,
-		padding: 24,
+		padding: s(24),
 	},
 	row: {
 		flexDirection: "row",
@@ -88,8 +89,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 24,
-		lineHeight: 30,
+		fontSize: s(24),
+		lineHeight: s(30),
 
 		color: COLOR.White,
 	},
@@ -112,8 +113,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: COLOR.Marengo,
 	},
 
@@ -121,20 +122,20 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 18,
-		lineHeight: 23,
+		fontSize: s(18),
+		lineHeight: s(23),
 		flexShrink: 1,
 
 		color: COLOR.White,
 	},
 
 	avatar: {
-		width: 42,
-		height: 42,
-		borderRadius: 42,
+		width: s(42),
+		height: s(42),
+		borderRadius: s(42),
 		backgroundColor: COLOR.Dark3,
 
-		marginRight: 16,
+		marginRight: s(16),
 	},
 })
 
