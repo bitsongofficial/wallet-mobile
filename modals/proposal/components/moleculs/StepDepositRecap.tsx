@@ -1,7 +1,8 @@
 import { StyleSheet } from "react-native"
-import { Recap } from "modals/validator/components/moleculs"
+import { s } from "react-native-size-matters"
 import { SupportedCoins } from "constants/Coins"
-import { getAssetName, getAssetTag } from "core/utils/Coin"
+import { getAssetTag } from "core/utils/Coin"
+import { Recap } from "modals/validator/components/moleculs"
 
 type Props = {
 	amount: string
@@ -21,5 +22,5 @@ export default ({ amount, proposalId, chain }: Props) => (
 )
 
 const styles = StyleSheet.create({
-	stat: { marginBottom: 16 },
+	stat: { marginBottom: s(16) },
 })

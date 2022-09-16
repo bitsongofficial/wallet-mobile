@@ -5,6 +5,7 @@ import { COLOR, wait } from "utils"
 import { Button, Footer } from "components/atoms"
 import { Vote, VoteController } from "./components/templates"
 import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
+import { s } from "react-native-size-matters"
 
 type Options = {
 	onClose?(): void
@@ -34,8 +35,7 @@ export default async function openVote(options?: Options) {
 		}
 
 		await gbs.setProps({
-			snapPoints: [600],
-			enableContentPanningGesture: false,
+			snapPoints: [s(600)],
 			backgroundStyle: styles.background,
 			animationConfigs: { duration: 400 },
 
@@ -74,11 +74,11 @@ export default async function openVote(options?: Options) {
 const styles = StyleSheet.create({
 	background: { backgroundColor: COLOR.Dark2 },
 	buttonContent: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
+		paddingHorizontal: s(40),
+		paddingVertical: s(18),
 	},
 	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 	},
 })

@@ -6,6 +6,8 @@ import { makeAutoObservable } from "mobx"
 import { Title } from "../atoms"
 import { ButtonRadioVote } from "../moleculs"
 import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { s, vs } from "react-native-size-matters"
 
 export class VoteController {
 	value: VoteOption = VoteOption.VOTE_OPTION_YES
@@ -56,19 +58,19 @@ export default observer<Props>(({ controller = new VoteController() }) => (
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingHorizontal: 30,
-		paddingTop: 25,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
+		paddingTop: vs(25),
 	},
-	title: { marginBottom: 9 },
+	title: { marginBottom: s(9) },
 	caption: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		textAlign: "center",
 		color: hexAlpha(COLOR.White, 30),
-		marginBottom: 27,
+		marginBottom: vs(27),
 	},
-	button: { marginBottom: 10 },
+	button: { marginBottom: vs(10) },
 })
