@@ -3,6 +3,7 @@ import { Icon2, IconName } from "components/atoms"
 import { useTheme } from "hooks"
 import { COLOR, hexAlpha } from "utils"
 import { RectButton, TouchableOpacity } from "react-native-gesture-handler"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	style?: StyleProp<ViewStyle>
@@ -50,8 +51,8 @@ const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
 		alignItems: "center",
-		paddingVertical: 10,
-		paddingLeft: 15,
+		paddingVertical: s(10),
+		paddingLeft: s(15),
 	},
 
 	left: {
@@ -67,14 +68,14 @@ const styles = StyleSheet.create({
 	},
 
 	icon: {
-		marginRight: 22,
+		marginRight: s(22),
 	},
 
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 	},
 })

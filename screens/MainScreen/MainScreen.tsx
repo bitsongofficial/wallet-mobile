@@ -26,6 +26,8 @@ import { Button } from "components/atoms"
 import { openClaim } from "modals/validator"
 import { formatNumber } from "utils/numbers"
 import { openSend } from "modals/wallets"
+import { s, vs } from "react-native-size-matters"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -72,20 +74,23 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		requestAnimationFrame(() => gbs.expand())
 	}, [])
 
-	const openScannerMemorized = useCallback(() => (navigation.navigate("ScannerQR", {
-		onBarCodeScanned: (uri: string) => {
-			try {
-				if (uri.startsWith("wc")) {
-					dapp.connect(uri)
-				}
-			} catch (e) {
-				console.error("Catched", e)
-			}
-		},
-	})), [])
+	const openScannerMemorized = useCallback(
+		() =>
+			navigation.navigate("ScannerQR", {
+				onBarCodeScanned: (uri: string) => {
+					try {
+						if (uri.startsWith("wc")) {
+							dapp.connect(uri)
+						}
+					} catch (e) {
+						console.error("Catched", e)
+					}
+				},
+			}),
+		[],
+	)
 
-	const onPressClaim = () =>
-	{
+	const onPressClaim = () => {
 		navigation.push("Loader", {
 			// @ts-ignore
 			callback: async () => {
@@ -133,7 +138,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		openClaim({
 			amount: validators.totalReward,
 			coinName: "BTSG",
-			onDone: async () => (await validators.claimAll()),
+			onDone: async () => await validators.claimAll(),
 			navigation,
 		})
 	}, [validators.totalReward])
@@ -166,15 +171,21 @@ export default observer<Props>(function MainScreen({ navigation }) {
 					<View style={styles.info}>
 						<View style={styles.balance}>
 							<Text style={styles.balance_title}>Total Balance</Text>
-							<Text style={styles.balance_value}>{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}</Text>
+							<Text style={styles.balance_value}>
+								{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}
+							</Text>
 							{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}
 						</View>
 
 						<View style={styles.reward}>
 							<Text style={styles.reward_title}>Reward</Text>
 							<View style={styles.reward_row}>
-								<Text style={styles.reward_value}>{formatNumber(rewards)} {settings.currency?.symbol}</Text>
-								<Button disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>CLAIM</Button>
+								<Text style={styles.reward_value}>
+									{formatNumber(rewards)} {settings.currency?.symbol}
+								</Text>
+								<Button disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>
+									CLAIM
+								</Button>
 							</View>
 						</View>
 					</View>
@@ -212,69 +223,70 @@ export default observer<Props>(function MainScreen({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		flexShrink: 1,
 		backgroundColor: COLOR.Dark3,
 	},
 
 	scrollviewContent: {
-		marginTop: 40,
-		paddingTop: 40,
-		flex:1,
+		marginTop: vs(40),
+		paddingTop: vs(40),
+		flex: 1,
 		flexShrink: 1,
 	},
 	info: {
-		marginRight: 22,
-		marginLeft: 32,
-		marginBottom: 60,
+		marginRight: s(22),
+		marginLeft: s(32),
+		marginBottom: vs(60),
 	},
 	balance: {
-		marginBottom: 34,
+		marginBottom: vs(34),
 	},
 	balance_title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 18,
-		lineHeight: 23,
+		fontSize: s(18),
+		lineHeight: s(23),
 		color: COLOR.RoyalBlue2,
 
-		marginBottom: 10,
+		marginBottom: vs(10),
 	},
 	balance_value: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 42,
-		lineHeight: 53,
+		fontSize: s(42),
+		lineHeight: s(53),
 		color: COLOR.White,
 
-		marginBottom: 6,
+		marginBottom: vs(6),
 	},
 	balance_variation: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: COLOR.White,
 		opacity: 0.5,
 	},
 
-	reward: {},
+	reward: {
+		// backgroundColor: "red",
+	},
 	reward_title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.RoyalBlue2,
-		marginBottom: 10,
+		marginBottom: vs(10),
 	},
 	reward_value: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 30,
+		fontSize: s(30),
 		color: COLOR.White,
 	},
 
@@ -284,23 +296,21 @@ const styles = StyleSheet.create({
 	},
 
 	toolbar_short: {
-		marginHorizontal: 24,
-		marginBottom: 40,
+		marginHorizontal: s(24),
+		marginBottom: vs(40),
 	},
 	toolbar_full: {
-		padding: 24,
-		...StyleSheet.absoluteFillObject,
-		zIndex: 10,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
+		flex: 1,
 	},
 
 	tabs: {
-		paddingHorizontal: 30,
-		marginBottom: 18,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
+		marginBottom: vs(18),
 	},
 	coins: {
-		flex: 1,
-		paddingTop: 8,
-		paddingBottom: 64,
-		marginHorizontal: 14,
+		paddingTop: vs(8),
+		paddingBottom: vs(164),
+		marginHorizontal: s(14),
 	},
 })

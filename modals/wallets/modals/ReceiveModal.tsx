@@ -1,15 +1,17 @@
 import { useCallback, useMemo, useState, useEffect } from "react"
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
-import { observer } from "mobx-react-lite"
-import * as Clipboard from "expo-clipboard"
 import QRCode from "react-native-qrcode-svg"
+import { s, vs } from "react-native-size-matters"
 import { useDimensions } from "@react-native-community/hooks"
+import { observer } from "mobx-react-lite"
+import { BottomSheetView, TouchableOpacity } from "@gorhom/bottom-sheet"
+import * as Clipboard from "expo-clipboard"
 import { useStore } from "hooks"
 import { COLOR, hexAlpha, wait } from "utils"
+import { trimAddress } from "utils/string"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { Icon2 } from "components/atoms"
 import { Header } from "../components/atoms"
-import { BottomSheetView, TouchableOpacity } from "@gorhom/bottom-sheet"
-import { trimAddress } from "utils/string"
 
 type Props = {
 	style: StyleProp<ViewStyle>
@@ -43,7 +45,7 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 			<Header title="Qr Code" subtitle="Scan to receive import" style={styles.header} />
 
 			<View style={styles.qr_code}>
-				{address != "" && <QRCode value={address} size={screen.width * 0.7} />}
+				{address != "" && <QRCode value={address} size={vs(screen.width * 0.7)} />}
 			</View>
 
 			<Text style={styles.subtitle}>Copy address</Text>
@@ -60,72 +62,54 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 
 const styles = StyleSheet.create({
 	wrapper: {
-		marginHorizontal: 30,
+		marginHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,
 	},
 
 	header: {
-		marginBottom: 22,
+		marginBottom: vs(22),
 	},
 
 	subtitle: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.White,
-		marginBottom: 22,
+		marginBottom: vs(22),
 	},
 
 	qr_code: {
 		alignItems: "center",
 		justifyContent: "center",
-		paddingVertical: 19,
-		marginBottom: 20,
+		paddingVertical: vs(19),
+		marginBottom: vs(20),
 	},
 
 	address: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: vs(14),
+		lineHeight: vs(18),
 		color: COLOR.White,
 	},
 	buttonCopy: {
 		height: "100%",
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		alignItems: "center",
 		justifyContent: "center",
 	},
 
 	card: {
 		backgroundColor: COLOR.Dark3,
-		height: 70,
+		height: vs(70),
 		justifyContent: "space-between",
 		flexDirection: "row",
 		overflow: "hidden",
-		borderRadius: 20,
-		paddingLeft: 30,
-
+		borderRadius: s(20),
+		paddingLeft: s(30),
 		alignItems: "center",
-	},
-
-	footer: {
-		flex: 1,
-		justifyContent: "flex-end",
-		alignItems: "center",
-		paddingBottom: 8,
-		paddingTop: 15,
-	},
-
-	buttonContent: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
-	},
-	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
 	},
 })

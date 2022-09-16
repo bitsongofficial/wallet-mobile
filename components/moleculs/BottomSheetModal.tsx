@@ -15,6 +15,7 @@ import DefaultBottomSheet, {
 import { useTheme } from "hooks"
 import { COLOR } from "utils"
 import { gav } from "modals"
+import { s } from "react-native-size-matters"
 
 type PropsModal = BottomSheetModalProps
 
@@ -96,19 +97,19 @@ export const BottomSheetObserver = observer(
 
 const styles = StyleSheet.create({
 	background: {
-		borderTopRightRadius: 30,
-		borderTopLeftRadius: 30,
+		borderTopRightRadius: s(30),
+		borderTopLeftRadius: s(30),
 	},
 	// ------- handle --------
 	handleContainer: {
-		height: 30,
+		height: s(30),
 		justifyContent: "center",
 		alignItems: "center",
 	},
 	handleIndicator: {
-		height: 3,
-		width: 120,
-		borderRadius: 2,
+		height: s(3),
+		width: s(120),
+		borderRadius: s(2),
 	},
 	backdrop: { backgroundColor: COLOR.Dark3 },
 })

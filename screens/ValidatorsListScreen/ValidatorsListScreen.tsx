@@ -21,6 +21,8 @@ import { useAnimateFlatlist, useGlobalBottomsheet, useStore } from "hooks"
 import { Shadow } from "components/atoms"
 import { Validator as ValidatorItem } from "components/organisms"
 import { Title, Toolbar } from "./components"
+import { vs } from "react-native-size-matters"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
@@ -62,45 +64,48 @@ export default observer<Props>(function ValidatorsListScreen({ navigation }) {
 		})
 
 	const gbs = useGlobalBottomsheet()
-	const openBottomSheet = useCallback((validator: Validator) => {
-		gbs.setProps({
-			snapPoints: [254],
-			children: () => (
-				<Toolbar
-					style={{ marginHorizontal: 30 }}
-					onPressClaim={
-						validators.CanStake && validators.validatorReward(validator) > 0 ?
-						(() => {openClaimModal(validator)})
-						: undefined
-					}
-					onPressStake={
-						validators.CanStake ?
-						() => {openDelegateWithValidator(validator, navigation)}
-						: undefined
-					}
-					onPressUnstake={
-						validators.CanStake && validators.validatorDelegations(validator) > 0 ?
-						() => (openUndelegateWithValidator(validator, navigation))
-						: undefined
-					}
-					onPressRestake={
-						validators.CanStake && validators.validatorDelegations(validator) > 0 ?
-						() => (openRedelegateWithValidator(validator, navigation))
-						: undefined
-					}
-				/>
-			),
-		})
-		requestAnimationFrame(() => gbs.snapToIndex(0))
-	}, [validators.CanStake])
+	const openBottomSheet = useCallback(
+		(validator: Validator) => {
+			gbs.setProps({
+				snapPoints: [vs(254)],
+				children: () => (
+					<Toolbar
+						style={{ marginHorizontal: HORIZONTAL_WRAPPER }}
+						onPressClaim={
+							validators.CanStake && validators.validatorReward(validator) > 0
+								? () => openClaimModal(validator)
+								: undefined
+						}
+						onPressStake={
+							validators.CanStake
+								? () => openDelegateWithValidator(validator, navigation)
+								: undefined
+						}
+						onPressUnstake={
+							validators.CanStake && validators.validatorDelegations(validator) > 0
+								? () => openUndelegateWithValidator(validator, navigation)
+								: undefined
+						}
+						onPressRestake={
+							validators.CanStake && validators.validatorDelegations(validator) > 0
+								? () => openRedelegateWithValidator(validator, navigation)
+								: undefined
+						}
+					/>
+				),
+			})
+			requestAnimationFrame(() => gbs.snapToIndex(0))
+		},
+		[validators.CanStake],
+	)
 
 	// -------------- Styles --------------
 
 	const flatlistContentStyle = useMemo<ViewStyle>(
 		() => ({
-			paddingTop: 23,
-			paddingHorizontal: 30,
-			paddingBottom: 100,
+			paddingTop: vs(23),
+			paddingHorizontal: HORIZONTAL_WRAPPER,
+			paddingBottom: vs(100),
 		}),
 		[],
 	)
@@ -155,9 +160,10 @@ export default observer<Props>(function ValidatorsListScreen({ navigation }) {
 
 const styles = StyleSheet.create({
 	background: { backgroundColor: COLOR.Dark3 },
-	title: { marginBottom: 24 },
-	validator: { marginBottom: 20 },
+	title: { marginBottom: vs(24) },
+	validator: { marginBottom: vs(20) },
 })
+
 const mock: Validator[] = [
 	{
 		id: "1",

@@ -10,6 +10,8 @@ import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { SupportedCoins } from "constants/Coins"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { s, vs } from "react-native-size-matters"
 
 // -------------- Controller ---------------------
 
@@ -125,33 +127,33 @@ export const FooterDeposit = observer(
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingHorizontal: 30,
-		paddingTop: 25,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
+		paddingTop: vs(25),
 	},
-	title: { marginBottom: 31 },
+	title: { marginBottom: vs(31) },
 	card: {
 		backgroundColor: COLOR.Dark2,
-		paddingLeft: 20,
-		paddingHorizontal: 23,
-		paddingTop: 32,
-		paddingBottom: 26,
+		paddingLeft: s(20),
+		paddingHorizontal: s(23),
+		paddingTop: s(32),
+		paddingBottom: s(26),
 	},
 
 	// --------- Footer -------
 
 	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 	},
 	icon: {
-		marginLeft: 24,
+		marginLeft: s(24),
 	},
 	buttonContent: {
-		paddingHorizontal: 24,
-		paddingVertical: 18,
+		paddingHorizontal: s(24),
+		paddingVertical: s(18),
 	},
 	buttonContentCenter: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
+		paddingHorizontal: s(40),
+		paddingVertical: s(18),
 	},
 })

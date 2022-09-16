@@ -6,6 +6,8 @@ import { MainTabBar } from "./components"
 import { COLOR, hexAlpha } from "utils"
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 import { Header } from "components/organisms"
+import { View } from "react-native"
+import MarkerSoon from "./components/MarkerSoon"
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
@@ -26,7 +28,6 @@ export default () => (
 				headerTransparent: true,
 				tabBarStyle: { position: "absolute" },
 				tabBarShowLabel: false,
-				// headerShown: false,
 			}}
 		>
 			<BottomTab.Screen
@@ -56,14 +57,13 @@ export default () => (
 				options={{
 					headerShown: false,
 					tabBarIcon: ({ focused }) => (
-						<Icon2 name="circle" size={20} stroke={hexAlpha(COLOR.White, 10)} />
+						<View>
+							<Icon2 name="circle" size={20} stroke={hexAlpha(COLOR.White, 10)} />
+							<MarkerSoon />
+						</View>
 					),
 				}}
-				listeners={{
-					tabPress: (e) => {
-						e.preventDefault()
-					},
-				}}
+				listeners={{ tabPress: (e) => e.preventDefault() }}
 			/>
 		</BottomTab.Navigator>
 	</BottomSheetModalProvider>

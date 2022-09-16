@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react"
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { FlatList, RectButton, Swipeable } from "react-native-gesture-handler"
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet"
 import { observable } from "mobx"
@@ -16,6 +16,7 @@ import { ProfileWallets } from "stores/WalletStore"
 import { WalletTypes } from "core/types/storing/Generic"
 import { ListButton } from "screens/Profile/components/atoms"
 import { ControllerChangeWallet } from "../../controllers"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	close(): void
@@ -25,16 +26,8 @@ type Props = {
 
 export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 	const { wallet } = useStore()
-	const {
-		steps,
-		edited,
-		inputSearch,
-		inputWalletName,
-		selected,
-		setEdited,
-		setSelected,
-		seedPhrase,
-	} = controller
+	const { steps, edited, inputSearch, inputWalletName, setEdited, setSelected, seedPhrase } =
+		controller
 
 	const filtred = useMemo(() => {
 		if (inputSearch.value) {
@@ -67,7 +60,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 			<View style={{ marginBottom: 13 }}>
 				<WalletItemEdited
 					value={item}
-					isActive={selected === item}
+					isActive={controller.selected === item}
 					onPress={setSelected}
 					onPressDelete={(w) => {
 						close()
@@ -81,7 +74,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 				/>
 			</View>
 		),
-		[selected],
+		[controller.selected],
 	)
 
 	return (
@@ -247,19 +240,20 @@ export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, contr
 	)
 })
 
+const WRAPPER = s(26)
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		height: Dimensions.get("screen").height * 0.9,
-		marginTop: 15,
+		marginTop: vs(15),
 	},
-	wrapper: { marginHorizontal: 26 },
+	wrapper: { marginHorizontal: WRAPPER },
 
 	// ------ Header ---------
 	header: {
 		flexDirection: "row",
 		alignItems: "center",
-		marginBottom: 30,
+		marginBottom: vs(30),
 	},
 	headerRight: { flex: 1 },
 	headerCenter: {
@@ -271,40 +265,40 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 	},
 
-	buttonBack: { padding: 5 },
-	title: { fontSize: 16 },
-	search: { marginBottom: 9 },
+	buttonBack: { padding: s(5) },
+	title: { fontSize: s(16) },
+	search: { marginBottom: s(9) },
 
 	// ------  Edit --------
 
-	editMenu: { marginTop: 40 },
+	editMenu: { marginTop: vs(40) },
 	editTitle: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 
 		color: hexAlpha(COLOR.White, 50),
 	},
 
 	buttons_list: {
-		marginRight: 15,
-		paddingTop: 15,
+		marginRight: s(15),
+		paddingTop: vs(15),
 	},
-	listButton: { marginBottom: 5 },
+	listButton: { marginBottom: vs(5) },
 
 	caption: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 
 		color: hexAlpha(COLOR.White, 30),
 		textAlign: "center",
 
-		marginTop: 40,
+		marginTop: vs(40),
 	},
 
 	// ----- Wallets -------
@@ -313,26 +307,26 @@ const styles = StyleSheet.create({
 		justifyContent: "flex-end",
 		alignItems: "center",
 
-		marginTop: 32,
-		marginBottom: 9,
+		marginTop: vs(32),
+		marginBottom: vs(9),
 	},
 	switchTitle: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 12,
-		lineHeight: 15,
+		fontSize: s(12),
+		lineHeight: s(15),
 
 		color: COLOR.White,
-		marginRight: 11,
+		marginRight: s(11),
 	},
 
 	scroll: {
 		flexGrow: 1,
 	},
 	scrollContent: {
-		paddingTop: 9,
-		paddingBottom: 70,
+		paddingTop: vs(9),
+		paddingBottom: vs(70),
 	},
 
 	phrase: {
@@ -342,18 +336,18 @@ const styles = StyleSheet.create({
 	// ------- Buttons ------
 
 	buttons: {
-		padding: 15,
+		padding: s(15),
 		flexDirection: "row",
 		justifyContent: "center",
 		position: "absolute",
 		width: "100%",
 	},
 	buttonText: {
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 	},
 	buttonContent: {
-		paddingVertical: 18,
-		paddingHorizontal: 40,
+		paddingVertical: s(18),
+		paddingHorizontal: s(40),
 	},
 })

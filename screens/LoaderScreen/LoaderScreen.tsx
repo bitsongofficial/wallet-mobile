@@ -4,11 +4,12 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
-import { useTheme } from "hooks"
 import { COLOR } from "utils"
 import { RootStackParamList } from "types"
 import { FooterSuccess } from "./components/moleculs"
 import { StepError, StepLoad, StepSuccess } from "./components/organisms"
+import { vs } from "react-native-size-matters"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Status = "pending" | "fulfilled" | "rejected"
 
@@ -23,44 +24,44 @@ export default function LoaderScreen({
 
 	const result = useRef()
 	const error = useRef()
-	useEffect(() => {
-		const unsubscribe = navigation.addListener('transitionEnd', (e) => {
-			setTimeout(() =>
-			{
-				route.params
-					?.callback()
-					.then((r) => {
-						result.current = r
-						if (r) setStatus("fulfilled")
-						else setStatus("rejected")
-					})
-					.catch((e) => {
-						error.current = e
-						setStatus("rejected")
-					})
-	
-				return () => {
-					if (route.params) {
-						const { onError, onSucceess } = route.params
-						onError && onError(error.current)
-						onSucceess && onSucceess(result.current)
+	useEffect(
+		() =>
+			navigation.addListener("transitionEnd", (e) =>
+				setTimeout(() => {
+					route.params
+						?.callback()
+						.then((r) => {
+							result.current = r
+							if (r) setStatus("fulfilled")
+							else setStatus("rejected")
+						})
+						.catch((e) => {
+							error.current = e
+							setStatus("rejected")
+						})
+
+					return () => {
+						if (route.params) {
+							const { onError, onSucceess } = route.params
+							onError && onError(error.current)
+							onSucceess && onSucceess(result.current)
+						}
 					}
-				}
-			}, 500)
-		})
-		return unsubscribe
-	}, [])
+				}, 500),
+			),
+		[],
+	)
 
 	// ------------ Footer ---------------
 
 	const insets = useSafeAreaInsets()
-	const bottomShift = useSharedValue(108 + insets.bottom)
+	const bottomShift = useSharedValue(vs(108) + insets.bottom)
 
 	useEffect(() => {
 		if (status === "fulfilled") {
 			bottomShift.value = 0
 		} else {
-			bottomShift.value = 108 + insets.bottom
+			bottomShift.value = vs(108) + insets.bottom
 		}
 	}, [status])
 
@@ -71,7 +72,7 @@ export default function LoaderScreen({
 		}),
 		position: "absolute",
 		width: "100%",
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 	}))
 
 	return (
@@ -86,13 +87,12 @@ export default function LoaderScreen({
 					source={require("assets/images/Ellipse_light.png")}
 				/>
 
-				<View style={{ flex: 1, justifyContent: "space-evenly", paddingVertical: 60 }}>
+				<View style={styles.content}>
 					{status == "pending" && <StepLoad />}
 					{status == "fulfilled" && <StepSuccess />}
 					{status == "rejected" && <StepError onPressBack={goBack} />}
 
 					<FooterSuccess
-						//
 						style={footerStyle}
 						onPressConfirm={goBack}
 						// onPressMintscan={() => {}}
@@ -111,15 +111,20 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		backgroundColor: COLOR.Dark3,
 	},
+	content: {
+		flex: 1,
+		justifyContent: "space-evenly",
+		paddingVertical: vs(80),
+	},
 	title: {
 		textAlign: "center",
-		marginBottom: 24,
+		marginBottom: vs(24),
 	},
 	caption: {
 		textAlign: "center",
 	},
 	iconContainer: {
-		height: 218,
+		height: vs(218),
 		alignItems: "center",
 		justifyContent: "center",
 	},

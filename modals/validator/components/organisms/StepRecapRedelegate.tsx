@@ -3,6 +3,7 @@ import { Coin } from "classes"
 import { COLOR } from "utils"
 import { Recap } from "../moleculs"
 import { Validator } from "core/types/coin/cosmos/Validator"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	from?: Validator | null
@@ -30,10 +31,10 @@ export default ({ amount, coin, from, to }: Props) => (
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: COLOR.Dark3,
-		paddingVertical: 32,
-		paddingHorizontal: 20,
-		borderRadius: 20,
-		marginTop: 36,
+		paddingVertical: s(32),
+		paddingHorizontal: s(20),
+		borderRadius: s(20),
+		marginTop: vs(36),
 	},
 	stats: {
 		flexDirection: "row",
@@ -41,25 +42,25 @@ const styles = StyleSheet.create({
 	},
 
 	flex1: { flex: 1 },
-	stat: { marginBottom: 16 },
+	stat: { marginBottom: vs(16) },
 	title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.RoyalBlue2,
 
-		marginBottom: 12,
+		marginBottom: vs(12),
 	},
 	amount: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 42,
-		lineHeight: 53,
+		fontSize: s(42),
+		lineHeight: s(53),
 		color: COLOR.White,
 
-		marginBottom: 8,
+		marginBottom: vs(8),
 	},
 })

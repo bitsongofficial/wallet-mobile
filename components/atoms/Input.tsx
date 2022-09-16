@@ -12,6 +12,7 @@ import { TextInput } from "react-native-gesture-handler"
 import { useTheme } from "hooks"
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet"
 import { COLOR } from "utils"
+import { s } from "react-native-size-matters"
 
 export type Props = TextInputProps & {
 	style?: StyleProp<ViewStyle>
@@ -24,8 +25,8 @@ export type Props = TextInputProps & {
 	errorStyle?: StyleProp<ViewStyle>
 }
 
-const LINE_HEIGHT = 18
-const BORDER_RADIUS = 50
+const LINE_HEIGHT = s(18)
+const BORDER_RADIUS = s(50)
 
 export default ({
 	inputStyle,
@@ -108,10 +109,10 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 14,
+		fontSize: s(14),
 		// https://stackoverflow.com/a/68458803
-		paddingHorizontal: 24,
-		paddingVertical: 19,
+		paddingHorizontal: s(24),
+		paddingVertical: s(19),
 		height: LINE_HEIGHT,
 		flex: 1,
 	},
@@ -120,22 +121,22 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 14,
+		fontSize: s(14),
 		lineHeight: LINE_HEIGHT,
-		top: 19,
-		left: 25,
+		top: s(19),
+		left: s(25),
 	},
 
 	error: {
 		position: "absolute",
-		bottom: -19,
-		left: 24,
+		bottom: s(-19),
+		left: s(24),
 
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 12,
-		lineHeight: 15,
+		fontSize: s(12),
+		lineHeight: s(15),
 
 		color: COLOR.Pink2,
 	},

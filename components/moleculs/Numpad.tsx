@@ -1,6 +1,7 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { useTheme } from "hooks"
+import { s, vs } from "react-native-size-matters"
 
 const defaultNumpad = [
 	["1", "2", "3"],
@@ -14,15 +15,22 @@ type Props = {
 	onPressRemove(): void
 	style?: StyleProp<ViewStyle>
 	numpad?: (string | undefined)[][]
+	keyStyle?: StyleProp<ViewStyle>
 }
 
-export default function Numpad({ onPress, style, onPressRemove, numpad = defaultNumpad }: Props) {
+export default function Numpad({
+	onPress,
+	style,
+	onPressRemove,
+	numpad = defaultNumpad,
+	keyStyle,
+}: Props) {
 	const theme = useTheme()
 
 	const handleTouch = (num?: string) => num && (num === "C" ? onPressRemove() : onPress(num))
 
 	return (
-		<View style={[styles.container, style]}>
+		<View style={style}>
 			{numpad.map((row, index) => (
 				<View key={index} style={styles.row}>
 					{row.map((num, index) => (
@@ -30,7 +38,7 @@ export default function Numpad({ onPress, style, onPressRemove, numpad = default
 							key={num?.toString() || "key" + index}
 							onPress={() => handleTouch(num)}
 						>
-							<View style={styles.num}>
+							<View style={[styles.num, keyStyle]}>
 								<Text style={[styles.text, theme.text.primary]}>{num}</Text>
 							</View>
 						</TouchableOpacity>
@@ -42,25 +50,22 @@ export default function Numpad({ onPress, style, onPressRemove, numpad = default
 }
 
 const styles = StyleSheet.create({
-	container: {
-		// justifyContent: "space-around",
-	},
 	row: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 	},
 	num: {
-		width: 60,
-		height: 60,
+		width: vs(60),
+		height: vs(60),
 		alignItems: "center",
 		justifyContent: "center",
-		borderRadius: 60,
+		borderRadius: vs(60),
 	},
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 24,
-		lineHeight: 27,
+		fontSize: vs(24),
+		lineHeight: vs(27),
 	},
 })

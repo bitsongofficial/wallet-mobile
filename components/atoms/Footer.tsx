@@ -1,4 +1,6 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
+import { s } from "react-native-size-matters"
+import { FOOTER_HEIGHT } from "utils/constants"
 
 type Props = {
 	Right?: JSX.Element | boolean
@@ -15,21 +17,31 @@ export default ({ Center, Left, Right, style }: Props) => (
 	</View>
 )
 
-export const FOOTER_HEIGHT = 56
-
 const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
-		marginHorizontal: 30,
+		marginHorizontal: s(30), // TODO: Standart Wrapper, need constant
 		height: FOOTER_HEIGHT,
 		alignItems: "center",
 		justifyContent: "space-between",
 	},
-	left: { position: "absolute", left: 0, zIndex: 1 },
+	left: {
+		position: "absolute",
+		left: 0,
+		zIndex: 1,
+		alignItems: "center",
+	},
 	center: {
 		...StyleSheet.absoluteFillObject,
 		flexDirection: "row",
+		alignItems: "center",
+
 		justifyContent: "center",
 	},
-	right: { position: "absolute", right: 0, zIndex: 1 },
+	right: {
+		position: "absolute",
+		right: 0,
+		zIndex: 1,
+		alignItems: "center",
+	},
 })

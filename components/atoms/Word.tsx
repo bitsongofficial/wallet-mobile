@@ -8,6 +8,7 @@ import {
 	View,
 	ViewStyle,
 } from "react-native"
+import { s } from "react-native-size-matters"
 import { COLOR, hexAlpha } from "utils"
 
 type Props = {
@@ -50,10 +51,10 @@ const styles = StyleSheet.create({
 		backgroundColor: COLOR.Dark3,
 		flexDirection: "row",
 		alignItems: "center",
-		paddingHorizontal: 20, // 22 -
-		paddingVertical: 11,
-		borderRadius: 50,
-		borderWidth: 2,
+		paddingHorizontal: s(20),
+		paddingVertical: s(11),
+		borderRadius: s(50),
+		borderWidth: s(2),
 		borderColor: COLOR.Dark2,
 	},
 	containerHidden: {
@@ -67,16 +68,16 @@ const styles = StyleSheet.create({
 		color: hexAlpha(COLOR.White, 40),
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 18,
-		lineHeight: 23,
-		marginRight: 6,
+		fontSize: s(18),
+		lineHeight: s(23),
+		marginRight: s(6),
 	},
 	text: {
 		fontFamily: "CircularStd",
 		color: COLOR.White,
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 	},
 })

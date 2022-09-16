@@ -2,6 +2,7 @@ import { memo } from "react"
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 import { Word } from "components/atoms"
 import { sliceIntoChunks } from "utils"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	value: string[]
@@ -23,9 +24,9 @@ export default memo(({ value, style, hidden = true }: Props) => (
 const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
-		marginBottom: 10,
+		marginBottom: s(10),
 	},
 	word: {
-		marginRight: 10,
+		marginRight: s(10),
 	},
 })

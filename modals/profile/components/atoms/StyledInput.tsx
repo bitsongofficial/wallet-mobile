@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native"
 import { COLOR, hexAlpha } from "utils"
 import { Input, InputProps } from "components/atoms"
+import { s } from "react-native-size-matters"
 
 type Props = InputProps & { isFocus?: boolean }
 
@@ -18,14 +19,14 @@ export default ({ style, bottomsheet = true, isFocus, ...props }: Props) => (
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: hexAlpha(COLOR.Lavender, 10),
-		borderRadius: 20,
+		borderRadius: s(20),
 	},
 	container_focused: {
-		borderWidth: 2,
+		borderWidth: s(2),
 		borderColor: COLOR.Marengo,
 	},
 	input: {
-		height: 62,
+		height: s(62),
 		color: COLOR.White,
 	},
 })

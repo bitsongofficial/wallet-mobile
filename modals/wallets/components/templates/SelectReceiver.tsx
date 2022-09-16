@@ -15,11 +15,10 @@ import { useStore, useTheme } from "hooks"
 import { isValidAddress } from "core/utils/Address"
 import { FlatList } from "react-native-gesture-handler"
 import { Contact } from "stores/ContactsStore"
-import { HORIZONTAL_WRAPPER } from "modals/wallets/constants"
 import { SendController } from "../../controllers"
 import { CardAddress, CardAdressSelf } from "../moleculs"
 import { Contact as ContactItem } from "../atoms"
-import { FOOTER_HEIGHT } from "components/atoms"
+import { FOOTER_HEIGHT, HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = {
 	controller: SendController

@@ -7,8 +7,10 @@ import { observer } from "mobx-react-lite"
 import { COLOR } from "utils"
 import { useStore } from "hooks"
 import { RootStackParamList } from "types"
-import { Icon } from "components/atoms"
+import { Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { s } from "react-native-size-matters"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = {
 	style?: StyleProp<ViewStyle>
@@ -25,13 +27,15 @@ export default observer(function Header({ navigation, style }: Props) {
 		<Animated.View style={[styles.container, style, { paddingTop: insets.top }]}>
 			<View style={styles.header}>
 				<View style={styles.right}>
-					<Icon name="cosmo" size={40} />
+					<Icon2 name="logo" size={40} />
 				</View>
+				{/* TODO: need center position title */}
 				<View style={styles.center}>
 					<Text style={styles.title}>Cosmonautico</Text>
 				</View>
+
 				<View style={styles.left}>
-					<Icon name="bell" size={15} fill="#202020" />
+					<Icon2 name="bell_1" size={16} stroke={COLOR.Marengo} />
 					<TouchableOpacity onPress={openProfile}>
 						<Image
 							source={
@@ -54,9 +58,9 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		flexDirection: "row",
-		paddingHorizontal: 25,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		justifyContent: "space-between",
-		paddingVertical: 10,
+		paddingVertical: s(10),
 	},
 	right: {},
 	center: {
@@ -77,17 +81,17 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	avatar: {
-		marginLeft: 20,
-		width: 35,
-		height: 35,
-		borderRadius: 40,
+		marginLeft: s(20),
+		width: s(35),
+		height: s(35),
+		borderRadius: s(40),
 	},
 	title: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: COLOR.White,
 	},
 })

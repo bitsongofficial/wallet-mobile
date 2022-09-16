@@ -4,6 +4,7 @@ import { Icon2 } from "components/atoms"
 import { Caption, Card } from "../atoms"
 import { memo } from "react"
 import { RectButton } from "react-native-gesture-handler"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	style: StyleProp<ViewStyle>
@@ -30,12 +31,12 @@ export default memo(({ style, title, value, onPress }: Props) => {
 
 const styles = StyleSheet.create({
 	container: {
-		paddingLeft: 21,
-		paddingRight: 25,
-		paddingVertical: 24,
+		paddingLeft: s(21),
+		paddingRight: s(25),
+		paddingVertical: s(24),
 	},
 	caption: {
-		marginBottom: 19,
+		marginBottom: s(19),
 	},
 	address: {
 		flexDirection: "row",
@@ -46,8 +47,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.White,
 	},
 })

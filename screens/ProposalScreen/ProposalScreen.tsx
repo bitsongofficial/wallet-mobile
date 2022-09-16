@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react"
-import { ListRenderItem, Platform, SafeAreaView, StyleSheet, View } from "react-native"
+import { ListRenderItem, StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps } from "@react-navigation/native"
@@ -14,12 +14,14 @@ import { RootStackParamList, RootTabParamList } from "types"
 import { ProposalStatus } from "cosmjs-types/cosmos/gov/v1beta1/gov"
 import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { SupportedCoins } from "constants/Coins"
-
+import { useHeaderHeight } from "@react-navigation/elements"
 import { CardCommission, Head, ITab, Tabs } from "./components/moleculs"
 import { useAnimateFlatlist } from "hooks"
 import { openChangeChain } from "modals/proposal"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { Shadow } from "components/atoms"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { s } from "react-native-size-matters"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
@@ -53,14 +55,16 @@ export default observer<Props>(function Stacking({ navigation }) {
 	const { proposals } = useStore()
 	// const filterdProposals = useMemo<Proposal[]>(() => mock, [status])
 
-	const changeActiveChain = useCallback((chain:SupportedCoins) =>
-	{
+	const changeActiveChain = useCallback((chain: SupportedCoins) => {
 		proposals.addToRecent(chain)
 		setActiveChain(chain)
 	}, [])
 
 	const filterdProposals = useMemo(
-		() => proposals.filterByCoinAndType(activeChain ? activeChain: SupportedCoins.BITSONG, status).slice(),
+		() =>
+			proposals
+				.filterByCoinAndType(activeChain ? activeChain : SupportedCoins.BITSONG, status)
+				.slice(),
 		[status, activeChain],
 	)
 	const renderProposals = useCallback<ListRenderItem<Proposal>>(
@@ -70,21 +74,35 @@ export default observer<Props>(function Stacking({ navigation }) {
 				style={styles.listItem}
 				onPress={() => navigation.navigate("ProposalDetails", { proposal: item })}
 			>
-				<CardCommission key={item.id.toString()} title={item.title} status={item.status} percentage={proposals.votedPercentage(item)} />
+				<CardCommission
+					key={item.id.toString()}
+					title={item.title}
+					status={item.status}
+					percentage={proposals.votedPercentage(item)}
+				/>
 			</TouchableOpacity>
 		),
 		[],
 	)
 
 	// ------------- Actions --------------
-	const navToNew = useCallback(() => navigation.navigate("NewProposal", {
-		chain: activeChain
-	}), [])
-	const openChangeChainModal = useCallback(() => openChangeChain({
-		setActiveChain: changeActiveChain
-	}), [])
+	const navToNew = useCallback(
+		() =>
+			navigation.navigate("NewProposal", {
+				chain: activeChain,
+			}),
+		[],
+	)
+	const openChangeChainModal = useCallback(
+		() =>
+			openChangeChain({
+				setActiveChain: changeActiveChain,
+			}),
+		[],
+	)
 
 	// -------------- Styles --------------
+	const headerHeight = useHeaderHeight()
 	const insets = useSafeAreaInsets()
 	const flatlistContentStyle = useMemo(
 		() => ({ paddingBottom: 100 + insets.bottom }),
@@ -97,7 +115,6 @@ export default observer<Props>(function Stacking({ navigation }) {
 	return (
 		<>
 			<StatusBar style="light" />
-			<SafeAreaView style={styles.safearea} />
 			<Animated.FlatList
 				onScroll={scrollHandler}
 				// ------------ Header -----------------
@@ -113,7 +130,7 @@ export default observer<Props>(function Stacking({ navigation }) {
 				data={filterdProposals}
 				renderItem={renderProposals}
 				// ------------ Styles --------------------
-				style={styles.flatlist}
+				style={[styles.flatlist, { marginTop: headerHeight }]}
 				contentContainerStyle={flatlistContentStyle}
 				keyExtractor={(item) => item.id.toString()}
 			/>
@@ -123,15 +140,11 @@ export default observer<Props>(function Stacking({ navigation }) {
 })
 
 const styles = StyleSheet.create({
-	safearea: { backgroundColor: COLOR.Dark3 },
 	flatlist: { backgroundColor: COLOR.Dark3 },
-	listHeader: {
-		backgroundColor: COLOR.Dark3,
-		paddingTop: Platform.OS === "ios" ? 75 : 110,
-	},
-	tabs: { paddingHorizontal: 30 },
+	listHeader: { backgroundColor: COLOR.Dark3 },
+	tabs: { paddingHorizontal: HORIZONTAL_WRAPPER },
 	listItem: {
-		marginTop: 20,
-		marginHorizontal: 30,
+		marginTop: s(20),
+		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 })

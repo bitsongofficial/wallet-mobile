@@ -1,4 +1,5 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
+import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 import Caption from "./Caption"
 
@@ -8,14 +9,12 @@ type Props = {
 	style?: StyleProp<ViewStyle>
 }
 
-export default ({ title, value, style }: Props) => {
-	return (
-		<View style={[styles.container, style]}>
-			<Caption style={styles.count}>{title}</Caption>
-			<Text style={styles.value}>{value}</Text>
-		</View>
-	)
-}
+export default ({ title, value, style }: Props) => (
+	<View style={[styles.container, style]}>
+		<Caption style={styles.count}>{title}</Caption>
+		<Text style={styles.value}>{value}</Text>
+	</View>
+)
 
 const styles = StyleSheet.create({
 	container: {
@@ -23,15 +22,15 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 	},
 	count: {
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 	},
 	value: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.White,
 	},
 })

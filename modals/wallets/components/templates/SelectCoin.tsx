@@ -9,7 +9,7 @@ import { FlatList } from "react-native-gesture-handler"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { SendController } from "../../controllers"
 import { ButtonCoinSelect } from "../moleculs"
-import { HORIZONTAL_WRAPPER } from "modals/wallets/constants"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = {
 	controller: SendController

@@ -1,5 +1,6 @@
 import { Icon2 } from "components/atoms"
 import { Image, StyleSheet, View } from "react-native"
+import { s, vs } from "react-native-size-matters"
 import { COLOR } from "utils"
 import { Caption, Title, Button } from "../atoms"
 
@@ -36,7 +37,7 @@ export default ({ onPressBack }: Props) => (
 const styles = StyleSheet.create({
 	title: {
 		textAlign: "center",
-		marginBottom: 24,
+		marginBottom: vs(24),
 	},
 	caption: {
 		textAlign: "center",
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
 	},
 
 	icon: {
-		width: 205,
-		height: 205,
+		width: s(205),
+		height: s(205),
 	},
 })

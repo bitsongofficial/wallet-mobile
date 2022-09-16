@@ -1,6 +1,7 @@
 import { Coin } from "classes"
 import { Validator } from "core/types/coin/cosmos/Validator"
 import { StyleSheet } from "react-native"
+import { s } from "react-native-size-matters"
 import { Recap } from "../moleculs"
 
 type Props = {
@@ -24,5 +25,5 @@ export default ({ amount, coin, from }: Props) => (
 )
 
 const styles = StyleSheet.create({
-	stat: { marginBottom: 16 },
+	stat: { marginBottom: s(16) },
 })

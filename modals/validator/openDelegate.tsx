@@ -6,6 +6,7 @@ import { store } from "stores/Store"
 import { gbs } from "modals"
 import { SupportedCoins } from "constants/Coins"
 import { navigate } from "navigation/utils"
+import { s } from "react-native-size-matters"
 
 type Options = {
 	controller: DelegateController
@@ -14,7 +15,7 @@ type Options = {
 	onDismiss?(): void
 }
 
-const snapPoints = [[600], ["85%"], [450]]
+const snapPoints = [[s(600)], ["85%"], [s(450)]]
 
 export default async function openDelegate({ onDone, onClose, onDismiss, controller }: Options) {
 	const status = { done: false }

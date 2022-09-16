@@ -1,6 +1,7 @@
 import { memo } from "react"
 import { StyleProp, StyleSheet, Text, ViewStyle } from "react-native"
 import { RectButton, ScrollView } from "react-native-gesture-handler"
+import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 
 export type ITab = "All" | "Deposit" | "Voting" | "Passed" | "Rejected" | "Draft"
@@ -27,19 +28,19 @@ export default memo(({ style, active, onPress }: Props) => (
 
 const styles = StyleSheet.create({
 	tab: {
-		paddingHorizontal: 12,
-		height: 48,
+		paddingHorizontal: s(12),
+		height: s(48),
 		justifyContent: "center",
 	},
 	gap: {
-		marginRight: 30,
+		marginRight: s(30),
 	},
 
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
+		fontSize: s(16),
 		color: COLOR.Marengo,
 	},
 	active: {

@@ -1,5 +1,6 @@
 import { Button, ButtonProps } from "components/atoms"
 import { StyleSheet } from "react-native"
+import { vs } from "react-native-size-matters"
 
 export default (props: ButtonProps) => (
 	<Button contentContainerStyle={styles.buttonContent} textStyle={styles.buttonText} {...props} />
@@ -7,8 +8,8 @@ export default (props: ButtonProps) => (
 
 const styles = StyleSheet.create({
 	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: vs(16),
+		lineHeight: vs(20),
 	},
-	buttonContent: { paddingVertical: 17 },
+	buttonContent: { paddingVertical: vs(17) },
 })

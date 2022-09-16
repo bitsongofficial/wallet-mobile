@@ -20,6 +20,8 @@ import { useHeaderHeight } from "@react-navigation/elements"
 import { openChangeVoteTypology } from "modals/proposal"
 import { useStore } from "hooks"
 import { SupportedCoins } from "constants/Coins"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { s, vs } from "react-native-size-matters"
 
 type Props = NativeStackScreenProps<RootStackParamList, "NewProposal">
 
@@ -225,22 +227,22 @@ const styles = StyleSheet.create({
 	container: {
 		backgroundColor: COLOR.Dark3,
 		zIndex: 0,
-		paddingBottom: 8,
+		paddingBottom: vs(8),
 	},
 	scrollContent: {
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 	},
 
 	head: {
 		flexDirection: "row",
-		marginBottom: 36,
+		marginBottom: vs(36),
 		alignItems: "center",
 		justifyContent: "space-between",
 	},
 
 	buttonGoBackContent: {
-		paddingVertical: 13,
-		paddingHorizontal: 13,
+		paddingVertical: s(13),
+		paddingHorizontal: s(13),
 		backgroundColor: COLOR.Dark3,
 	},
 
@@ -248,8 +250,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 18,
-		lineHeight: 23,
+		fontSize: s(18),
+		lineHeight: s(23),
 		color: COLOR.White,
 	},
 
@@ -257,8 +259,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 12,
-		lineHeight: 15,
+		fontSize: s(12),
+		lineHeight: s(15),
 		color: COLOR.RoyalBlue6,
 	},
 
@@ -267,66 +269,66 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 		color: hexAlpha(COLOR.White, 30),
 
-		marginBottom: 8,
+		marginBottom: vs(8),
 	},
 
 	inputContainer: {
-		borderRadius: 20,
-		marginBottom: 20,
+		borderRadius: s(20),
+		marginBottom: vs(20),
 	},
 	input: {
-		paddingHorizontal: 30,
-		paddingVertical: 22,
-		height: 62,
+		paddingHorizontal: s(30),
+		paddingVertical: s(22),
+		height: s(62),
 	},
 	textarea: {
-		height: 166,
-		borderRadius: 20,
-		marginBottom: 8,
+		height: vs(166),
+		borderRadius: s(20),
+		marginBottom: vs(8),
 	},
 	textAreaInput: {
 		height: "100%",
-		paddingTop: 22,
-		paddingBottom: 22,
-		paddingHorizontal: 32,
+		paddingTop: s(22),
+		paddingBottom: s(22),
+		paddingHorizontal: s(32),
 	},
 
 	// ---------- Footer ------------
 
 	footer: {
 		flexDirection: "row",
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		justifyContent: "space-between",
 		alignItems: "flex-end",
-		marginBottom: 8,
+		marginBottom: vs(8),
 	},
 
 	buttonText: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.White,
 	},
 
 	buttonContent: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
+		paddingHorizontal: s(40),
+		paddingVertical: s(18),
 	},
 
 	buttonContentFill: {
-		paddingHorizontal: 35,
-		paddingVertical: 18,
+		paddingHorizontal: s(35),
+		paddingVertical: s(18),
 	},
 
 	inputRightContainer: {
 		height: "100%",
-		paddingHorizontal: 30,
+		paddingHorizontal: s(30),
 		alignItems: "center",
 		flexDirection: "row",
 	},

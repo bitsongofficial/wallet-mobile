@@ -7,6 +7,7 @@ import { useVoteIcon } from "../../hooks"
 // TODO: need reorder components
 import { RadioButton } from "screens/Profile/components/atoms"
 import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
+import { s } from "react-native-size-matters"
 
 type RadioProps = {
 	value: VoteOption
@@ -48,14 +49,14 @@ export default ({ active, onPress, value, style }: RadioProps) => {
 
 const styles = StyleSheet.create({
 	container: {
-		height: 70,
-		borderRadius: 20,
+		height: s(70),
+		borderRadius: s(20),
 		flexDirection: "row",
 		backgroundColor: COLOR.Dark3,
-		paddingHorizontal: 24,
+		paddingHorizontal: s(24),
 		alignItems: "center",
 	},
-	icon: { marginRight: 17 },
+	icon: { marginRight: s(17) },
 	row: {
 		flexDirection: "row",
 		flex: 1,
@@ -65,8 +66,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 		color: COLOR.White,
 	},
 })

@@ -10,7 +10,7 @@ import {
 	ViewStyle,
 } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { RectButton, Swipeable, TouchableOpacity } from "react-native-gesture-handler"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
@@ -24,8 +24,11 @@ import { ContactItem } from "./components/moleculs"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
 import { useBottomSheetModals } from "./hooks"
 import { Contact } from "stores/ContactsStore"
+import { s, vs } from "react-native-size-matters"
 
 type Props = NativeStackScreenProps<RootStackParamList, "AddressBook">
+
+const WRAPPER = s(34)
 
 export default observer<Props>(function AddressBookScreen({ navigation }) {
 	const { contacts } = useStore()
@@ -34,24 +37,26 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 	// ------- Wallets ------
 	const mapItemsRef = useMemo(() => observable.map<Contact, React.RefObject<Swipeable>>(), [])
 
-	const renderContact: ListRenderItem<Contact> = ({ item }) => (
-		<View style={{ marginBottom: 24 }}>
-			{/* TODO: remake by SwipeableItem */}
-			<ContactItem
-				value={item}
-				onPress={() => {}}
-				onPressStar={contacts.toggleStarred}
-				onPressDelete={openModal.removeContact}
-				onPressEdit={openModal.editContact}
-				mapItemsRef={mapItemsRef}
-			/>
-		</View>
+	const renderContact = useCallback<ListRenderItem<Contact>>(
+		({ item }) => (
+			<View style={styles.contact}>
+				<ContactItem
+					value={item}
+					wrapper={WRAPPER}
+					onPressStar={contacts.toggleStarred}
+					onPressDelete={openModal.removeContact}
+					onPressEdit={openModal.editContact}
+					mapItemsRef={mapItemsRef}
+				/>
+			</View>
+		),
+		[],
 	)
 
 	const renderSectionHeader = useCallback(
 		({ section }) => (
-			<View style={[{ marginBottom: 8 }, styles.wrapper]}>
-				<Text style={{ color: hexAlpha(COLOR.White, 40) }}>{section.label}</Text>
+			<View style={styles.section}>
+				<Text style={styles.label}>{section.label}</Text>
 			</View>
 		),
 		[],
@@ -71,6 +76,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 	const sectionData = contacts.labelContacts(contacts.contacts, inputSearch.value)
 
 	useEffect(() => inputSearch.clear, [])
+	const insets = useSafeAreaInsets()
 
 	const addContact = useCallback(() => {
 		openModal.addContact()
@@ -82,7 +88,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 			<StatusBar style="light" />
 
 			<ThemedGradient invert style={styles.container}>
-				<SafeAreaView style={styles.safeArea}>
+				<View style={[styles.safeArea, { paddingTop: insets.top }]}>
 					<Animated.View style={animStyle}>
 						<Header
 							onPressBack={goBack}
@@ -90,7 +96,7 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 							title="Address Book"
 							onPressPlus={addContact}
 						/>
-						<View style={[styles.wrapper]}>
+						<View style={styles.wrapper}>
 							<Input
 								value={inputSearch.value}
 								onChangeText={inputSearch.set}
@@ -106,24 +112,22 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 							/>
 						</View>
 
-						{contacts.contacts.length > 0 ? (
+						{true ? (
 							<SectionList
-								style={{ marginTop: 10 }}
+								style={styles.sectionList}
 								keyExtractor={({ address }) => address}
-								contentContainerStyle={{ paddingTop: 30 }}
+								contentContainerStyle={styles.sectionListContent}
 								sections={sectionData}
 								renderItem={renderContact}
 								renderSectionHeader={renderSectionHeader}
 							/>
 						) : (
 							<View style={[styles.wrapper, { flex: 1 }]}>
-								<View style={{ alignItems: "center" }}>
-									<View style={{ marginVertical: 40 }}>
-										<Circles>
-											<Icon2 name="address_book" size={69} stroke={COLOR.White} />
-										</Circles>
-									</View>
-									<Title style={styles.title}>Non hai ancora aggiunto alcun contatto</Title>
+								<Circles style={{ marginVertical: vs(40) }}>
+									<Icon2 name="address_book" size={69} stroke={COLOR.White} />
+								</Circles>
+								<View style={{ flex: 1 }}>
+									<Title style={styles.title}>You haven’t yet added any contacts. </Title>
 									<Subtitle style={styles.subtitle}>
 										Access VIP experiences, exclusive previews, finance your own music projects and
 										have your say.
@@ -137,11 +141,10 @@ export default observer<Props>(function AddressBookScreen({ navigation }) {
 								onPress={openModal.addContact}
 								textStyle={styles.buttonText}
 								contentContainerStyle={styles.buttonContent}
-								mode="fill"
 							/>
 						</View>
 					</Animated.View>
-				</SafeAreaView>
+				</View>
 			</ThemedGradient>
 		</>
 	)
@@ -175,23 +178,42 @@ const Header = ({ onPressBack, style, title, onPressPlus }: PropsHeader) => (
 const styles = StyleSheet.create({
 	container: { flex: 1 },
 	safeArea: { flex: 1 },
-	header: { marginBottom: 25, paddingVertical: 10, paddingHorizontal: 20 },
+	header: {
+		marginBottom: vs(25),
+		paddingVertical: s(10),
+		paddingHorizontal: s(20),
+	},
 
 	head: {
-		marginHorizontal: 25, // <- wrapper
-		marginBottom: 30,
+		marginHorizontal: s(25), // <- wrapper
+		marginBottom: vs(30),
 	},
 
-	wrapper: { marginHorizontal: 34 },
+	wrapper: {
+		marginHorizontal: s(34),
+	},
+
+	sectionList: { marginTop: vs(10) },
+	sectionListContent: {
+		paddingTop: s(30),
+		paddingBottom: s(70),
+	},
+	section: {
+		marginBottom: 8,
+		marginHorizontal: s(34),
+	},
+	label: { color: hexAlpha(COLOR.White, 40) },
+	contact: { marginBottom: s(12) },
+
 	title: {
-		fontSize: 18,
-		lineHeight: 24,
+		fontSize: vs(18),
+		lineHeight: vs(24),
 		textAlign: "center",
-		marginBottom: 25,
+		marginBottom: vs(25),
 	},
 	subtitle: {
-		fontSize: 15,
-		lineHeight: 18,
+		fontSize: vs(15),
+		lineHeight: vs(18),
 		textAlign: "center",
 		opacity: 0.3,
 	},
@@ -201,24 +223,25 @@ const styles = StyleSheet.create({
 		bottom: 0,
 		width: "100%",
 		alignItems: "center",
-		paddingVertical: 16,
+		paddingVertical: s(16),
+		zIndex: 10,
 	},
 	buttonContent: {
-		paddingHorizontal: 55,
-		paddingVertical: 18,
+		paddingHorizontal: s(55),
+		paddingVertical: s(18),
 		backgroundColor: COLOR.Dark3,
 	},
 	buttonText: {
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 	},
 
 	// ------- Header ----------
 	header_container: { flexDirection: "row" },
 	header_left: { flexDirection: "row" },
 	header_backButton: {
-		padding: 5,
-		borderRadius: 20,
+		padding: s(5),
+		borderRadius: s(20),
 	},
 	header_right: {
 		flex: 1,
@@ -226,15 +249,15 @@ const styles = StyleSheet.create({
 		alignItems: "flex-end",
 	},
 	header_scanButtonContainer: {
-		width: 33,
-		height: 33,
-		borderRadius: 33,
+		width: s(33),
+		height: s(33),
+		borderRadius: s(33),
 		backgroundColor: COLOR.Dark3,
 		overflow: "hidden",
 	},
 	header_scanButton: {
-		width: 33,
-		height: 33,
+		width: s(33),
+		height: s(33),
 		alignItems: "center",
 		justifyContent: "center",
 	},
@@ -242,18 +265,18 @@ const styles = StyleSheet.create({
 	// ------- BottomSheet --------
 	bottomSheetBackground: {
 		backgroundColor: COLOR.Dark3,
-		paddingTop: 30,
+		paddingTop: vs(30),
 	},
 	//
 	search: {
 		backgroundColor: hexAlpha(COLOR.Lavender, 10),
-		borderRadius: 20,
+		borderRadius: s(20),
 	},
 	searchInput: {
-		height: 62,
+		height: s(62),
 	},
 	searchIconContainer: {
-		paddingHorizontal: 25,
+		paddingHorizontal: s(25),
 		alignItems: "center",
 		justifyContent: "center",
 	},

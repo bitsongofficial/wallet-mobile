@@ -1,4 +1,5 @@
 import { Image, StyleSheet, View } from "react-native"
+import { s, vs } from "react-native-size-matters"
 import { Caption, Title } from "../atoms"
 
 type Props = {
@@ -27,18 +28,18 @@ export default ({
 const styles = StyleSheet.create({
 	title: {
 		textAlign: "center",
-		marginBottom: 24,
+		marginBottom: vs(24),
 	},
 	caption: {
 		textAlign: "center",
 	},
 	iconContainer: {
-		height: 218,
+		height: s(218),
 		alignItems: "center",
 		justifyContent: "center",
 	},
 	icon: {
-		width: 205,
-		height: 205,
+		width: s(205),
+		height: s(205),
 	},
 })

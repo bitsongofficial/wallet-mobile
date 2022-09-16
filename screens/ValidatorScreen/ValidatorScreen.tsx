@@ -1,33 +1,34 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
 import {
 	Image,
 	ListRenderItem,
 	Platform,
 	RefreshControl,
-	SafeAreaView,
 	ScrollView,
 	StyleSheet,
 	Text,
 	View,
 } from "react-native"
+import { s, vs } from "react-native-size-matters"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { StatusBar } from "expo-status-bar"
+import { FlatList } from "react-native-gesture-handler"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import * as Clipboard from "expo-clipboard"
+import moment from "moment"
 import { RootStackParamList } from "types"
 import { COLOR, hexAlpha } from "utils"
-import { CardAddress, CardClaim, CardDelegation, CardInfo } from "./components/moleculs"
-import { FlatList } from "react-native-gesture-handler"
-import moment from "moment"
-import { ButtonBack } from "components/atoms"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Stat } from "./components/atoms"
-import { openDelegateWithValidator, openRedelegateWithValidator, openClaim } from "modals/validator"
 import { useStore } from "hooks"
 import { SupportedCoins } from "constants/Coins"
-import * as Clipboard from "expo-clipboard"
 import { openUndelegateWithValidator } from "modals/validator/withValidator"
-import { formatNumber } from "utils/numbers"
+import { openDelegateWithValidator, openRedelegateWithValidator, openClaim } from "modals/validator"
 import { Validator, ValidatorStatus } from "core/types/coin/cosmos/Validator"
+import { formatNumber } from "utils/numbers"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { ButtonBack } from "components/atoms"
+import { CardAddress, CardClaim, CardDelegation, CardInfo } from "./components/moleculs"
+import { Stat } from "./components/atoms"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Validator">
 
@@ -99,7 +100,12 @@ export default observer<Props>(function ValidatorScreen({ navigation, route }) {
 
 	const renderInfo = useCallback<ListRenderItem<IData>>(
 		({ item }) => (
-			<CardInfo style={item.title !== "TOTAL STAKE" && styles.info} key={item.title} {...item} />
+			<CardInfo
+				style={item.title !== "TOTAL STAKE" && styles.info}
+				key={item.title}
+				{...item}
+				//
+			/>
 		),
 		[],
 	)
@@ -184,22 +190,18 @@ export default observer<Props>(function ValidatorScreen({ navigation, route }) {
 				<View style={styles.wrapper}>
 					<CardAddress
 						title="OPERATION ADDRESS"
-						onPress={() => {
-							Clipboard.setStringAsync(validator.operator)
-						}}
+						onPress={() => Clipboard.setStringAsync(validator.operator)}
 						value={validator.operator}
 						style={styles.address}
 					/>
 					<CardAddress
 						title="ACCOUNT ADDRESS"
-						onPress={() => {
-							Clipboard.setStringAsync(validator.operator)
-						}}
+						onPress={() => Clipboard.setStringAsync(validator.operator)}
 						value={address}
 						style={styles.address}
 					/>
 
-					<View style={{ marginHorizontal: 10, marginTop: 10 }}>
+					<View style={{ marginHorizontal: s(10), marginTop: s(10) }}>
 						{/* <Stat
 								style={styles.stat}
 								title="Uptime"
@@ -242,63 +244,63 @@ const styles = StyleSheet.create({
 		backgroundColor: COLOR.Dark3,
 	},
 	scrollviewContent: {
-		paddingTop: 28,
+		paddingTop: vs(28),
 	},
 
 	wrapper: {
-		paddingHorizontal: 30,
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 	},
 	title: {
-		marginTop: Platform.OS === "ios" ? 30 : 60,
-		marginBottom: 24,
+		marginTop: Platform.OS === "ios" ? s(30) : s(60),
+		marginBottom: vs(24),
 	},
 
 	head: {
 		flexDirection: "row",
 		justifyContent: "flex-start",
 		width: "100%",
-		marginBottom: 33,
+		marginBottom: vs(33),
 	},
 
 	avatarContainer: {
-		width: 80,
-		height: 80,
-		borderRadius: 80,
+		width: s(80),
+		height: s(80),
+		borderRadius: s(80),
 
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: COLOR.Dark2,
 
-		marginRight: 24,
+		marginRight: s(24),
 	},
 	avatar: {
-		width: 54,
-		height: 54,
-		borderRadius: 54,
+		width: s(54),
+		height: s(54),
+		borderRadius: s(54),
 		backgroundColor: COLOR.Dark3,
 	},
 
 	validatorNameContainer: {
 		flexDirection: "row",
-		marginBottom: 10,
+		marginBottom: vs(10),
 	},
 
 	validatorName: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 20,
-		lineHeight: 25,
+		fontSize: vs(20),
+		lineHeight: vs(25),
 
 		color: COLOR.White,
-		marginRight: 12,
+		marginRight: s(12),
 	},
 
 	badge: {
 		backgroundColor: COLOR.LightGreyBlue,
-		paddingHorizontal: 12,
-		paddingVertical: 5,
-		borderRadius: 25,
+		paddingHorizontal: s(12),
+		paddingVertical: s(5),
+		borderRadius: s(25),
 		alignItems: "center",
 		justifyContent: "center",
 	},
@@ -306,8 +308,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "700",
-		fontSize: 8,
-		lineHeight: 10,
+		fontSize: s(8),
+		lineHeight: s(10),
 		color: COLOR.White,
 	},
 
@@ -315,36 +317,36 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 15,
-		lineHeight: 19,
+		fontSize: s(15),
+		lineHeight: s(19),
 		color: hexAlpha(COLOR.PaleBlue, 50),
 	},
 
-	claim: { marginBottom: 25 },
-	delegation: { marginBottom: 38 },
+	claim: { marginBottom: vs(25) },
+	delegation: { marginBottom: vs(38) },
 	titleList: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 
 		color: COLOR.White,
-		marginBottom: 9,
-		marginLeft: 10,
+		marginBottom: vs(9),
+		marginLeft: s(10),
 	},
 
-	flatlistContent: { paddingVertical: 10 },
-	flatlist: { marginBottom: 15 },
-	info: { marginRight: 20 },
-	address: { marginBottom: 25 },
-	stat: { marginBottom: 26 },
+	flatlistContent: { paddingVertical: s(10) },
+	flatlist: { marginBottom: vs(15) },
+	info: { marginRight: s(20) },
+	address: { marginBottom: vs(25) },
+	stat: { marginBottom: vs(26) },
 
 	buttonBack: {
 		backgroundColor: COLOR.White,
-		paddingHorizontal: 24,
-		paddingVertical: 18,
-		borderRadius: 50,
+		paddingHorizontal: s(24),
+		paddingVertical: s(18),
+		borderRadius: s(50),
 	},
 })
 

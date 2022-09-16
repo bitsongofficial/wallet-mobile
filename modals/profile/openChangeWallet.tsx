@@ -1,6 +1,7 @@
 import { BottomSheetProps } from "@gorhom/bottom-sheet"
 import { gbs } from "modals"
 import { Dimensions, Keyboard } from "react-native"
+import { vs } from "react-native-size-matters"
 import { store } from "stores/Store"
 import { ChangeWallet, FooterChangeWallet } from "./components/organisms"
 import { ControllerChangeWallet } from "./controllers"
@@ -14,6 +15,7 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 	const { wallet } = store
 
 	const controller = new ControllerChangeWallet()
+	controller.setSelected(wallet.activeWallet)
 
 	const close = () => {
 		Keyboard.dismiss()
@@ -48,7 +50,7 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 		gbs.backHandler = goBack
 
 		await gbs.setProps({
-			snapPoints: [window.height - 100],
+			snapPoints: [window.height - vs(100)],
 			...props,
 			onChange(index) {
 				if (index === -1) {
@@ -56,15 +58,20 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 					onClose && onClose()
 				}
 			},
+			children: () => (
+				<ChangeWallet
+					//
+					onPressViewMnemonic={showMnemonic}
+					close={close}
+					controller={controller}
+				/>
+			),
 			footerComponent: () => (
 				<FooterChangeWallet
 					onPressSelect={setWallet}
 					onPressSave={saveEdited}
 					controller={controller}
 				/>
-			),
-			children: () => (
-				<ChangeWallet onPressViewMnemonic={showMnemonic} close={close} controller={controller} />
 			),
 		})
 		requestAnimationFrame(() => gbs.expand())

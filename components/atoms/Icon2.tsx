@@ -1,5 +1,7 @@
+import { memo } from "react"
 import { StyleSheet, View } from "react-native"
 import { SvgCss, XmlProps } from "react-native-svg"
+import { s } from "react-native-size-matters"
 import Icons from "assets/svg2/icons"
 import { COLOR } from "utils"
 
@@ -11,10 +13,10 @@ type Props = Omit<XmlProps, "xml" | "fill"> & {
 	name: IconName
 }
 
-export default ({ size = 14, name, ...props }: Props) => {
+export default memo(({ size = 14, name, ...props }: Props) => {
 	const style = {
-		width: props.style?.width || size,
-		height: props.style?.height || size,
+		width: props.style?.width || s(size),
+		height: props.style?.height || s(size),
 	}
 
 	const Icon = Icons[name]
@@ -23,7 +25,7 @@ export default ({ size = 14, name, ...props }: Props) => {
 		return <SvgCss {...props} {...style} xml={Icon} style={[style, props.style]} />
 	}
 	return <View style={[styles.fake, style, props.style]} />
-}
+})
 
 const styles = StyleSheet.create({
 	fake: {

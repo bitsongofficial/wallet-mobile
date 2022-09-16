@@ -1,6 +1,7 @@
 import { StyleProp, StyleSheet, Text, TextStyle } from "react-native"
 import { useTheme } from "hooks"
 import { COLOR } from "utils"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	text?: string
@@ -17,8 +18,8 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: s(14),
+		lineHeight: s(18),
 
 		color: COLOR.Marengo,
 	},

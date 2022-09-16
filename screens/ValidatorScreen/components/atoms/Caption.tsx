@@ -1,4 +1,5 @@
 import { StyleProp, StyleSheet, Text, TextStyle } from "react-native"
+import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 
 type Props = {
@@ -7,17 +8,17 @@ type Props = {
 	style?: StyleProp<TextStyle>
 }
 
-export default ({ children, text, style }: Props) => {
-	return <Text style={[styles.text, style]}>{text || children}</Text>
-}
+export default ({ children, text, style }: Props) => (
+	<Text style={[styles.text, style]}>{text || children}</Text>
+)
 
 const styles = StyleSheet.create({
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 13,
-		lineHeight: 16,
+		fontSize: s(13),
+		lineHeight: s(16),
 		color: COLOR.Marengo,
 	},
 })

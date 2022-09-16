@@ -6,6 +6,7 @@ import { Button, Footer } from "components/atoms"
 import { VoteRecap } from "./components/templates"
 import { SupportedCoins } from "constants/Coins"
 import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
+import { s } from "react-native-size-matters"
 
 type Options = {
 	value: VoteOption
@@ -36,7 +37,7 @@ export default async function openVote(options: Options) {
 		}
 
 		await gbs.setProps({
-			snapPoints: [404],
+			snapPoints: [s(404)],
 			enableContentPanningGesture: false,
 			backgroundStyle: styles.background,
 			animationConfigs: { duration: 400 },
@@ -47,6 +48,7 @@ export default async function openVote(options: Options) {
 					options?.onDismiss && !status.done && options?.onDismiss()
 				}
 			},
+			children: () => <VoteRecap value={options.value} chain={options.chain} />,
 			footerComponent: () => (
 				<SafeAreaInsetsContext.Consumer>
 					{(insets) => (
@@ -64,7 +66,6 @@ export default async function openVote(options: Options) {
 					)}
 				</SafeAreaInsetsContext.Consumer>
 			),
-			children: () => <VoteRecap value={options.value} chain={options.chain} />,
 		})
 		requestAnimationFrame(() => gbs.expand())
 	}
@@ -75,11 +76,11 @@ export default async function openVote(options: Options) {
 const styles = StyleSheet.create({
 	background: { backgroundColor: COLOR.Dark2 },
 	buttonContent: {
-		paddingHorizontal: 40,
-		paddingVertical: 18,
+		paddingHorizontal: s(40),
+		paddingVertical: s(18),
 	},
 	buttonText: {
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 	},
 })

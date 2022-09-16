@@ -8,16 +8,17 @@ import mock_2 from "classes/mock_2"
 import { Coin } from "classes"
 import { reaction } from "mobx"
 import { Proposal } from "core/types/coin/cosmos/Proposal"
+import { s } from "react-native-size-matters"
 
 type Options = {
 	proposal: Proposal
 	controller?: DepositController
 	onClose?(): void
-	onDone?(): void
+	onDone?(): Promise<any>
 	onDismiss?(): void
 }
 
-const snapPoints = [[594], [445]]
+const snapPoints = [[s(594)], [s(445)]]
 
 export default async function openDeposit({
 	controller = new DepositController(),
@@ -61,7 +62,6 @@ export default async function openDeposit({
 
 		await gbs.setProps({
 			snapPoints: snapPoints[steps.active],
-			enableContentPanningGesture: false,
 			backgroundStyle: styles.background,
 
 			onChange(index) {

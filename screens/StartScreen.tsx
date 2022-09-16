@@ -14,10 +14,11 @@ import { useFocusEffect } from "@react-navigation/native"
 // @ts-ignore
 import waves_light from "assets/images/waves_light.png"
 import { COLOR } from "utils"
+import { s, vs } from "react-native-size-matters"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Start">
 
-const points = [270]
+const points = [s(270)]
 
 export default observer<Props>(function StartScreen({ navigation }) {
 	const theme = useTheme()
@@ -51,7 +52,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
 					Center={
 						<>
 							<Image source={waves_light} style={styles.waves} />
-							<Icon2 name="logo" size={56} />
+							<Icon2 name="logo" size={s(56)} />
 						</>
 					}
 				/>
@@ -63,7 +64,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
 					<View style={styles.buttons}>
 						<Button
 							text="Create Wallet"
-							Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
+							Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
 							onPress={createCreateWallet}
 							style={styles.mb18}
 							textStyle={[styles.buttonText, theme.text.primary]}
@@ -72,7 +73,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
 						<Button
 							text="Import Existing Wallet"
 							mode="gradient_border"
-							Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
+							Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
 							onPress={openBottomSheet}
 							style={styles.mb24}
 							textStyle={[styles.buttonText, theme.text.primary]}
@@ -85,7 +86,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
 							mode="fill"
 							onPress={test}
 							contentContainerStyle={styles.buttonContent}
-							Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
+							Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
 						>
 							<Text style={[styles.buttonText, theme.text.colorText]}>
 								Import with <Text style={theme.text.primary}>Ledger Nano X</Text>
@@ -96,7 +97,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
 								mode="fill"
 								onPress={test}
 								contentContainerStyle={styles.buttonContent}
-								Right={<Icon2 name="chevron_right" size={18} />}
+								Right={<Icon2 name="chevron_right_2" size={18} />}
 							>
 								<Text style={[styles.buttonText, theme.text.colorText]}>Skip</Text>
 							</Button>
@@ -110,7 +111,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
 					<Text style={[styles.bottomSheetTitle, theme.text.primary]}>Import Existing Wallet</Text>
 					<Button
 						text="Import from Seed Phrase"
-						Right={<Icon2 name="chevron_right" size={18} stroke={COLOR.White} />}
+						Right={<Icon2 name="chevron_right_2" size={18} stroke={COLOR.White} />}
 						onPress={importFromSeed}
 						textStyle={[styles.buttonText, theme.text.primary]}
 						contentContainerStyle={styles.buttonContent}
@@ -120,7 +121,7 @@ export default observer<Props>(function StartScreen({ navigation }) {
 						mode="gradient_border"
 						text="Import with Keplr Extension"
 						onPress={importWithKeplr}
-						Right={<Icon2 name="chevron_right" size={18} stroke={COLOR.White} />}
+						Right={<Icon2 name="chevron_right_2" size={18} stroke={COLOR.White} />}
 						textStyle={[styles.buttonText, theme.text.primary]}
 						contentContainerStyle={[styles.buttonContent_gradient, { backgroundColor: "#2b2b47" }]}
 						style={styles.mb12}
@@ -138,8 +139,8 @@ const styles = StyleSheet.create({
 		justifyContent: "flex-end",
 	},
 	buttons: {
-		marginTop: 50,
-		marginHorizontal: 24,
+		marginTop: vs(50),
+		marginHorizontal: s(24),
 		justifyContent: "flex-end",
 	},
 
@@ -147,18 +148,18 @@ const styles = StyleSheet.create({
 		justifyContent: "flex-end",
 		flex: 1,
 	},
-	mb12: { marginBottom: 12 },
-	mb18: { marginBottom: 18 },
-	mb24: { marginBottom: 24 },
+	mb12: { marginBottom: vs(12) },
+	mb18: { marginBottom: vs(18) },
+	mb24: { marginBottom: vs(24) },
 
 	buttonContent: {
-		paddingVertical: 18,
-		paddingHorizontal: 24,
+		paddingVertical: s(18),
+		paddingHorizontal: s(24),
 		justifyContent: "space-between",
 	},
 	buttonContent_gradient: {
-		paddingVertical: 16,
-		paddingHorizontal: 22,
+		paddingVertical: s(16),
+		paddingHorizontal: s(22),
 		justifyContent: "space-between",
 	},
 
@@ -166,25 +167,25 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 	},
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 24,
-		lineHeight: 30,
+		fontSize: s(24),
+		lineHeight: s(30),
 
-		marginHorizontal: 32,
+		marginHorizontal: s(32),
 	},
 
 	bottomSheetTitle: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: 16,
-		lineHeight: 20,
+		fontSize: s(16),
+		lineHeight: s(20),
 
 		marginBottom: 32,
 	},
@@ -194,9 +195,11 @@ const styles = StyleSheet.create({
 	},
 
 	waves: {
-		width: 1100,
-		height: 1100,
+		width: s(1100),
+		height: s(1100),
+		// width: 1100,
+		// height: 1100,
 		position: "absolute",
-		top: -550,
+		top: s(-550),
 	},
 })
