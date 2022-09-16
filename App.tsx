@@ -26,8 +26,9 @@ configure({ useProxies: "ifavailable" })
 SplashScreen.preventAutoHideAsync()
 
 const App = observer(() => {
-	const {localStorageManager, wallet, configs} = useStore()
+	const {localStorageManager, wallet} = useStore()
 	const [startRoute, setStartRoute] = useState<keyof RootStackParamList>()
+	const [navigated, setNavigated] = useState<boolean>(false)
 	const isLoadingComplete = useCachedResources()
 	const colorScheme = useColorScheme()
 
@@ -39,20 +40,17 @@ const App = observer(() => {
 		let dismiss: any
 		try
 		{
-			if(navigationRef)
-			{
-				dismiss = autorun(() => {
-					if (wallet.loadedFromMemory) {
-						if (wallet.profiles.length > 0) setStartRoute("Root")
-						else setStartRoute("Start")
-						if(dismiss) dismiss()
-					}
-					else
-					{
-						localStorageManager.initialLoad()
-					}
-				})
-			}
+			dismiss = autorun(() => {
+				if (wallet.loadedFromMemory) {
+					if (wallet.profiles.length > 0) setStartRoute("Root")
+					else setStartRoute("Start")
+					if(dismiss) dismiss()
+				}
+				else
+				{
+					localStorageManager.initialLoad()
+				}
+			})
 		}
 		catch (e)
 		{
@@ -63,7 +61,7 @@ const App = observer(() => {
 		{
 			if(dismiss) dismiss()
 		}
-	}, [navigationRef])
+	})
 
 	useEffect(() => {
 		if (Platform.OS === "android") {
@@ -81,11 +79,12 @@ const App = observer(() => {
 
 	useEffect(() =>
 	{
-		if(isLoadingComplete && ((wallet.pinAsked && startRoute == "Root") || startRoute == "Start"))
+		if(navigationRef && !navigated && isLoadingComplete && ((wallet.pinAsked && startRoute == "Root") || startRoute == "Start"))
 		{
+			setNavigated(true)
 			navigate(startRoute)
 		}
-	}, [isLoadingComplete, wallet.pinAsked, startRoute])
+	}, [isLoadingComplete, navigated, wallet.pinAsked, startRoute, navigationRef])
 
 	useEffect(() => {
 		const backHandler = bottomsheet.backHandler
