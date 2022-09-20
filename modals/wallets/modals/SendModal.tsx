@@ -106,7 +106,7 @@ export const FooterSendModal = observer(
 								<Button
 									text="Preview Send"
 									onPress={() => steps.goTo("Send Recap")}
-									disable={addressInput.value != "" && isValidAddress(addressInput.value)}
+									disable={!(addressInput.value != "" && isValidAddress(addressInput.value))}
 									contentContainerStyle={styles.buttonPreviewSend}
 									textStyle={styles.buttonText}
 								/>
@@ -128,8 +128,8 @@ export const FooterSendModal = observer(
 									text="Continue"
 									onPress={() => steps.goTo("Select Receiver")}
 									disable={
-										Number(creater.balance) <= (creater.coin?.balance || 0) &&
-										Number(creater.balance) > 0
+										!(Number(creater.balance) <= (creater.coin?.balance ?? 0) &&
+										Number(creater.balance) > 0)
 									}
 									contentContainerStyle={styles.buttonContinue}
 									textStyle={styles.buttonText}
@@ -171,7 +171,6 @@ const styles = StyleSheet.create({
 	selectCoin: { marginTop: 15 },
 	insertImport: {
 		marginHorizontal: HORIZONTAL_WRAPPER,
-		backgroundColor: "orange",
 	},
 	selectReceiver: { flex: 1 },
 
