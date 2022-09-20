@@ -14,7 +14,7 @@ export class SubmitProposal extends CosmosOperation {
 			])
 		const wallet = walletInfos[1]
 		const client = await SigningStargateClient.connectWithSigner(this.coin.RPCEndpoint(), wallet, {
-			gasPrice: GasPrice.fromString("0.001ubtsg"),
+			gasPrice: GasPrice.fromString(this.coin.gasUnit()),
 		})
 		const message: MsgSubmitProposalEncodeObject = {
 			typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",

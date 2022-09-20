@@ -8,7 +8,7 @@ export class Send extends CosmosOperation {
 		const wallet = await data.from.Signer()
 		const [firstAccount] = await wallet.getAccounts();
 		const client = await SigningStargateClient.connectWithSigner(this.coin.RPCEndpoint(), wallet, {
-			gasPrice: GasPrice.fromString("0.001ubtsg"),
+			gasPrice: GasPrice.fromString(this.coin.gasUnit()),
 		})
 
 		try

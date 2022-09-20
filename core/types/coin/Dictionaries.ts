@@ -6,3 +6,7 @@ import { Coin } from "core/coin/Generic";
 export const CoinClasses: SupportedCoinsFullMap<CosmosCoin> = {
 	[SupportedCoins.BITSONG]: new Bitsong()
 }
+
+export const ChainRegistryNames: SupportedCoinsFullMap<string> = {
+	[SupportedCoins.BITSONG]: "bitsong"
+}

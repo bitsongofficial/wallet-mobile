@@ -1,6 +1,6 @@
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 
-export const AminoTypes = {
+export const AminoTypes: {[k in CoinOperationEnum]?: string} = {
 	[CoinOperationEnum.Send]: "/cosmos.bank.v1beta1.MsgSend",
 	[CoinOperationEnum.Delegate]: "/cosmos.staking.v1beta1.MsgDelegate",
 	[CoinOperationEnum.Redelegate]: "/cosmos.staking.v1beta1.MsgBeginRedelegate",

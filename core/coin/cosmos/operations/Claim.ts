@@ -14,7 +14,7 @@ export class Claim extends CosmosOperation {
 		const wallet = walletInfos[1]
 		const ownerAddress = walletInfos[0]
 		const client = await SigningStargateClient.connectWithSigner(this.coin.RPCEndpoint(), wallet, {
-			gasPrice: GasPrice.fromString("0.001ubtsg"),
+			gasPrice: GasPrice.fromString(this.coin.gasUnit()),
 		})
 
 		const encodedMessages: MsgWithdrawDelegatorRewardEncodeObject[] = validatorAddresses.map(validatorAddresse => ({
@@ -24,8 +24,6 @@ export class Claim extends CosmosOperation {
 				validatorAddress: validatorAddresse,
 			}),
 		}))
-
-		console.log("em", encodedMessages)
 
 		try
 		{

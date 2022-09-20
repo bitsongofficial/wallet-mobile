@@ -1,7 +1,7 @@
 import { SupportedCoins } from "constants/Coins"
-import { CoinClasses } from "core/types/coin/Dictionaries"
+import { ChainRegistryNames, CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
-import { assets } from 'chain-registry'
+import { assets, chains } from 'chain-registry'
 
 export enum SupportedFiats {
 	USD = "usd",
@@ -80,6 +80,21 @@ function resolveAsset(asset: string | SupportedCoins)
 	const chain = asset as SupportedCoins
 	if(asset && Object.values(SupportedCoins).includes(asset as SupportedCoins)) return fromCoinToDefaultDenom(asset as SupportedCoins)
 	return asset
+}
+
+export function getCoinGasUnit(coin: SupportedCoins)
+{
+	const c = chains.find((c: any) =>
+	{
+		return c.chain_name == ChainRegistryNames[coin]
+	})
+	if(c && c.fees && c.fees.fee_tokens && c.fees.fee_tokens.length > 0)
+	{
+		const token = c.fees.fee_tokens[0]
+		return token.fixed_min_gas_price + token.denom
+	}
+
+	return undefined
 }
 
 export function getAssetsInfos(asset: string | SupportedCoins)

@@ -9,20 +9,18 @@ export class Redelegate extends CosmosOperation {
 			[
 				data.delegator.Address(),
 				data.delegator.Signer(),
-				data.validator.Address(),
-				data.newValidator.Address(),
 			])
 		const wallet = walletInfos[1]
 		const client = await SigningStargateClient.connectWithSigner(this.coin.RPCEndpoint(), wallet, {
-			gasPrice: GasPrice.fromString("0.001ubtsg"),
+			gasPrice: GasPrice.fromString(this.coin.gasUnit()),
 		})
 
 		const encodedMessage = {
 			typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
 			value: MsgBeginRedelegate.fromPartial({
 				delegatorAddress: walletInfos[0],
-				validatorSrcAddress: walletInfos[2],
-				validatorDstAddress: walletInfos[3],
+				validatorSrcAddress: data.validator.operator,
+				validatorDstAddress: data.newValidator.operator,
 				amount: data.amount,
 			}),
 		  }
