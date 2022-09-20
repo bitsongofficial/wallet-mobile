@@ -64,7 +64,7 @@ export const Footer = observer(
 			<BottomSheetFooter animatedFooterPosition={animatedFooterPosition} bottomInset={24}>
 				<View style={{ marginBottom: 8, marginHorizontal: 30 }}>
 					{steps.title === "Import" &&
-						(phrase.words.length === 16 ? (
+						(phrase.words.length === 12 || phrase.words.length === 24 ? (
 							<Button
 								text="Done"
 								onPress={openName}
