@@ -10,6 +10,7 @@ import { FooterSuccess } from "./components/moleculs"
 import { StepError, StepLoad, StepSuccess } from "./components/organisms"
 import { vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { EventListenerCallback, EventMapBase, EventMapCore } from "@react-navigation/native"
 
 type Status = "pending" | "fulfilled" | "rejected"
 
@@ -26,7 +27,10 @@ export default function LoaderScreen({
 	const error = useRef()
 	useEffect(
 		() =>
-			navigation.addListener("transitionEnd", (e) =>
+		{
+			const listener = () =>
+			{
+				navigation.removeListener("transitionEnd", listener)
 				setTimeout(() => {
 					route.params
 						?.callback()
@@ -47,9 +51,11 @@ export default function LoaderScreen({
 							onSucceess && onSucceess(result.current)
 						}
 					}
-				}, 500),
-			),
-		[],
+				}, 500)
+			}
+			navigation.addListener("transitionEnd", listener)
+		},
+		[navigation, route.params],
 	)
 
 	// ------------ Footer ---------------
