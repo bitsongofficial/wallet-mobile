@@ -22,8 +22,6 @@ export class WalletConnectCosmosClientV1 {
 	wallets
 	name?: string
 	date?: Date
-	pendingAction: (() => void) | null = null
-	confirmationExtraData: any
 	onConnect?: (connection: WalletConnectCosmosClientV1) => void
 	onDisconnect?: (connection: WalletConnectCosmosClientV1) => void
 	constructor(options: {
