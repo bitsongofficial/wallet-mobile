@@ -82,12 +82,17 @@ function resolveAsset(asset: string | SupportedCoins)
 	return asset
 }
 
-export function getCoinGasUnit(coin: SupportedCoins)
+function resolveCoin(coin: SupportedCoins)
 {
-	const c = chains.find((c: any) =>
+	return chains.find((c: any) =>
 	{
 		return c.chain_name == ChainRegistryNames[coin]
 	})
+}
+
+export function getCoinGasUnit(coin: SupportedCoins)
+{
+	const c = resolveCoin(coin)
 	if(c && c.fees && c.fees.fee_tokens && c.fees.fee_tokens.length > 0)
 	{
 		const token = c.fees.fee_tokens[0]
@@ -95,6 +100,24 @@ export function getCoinGasUnit(coin: SupportedCoins)
 	}
 
 	return undefined
+}
+
+export function getCoinPrefix(coin: SupportedCoins)
+{
+	return resolveCoin(coin).bech32_prefix
+}
+
+export function fromPrefixToCoin(prefix: string)
+{
+	const chain = chains.find((c: any) => c.bech32_prefix == prefix)
+	const a = Object.entries(ChainRegistryNames).find(e => e[1] == chain.chain_name)?.[0] as SupportedCoins
+	return a
+}
+
+export function getCoinDerivationPath(coin: SupportedCoins)
+{
+	const c = resolveCoin(coin)	
+	return ""
 }
 
 export function getAssetsInfos(asset: string | SupportedCoins)
