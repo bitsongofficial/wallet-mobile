@@ -33,7 +33,7 @@ export default observer(({ phrase, style, inputStyle, bottomsheet, ...props }: P
 				onChangeText={phrase.inputSet}
 				onSubmitEditing={phrase.inputSubmit}
 				keyboardAppearance="dark" // TODO: theme me
-				autocomplite={phrase.hint}
+				autocomplete={phrase.hint}
 				autoCorrect={false}
 				autoCapitalize="none"
 				autoCompleteType="off"

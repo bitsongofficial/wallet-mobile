@@ -15,9 +15,10 @@ import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
 
 export type Props = TextInputProps & {
+	label?: string
 	style?: StyleProp<ViewStyle>
 	inputStyle?: StyleProp<TextStyle>
-	autocomplite?: string | null
+	autocomplete?: string | null
 	bottomsheet?: boolean
 	Right?: JSX.Element
 
@@ -29,9 +30,10 @@ const LINE_HEIGHT = s(18)
 const BORDER_RADIUS = s(50)
 
 export default ({
+	label,
 	inputStyle,
 	style,
-	autocomplite,
+	autocomplete,
 	bottomsheet,
 	Right,
 	errorMessage,
@@ -41,7 +43,7 @@ export default ({
 	const theme = useTheme()
 	const Component = useMemo(() => (bottomsheet ? BottomSheetTextInput : TextInput), [bottomsheet])
 
-	const autocomplitPosition = useMemo(
+	const autocompletePosition = useMemo(
 		() =>
 			inputStyle?.height
 				? {
@@ -66,23 +68,29 @@ export default ({
 	)
 
 	return (
-		<View style={[styles.container, theme.input.container, style, errorBorder]}>
-			{autocomplite && (
-				<Text style={[theme.input.autocomplite, styles.autocomplite, autocomplitPosition]}>
-					{autocomplite}
-				</Text>
-			)}
+		<View>
+			{label &&
+			<Text style={styles.label}>
+				{label}
+			</Text>}
+			<View style={[styles.container, theme.input.container, style, errorBorder]}>
+				{autocomplete && (
+					<Text style={[theme.input.autocomplete, styles.autocomplete, autocompletePosition]}>
+						{autocomplete}
+					</Text>
+				)}
 
-			<View style={styles.row}>
-				<Component
-					style={[theme.input.component, styles.input, inputStyle]}
-					placeholderTextColor={theme.input.placeholder}
-					{...props}
-				/>
-				{Right}
+				<View style={styles.row}>
+					<Component
+						style={[theme.input.component, styles.input, inputStyle]}
+						placeholderTextColor={theme.input.placeholder}
+						{...props}
+					/>
+					{Right}
+				</View>
+
+				{errorText && <ErrorMessage message={errorText} style={errorStyle} />}
 			</View>
-
-			{errorText && <ErrorMessage message={errorText} style={errorStyle} />}
 		</View>
 	)
 }
@@ -105,6 +113,13 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		overflow: "hidden",
 	},
+	label: {
+		fontFamily: "CircularStd",
+		fontWeight: "400",
+		fontSize: s(12),
+		color: COLOR.Marengo,
+		marginBottom: s(12),
+	},
 	input: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
@@ -116,7 +131,7 @@ const styles = StyleSheet.create({
 		height: LINE_HEIGHT,
 		flex: 1,
 	},
-	autocomplite: {
+	autocomplete: {
 		position: "absolute",
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
