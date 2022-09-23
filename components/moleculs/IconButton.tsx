@@ -8,38 +8,31 @@ import {
 	ViewStyle,
 } from "react-native"
 import { useTheme } from "hooks"
-import Icon2 from "./Icon2"
-import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
+import Icons from "assets/svg";
+import { Icon } from "components/atoms";
 
 type Props = {
 	onPress?(): void
 	style?: StyleProp<ViewStyle>
-	text?: string
-	stroke?: string
-	textStyle?: StyleProp<TextStyle>
-	Left?: JSX.Element
-	Right?: JSX.Element
+	size?: number;
+	fill?: string;
+	name: keyof typeof Icons;
 }
 
-export default ({ onPress, style, text, textStyle, stroke, Left, Right }: Props) => {
+export default ({ onPress, style, name, size, fill }: Props) => {
 	const theme = useTheme()
 
 	return (
-		<View style={[styles.container, style]}>
+		<View style={[style]}>
 			<TouchableOpacity onPress={onPress}>
-				<View style={styles.inner}>
-					{Left}
-					<Text style={[styles.text, theme.text.primary, textStyle]}>{text}</Text>
-					{Right}
-				</View>
+				<Icon name={name} size={size} fill={fill}></Icon>
 			</TouchableOpacity>
 		</View>
 	)
 }
 
 const styles = StyleSheet.create({
-	container: {},
 	inner: {
 		flexDirection: "row",
 		alignItems: "center",

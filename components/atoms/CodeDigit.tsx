@@ -9,13 +9,13 @@ import { useTheme } from "hooks"
 import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
 
-type ButtonProps = {
+type Props = {
 	style?: StyleProp<ViewStyle>
 	text?: string
 	isError?: boolean
 }
 
-export default ({ style, text, isError }: ButtonProps) => {
+export default ({ style, text, isError }: Props) => {
 	const theme = useTheme()
 
 	return (

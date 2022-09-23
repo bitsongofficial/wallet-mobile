@@ -12,7 +12,7 @@ import ThemedGradient from "components/atoms/ThemedGradient"
 import { COLOR, hexAlpha } from "utils"
 import { s } from "react-native-size-matters"
 
-type Mode = "gradient" | "fill"
+type Mode = "gradient" | "fill" | "outline"
 
 type Props = {
 	onPress?(): void
@@ -51,7 +51,7 @@ export default memo(
 			height: s(size),
 		}
 
-		const Background = mode === "gradient" ? ThemedGradient : View
+		const Background = mode !== "fill" ? ThemedGradient : View
 		const itemStyles = [styles.container, style]
 		if (onPress == undefined) itemStyles.push(styles.disabled)
 		return (
@@ -68,11 +68,11 @@ export default memo(
 								<Background
 									style={[styles.gradient, mode === "fill" && styles.fill_color, backgroundStyle]}
 								>
-									<View style={[styles.gradient_inner, iconContainerStyle]}>{Icon}</View>
+									<View style={[styles.gradient_inner, mode === "outline" && styles.outline, iconContainerStyle]}>{Icon}</View>
 								</Background>
 							</View>
 						</TouchableOpacity>
-						<Text style={[styles.text, textStyle]}>{title}</Text>
+						{title && <Text style={[styles.text, textStyle]}>{title}</Text>}
 					</>
 				)}
 			</View>
@@ -114,5 +114,8 @@ const styles = StyleSheet.create({
 		fontSize: s(13),
 		lineHeight: s(16),
 		color: COLOR.White,
+	},
+	outline: {
+		backgroundColor: COLOR.Dark3,
 	},
 })

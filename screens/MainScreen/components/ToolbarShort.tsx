@@ -47,9 +47,8 @@ export default observer(function ToolbarShort({
 			<ToolbarAction
 				title="All"
 				onPress={onPressAll}
-				mode="gradient"
+				mode="outline"
 				Icon={<Icon2 stroke={COLOR.White} size={18} name="settings" />}
-				iconContainerStyle={styles.dark}
 			/>
 		</View>
 	)
@@ -59,9 +58,5 @@ const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-	},
-
-	dark: {
-		backgroundColor: COLOR.Dark3,
 	},
 })

@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "hooks";
 import { observer } from "mobx-react-lite";
 
-type ButtonProps = {
+type Props = {
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   invert?: boolean;
@@ -13,7 +13,7 @@ export default observer(function ThemedGradient({
   children,
   style,
   invert,
-}: ButtonProps) {
+}: Props) {
   const themeStyle = useTheme();
 
   const colors = invert
