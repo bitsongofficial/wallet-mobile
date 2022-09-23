@@ -20,7 +20,7 @@ type Props = {
 	titleStyle?: StyleProp<TextStyle>
 	uppertitleStyle?: StyleProp<TextStyle>
 	subtitleStyle?: StyleProp<TextStyle>
-	size: Size | {uppertitle: Size, title: Size, subtitle: Size}
+	size?: Size | {uppertitle: Size, title: Size, subtitle: Size}
 }
 
 export default ({ style, title, subtitle, uppertitle, titleStyle, subtitleStyle, uppertitleStyle, size }: Props) => {

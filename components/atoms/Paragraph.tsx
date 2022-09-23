@@ -25,8 +25,6 @@ const styles = StyleSheet.create({
 	  fontWeight: "500",
 	  fontSize: 14,
 	  lineHeight: 18,
-  
-	  textAlign: "center",
 	  color: COLOR.Marengo,
 	  marginBottom: 26,
 	},
