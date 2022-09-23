@@ -9,7 +9,7 @@ import { useCallback } from "react"
 type Mode = "gradient" | "fill" | "gradient_border" | "white"
 type Size = "thin" | "normal" | number
 
-export type ButtonProps = {
+export type Props = {
 	onPress?(): void
 	mode?: Mode
 	text?: string
@@ -38,7 +38,7 @@ export default ({
 	disable,
 	Left,
 	Right,
-}: ButtonProps) => {
+}: Props) => {
 	const themeStyle = useTheme()
 	const Background = mode === "gradient" || mode === "gradient_border" ? ThemedGradient : View
 	const getPaddingValue = useCallback((val?: Size, direction: "horizontal" | "vertical" ="horizontal") =>
@@ -48,7 +48,7 @@ export default ({
 		if(direction == "horizontal") return s(24)
 		return s(16)
 	}, [])
-	const getPaddingStyle = useCallback(() =>
+	const getPaddingStyle = useCallback((size) =>
 	{
 		if(size && typeof(size) != "object") return {paddingHorizontal: getPaddingValue(size), paddingVertical: getPaddingValue(size, "vertical")}
 		if(size && typeof(size) != "number") return {
@@ -62,7 +62,7 @@ export default ({
 		<TouchableOpacity onPress={!disable ? onPress : undefined} disabled={disable}>
 			<View style={[styles.container, style, disable && styles.disable]}>
 				<Background style={[mode === "gradient_border" && styles.border, mode === "white" && {backgroundColor: COLOR.White}]}>
-					<View style={[styles.content, getPaddingStyle(), contentContainerStyle]}>
+					<View style={[styles.content, getPaddingStyle(size), contentContainerStyle]}>
 						{!!Left && Left}
 						{text || typeof children === "string" ? (
 							<Text style={[styles.text, themeStyle.text.primary, {fontSize: s(fontSize)}, textStyle]}>

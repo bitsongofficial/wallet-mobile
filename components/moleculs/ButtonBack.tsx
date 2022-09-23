@@ -9,7 +9,7 @@ import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
 import { InlineButton } from "components/atoms"
 
-type ButtonProps = {
+type Props = {
 	onPress?(): void
 	style?: StyleProp<ViewStyle>
 	text?: string
@@ -17,7 +17,7 @@ type ButtonProps = {
 	textStyle?: StyleProp<TextStyle>
 }
 
-export default ({ onPress, style, text, textStyle, stroke }: ButtonProps) => {
+export default ({ onPress, style, text, textStyle, stroke }: Props) => {
 	return (
 		<InlineButton onPress={onPress} text={text || "Back"} Left={
 			<Icon2 name="chevron_left" size={18} stroke={stroke || COLOR.White} />
