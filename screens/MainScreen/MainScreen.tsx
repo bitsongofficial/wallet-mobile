@@ -205,15 +205,15 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						style={styles.tabs}
 					/>
 
-					<View style={styles.coins}>
-						{coin.coins
-							.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
-							.map((coin) => (
-								<TouchableOpacity key={coin.info._id} disabled={true}>
-									<CoinStat coin={coin} style={{ marginBottom: 9 }} />
-								</TouchableOpacity>
-							))}
-					</View>
+						<View style={styles.coins}>
+							{coin.coins
+								.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
+								.map((coin) => (
+									<TouchableOpacity key={coin.info._id} disabled={true}>
+										<CoinStat coin={coin} style={{ marginBottom: 9 }} />
+									</TouchableOpacity>
+								))}
+						</View>
 				</ScrollView>
 			</SafeAreaView>
 		</>

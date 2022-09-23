@@ -1,17 +1,20 @@
 import {
+	StyleProp,
 	StyleSheet,
 	Text,
+	TextStyle,
 } from "react-native"
 import { COLOR } from "utils"
 import { rehydrateNewLines } from "utils/string"
 
 type Props = {
 	text?: string
+	style?: StyleProp<TextStyle>
 }
 
-export default ({ text, children }: React.PropsWithChildren<Props>) => {
+export default ({ text, children, style }: React.PropsWithChildren<Props>) => {
 	return (
-		<Text style={styles.caption}>
+		<Text style={[styles.caption, style]}>
           {text && rehydrateNewLines(text)}
 		  {children}
         </Text>
