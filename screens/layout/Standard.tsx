@@ -1,6 +1,7 @@
 import { ScrollView, StyleSheet } from "react-native"
 import { s, vs } from "react-native-size-matters"
 import { COLOR } from "utils"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = {}
 
@@ -16,7 +17,7 @@ export default Standard
 
 const styles = StyleSheet.create({
 	container: {
-		paddingHorizontal: s(24),
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		paddingTop: vs(50),
 		paddingBottom: s(24),
 		backgroundColor: COLOR.Dark3,

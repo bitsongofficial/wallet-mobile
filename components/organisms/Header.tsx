@@ -26,15 +26,11 @@ export default observer(function Header({ navigation, style }: Props) {
 	return (
 		<Animated.View style={[styles.container, style, { paddingTop: insets.top }]}>
 			<View style={styles.header}>
-				<View style={styles.right}>
+				<View style={styles.left}>
 					<Icon2 name="logo" size={40} />
 				</View>
-				{/* TODO: need center position title */}
-				<View style={styles.center}>
-					<Text style={styles.title}>Cosmonautico</Text>
-				</View>
 
-				<View style={styles.left}>
+				<View style={styles.right}>
 					<Icon2 name="bell_1" size={16} stroke={COLOR.Marengo} />
 					<TouchableOpacity onPress={openProfile}>
 						<Image
@@ -62,7 +58,10 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		paddingVertical: s(10),
 	},
-	right: {},
+	left: {
+		position: "relative",
+		left: -4,
+	},
 	center: {
 		flex: 1,
 		flexDirection: "row",
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
 		position: "absolute",
 		right: 0,
 	},
-	left: {
+	right: {
 		flexDirection: "row",
 		justifyContent: "center",
 
