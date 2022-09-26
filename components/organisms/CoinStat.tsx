@@ -6,6 +6,7 @@ import { assets } from "chain-registry"
 import { useStore } from "hooks"
 import { toJS } from "mobx"
 import { s } from "react-native-size-matters"
+import ListItem from "components/moleculs/ListItem"
 
 type Props = {
 	coin: Coin
@@ -25,79 +26,13 @@ export default observer(({ coin, style }: Props) => {
 	const balanceUSD = coin.balanceUSD ? coin.balanceUSD.toLocaleString("en") : undefined
 
 	return (
-		<View style={[styles.container, style]}>
-			<View style={styles.imageContainer}>
-				<Image source={source} style={styles.image} />
-			</View>
-
-			<View style={styles.about}>
-				<View style={styles.texts}>
-					<Text style={styles.primary}>{name}</Text>
-					<Text style={styles.secondary}>{display}</Text>
-				</View>
-
-				<View style={styles.numbers}>
-					<Text style={styles.primary}>{balance}</Text>
-					{balanceUSD && (
-						<Text style={styles.secondary}>
-							{balanceUSD} {settings.currency?.symbol}
-						</Text>
-					)}
-				</View>
-			</View>
-		</View>
+		<ListItem
+			uri={logo}
+			title={name}
+			subtitle={display}
+			description={balance}
+			subdescription={balanceUSD ? (balanceUSD + " " + settings.currency?.symbol) : undefined}
+			style={style}
+		/>
 	)
-})
-
-const styles = StyleSheet.create({
-	container: {
-		backgroundColor: hexAlpha(COLOR.White, 10),
-		height: s(70),
-		paddingHorizontal: s(20),
-		paddingVertical: s(18),
-		borderRadius: s(20),
-		flex: 1,
-		flexDirection: "row",
-	},
-
-	about: {
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "space-between",
-	},
-	imageContainer: {
-		marginRight: s(14),
-		width: s(30),
-		height: s(30),
-	},
-	image: {
-		width: s(30),
-		height: s(30),
-		borderRadius: s(30),
-	},
-	texts: {
-		flex: 1,
-		alignItems: "flex-start",
-	},
-	numbers: {
-		flex: 1,
-		alignItems: "flex-end",
-	},
-	primary: {
-		color: COLOR.White,
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: s(14),
-		lineHeight: s(18),
-	},
-	secondary: {
-		color: COLOR.White,
-		opacity: 0.5,
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: s(12),
-		// lineHeight: '111.1%',
-	},
 })

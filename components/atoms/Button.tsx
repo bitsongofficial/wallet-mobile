@@ -35,7 +35,7 @@ const Button = ({
 	mode = "gradient",
 	contentContainerStyle,
 	textStyle,
-	fontSize = 16,
+	fontSize,
 	size = "normal",
 	disable = false,
 	Left,
@@ -44,10 +44,12 @@ const Button = ({
 }: Props) => {
 	const themeStyle = useTheme()
 	const Background = mode === "gradient" || mode === "gradient_border" ? ThemedGradient : View
+	const actualFontSize = fontSize ?? (size == "thin" ? 12 : 16)
 	const getPaddingValue = useCallback((val?: Size, direction: "horizontal" | "vertical" ="horizontal") =>
 	{
 		if(typeof(val) == "number") return s(val)
-		if(val == "thin") return s(8)
+		if(val == "thin" && direction == "vertical") return s(8)
+		if(val == "thin" && direction == "horizontal") return s(12)
 		if(direction == "horizontal") return s(24)
 		return s(16)
 	}, [])
@@ -74,7 +76,7 @@ const Button = ({
 					]}>
 						{Left}
 						{text || typeof children === "string" ? (
-							<Text style={[styles.text, themeStyle.text.primary, {fontSize: s(fontSize), textAlign: textAlignment}, textStyle]}>
+							<Text style={[styles.text, themeStyle.text.primary, {fontSize: s(actualFontSize), textAlign: textAlignment}, textStyle]}>
 								{text || children}
 							</Text>
 						) : (

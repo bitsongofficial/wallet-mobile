@@ -27,9 +27,9 @@ export default ({ style, title, subtitle, description, subdescription, uri }: Pr
 
 				{(description || subdescription) && <View style={styles.numbers}>
 					<Text style={styles.primary}>{description}</Text>
-					{subtitle && (
+					{subdescription && (
 						<Text style={styles.secondary}>
-							{subtitle}
+							{subdescription}
 						</Text>
 					)}
 				</View>}

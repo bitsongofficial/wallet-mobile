@@ -22,12 +22,14 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { ReceiveModal } from "modals/wallets/modals"
 import { SupportedCoins } from "constants/Coins"
-import { Button } from "components/atoms"
+import { Button, Title } from "components/atoms"
 import { openClaim } from "modals/validator"
 import { formatNumber } from "utils/numbers"
 import { openSend } from "modals/wallets"
 import { s, vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { withStatusBar, withStatusBarBottomNavigator } from "screens/layout/hocs"
+import BottomNavigator from "screens/layout/BottomNavigator"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -38,7 +40,7 @@ type Props = CompositeScreenProps<
 	BottomTabScreenProps<RootTabParamList, "MainTab">
 >
 
-export default observer<Props>(function MainScreen({ navigation }) {
+export default withStatusBar(observer<Props>(function MainScreen({ navigation }) {
 	const { coin, dapp, settings, validators } = useStore()
 	// need culc by wallet
 
@@ -154,39 +156,33 @@ export default observer<Props>(function MainScreen({ navigation }) {
 	const rewards = validators.totalRewardAsDollars
 
 	return (
-		<>
-			<StatusBar style="light" />
-
-			<SafeAreaView style={styles.container}>
-				<ScrollView
-					style={styles.scrollviewContent}
-					refreshControl={
-						<RefreshControl
-							tintColor={COLOR.White}
-							refreshing={isRefreshing}
-							onRefresh={onRefresh}
-						/>
-					}
-				>
+		<SafeAreaView style={styles.container}>
+			<BottomNavigator
+				refreshControl={
+					<RefreshControl
+						tintColor={COLOR.White}
+						refreshing={isRefreshing}
+						onRefresh={onRefresh}
+					/>
+				}>
 					<View style={styles.info}>
-						<View style={styles.balance}>
-							<Text style={styles.balance_title}>Total Balance</Text>
-							<Text style={styles.balance_value}>
-								{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}
-							</Text>
-							{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}
-						</View>
+						<Title
+							title={coin.totalBalance.toLocaleString("en") + " " + settings.currency?.symbol}
+							uppertitle="Total Balance"
+							size={{title: 42, uppertitle: 20}}
+							style={styles.mb34}
+						></Title>
+						{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}
 
-						<View style={styles.reward}>
-							<Text style={styles.reward_title}>Reward</Text>
-							<View style={styles.reward_row}>
-								<Text style={styles.reward_value}>
-									{formatNumber(rewards)} {settings.currency?.symbol}
-								</Text>
-								<Button disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>
-									CLAIM
-								</Button>
-							</View>
+						<View style={[styles.reward]}>
+							<Title
+								title={formatNumber(rewards) + " " + settings.currency?.symbol}
+								uppertitle="Reward"
+								size={{title: 32, uppertitle: 16}}
+							></Title>
+							<Button size="thin" disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>
+								CLAIM
+							</Button>
 						</View>
 					</View>
 					<ToolbarShort
@@ -214,27 +210,17 @@ export default observer<Props>(function MainScreen({ navigation }) {
 									</TouchableOpacity>
 								))}
 						</View>
-				</ScrollView>
-			</SafeAreaView>
-		</>
+			</BottomNavigator>
+		</SafeAreaView>
 	)
-})
+}))
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: COLOR.Dark3,
 	},
-
-	scrollviewContent: {
-		marginTop: vs(40),
-		paddingTop: vs(40),
-		flex: 1,
-		flexShrink: 1,
-	},
 	info: {
-		marginRight: s(22),
-		marginLeft: s(32),
 		marginBottom: vs(60),
 	},
 	balance: {
@@ -269,48 +255,26 @@ const styles = StyleSheet.create({
 		color: COLOR.White,
 		opacity: 0.5,
 	},
-
+	mb34: {
+		marginBottom: vs(34),
+	},
 	reward: {
-		// backgroundColor: "red",
-	},
-	reward_title: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "400",
-		fontSize: s(16),
-		lineHeight: s(20),
-		color: COLOR.RoyalBlue2,
-		marginBottom: vs(10),
-	},
-	reward_value: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: s(30),
-		color: COLOR.White,
-	},
-
-	reward_row: {
-		flexDirection: "row",
 		justifyContent: "space-between",
+		alignItems: "flex-end",
+		flexDirection: "row",
 	},
 
 	toolbar_short: {
-		marginHorizontal: s(24),
 		marginBottom: vs(40),
 	},
 	toolbar_full: {
-		paddingHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,
 	},
 
 	tabs: {
-		paddingHorizontal: HORIZONTAL_WRAPPER,
 		marginBottom: vs(18),
 	},
 	coins: {
 		paddingTop: vs(8),
-		paddingBottom: vs(164),
-		marginHorizontal: s(14),
 	},
 })

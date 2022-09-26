@@ -10,7 +10,7 @@ import { View } from "components/Themed"
 import { COLOR } from "utils"
 import { useCallback, useMemo } from "react"
 
-type Size = 16 | 20 | 24 | 42
+type Size = 16 | 20 | 24 | 32 | 42
 
 type Props = {
 	style?: StyleProp<ViewStyle>
@@ -20,7 +20,7 @@ type Props = {
 	titleStyle?: StyleProp<TextStyle>
 	uppertitleStyle?: StyleProp<TextStyle>
 	subtitleStyle?: StyleProp<TextStyle>
-	size?: Size | {uppertitle: Size, title: Size, subtitle: Size}
+	size?: Size | {uppertitle?: Size, title?: Size, subtitle?: Size}
 }
 
 export default ({
@@ -64,7 +64,7 @@ export default ({
 	return (
 		<View style={[styles.container, style]}>
 			{uppertitle && <Text style={[styles.uppertitle, uppertitleStyle, sizes.uppertitle]}>{uppertitle}</Text>}
-			<Text style={[styles.title, titleStyle, sizes.title]}>
+			<Text style={[styles.title, titleStyle, sizes.title, subtitle ? styles.titleMarginBottom : undefined]}>
 				{children ?? title}
 			</Text>
 			{subtitle && <Text style={[styles.subtitle, subtitleStyle, sizes.subtitle]}>{subtitle}</Text>}
@@ -74,7 +74,6 @@ export default ({
 
 const styles = StyleSheet.create({
 	container: {
-		marginBottom: vs(34),
 		backgroundColor: "transparent",
 	},
 	uppertitle: {
@@ -90,7 +89,8 @@ const styles = StyleSheet.create({
 		fontStyle: "normal",
 		fontWeight: "500",
 		color: COLOR.White,
-
+	},
+	titleMarginBottom: {
 		marginBottom: vs(6),
 	},
 	subtitle: {
