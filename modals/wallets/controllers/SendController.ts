@@ -13,7 +13,7 @@ export default class SendController {
   ]);
 
   private currentInput = ""
-  private invertedInner = true
+  private invertedInner = false
 
   creater = new Transaction.Creater();
 
