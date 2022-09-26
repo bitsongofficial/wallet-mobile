@@ -9,6 +9,7 @@ import { Button } from "components/atoms"
 import * as Clipboard from "expo-clipboard"
 import { useKeyboard } from "@react-native-community/hooks"
 import { s, vs } from "react-native-size-matters"
+import { TitledParagraph } from "components/moleculs"
 
 type Props = {
 	phrase: Phrase
@@ -30,14 +31,14 @@ export default observer<Props>(({ phrase, onPressBack, onPressNext, isDisableNex
 	const { keyboardShown } = useKeyboard()
 	return (
 		<>
-			<View style={styles.text}>
-				<Title style={styles.title}>Import your Mnemonic</Title>
-				<Subtitle style={styles.subtitle}>
-					This is the only way you will be able to {"\n"}
-					recover your account. Please store it{"\n"}
-					somewhere safe!
-				</Subtitle>
-			</View>
+			<TitledParagraph
+				title="Import your Mnemonic"
+				style={styles.text}
+			>
+				This is the only way you will be able to {"\n"}
+				recover your account. Please store it{"\n"}
+				somewhere safe!
+			</TitledParagraph>
 
 			<View
 				// ref={scrollview}
@@ -53,7 +54,7 @@ export default observer<Props>(({ phrase, onPressBack, onPressNext, isDisableNex
 						onPress={pasteFromClipboard}
 					/>
 				</View>
-				<PhraseInput phrase={phrase} inputStyle={{ marginHorizontal: 30 }} />
+				<PhraseInput phrase={phrase} />
 			</View>
 
 			{!keyboardShown && (
@@ -62,7 +63,6 @@ export default observer<Props>(({ phrase, onPressBack, onPressNext, isDisableNex
 					isDisableNext={isDisableNext}
 					onPressBack={onPressBack}
 					onPressNext={onPressNext}
-					style={styles.mh30}
 				/>
 			)}
 		</>
@@ -70,11 +70,7 @@ export default observer<Props>(({ phrase, onPressBack, onPressNext, isDisableNex
 })
 
 const styles = StyleSheet.create({
-	title: { marginTop: vs(50) },
-	subtitle: { marginTop: vs(8) },
-	text: { paddingHorizontal: s(30), marginBottom: vs(32) },
-
-	mh30: { marginHorizontal: s(30) },
+	text: { marginTop: vs(50), marginBottom: vs(32) },
 
 	scrollview: { flex: 1 },
 	scrollviewContent: {
@@ -84,7 +80,6 @@ const styles = StyleSheet.create({
 	},
 	paste: {
 		width: 65,
-		marginHorizontal: 30,
 		marginBottom: 24,
 	},
 	buttonContent: {

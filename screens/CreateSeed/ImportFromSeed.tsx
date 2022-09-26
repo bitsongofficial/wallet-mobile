@@ -16,10 +16,11 @@ import {
 	StepPinConfirm,
 	StepPinSet,
 } from "./components/templates"
+import { withStatusBarFullHeight } from "screens/layout/hocs"
 
 type Props = NativeStackScreenProps<RootStackParamList, "ImportFromSeed">
 
-export default observer<Props>(({ navigation }) => {
+export default withStatusBarFullHeight(observer<Props>(({ navigation }) => {
 	const controller = useImportFromSeed()
 	const { steps, phrase, walletName, confirm, pin } = controller
 	const { wallet, localStorageManager } = useStore()
@@ -70,13 +71,13 @@ export default observer<Props>(({ navigation }) => {
 						<>
 							<StepImportMnemonic
 								phrase={phrase}
-								isDisableNext={false} // TODO: may be need check phrase?
+								isDisableNext={phrase.words.length != 12 && phrase.words.length != 24} // TODO: may be need check phrase?
 								onPressBack={goBack}
 								onPressNext={goNext}
 							/>
 						</>
 					) : (
-						<View style={[styles.mh30, { flex: 1 }]}>
+						<View style={[{ flex: 1 }]}>
 							{steps.active === 1 && (
 								<StepNameWallet
 									input={walletName}
@@ -107,7 +108,7 @@ export default observer<Props>(({ navigation }) => {
 			</KeyboardAvoidingView>
 		</>
 	)
-})
+}))
 
 const styles = StyleSheet.create({
 	container: {
@@ -116,5 +117,4 @@ const styles = StyleSheet.create({
 		borderStartColor: "green",
 	},
 	keyboardAvoiding: { flex: 1 },
-	mh30: { marginHorizontal: 30 },
 })
