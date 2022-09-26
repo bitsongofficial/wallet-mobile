@@ -21,7 +21,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Start">
 
 const points = [s(270)]
 
-export default observer<Props>(withStatusBarFullHeight(function StartScreen({ navigation }) {
+export default withStatusBarFullHeight(observer<Props>(function StartScreen({ navigation }) {
 	const theme = useTheme()
 	const { wallet } = useStore()
 
@@ -76,7 +76,7 @@ export default observer<Props>(withStatusBarFullHeight(function StartScreen({ na
 							Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
 							style={styles.buttonContent}
 						>
-							Import with <Text style={theme.text.primary}>Ledger Nano X</Text>
+							<Text style={theme.text.colorText}>Import with</Text> Ledger Nano X
 						</InlineButton>
 						{wallet.activeWallet && (
 							<Button

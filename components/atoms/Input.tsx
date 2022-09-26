@@ -26,8 +26,9 @@ export type Props = TextInputProps & {
 	errorStyle?: StyleProp<ViewStyle>
 }
 
+const HEIGHT = s(62)
 const LINE_HEIGHT = s(18)
-const BORDER_RADIUS = s(50)
+const BORDER_RADIUS = s(20)
 
 export default ({
 	label,
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
 		// https://stackoverflow.com/a/68458803
 		paddingHorizontal: s(24),
 		paddingVertical: s(19),
-		height: LINE_HEIGHT,
+		height: HEIGHT,
 		flex: 1,
 	},
 	autocomplete: {

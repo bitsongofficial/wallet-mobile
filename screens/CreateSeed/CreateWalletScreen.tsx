@@ -2,12 +2,10 @@ import { useCallback, useEffect, useState } from "react"
 import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { StatusBar } from "expo-status-bar"
 import { supportedAuthenticationTypesAsync, AuthenticationType } from "expo-local-authentication"
 import { observer } from "mobx-react-lite"
 import { RootStackParamList } from "types"
 import { CheckMethod } from "stores/type"
-import { COLOR } from "utils"
 import { useLoading, useStore } from "hooks"
 import { Pagination } from "components/moleculs"
 import { Header, Icon2 } from "components/atoms"
@@ -19,11 +17,11 @@ import {
 	StepPinSet,
 } from "./components/templates"
 import { FaceID } from "./components/organisms"
-import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { withStatusBarFullHeight } from "screens/layout/hocs"
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateWallet">
 
-export default observer<Props>(({ navigation }) => {
+export default withStatusBarFullHeight(observer<Props>(({ navigation }) => {
 	const controller = useCreateWallet()
 
 	const { wallet, settings, localStorageManager } = useStore()
@@ -68,9 +66,10 @@ export default observer<Props>(({ navigation }) => {
 
 	const insets = useSafeAreaInsets()
 
+	console.log(controller.isPhraseShown)
+
 	return (
 		<>
-			<StatusBar style="light" />
 			<KeyboardAvoidingView
 				style={styles.keyboardAvoiding}
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -122,12 +121,10 @@ export default observer<Props>(({ navigation }) => {
 			</KeyboardAvoidingView>
 		</>
 	)
-})
+}))
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: COLOR.Dark3,
-		paddingHorizontal: HORIZONTAL_WRAPPER,
 		flexGrow: 1,
 	},
 	keyboardAvoiding: { flexGrow: 1 },

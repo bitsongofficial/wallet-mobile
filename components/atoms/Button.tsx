@@ -24,6 +24,7 @@ export type Props = {
 	disable?: boolean
 	Left?: JSX.Element
 	Right?: JSX.Element
+	textAlignment?: "center" | "left" | "right"
 }
 
 const Button = ({
@@ -36,9 +37,10 @@ const Button = ({
 	textStyle,
 	fontSize = 16,
 	size = "normal",
-	disable,
+	disable = false,
 	Left,
 	Right,
+	textAlignment = "left",
 }: Props) => {
 	const themeStyle = useTheme()
 	const Background = mode === "gradient" || mode === "gradient_border" ? ThemedGradient : View
@@ -63,10 +65,16 @@ const Button = ({
 		<TouchableOpacity onPress={!disable ? onPress : undefined} disabled={disable}>
 			<View style={[styles.container, style, disable && styles.disable]}>
 				<Background style={[mode === "gradient_border" && styles.border, mode === "white" && {backgroundColor: COLOR.White}]}>
-					<View style={[styles.content, getPaddingStyle(size), mode === "gradient_border" && styles.gradientBorderBackground, contentContainerStyle]}>
+					<View style={[
+						styles.content,
+						getPaddingStyle(size),
+						mode === "gradient_border" && styles.gradientBorderBackground,
+						contentContainerStyle,
+						!(Left || Right) && textAlignment == "center" ? styles.contentCenter : styles.contentBetween,
+					]}>
 						{Left}
 						{text || typeof children === "string" ? (
-							<Text style={[styles.text, themeStyle.text.primary, {fontSize: s(fontSize)}, textStyle]}>
+							<Text style={[styles.text, themeStyle.text.primary, {fontSize: s(fontSize), textAlign: textAlignment}, textStyle]}>
 								{text || children}
 							</Text>
 						) : (
@@ -103,10 +111,15 @@ const styles = StyleSheet.create({
 		overflow: "hidden",
 	},
 	content: {
-		justifyContent: "space-between",
 		alignItems: "center",
 		flexDirection: "row",
 		borderRadius: s(50),
+	},
+	contentBetween: {
+		justifyContent: "space-between",
+	},
+	contentCenter: {
+		justifyContent: "space-around",
 	},
 	border: {
 		padding: s(2),

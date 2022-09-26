@@ -39,7 +39,7 @@ export default ({
 			<TouchableOpacity onPress={onPress}>
 				<View style={styles.inner}>
 					{Left}
-					<Text style={[styles.text, theme.text.colorText, textStyle]}>
+					<Text style={[styles.text, theme.text.primary, textStyle]}>
 						{children ?? text}
 					</Text>
 					{Right}

@@ -1,5 +1,5 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
-import { Button, ButtonBack, Icon2 } from "components/atoms"
+import { Button, ButtonBack, ButtonChevroletRight, Icon2 } from "components/atoms"
 import { useTheme } from "hooks"
 import { COLOR } from "utils"
 import { s, vs } from "react-native-size-matters"
@@ -26,12 +26,10 @@ export default ({
 		<View style={[styles.container, style]}>
 			<ButtonBack onPress={onPressBack} />
 			{!isHideNext && (
-				<Button
+				<ButtonChevroletRight
 					text={nextButtonText}
-					Right={<Icon2 name="chevron_right_2" size={18} stroke={COLOR.White} />}
 					onPress={onPressNext}
-					textStyle={[styles.buttonText, theme.text.primary]}
-					contentContainerStyle={styles.buttonContent}
+					textStyle={styles.buttonText}
 					disable={isDisableNext}
 				/>
 			)}
@@ -47,17 +45,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		paddingBottom: vs(16),
 	},
-	buttonContent: {
-		paddingVertical: s(18),
-		paddingHorizontal: s(24),
-		justifyContent: "space-between",
-	},
 	buttonText: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: s(16),
-		lineHeight: s(20),
 		marginRight: s(24),
 	},
 })

@@ -4,6 +4,7 @@ import { Subtitle, Title } from "../atoms"
 import { Footer, CreateSeed } from "../organisms"
 import { Phrase } from "classes"
 import { vs } from "react-native-size-matters"
+import { TitledParagraph } from "components/moleculs"
 
 type Props = {
 	phrase: Phrase
@@ -15,12 +16,11 @@ type Props = {
 
 export default observer<Props>(({ isHidden, onPressToggle, phrase, onPressBack, onPressNext }) => (
 	<>
-		<Title style={styles.title}>Create New Mnemonic</Title>
-		<Subtitle style={styles.subtitle}>
-			This is the only way you will be able to {"\n"}
-			recover your account. Please store it{"\n"}
-			somewhere safe!
-		</Subtitle>
+		<TitledParagraph
+			title={"Create New Mnemonic"}
+			text={"This is the only way you will be able to \n recover your account. Please store it\n somewhere safe!"}
+			style={styles.title}
+		></TitledParagraph>
 
 		{phrase.words && (
 			<CreateSeed

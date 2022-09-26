@@ -4,6 +4,7 @@ import {
 	Text,
 	TextStyle,
 } from "react-native"
+import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 import { rehydrateNewLines } from "utils/string"
 
@@ -26,8 +27,8 @@ const styles = StyleSheet.create({
 	  fontFamily: "CircularStd",
 	  fontStyle: "normal",
 	  fontWeight: "500",
-	  fontSize: 14,
-	  lineHeight: 18,
+	  fontSize: s(14),
+	  lineHeight: s(18),
 	  color: COLOR.Marengo,
 	  marginBottom: 26,
 	},
