@@ -35,15 +35,14 @@ export default ({ item, isActive, onPress, leftExtractor, rightExtractor, labelE
 
 const styles = StyleSheet.create({
 	container: {
-		height: vs(55),
 		marginBottom: 4,
-		paddingLeft: s(25),
-		paddingRight: s(15),
+		paddingLeft: s(8),
+		paddingRight: s(8),
 		alignItems: "center",
 		flexDirection: "row",
 		justifyContent: "space-between",
+		height: vs(55),
 	},
-
 	name: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
@@ -60,8 +59,6 @@ const styles = StyleSheet.create({
 		fontSize: s(15),
 		lineHeight: s(50),
 		color: hexAlpha(COLOR.White, 40),
-		flex: 1,
-		marginLeft: s(42),
 	},
 	text_active: {
 		color: COLOR.White,
@@ -70,5 +67,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		flexDirection: "row",
 		justifyContent: "space-between",
+		marginEnd: s(20),
+		flex: 1,
 	}
 })

@@ -16,7 +16,7 @@ type Props = {
 	onPress?(): void
 	style?: StyleProp<ViewStyle>
 	text?: string
-	stroke?: string
+	alignment?: "center" | "left"
 	textStyle?: StyleProp<TextStyle>
 	Left?: JSX.Element
 	Right?: JSX.Element
@@ -27,7 +27,7 @@ export default ({
 	style,
 	text,
 	textStyle,
-	stroke,
+	alignment="center",
 	Left,
 	Right,
 	children
@@ -37,9 +37,9 @@ export default ({
 	return (
 		<View style={[styles.container, style]}>
 			<TouchableOpacity onPress={onPress}>
-				<View style={styles.inner}>
+				<View style={[styles.inner, (!(Left || Right) || alignment == "left") ? {justifyContent: "flex-start"} : undefined]}>
 					{Left}
-					<Text style={[styles.text, theme.text.primary, textStyle]}>
+					<Text style={[styles.text, theme.text.primary, textStyle, {textAlign: alignment}]}>
 						{children ?? text}
 					</Text>
 					{Right}

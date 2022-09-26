@@ -20,6 +20,7 @@ type Props = {
 	titleStyle?: StyleProp<TextStyle>
 	uppertitleStyle?: StyleProp<TextStyle>
 	subtitleStyle?: StyleProp<TextStyle>
+	alignment?: "center" | "left"
 	size?: Size | {uppertitle?: Size, title?: Size, subtitle?: Size}
 }
 
@@ -31,6 +32,7 @@ export default ({
 	titleStyle,
 	subtitleStyle,
 	uppertitleStyle,
+	alignment = "left",
 	size,
 	children
 }: React.PropsWithChildren<Props>) =>
@@ -61,13 +63,14 @@ export default ({
 		}
 	}, [])
 	const sizes = useMemo(() => getFontSizes(size), [size])
+	const align = {textAlign: alignment}
 	return (
 		<View style={[styles.container, style]}>
-			{uppertitle && <Text style={[styles.uppertitle, uppertitleStyle, sizes.uppertitle]}>{uppertitle}</Text>}
-			<Text style={[styles.title, titleStyle, sizes.title, subtitle ? styles.titleMarginBottom : undefined]}>
+			{uppertitle && <Text style={[styles.uppertitle, uppertitleStyle, sizes.uppertitle, align]}>{uppertitle}</Text>}
+			<Text style={[styles.title, titleStyle, sizes.title, subtitle ? styles.titleMarginBottom : undefined, align]}>
 				{children ?? title}
 			</Text>
-			{subtitle && <Text style={[styles.subtitle, subtitleStyle, sizes.subtitle]}>{subtitle}</Text>}
+			{subtitle && <Text style={[styles.subtitle, subtitleStyle, sizes.subtitle, align]}>{subtitle}</Text>}
 		</View>
 	)
 }

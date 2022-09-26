@@ -4,8 +4,9 @@ import { BottomSheetFlatList } from "@gorhom/bottom-sheet"
 import { COLOR, hexAlpha, InputHandler } from "utils"
 import { Icon2, Paragraph, Title } from "components/atoms"
 import { s, vs } from "react-native-size-matters"
-import SelectItem from "../moleculus/SelectItem"
 import { StyledInput } from "modals/profile/components/atoms"
+import { SelectItem } from "../moleculus"
+import { observer } from "mobx-react-lite"
 
 export type Props = {
 	items: any[]
@@ -22,7 +23,7 @@ export type Props = {
 	searchCriteria?:(item:any, search: string) => boolean
 }
 
-export default ((
+export default observer((
 	{
 		title,
 		description,
@@ -67,21 +68,21 @@ export default ((
 
 	return (
 		<View style={styles.container}>
-			<Title style={styles.title} title={title} />
-			<Paragraph style={styles.paragraph}>
+			<Title style={styles.title} title={title} alignment="center" size={20} />
+			<Paragraph style={[styles.paragraph, searchCriteria ? styles.mb30 : styles.mb10]}>
 				{description}
 			</Paragraph>
-			<StyledInput
+			{searchCriteria && <StyledInput
 				placeholder={searchText ?? "Search"}
 				value={input.value}
 				onChangeText={input.set}
-				style={styles.search}
+				style={[styles.search, styles.mb10]}
 				Right={
 					<View style={styles.iconContainer}>
 						<Icon2 name="magnifying_glass" stroke={hexAlpha(COLOR.White, 20)} size={21} />
 					</View>
 				}
-			/>
+			/>}
 			<BottomSheetFlatList
 				data={filtred}
 				style={styles.scroll}
@@ -107,13 +108,16 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 	},
 	paragraph: {
-		marginBottom: vs(30),
 		textAlign: "center",
 	},
 	search: {
+	},
+	mb10: {
 		marginBottom: vs(9),
 	},
-
+	mb30: {
+		marginBottom: vs(30),
+	},
 	scroll: {
 		height: vs(100),
 		flexGrow: 1,

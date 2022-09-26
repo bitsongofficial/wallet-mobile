@@ -36,7 +36,7 @@ export default observer<Props>(function SendModal({
 			{hasCoins ? (
 				<>
 					{steps.title === "Select coin" ? (
-						<SelectCoin controller={controller} onBack={onPressBack} />
+						<SelectCoin onPress={controller.creater.setCoin} activeCoin={controller.creater.coin} onBack={onPressBack} />
 					) : (
 						<>
 							<Header

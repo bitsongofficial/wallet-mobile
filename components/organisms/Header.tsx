@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 	},
-
 	icon: {
 		position: "absolute",
 		right: 0,

@@ -19,7 +19,7 @@ type Props = {
 
 export default ({ onPress, style, text, textStyle, stroke }: Props) => {
 	return (
-		<InlineButton onPress={onPress} text={text || "Back"} Left={
+		<InlineButton onPress={onPress} text={text || "Back"} alignment={"left"} Left={
 			<Icon2 name="chevron_left" size={18} stroke={stroke || COLOR.White} />
 		} style={style} textStyle={textStyle} />
 	)
