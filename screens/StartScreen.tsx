@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { RootStackParamList } from "types"
-import { Button, Header } from "components/atoms"
+import { Button, ButtonChevroletRight, Header, InlineButton, Title } from "components/atoms"
 import Icon2 from "components/atoms/Icon2"
 import { BottomSheetModal } from "components/moleculs"
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types"
@@ -15,12 +15,13 @@ import { useFocusEffect } from "@react-navigation/native"
 import waves_light from "assets/images/waves_light.png"
 import { COLOR } from "utils"
 import { s, vs } from "react-native-size-matters"
+import { withStatusBarFullHeight } from "./layout/hocs"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Start">
 
 const points = [s(270)]
 
-export default observer<Props>(function StartScreen({ navigation }) {
+export default observer<Props>(withStatusBarFullHeight(function StartScreen({ navigation }) {
 	const theme = useTheme()
 	const { wallet } = useStore()
 
@@ -45,53 +46,38 @@ export default observer<Props>(function StartScreen({ navigation }) {
 
 	return (
 		<>
-			<StatusBar style="light" />
-
 			<SafeAreaView style={styles.container}>
 				<Header
 					Center={
 						<>
-							<Image source={waves_light} style={styles.waves} />
 							<Icon2 name="logo" size={s(56)} />
 						</>
 					}
 				/>
 				<View style={styles.bottom}>
-					<Text style={[styles.text, theme.text.primary]}>
-						A nice phrase to {"\n"}welcome our users.
-					</Text>
+					<Title titleStyle={[styles.text, theme.text.primary]}>
+						A nice phrase to {"\n"} welcome our users.
+					</Title>
 
 					<View style={styles.buttons}>
-						<Button
+						<ButtonChevroletRight
 							text="Create Wallet"
-							Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
 							onPress={createCreateWallet}
 							style={styles.mb18}
-							textStyle={[styles.buttonText, theme.text.primary]}
-							contentContainerStyle={styles.buttonContent}
 						/>
-						<Button
+						<ButtonChevroletRight
 							text="Import Existing Wallet"
 							mode="gradient_border"
-							Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
 							onPress={openBottomSheet}
 							style={styles.mb24}
-							textStyle={[styles.buttonText, theme.text.primary]}
-							contentContainerStyle={[
-								styles.buttonContent_gradient,
-								{ backgroundColor: COLOR.Dark3 },
-							]}
 						/>
-						<Button
-							mode="fill"
+						<InlineButton
 							onPress={test}
-							contentContainerStyle={styles.buttonContent}
 							Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
+							style={styles.buttonContent}
 						>
-							<Text style={[styles.buttonText, theme.text.colorText]}>
-								Import with <Text style={theme.text.primary}>Ledger Nano X</Text>
-							</Text>
-						</Button>
+							Import with <Text style={theme.text.primary}>Ledger Nano X</Text>
+						</InlineButton>
 						{wallet.activeWallet && (
 							<Button
 								mode="fill"
@@ -108,39 +94,32 @@ export default observer<Props>(function StartScreen({ navigation }) {
 
 			<BottomSheetModal ref={bottomSheet} index={0} snapPoints={points}>
 				<View style={styles.bottomSheetContainer}>
-					<Text style={[styles.bottomSheetTitle, theme.text.primary]}>Import Existing Wallet</Text>
-					<Button
+					<Title size={16} style={styles.bottomSheetTitle}>Import Existing Wallet</Title>
+					<ButtonChevroletRight
 						text="Import from Seed Phrase"
-						Right={<Icon2 name="chevron_right_2" size={18} stroke={COLOR.White} />}
 						onPress={importFromSeed}
-						textStyle={[styles.buttonText, theme.text.primary]}
-						contentContainerStyle={styles.buttonContent}
 						style={styles.mb12}
 					/>
-					<Button
+					<ButtonChevroletRight
 						mode="gradient_border"
 						text="Import with Keplr Extension"
 						onPress={importWithKeplr}
-						Right={<Icon2 name="chevron_right_2" size={18} stroke={COLOR.White} />}
-						textStyle={[styles.buttonText, theme.text.primary]}
-						contentContainerStyle={[styles.buttonContent_gradient, { backgroundColor: "#2b2b47" }]}
+						contentContainerStyle={{ backgroundColor: theme.bottomsheet.background.backgroundColor }}
 						style={styles.mb12}
 					/>
 				</View>
 			</BottomSheetModal>
 		</>
 	)
-})
+}))
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: COLOR.Dark3,
 		justifyContent: "flex-end",
 	},
 	buttons: {
 		marginTop: vs(50),
-		marginHorizontal: s(24),
 		justifyContent: "flex-end",
 	},
 
@@ -155,11 +134,9 @@ const styles = StyleSheet.create({
 	buttonContent: {
 		paddingVertical: s(18),
 		paddingHorizontal: s(24),
-		justifyContent: "space-between",
 	},
 	buttonContent_gradient: {
 		paddingVertical: s(16),
-		paddingHorizontal: s(22),
 		justifyContent: "space-between",
 	},
 
@@ -176,30 +153,13 @@ const styles = StyleSheet.create({
 		fontWeight: "400",
 		fontSize: s(24),
 		lineHeight: s(30),
-
-		marginHorizontal: s(32),
 	},
 
 	bottomSheetTitle: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "400",
-		fontSize: s(16),
-		lineHeight: s(20),
-
 		marginBottom: 32,
 	},
 	bottomSheetContainer: {
 		paddingHorizontal: 30,
 		paddingVertical: 20,
-	},
-
-	waves: {
-		width: s(1100),
-		height: s(1100),
-		// width: 1100,
-		// height: 1100,
-		position: "absolute",
-		top: s(-550),
 	},
 })
