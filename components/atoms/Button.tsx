@@ -1,10 +1,11 @@
-import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native"
+import { Omit, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native"
 import ThemedGradient from "./ThemedGradient"
 import { useTheme } from "hooks"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 import { useCallback } from "react"
+import Icon2 from "./Icon2"
 
 type Mode = "gradient" | "fill" | "gradient_border" | "white"
 type Size = "thin" | "normal" | number
@@ -17,7 +18,7 @@ export type Props = {
 	style?: StyleProp<ViewStyle>
 	contentContainerStyle?: StyleProp<ViewStyle>
 	textStyle?: StyleProp<TextStyle>
-	fontSize: 12 | 16
+	fontSize?: 12 | 16
 	size?: Size | {x: Size, y: Size}
 	full?: boolean
 	disable?: boolean
@@ -25,7 +26,7 @@ export type Props = {
 	Right?: JSX.Element
 }
 
-export default ({
+const Button = ({
 	onPress,
 	text,
 	children,
@@ -62,8 +63,8 @@ export default ({
 		<TouchableOpacity onPress={!disable ? onPress : undefined} disabled={disable}>
 			<View style={[styles.container, style, disable && styles.disable]}>
 				<Background style={[mode === "gradient_border" && styles.border, mode === "white" && {backgroundColor: COLOR.White}]}>
-					<View style={[styles.content, getPaddingStyle(size), contentContainerStyle]}>
-						{!!Left && Left}
+					<View style={[styles.content, getPaddingStyle(size), mode === "gradient_border" && styles.gradientBorderBackground, contentContainerStyle]}>
+						{Left}
 						{text || typeof children === "string" ? (
 							<Text style={[styles.text, themeStyle.text.primary, {fontSize: s(fontSize)}, textStyle]}>
 								{text || children}
@@ -71,7 +72,7 @@ export default ({
 						) : (
 							children
 						)}
-						{!!Right && Right}
+						{Right}
 					</View>
 				</Background>
 			</View>
@@ -79,19 +80,39 @@ export default ({
 	)
 }
 
+export default Button
+
+function withChevrolet(ButtonComponent: typeof Button)
+{
+	return function(props: React.PropsWithChildren<Omit<Props, "Right" | "Left">>)
+	{
+		return (
+			<ButtonComponent
+				Right={<Icon2 name="chevron_right_2" stroke={COLOR.White} size={18} />}
+				{...props}
+			></ButtonComponent>
+		)
+	}
+}
+
+export const ButtonChevroletRight = withChevrolet(Button)
+
 const styles = StyleSheet.create({
 	container: {
 		borderRadius: s(50),
 		overflow: "hidden",
 	},
 	content: {
-		justifyContent: "center",
+		justifyContent: "space-between",
 		alignItems: "center",
 		flexDirection: "row",
 		borderRadius: s(50),
 	},
 	border: {
 		padding: s(2),
+	},
+	gradientBorderBackground: {
+		backgroundColor: COLOR.Dark3,
 	},
 	text: {
 		fontFamily: "CircularStd",

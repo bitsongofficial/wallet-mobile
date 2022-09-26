@@ -14,7 +14,7 @@ type Size = 16 | 20 | 24 | 42
 
 type Props = {
 	style?: StyleProp<ViewStyle>
-	title: string
+	title?: string
 	uppertitle?: string
 	subtitle?: string
 	titleStyle?: StyleProp<TextStyle>
@@ -23,24 +23,41 @@ type Props = {
 	size?: Size | {uppertitle: Size, title: Size, subtitle: Size}
 }
 
-export default ({ style, title, subtitle, uppertitle, titleStyle, subtitleStyle, uppertitleStyle, size }: Props) => {
+export default ({
+	style,
+	title,
+	subtitle,
+	uppertitle,
+	titleStyle,
+	subtitleStyle,
+	uppertitleStyle,
+	size,
+	children
+}: React.PropsWithChildren<Props>) =>
+{
 	const toFontSize = useCallback((size: number) =>
 	{
+		if(size) return {
+			fontSize: s(size),
+			lineHeight: s(size + 6),
+		}
 		return {
-			fontSize: s(size)
+			fontSize: s(24),
+			lineHeight: s(30),
 		}
 	}, [])
 	const getFontSizes = useCallback((size) =>
 	{
-		if(typeof(size) == "object") return {
-			uppertitle: toFontSize(size.uppertitle),
-			subtitle: toFontSize(size.subtitle),
-			title: toFontSize(size.title)
+		const actualSize = size ?? 24
+		if(typeof(actualSize) == "object") return {
+			uppertitle: toFontSize(actualSize.uppertitle),
+			subtitle: toFontSize(actualSize.subtitle),
+			title: toFontSize(actualSize.title)
 		}
 		return {
-			uppertitle: toFontSize(size - 4),
-			subtitle: toFontSize(size - 8),
-			title: toFontSize(size)
+			uppertitle: toFontSize(actualSize - 4),
+			subtitle: toFontSize(actualSize - 8),
+			title: toFontSize(actualSize)
 		}
 	}, [])
 	const sizes = useMemo(() => getFontSizes(size), [size])
@@ -48,7 +65,7 @@ export default ({ style, title, subtitle, uppertitle, titleStyle, subtitleStyle,
 		<View style={[styles.container, style]}>
 			{uppertitle && <Text style={[styles.uppertitle, uppertitleStyle, sizes.uppertitle]}>{uppertitle}</Text>}
 			<Text style={[styles.title, titleStyle, sizes.title]}>
-				{title}
+				{children ?? title}
 			</Text>
 			{subtitle && <Text style={[styles.subtitle, subtitleStyle, sizes.subtitle]}>{subtitle}</Text>}
 		</View>
@@ -58,13 +75,12 @@ export default ({ style, title, subtitle, uppertitle, titleStyle, subtitleStyle,
 const styles = StyleSheet.create({
 	container: {
 		marginBottom: vs(34),
+		backgroundColor: "transparent",
 	},
 	uppertitle: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "400",
-		fontSize: s(16),
-		lineHeight: s(23),
 		color: COLOR.RoyalBlue2,
 
 		marginBottom: vs(10),
@@ -73,8 +89,6 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: s(24),
-		lineHeight: s(53),
 		color: COLOR.White,
 
 		marginBottom: vs(6),
@@ -83,8 +97,6 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: s(14),
-		lineHeight: s(18),
 		color: COLOR.White,
 		opacity: 0.5,
 	},

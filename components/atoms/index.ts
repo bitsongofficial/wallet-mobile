@@ -1,7 +1,7 @@
 export { default as Icon } from "./Icon"
 export { default as Icon2, IconName } from "./Icon2"
 export { default as Image } from "./Image"
-export { default as Button, Props as ButtonProps } from "./Button"
+export { default as Button, Props as ButtonProps, ButtonChevroletRight } from "./Button"
 export { default as InlineButton } from "./InlineButton"
 export { default as ButtonBack } from "../moleculs/ButtonBack"
 export { default as ThemedGradient } from "./ThemedGradient"
