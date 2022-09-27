@@ -31,6 +31,7 @@ export default observer<Props>(function SendModal({
 
 	const { steps } = controller
 
+
 	return (
 		<BottomSheetView style={styles.container}>
 			{hasCoins ? (

@@ -16,6 +16,7 @@ import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmo
 import SettingsStore from "./SettingsStore";
 import { ICoin } from "classes/types";
 import { isValidAddress } from "core/utils/Address";
+import { getSendMessage } from "core/coin/cosmos/operations/Send";
 
 const maxRecentRecipients = 10
 
@@ -212,6 +213,34 @@ export default class CoinStore {
 		}
 	}
 
+	async sendMessage(coin: SupportedCoins, address: string, amount: Amount)
+	{
+		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
+		const wallet = this.walletStore.activeWallet.wallets[coin]
+		if(!(wallet instanceof CosmosWallet) || !this.CanSend)
+		{
+			runInAction(() =>
+			{
+				this.loading.send = false
+				this.results.send = false
+			})
+			throw {error: "operation not permitted"}
+		}
+		try
+		{
+			const data: FromToAmount = {
+				from:  wallet as CosmosWallet,
+				to: new PublicWallet(address),
+				amount,
+			}
+			return await getSendMessage(data)
+		}
+		catch(e)
+		{
+			console.error("Catched", e)
+		}
+	}
+
 	findAssetWithDenom(denom: Denom)
 	{
 		return this.coins.find(c => c.info.denom == denom)
@@ -224,11 +253,7 @@ export default class CoinStore {
 
 	async sendCoin(coin: SupportedCoins, address: string, balance: number)
 	{
-		const denom = fromCoinToDefaultDenom(coin)
-		return await this.sendAmount(coin, address, {
-			amount: (balance * convertRateFromDenom(denom)).toString(),
-			denom: denom,
-		})
+		return await this.sendAmount(coin, address, fromCoinToAmount(balance, coin))
 	}
 
 	async sendFiat(coin: SupportedCoins, address: string, fiat: number)
