@@ -17,6 +17,7 @@ import SettingsStore from "./SettingsStore";
 import { ICoin } from "classes/types";
 import { isValidAddress } from "core/utils/Address";
 import { getSendMessage } from "core/coin/cosmos/operations/Send";
+import { globalLoading } from "modals";
 
 const maxRecentRecipients = 10
 
@@ -80,6 +81,7 @@ export default class CoinStore {
 			{
 				if(this.walletStore.activeProfile)
 				{
+					globalLoading.open()
 					waitings.push((async () =>
 					{
 						const profile = this.walletStore.activeWallet
@@ -149,6 +151,7 @@ export default class CoinStore {
 		{
 			console.error("Catched", e)
 		}
+		globalLoading.close()
 	}
 
 	get totalBalance()

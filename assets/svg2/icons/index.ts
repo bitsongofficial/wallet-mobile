@@ -83,6 +83,8 @@ import loader_error from "./loader_error.svg"
 import loader_lock from "./loader_lock.svg"
 import alert_circle from "./alert-circle.svg"
 
+import user from "./user.svg"
+
 export default <const>{
 	eye_closed_gradient,
 	fingerprint_gradient,
@@ -164,4 +166,5 @@ export default <const>{
 	loader_error,
 	loader_lock,
 	alert_circle,
+	user,
 }

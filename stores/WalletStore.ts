@@ -16,6 +16,7 @@ import uuid from 'react-native-uuid';
 import { navigate } from "navigation/utils";
 import { isPinSaved } from "utils/biometrics";
 import { fromPrefixToCoin } from "core/utils/Coin";
+import { globalLoading } from "modals";
 
 export const cosmos_mnemonic_prefix = "mnemonic_"
 
@@ -255,6 +256,7 @@ export default class WalletStore {
       const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
       this.pinAsked = true
+      globalLoading.open()
       await Promise.all(toJS(this.profiles).map(async (profile, index) =>
       {
         switch(profile.type)
@@ -320,6 +322,7 @@ export default class WalletStore {
       this.firstLoad = true
       this.loading = false
     })
+    globalLoading.close()
   }
 
   get activeWallet()

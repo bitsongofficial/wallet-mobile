@@ -5,9 +5,9 @@ import { NativeStackHeaderProps, NativeStackNavigationProp } from "@react-naviga
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { observer } from "mobx-react-lite"
 import { COLOR } from "utils"
-import { useStore } from "hooks"
+import { useLoading, useStore } from "hooks"
 import { RootStackParamList } from "types"
-import { Icon2 } from "components/atoms"
+import { Icon2, Loader } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { s } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
@@ -19,6 +19,7 @@ type Props = {
 
 export default observer(function Header({ navigation, style }: Props) {
 	const { wallet } = useStore()
+	const { isOpen } = useLoading()
 	const openProfile = useCallback(() => navigation?.navigate("Profile"), [])
 
 	const insets = useSafeAreaInsets()
@@ -27,12 +28,19 @@ export default observer(function Header({ navigation, style }: Props) {
 		<Animated.View style={[styles.container, style, { paddingTop: insets.top }]}>
 			<View style={styles.header}>
 				<View style={styles.left}>
-					<Icon2 name="logo" size={40} />
+					{!isOpen && <Icon2 name="logo" size={40} />}
+					{isOpen && <Loader size={40} />}
 				</View>
 
 				<View style={styles.right}>
 					<Icon2 name="bell_1" size={16} stroke={COLOR.Marengo} />
 					<TouchableOpacity onPress={openProfile}>
+						{/* <Icon2
+							name="user"
+							style={styles.avatar}
+							stroke={COLOR.BlueCrayola}
+							size={40}
+						/> */}
 						<Image
 							source={
 								wallet.activeProfile && wallet.activeProfile.avatar
