@@ -15,19 +15,19 @@ type Props = {
 export default ({ style, title, subtitle, description, subdescription, uri }: Props) => {
 	return (
 		<View style={[styles.container, style]}>
-			{uri && <View style={styles.imageContainer}>
+			{uri != undefined && <View style={styles.imageContainer}>
 				<Image uri={uri} style={styles.image}></Image>
 			</View>}
 
 			<View style={styles.about}>
 				<View style={styles.texts}>
 					<Text style={styles.primary}>{title}</Text>
-					{subtitle && <Text style={styles.secondary}>{subtitle}</Text>}
+					{subtitle != undefined && <Text style={styles.secondary}>{subtitle}</Text>}
 				</View>
 
-				{(description || subdescription) && <View style={styles.numbers}>
+				{(description != undefined || subdescription != undefined) && <View style={styles.numbers}>
 					<Text style={styles.primary}>{description}</Text>
-					{subdescription && (
+					{subdescription != undefined && (
 						<Text style={styles.secondary}>
 							{subdescription}
 						</Text>
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
 		width: s(30),
 		height: s(30),
 		borderRadius: s(30),
+		backgroundColor: COLOR.Dark3,
 	},
 	texts: {
 		flex: 1,
