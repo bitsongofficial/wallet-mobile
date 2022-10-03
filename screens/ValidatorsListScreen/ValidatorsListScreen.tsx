@@ -23,6 +23,7 @@ import { Validator as ValidatorItem } from "components/organisms"
 import { Title, Toolbar } from "./components"
 import { vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
+import BottomNavigator from "screens/layout/BottomNavigator"
 
 type Props = CompositeScreenProps<
 	NativeStackScreenProps<RootStackParamList>,
@@ -123,7 +124,7 @@ export default observer<Props>(function ValidatorsListScreen({ navigation }) {
 	const [scrollHandler, animStyles] = useAnimateFlatlist()
 
 	return (
-		<>
+		<BottomNavigator>
 			<StatusBar style="light" />
 			<Animated.FlatList
 				onScroll={scrollHandler}
@@ -140,7 +141,6 @@ export default observer<Props>(function ValidatorsListScreen({ navigation }) {
 				ListHeaderComponentStyle={styles.background}
 				ListHeaderComponent={
 					<>
-						<Title style={styles.title}>Validators</Title>
 						<Shadow style={animStyles.topShadow} />
 					</>
 				}
@@ -154,7 +154,7 @@ export default observer<Props>(function ValidatorsListScreen({ navigation }) {
 				contentContainerStyle={flatlistContentStyle}
 			/>
 			<Shadow style={animStyles.bottomShadow} invert />
-		</>
+		</BottomNavigator>
 	)
 })
 
