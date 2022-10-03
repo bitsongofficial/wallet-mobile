@@ -14,6 +14,8 @@ import { useStore } from "hooks"
 import { toJS } from "mobx"
 import { s, vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { Coin } from "classes"
+import { useCallback } from "react"
 
 type Props = {
 	controller: SendController
@@ -30,7 +32,6 @@ export default observer<Props>(function SendModal({
 	const hasCoins = toJS(store.coin.coins).length > 0
 
 	const { steps } = controller
-
 
 	return (
 		<BottomSheetView style={styles.container}>

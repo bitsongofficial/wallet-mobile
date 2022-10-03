@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
 		height: s(62),
 		borderRadius: s(62),
 		overflow: "hidden",
-		backgroundColor: "red",
 	},
 	gradient: {
 		flex: 1,
