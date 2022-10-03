@@ -163,7 +163,6 @@ const styles = StyleSheet.create({
 
 	iconTouchable: {
 		paddingHorizontal: s(23),
-		backgroundColor: "red",
 		alignItems: "center",
 		justifyContent: "center",
 	},
