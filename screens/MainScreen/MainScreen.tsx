@@ -169,7 +169,7 @@ export default withStatusBar(observer<Props>(function MainScreen({ navigation })
 						<Title
 							title={coin.totalBalance.toLocaleString("en") + " " + settings.currency?.symbol}
 							uppertitle="Total Balance"
-							size={{title: 42, uppertitle: 20}}
+							size={{title: 32, uppertitle: 18}}
 							style={styles.mb34}
 						></Title>
 						{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}

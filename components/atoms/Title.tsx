@@ -10,7 +10,7 @@ import { View } from "components/Themed"
 import { COLOR } from "utils"
 import { useCallback, useMemo } from "react"
 
-type Size = 16 | 20 | 24 | 32 | 42
+type Size = 16 | 18 | 20 | 24 | 32 | 42
 
 type Props = {
 	style?: StyleProp<ViewStyle>
