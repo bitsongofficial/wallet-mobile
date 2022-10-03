@@ -3,12 +3,13 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { Button, Icon2 } from "components/atoms"
 import { useStore, useTheme } from "hooks"
-import { COLOR } from "utils"
+import { COLOR, hexAlpha } from "utils"
 import { ICoin, IPerson } from "classes/types"
 import { observer } from "mobx-react-lite"
 import { useCallback } from "react"
 import { SupportedCoins } from "constants/Coins"
 import { Contact } from "stores/ContactsStore"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	/** How many $ we will send */
@@ -53,22 +54,19 @@ export default observer(function CardWillSend({
 	return (
 		<View style={[styles.container, style]}>
 			<View style={styles.title}>
-				<Text style={[styles.text, styles.titleText, theme.text.colorText]}>Total Balance</Text>
+				<Text style={[styles.text, styles.titleText, theme.text.colorText]}>You are sending</Text>
 				<TouchableOpacity onPress={onPressUp}>
 					<Icon2 name="arrow_up" size={18} stroke={COLOR.Marengo} />
 				</TouchableOpacity>
 			</View>
 
 			<Text style={[styles.transferAmount, theme.text.primary]}>
-				{amount} {settings.currency?.symbol}
+				{coinsValue} <Text style={{fontSize: s(20)}}>{coinData.coinName.toUpperCase()}</Text>
 			</Text>
 
-			<View style={styles.row}>
-				<Text style={[styles.text, styles.w30, theme.text.colorText]}>as</Text>
-				<Text style={[styles.text, theme.text.primary]}>
-					{coinsValue} {coinData.coinName.toUpperCase()}
-				</Text>
-			</View>
+			<Text style={[styles.fiatText]}>
+				{amount} {settings.currency?.symbol}
+			</Text>
 
 			<View style={styles.row}>
 				<Text style={[styles.text, styles.w66, theme.text.colorText]}>from</Text>
@@ -77,23 +75,6 @@ export default observer(function CardWillSend({
 
 			<View style={styles.row}>
 				<Text style={[styles.text, styles.w30, theme.text.colorText]}>to</Text>
-				{receiver ? (
-					<>
-						<View style={styles.avatar} />
-						{/* <Image style={styles.avatar} source={{ uri: receiver.avatar }} /> */}
-						<Text style={[styles.text, theme.text.primary]}>{receiver.name}</Text>
-					</>
-				) : (
-					<Button
-						text="Add Contact"
-						onPress={addContact}
-						contentContainerStyle={styles.buttonAdd}
-					/>
-				)}
-			</View>
-
-			<View style={styles.row}>
-				<Text style={[styles.text, styles.w66, theme.text.colorText]}>address</Text>
 				<Text style={[styles.text, theme.text.primary]}>{shortAddress}</Text>
 			</View>
 		</View>
@@ -121,9 +102,16 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		lineHeight: 18,
 	},
+	fiatText: {
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "500",
+		fontSize: 16,
+		lineHeight: 18,
+		color: hexAlpha(COLOR.White, 50),
+	},
 	titleText: {
 		fontWeight: "400",
-
 		fontSize: 16,
 		lineHeight: 20,
 	},
@@ -136,10 +124,10 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 42,
+		fontSize: 36,
 		lineHeight: 53,
 
-		marginTop: 16,
+		marginTop: 4,
 	},
 	avatar: {
 		width: 20,
