@@ -107,6 +107,11 @@ export function getCoinPrefix(coin: SupportedCoins)
 	return resolveCoin(coin).bech32_prefix
 }
 
+export function getCoinName(coin: SupportedCoins)
+{
+	return resolveCoin(coin).pretty_name
+}
+
 export function fromPrefixToCoin(prefix: string)
 {
 	const chain = chains.find((c: any) => c.bech32_prefix == prefix)
