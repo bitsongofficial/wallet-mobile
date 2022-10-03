@@ -12,6 +12,7 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 	const { coin } = store
 	const controller = new SendController()
 	const { creater, steps } = controller
+	steps.goTo("Select coin")
 	creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
 
 	const scanReciver = async () => {

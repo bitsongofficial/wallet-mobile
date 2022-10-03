@@ -12,7 +12,7 @@ import { trimAddress } from "utils/string"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { Icon2 } from "components/atoms"
 import { Header } from "../components/atoms"
-import { SelectCoin } from "../components/templates"
+import { SelectCoin, SelectNetwork } from "../components/templates"
 import { coinsFromSupportedCoins } from "utils/coins"
 import { SupportedCoins } from "constants/Coins"
 
@@ -31,7 +31,7 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 
 	const shortAddress = useMemo(() => (address ? trimAddress(address) : ""), [address])
 
-	const [isSelectingCoin, setIsSelectingCoin] = useState(false)
+	const [isSelectingCoin, setIsSelectingCoin] = useState(true)
 	const [selectedChain, setSelectedChain] = useState(SupportedCoins.BITSONG)
 
 	const copyToClipboard = useCallback(async () => {
@@ -56,11 +56,10 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 
 	return (
 		<BottomSheetView style={[styles.wrapper, style]}>
-			{isSelectingCoin && <SelectCoin
-				onPress={(coin) => {
-					setSelectedChain(coin.info.coin)
+			{isSelectingCoin && <SelectNetwork
+				onPress={(chain) => {
+					setSelectedChain(chain)
 				}}
-				activeCoin={activeCoin}
 				onBack={() => setIsSelectingCoin(false)} />
 			}
 			{!isSelectingCoin && <>
@@ -69,18 +68,18 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 				<View style={styles.addressBox} onLayout={qrCodeLayoutEvent}>
 					<View style={styles.qr_code}>
 						{address != "" && <QRCode value={address} size={size} />}
-					</View>
-					<Text style={styles.subtitle} onPress={copyToClipboard}>
-						{isCopied ? "Address copied!" : "Copy address"}
-					</Text>				
+					</View>			
 				</View>
 
 				<View style={styles.card}>
-					<Text style={styles.address}>{shortAddress}</Text>
-					<TouchableOpacity style={styles.buttonCopy} onPress={() => setIsSelectingCoin(true)}>
-						<Icon2 name="chevron_right_2" stroke={hexAlpha(COLOR.White, 30)} size={17} />
+					<Text style={styles.address}>{isCopied ? "Address copied!" : shortAddress}</Text>
+					<TouchableOpacity style={styles.buttonCopy} onPress={copyToClipboard}>
+						<Icon2 name="copy" stroke={hexAlpha(COLOR.White, 30)} size={17} />
 					</TouchableOpacity>
 				</View>
+				<Text style={styles.subtitle} onPress={copyToClipboard}>
+					{"Copy address"}
+				</Text>	
 			</>}
 		</BottomSheetView>
 	)
@@ -101,10 +100,10 @@ const styles = StyleSheet.create({
 		fontStyle: "normal",
 		fontWeight: "500",
 		fontSize: s(14),
-		textAlign: "center",
+		textAlign: "right",
 		lineHeight: s(20),
 		color: COLOR.RoyalBlue3,
-		marginBottom: vs(22),
+		marginEnd: vs(20),
 	},
 
 	qr_code: {
@@ -141,5 +140,6 @@ const styles = StyleSheet.create({
 		borderRadius: s(20),
 		paddingLeft: s(30),
 		alignItems: "center",
+		marginBottom: vs(4),
 	},
 })
