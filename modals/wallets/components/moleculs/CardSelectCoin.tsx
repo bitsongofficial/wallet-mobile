@@ -28,10 +28,9 @@ export default observer<Props>(function CardWallet({ coin, style }) {
 					<Text style={styles.balance}>
 						{formatNumber(coin?.info.balance ?? 0)} {coin?.info.coinName}
 					</Text>
-					<Image source={require("assets/images/mock/logo_bitsong.png")} style={styles.image} />
 				</View>
 			</View>
-			<Icon2 name="chevron_right" size={18} stroke={COLOR.RoyalBlue} />
+			<Icon2 name="chevron_right" size={18} stroke={COLOR.White} />
 		</Card>
 	)
 })
