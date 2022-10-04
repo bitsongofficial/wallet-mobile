@@ -1,1 +1,1 @@
-export { default as SelectItem } from "./SelectItem"
+export { default as SelectItem, Props as SelectItemProps } from "./SelectItem"

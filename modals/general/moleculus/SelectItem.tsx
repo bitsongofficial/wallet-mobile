@@ -1,35 +1,36 @@
 import { RadioButton } from "components/atoms"
-import { useCallback } from "react"
 import { StyleSheet, Text, View } from "react-native"
-import { TouchableWithoutFeedback } from "react-native-gesture-handler"
 import { s, vs } from "react-native-size-matters"
-import { ICurrency } from "screens/Profile/type"
 import { COLOR, hexAlpha } from "utils"
 
-type Props = {
+export type Props = {
 	item: any
-	onPress(item: any): void
 	isActive: boolean
+	hideSelector?: boolean
 	labelExtractor?:(item: any) => string
 	leftExtractor?:(item: any) => JSX.Element
 	rightExtractor?:(item: any) => JSX.Element
 }
 
-export default ({ item, isActive, onPress, leftExtractor, rightExtractor, labelExtractor }: Props) => {
-	const handlePress = useCallback(() => onPress(item), [onPress, item])
+export default ({
+	item,
+	isActive,
+	hideSelector = false,
+	leftExtractor,
+	rightExtractor,
+	labelExtractor
+}: Props) => {
 	return (
-		<TouchableWithoutFeedback onPress={handlePress}>
-			<View style={styles.container}>
-				<View style={styles.content}>
-					{leftExtractor && leftExtractor(item)}
-					<Text style={[styles.title, isActive && styles.text_active]}>
-						{labelExtractor ? labelExtractor(item) : item.toString()}
-					</Text>
-					{rightExtractor && rightExtractor(item)}
-				</View>
-				<RadioButton isActive={isActive} />
+		<View style={[styles.container]}>
+			<View style={[styles.content, hideSelector ? styles.contentWithoutSelector : styles.contentWithSelector]}>
+				{leftExtractor && leftExtractor(item)}
+				<Text style={[styles.title, (isActive || hideSelector) && styles.text_active]}>
+					{labelExtractor ? labelExtractor(item) : item.toString()}
+				</Text>
+				{rightExtractor && rightExtractor(item)}
 			</View>
-		</TouchableWithoutFeedback>
+			{!hideSelector && <RadioButton isActive={isActive} />}
+		</View>
 	)
 }
 
@@ -67,7 +68,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		flexDirection: "row",
 		justifyContent: "space-between",
-		marginEnd: s(20),
 		flex: 1,
-	}
+	},
+	contentWithSelector: {
+		marginEnd: s(20),
+	},
+	contentWithoutSelector: {
+	},
 })
