@@ -1,16 +1,12 @@
 import { useCallback } from "react"
-import { ListRenderItem, StyleSheet, Text, ViewStyle, StyleProp } from "react-native"
+import { StyleSheet, Text, ViewStyle, StyleProp } from "react-native"
 import { useStore, useTheme } from "hooks"
-import { ButtonBack } from "components/atoms"
 import { SupportedCoins } from "constants/Coins"
 import { Coin } from "classes"
 import { COLOR } from "utils"
-import { FlatList } from "react-native-gesture-handler"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
-import { SendController } from "../../controllers"
-import { ButtonCoinSelect } from "../moleculs"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
-import { Select } from "modals/general/organisms"
+import { CoinSelect } from "modals/general/organisms"
 
 type Props = {
 	activeCoin?: Coin | null
@@ -20,11 +16,11 @@ type Props = {
 }
 
 export default function SelectCoin({ activeCoin, onPress, onBack, style }: Props) {
-	const theme = useTheme()
 	const { coin } = useStore()
 
 	const selectCoin = useCallback(
-		(coin) => {
+		(coin) =>
+		{
 			onPress(coin)
 			onBack()
 		},
@@ -35,16 +31,11 @@ export default function SelectCoin({ activeCoin, onPress, onBack, style }: Props
 
 	return (
 		<BottomSheetView style={[styles.container, style]}>
-			<Select
-				title="Select coin"
-				description={"Select also the chain where your coin\ncome from"}
-				labelExtractor={(item) => item.info.brand}
-				items={availableCoins}
-				active={activeCoin}
+			<CoinSelect
+				coins={availableCoins}
 				onPress={selectCoin}
-				// searchCriteria={(item, search) => item.info.brand.toLowerCase().includes(search.toLowerCase())}
-				rightExtractor={item => <Text style={[{fontWeight: "bold"}, theme.text.colorText]}>{item.balance + " " + item.info.coinName}</Text>}
-			></Select>
+				active={activeCoin ? activeCoin : undefined}
+			></CoinSelect>
 		</BottomSheetView>
 	)
 }
