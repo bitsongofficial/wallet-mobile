@@ -3,7 +3,7 @@ import { COLOR, hexAlpha } from "utils"
 import { s } from "react-native-size-matters"
 import { Image } from "components/atoms"
 
-type Props = {
+export type Props = {
 	style?: StyleProp<ViewStyle>
 	title: string
 	subtitle?: string
