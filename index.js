@@ -2,6 +2,7 @@ import { registerRootComponent } from 'expo'
 
 import App from './App'
 
+import 'intl-pluralrules'
 import './i18n'
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);

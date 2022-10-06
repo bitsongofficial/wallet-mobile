@@ -14,7 +14,6 @@ const imports: {[k in Languages]?: any} = {
 i18n
 	.use(initReactI18next)
 	.use(resourcesToBackend((language, namespace, callback) => {
-		console.log(language, namespace, callback)
 		imports[language as Languages][namespace]
 			.then((resources: any) => {
 				callback(null, resources)
