@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx"
 import { ICurrency, ILang } from "screens/Profile/type"
-import languages from "constants/languages"
+import { Languages } from "constants/languages"
 import currencies from "constants/currencies"
 import { CheckMethod, NotifSettings } from "./type"
 import LocalStorageManager from "./LocalStorageManager"
@@ -12,7 +12,7 @@ export default class SettingsStore {
 	localStorageManager?: LocalStorageManager
 
 	theme: "light" | "dark" = "dark"
-	language: ILang = languages[0]
+	language: Languages = Languages.En
 	currency: ICurrency | null = currencies[0]
 	checkMethod: CheckMethod | null = null
 	biometric_enable = false
@@ -32,7 +32,7 @@ export default class SettingsStore {
 		this.theme = theme
 	}
 
-	setLanguage(language: ILang) {
+	setLanguage(language: Languages) {
 		this.language = language
 	}
 

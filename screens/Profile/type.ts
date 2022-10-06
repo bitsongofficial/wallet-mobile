@@ -9,7 +9,6 @@ export type IWallet = {
 export type ILang = {
   name: string;
   value: string;
-  id: string;
 };
 
 export type ICurrency = {

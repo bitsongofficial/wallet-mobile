@@ -6,7 +6,7 @@ import { useStore } from "hooks"
 import { COLOR, hexAlpha, InputHandler } from "utils"
 import { StyledInput, Title } from "../atoms"
 import { LanguageItem } from "../moleculs"
-import languages from "constants/languages"
+import { LanguageData, Languages } from "constants/languages"
 import { ILang } from "screens/Profile/type"
 import { Icon2 } from "components/atoms"
 import { s, vs } from "react-native-size-matters"
@@ -21,29 +21,29 @@ export default observer<Props>(({ close }) => {
 	// --------- Search ---------
 	const input = useMemo(() => new InputHandler(), [])
 
-	const filtred = useMemo(() => {
+	const filtered = useMemo<Languages[]>(() => {
 		if (input.value) {
 			const lowerCase = input.value.toLowerCase()
-			return languages.filter(({ name }) => name.toLowerCase().includes(lowerCase))
+			return Object.values(Languages).filter(code => LanguageData[code].name.toLowerCase().includes(lowerCase))
 		} else {
-			return languages
+			return Object.values(Languages)
 		}
 	}, [input.value])
 
 	// ------- FlatList ----------
 
-	const setLanguage = useCallback((lang: ILang) => {
+	const setLanguage = useCallback((lang: Languages) => {
 		settings.setLanguage(lang)
 		close()
 	}, [])
 
-	const keyExtractor = ({ id }: ILang) => id
-	const renderLanguage = useCallback<ListRenderItem<ILang>>(
-		({ item }) => (
+	const keyExtractor = (code: Languages) => code
+	const renderLanguage = useCallback<ListRenderItem<Languages>>(
+		({item}) => (
 			<LanguageItem
-				value={item}
-				isActive={item.id === settings.language.id}
-				onPress={setLanguage}
+				value={LanguageData[item]}
+				isActive={item === settings.language}
+				onPress={() => setLanguage(item)}
 			/>
 		),
 		[settings.language],
@@ -64,7 +64,7 @@ export default observer<Props>(({ close }) => {
 				}
 			/>
 			<BottomSheetFlatList
-				data={filtred}
+				data={filtered}
 				style={styles.scroll}
 				contentContainerStyle={styles.scrollContent}
 				keyExtractor={keyExtractor}
