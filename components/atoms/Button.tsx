@@ -25,6 +25,7 @@ export type Props = {
 	Left?: JSX.Element
 	Right?: JSX.Element
 	textAlignment?: "center" | "left" | "right"
+	uppercase?: boolean
 }
 
 const Button = ({
@@ -41,6 +42,7 @@ const Button = ({
 	Left,
 	Right,
 	textAlignment = "left",
+	uppercase = false,
 }: Props) => {
 	const themeStyle = useTheme()
 	const Background = mode === "gradient" || mode === "gradient_border" ? ThemedGradient : View
@@ -76,7 +78,14 @@ const Button = ({
 					]}>
 						{Left}
 						{text || typeof children === "string" ? (
-							<Text style={[styles.text, themeStyle.text.primary, {fontSize: s(actualFontSize), textAlign: textAlignment}, textStyle]}>
+							<Text style={[
+								styles.text,
+								themeStyle.text.primary,
+								{fontSize: s(actualFontSize),
+								textAlign: textAlignment},
+								textStyle,
+								uppercase ? styles.uppercaseText : undefined
+							]}>
 								{text || children}
 							</Text>
 						) : (
@@ -134,6 +143,9 @@ const styles = StyleSheet.create({
 		fontStyle: "normal",
 		fontWeight: "500",
 		fontSize: s(11),
+	},
+	uppercaseText: {
+		textTransform: "uppercase",
 	},
 	disable: {
 		opacity: 0.5,

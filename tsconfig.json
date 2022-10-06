@@ -20,6 +20,7 @@
 			"core": ["./core"],
 			"modals": ["./modals"]
 		},
-		"useDefineForClassFields": true
+		"useDefineForClassFields": true,
+		"resolveJsonModule": true,
 	}
 }

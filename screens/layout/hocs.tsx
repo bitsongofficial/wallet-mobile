@@ -1,4 +1,5 @@
 import { StatusBar } from "expo-status-bar";
+import { ComponentType } from "react";
 import { PropsWithChildren, PropsWithRef } from "react";
 import { RefreshControlProps } from "react-native";
 import BottomNavigator from "./BottomNavigator";
@@ -31,7 +32,7 @@ export function withFullHeight(Component: React.FC<any>)
 	}
 }
 
-export function withStatusBar(Component: React.FC<any>)
+export function withStatusBar(Component: ComponentType<any>)
 {
 	return function(props: PropsWithChildren<any> & PropsWithRef<any>) 
 	{

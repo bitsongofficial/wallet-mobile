@@ -71,6 +71,7 @@
     "expo-web-browser": "~10.2.1",
     "https-browserify": "0.0.1",
     "i18next": "^21.10.0",
+    "i18next-resources-to-backend": "^1.0.0",
     "metro-react-native-babel-preset": "^0.71.3",
     "mobx": "^6.6.0",
     "mobx-react-lite": "^3.3.0",

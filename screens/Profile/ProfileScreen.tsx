@@ -201,7 +201,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 										onPress={openModal.changeLanguage}
 										icon="translate"
 										style={styles.listButton}
-										Right={<Value text={capitalize(settings.language.name)} />}
+										Right={<Value text={capitalize(settings.prettyLanguage.name)} />}
 									/>
 									<ListButton
 										text="Currency"
