@@ -3,6 +3,7 @@ import { Button, GradientText, Icon2 } from "components/atoms"
 import { useTheme } from "hooks"
 import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	isHidden: boolean
@@ -10,11 +11,12 @@ type Props = {
 }
 
 export default ({ isHidden, onPress }: Props) => {
+	const { t } = useTranslation()
 	const theme = useTheme()
 	return isHidden ? (
 		<Button
 			mode="gradient"
-			text="Show Phrase"
+			text={t("ShowPhrase")}
 			contentContainerStyle={styles.content}
 			textStyle={[styles.text, theme.text.primary]}
 			Right={

@@ -13,10 +13,12 @@ import { COLOR, InputHandler } from "utils"
 import { ListButton, Subtitle } from "./components/atoms"
 import { askPin } from "navigation/AskPin"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = NativeStackScreenProps<RootStackParamList, "SettingsSecurity">
 
 export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
+	const { t } = useTranslation()
 	const { settings, localStorageManager } = useStore()
 	const loading = useLoading()
 
@@ -62,7 +64,7 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
                   }
                   // Right={}
                 /> */}
-								<ListButton icon="password" text="Change PIN" arrow onPress={goToChangePin} />
+								<ListButton icon="password" text={t("ChangePIN")} arrow onPress={goToChangePin} />
 							</View>
 
 							{/* <View style={styles.section}>
@@ -71,10 +73,10 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
               </View> */}
 
 							<View style={styles.section}>
-								<Subtitle style={styles.subtitle}>Account</Subtitle>
+								<Subtitle style={styles.subtitle}>{t("Account")}</Subtitle>
 								<ListButton
 									icon="fingerprint_simple"
-									text="Enable Biometrics"
+									text={t("EnableBiometrics")}
 									onPress={toggleEnableBiometric}
 									Right={
 										<Switch active={settings.biometric_enable} onPress={toggleEnableBiometric} />

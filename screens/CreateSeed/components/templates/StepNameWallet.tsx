@@ -6,6 +6,7 @@ import { Footer } from "../organisms"
 import { vs } from "react-native-size-matters"
 import { ScrollView } from "react-native-gesture-handler"
 import { TitledParagraph } from "components/moleculs"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	input: InputHandler
@@ -14,31 +15,35 @@ type Props = {
 	onPressNext(): void
 }
 
-export default observer<Props>(({ onPressBack, onPressNext, input, isDisableNext }) => (
-	<>
-		<ScrollView bounces={false} style={styles.flex1}>
-			<TitledParagraph
-				title={"Name Your Wallet"}
-				text={"This is the only way you will be able to \n recover your account. Please store it\n somewhere safe!"}
-				style={styles.title}
-			></TitledParagraph>
-			<View style={styles.flex1}>
-				<Input
-					placeholder="Wallet Name"
-					style={styles.input}
-					value={input.value}
-					onChangeText={input.set}
-				/>
-			</View>
-		</ScrollView>
-		<Footer
-			onPressBack={onPressBack}
-			onPressNext={onPressNext}
-			nextButtonText="Continue"
-			isDisableNext={isDisableNext}
-		/>
-	</>
-))
+export default observer<Props>(({ onPressBack, onPressNext, input, isDisableNext }) =>
+{
+	const { t } = useTranslation()
+	return (
+		<>
+			<ScrollView bounces={false} style={styles.flex1}>
+				<TitledParagraph
+					title={t("NameYourWallet")}
+					text={t("NameWalletDescription")}
+					style={styles.title}
+				></TitledParagraph>
+				<View style={styles.flex1}>
+					<Input
+						placeholder={t("WalletNamePlaceholder")}
+						style={styles.input}
+						value={input.value}
+						onChangeText={input.set}
+					/>
+				</View>
+			</ScrollView>
+			<Footer
+				onPressBack={onPressBack}
+				onPressNext={onPressNext}
+				nextButtonText={t("Continue")}
+				isDisableNext={isDisableNext}
+			/>
+		</>
+	)
+})
 
 const styles = StyleSheet.create({
 	title: { marginTop: vs(50) },

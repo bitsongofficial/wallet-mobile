@@ -15,6 +15,7 @@ import Animated, {
 	useAnimatedStyle,
 } from "react-native-reanimated"
 import { s } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	style: StyleProp<ViewStyle>
@@ -27,8 +28,9 @@ type Props = {
 
 export default observer<Props>(
 	({ style, input, onPressAvatar, avatar, animtedValue, onNickEdited }) => {
+		const { t } = useTranslation()
 		const inputRef = useRef<TextInput>(null)
-		const { dapp, user } = useStore()
+		const { dapp, wallet } = useStore()
 
 		const openInput = useCallback(() => {
 			inputRef.current?.focus()
@@ -40,10 +42,10 @@ export default observer<Props>(
 
 		useEffect(() => reaction(() => input.value, checkNick), [input])
 		useEffect(() => {
-			if (!input.isFocused && isNickValid) {
-				user?.setNick(input.value)
+			if (!input.isFocused && isNickValid && wallet.activeProfile) {
+				wallet.changeActiveProfileName(input.value)
 			}
-		}, [input.isFocused, isNickValid, user, input])
+		}, [input.isFocused, isNickValid, wallet.activeProfile, input])
 
 		const hidden = useSpring({ opacity: input.isFocused ? 0.3 : 1 })
 
@@ -62,6 +64,9 @@ export default observer<Props>(
 				transform: [{ scale }],
 			}
 		})
+
+		const setNick = t("SetNick")
+		const edit = t("Edit")
 
 		return (
 			<View style={[styles.container, style]}>
@@ -91,7 +96,7 @@ export default observer<Props>(
 				{!input.isFocused && (
 					<Animated.View style={buttonStyle}>
 						<Button
-							text={!input.value ? "Set nick" : "Edit"}
+							text={!input.value ? setNick : edit}
 							onPress={openInput}
 							style={styles.button}
 							contentContainerStyle={styles.buttonContent}

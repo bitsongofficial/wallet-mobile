@@ -10,6 +10,7 @@ import { useCallback } from "react"
 import { SupportedCoins } from "constants/Coins"
 import { Contact } from "stores/ContactsStore"
 import { s } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	/** How many $ we will send */
@@ -31,6 +32,7 @@ export default observer(function CardWillSend({
 	onPressUp,
 	style,
 }: Props) {
+	const { t } = useTranslation()
 	const theme = useTheme()
 	const { settings, contacts, coin } = useStore()
 
@@ -54,7 +56,8 @@ export default observer(function CardWillSend({
 	return (
 		<View style={[styles.container, style]}>
 			<View style={styles.title}>
-				<Text style={[styles.text, styles.titleText, theme.text.colorText]}>You are sending</Text>
+				<Text style={[styles.text, styles.titleText, theme.text.colorText]}>
+					{t("YouAreSending")}</Text>
 				<TouchableOpacity onPress={onPressUp}>
 					<Icon2 name="arrow_up" size={18} stroke={COLOR.Marengo} />
 				</TouchableOpacity>
@@ -69,12 +72,12 @@ export default observer(function CardWillSend({
 			</Text>
 
 			<View style={styles.row}>
-				<Text style={[styles.text, styles.w66, theme.text.colorText]}>from</Text>
+				<Text style={[styles.text, styles.w66, theme.text.colorText]}>{t("From")}</Text>
 				<Text style={[styles.text, theme.text.primary]}>{shortFrom}</Text>
 			</View>
 
 			<View style={styles.row}>
-				<Text style={[styles.text, styles.w30, theme.text.colorText]}>to</Text>
+				<Text style={[styles.text, styles.w30, theme.text.colorText]}>{t("To")}</Text>
 				<Text style={[styles.text, theme.text.primary]}>{shortAddress}</Text>
 			</View>
 		</View>

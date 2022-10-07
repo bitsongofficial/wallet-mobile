@@ -14,8 +14,7 @@ import { useStore } from "hooks"
 import { toJS } from "mobx"
 import { s, vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
-import { Coin } from "classes"
-import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	controller: SendController
@@ -28,10 +27,20 @@ export default observer<Props>(function SendModal({
 	onPressScanQRReciver,
 	onPressBack,
 }) {
+	const { t } = useTranslation()
 	const store = useStore()
 	const hasCoins = toJS(store.coin.coins).length > 0
 
 	const { steps } = controller
+
+	const stepsToTitle = () =>
+	{
+		if(steps.title === "Send Recap") return t("SendRecap")
+		if(steps.title === "Insert Import") return t("SendImportTitle")
+		if(steps.title === "Select Receiver") return t("SendReceiverTitle")
+		if(steps.title === "Select coin") return t("SelectCoinTitle")
+		return ""
+	}
 
 	return (
 		<BottomSheetView style={styles.container}>
@@ -42,8 +51,8 @@ export default observer<Props>(function SendModal({
 					) : (
 						<>
 							<Header
-								title={steps.title === "Send Recap" ? steps.title : "Send"}
-								subtitle={steps.title !== "Send Recap" ? steps.title : undefined}
+								title={steps.title === "Send Recap" ? stepsToTitle() : t("Send")}
+								subtitle={steps.title !== "Send Recap" ? stepsToTitle() : undefined}
 								Pagination={<Pagination acitveIndex={steps.active} count={3} />}
 								style={styles.header}
 							/>
@@ -82,6 +91,7 @@ type FooterProps = BottomSheetFooterProps & {
 
 export const FooterSendModal = observer(
 	({ controller, onPressBack, onPressSend, animatedFooterPosition }: FooterProps) => {
+		const { t } = useTranslation()
 		const { steps, creater } = controller
 		const { addressInput } = creater
 
@@ -106,7 +116,7 @@ export const FooterSendModal = observer(
 						<>
 							{steps.title === "Select Receiver" && (
 								<Button
-									text="Preview Send"
+									text={t("PreviewSend")}
 									onPress={() => steps.goTo("Send Recap")}
 									disable={!(addressInput.value != "" && isValidAddress(addressInput.value))}
 									contentContainerStyle={styles.buttonPreviewSend}
@@ -115,7 +125,7 @@ export const FooterSendModal = observer(
 							)}
 							{steps.title === "Send Recap" && (
 								<Button
-									text="Send"
+									text={t("Send")}
 									onPress={onPressSend}
 									contentContainerStyle={styles.buttonSend}
 									textStyle={styles.buttonText}
@@ -127,7 +137,7 @@ export const FooterSendModal = observer(
 						<>
 							{steps.title === "Insert Import" && (
 								<Button
-									text="Continue"
+									text={t("Continue")}
 									onPress={() => steps.goTo("Select Receiver")}
 									disable={
 										!(Number(creater.balance) <= (creater.coin?.balance ?? 0) &&

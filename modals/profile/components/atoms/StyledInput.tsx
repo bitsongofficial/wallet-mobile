@@ -5,10 +5,10 @@ import { s } from "react-native-size-matters"
 
 type Props = InputProps & { isFocus?: boolean }
 
-export default ({ style, bottomsheet = true, isFocus, ...props }: Props) => (
+export default ({ style, bottomsheet = true, isFocus, inputStyle, ...props }: Props) => (
 	<Input
 		style={[styles.container, isFocus && styles.container_focused, style]}
-		inputStyle={styles.input}
+		inputStyle={[styles.input, inputStyle]}
 		placeholderTextColor={hexAlpha(COLOR.White, 50)}
 		keyboardAppearance="dark"
 		bottomsheet={bottomsheet}

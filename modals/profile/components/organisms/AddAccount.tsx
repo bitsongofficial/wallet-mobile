@@ -9,6 +9,7 @@ import { BottomSheetFooter, BottomSheetFooterProps } from "@gorhom/bottom-sheet"
 import { ChooseStep, CreateStep, ImportStep, InputNameStep } from "../moleculs/AddAccount"
 import { ControllerAddAccount } from "modals/profile/controllers"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = { controller: ControllerAddAccount }
 
@@ -56,6 +57,7 @@ type FooterProps = BottomSheetFooterProps & {
 
 export const Footer = observer(
 	({ animatedFooterPosition, controller, onPressAddWallet, onPressBack }: FooterProps) => {
+		const { t } = useTranslation()
 		const { phrase, steps, nameInput } = controller
 
 		const openName = useCallback(() => steps.goTo("Name"), [])
@@ -85,7 +87,7 @@ export const Footer = observer(
 					{steps.title === "Create" && (
 						<View style={{ alignItems: "center", justifyContent: "center" }}>
 							<Button
-								text="Continue"
+								text={t("Continue")}
 								contentContainerStyle={styles.buttonContinueContent}
 								textStyle={styles.buttonContinueText}
 								onPress={openName}
@@ -98,7 +100,8 @@ export const Footer = observer(
 							<ButtonBack onPress={onPressBack} />
 							<View style={{ width: "66%" }}>
 								<Button
-									text="Add Account"
+									text={t("Add Account")}
+									textAlignment="center"
 									disable={!phrase.isValid || nameInput.value.length < 3}
 									contentContainerStyle={styles.buttonContinueContent}
 									textStyle={styles.buttonContinueText}

@@ -10,6 +10,7 @@ import * as Clipboard from "expo-clipboard"
 import { useKeyboard } from "@react-native-community/hooks"
 import { s, vs } from "react-native-size-matters"
 import { TitledParagraph } from "components/moleculs"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	phrase: Phrase
@@ -19,6 +20,7 @@ type Props = {
 }
 
 export default observer<Props>(({ phrase, onPressBack, onPressNext, isDisableNext }) => {
+	const { t } = useTranslation()
 	const scrollview = useRef<ScrollView>(null)
 	const scrollingEnd = useCallback(() => scrollview.current?.scrollToEnd(), [])
 
@@ -59,7 +61,7 @@ export default observer<Props>(({ phrase, onPressBack, onPressNext, isDisableNex
 
 			{!keyboardShown && (
 				<Footer
-					nextButtonText="Continue"
+					nextButtonText={t("Continue")}
 					isDisableNext={isDisableNext}
 					onPressBack={onPressBack}
 					onPressNext={onPressNext}

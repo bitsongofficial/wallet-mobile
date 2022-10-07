@@ -10,12 +10,14 @@ import { LanguageData, Languages } from "constants/languages"
 import { ILang } from "screens/Profile/type"
 import { Icon2 } from "components/atoms"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	close(): void
 }
 
 export default observer<Props>(({ close }) => {
+	const { t } = useTranslation()
 	const { settings } = useStore()
 
 	// --------- Search ---------
@@ -51,9 +53,9 @@ export default observer<Props>(({ close }) => {
 
 	return (
 		<View style={styles.container}>
-			<Title style={styles.title}>Seleziona Lingua</Title>
+			<Title style={styles.title}>{t("SelectLanguage")}</Title>
 			<StyledInput
-				placeholder="Cerca Lingua"
+				placeholder={t("SearchLanguage")}
 				style={styles.search}
 				value={input.value}
 				onChangeText={input.set}

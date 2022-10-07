@@ -1,4 +1,5 @@
 import { Agreement, Icon2, IconName } from "components/atoms"
+import { useTranslation } from "react-i18next"
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { COLOR, hexAlpha } from "utils"
@@ -9,21 +10,25 @@ type ChooseStepProps = {
 	onPressImport(): void
 }
 
-export default ({ onPressCreate, onPressImport }: ChooseStepProps) => (
-	<>
-		<Title style={styles.title}>Add a new account</Title>
-		<View style={styles.buttons}>
-			<ButtonChoose
-				icon="wallet"
-				text="Create Account"
-				onPress={onPressCreate}
-				style={{ marginBottom: 12 }}
-			/>
-			<ButtonChoose icon="wallet" text="Import Mnemonics" onPress={onPressImport} />
-		</View>
-		<Agreement style={styles.agreements} />
-	</>
-)
+export default ({ onPressCreate, onPressImport }: ChooseStepProps) =>
+{
+	const { t } = useTranslation()
+	return (
+		<>
+			<Title style={styles.title}>{t("AddNewAccount")}</Title>
+			<View style={styles.buttons}>
+				<ButtonChoose
+					icon="wallet"
+					text={t("CreateAccount")}
+					onPress={onPressCreate}
+					style={{ marginBottom: 12 }}
+				/>
+				<ButtonChoose icon="wallet" text={t("ImportMnemonics")} onPress={onPressImport} />
+			</View>
+			<Agreement style={styles.agreements} />
+		</>
+	)
+}
 
 type ButtonProps = {
 	icon: IconName

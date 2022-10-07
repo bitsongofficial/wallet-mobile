@@ -36,7 +36,6 @@ export default class SettingsStore {
 	setLanguage(language: Languages) {
 		if(language != this.language)
 		{
-			console.log("changing", language)
 			changeLanguage(language)
 			this.language = language
 		}

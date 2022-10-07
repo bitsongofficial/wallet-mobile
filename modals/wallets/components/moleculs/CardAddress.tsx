@@ -28,7 +28,7 @@ export default observer<Props>(function CardWallet({ onPressQR, input, style, is
 			bottomsheet
 			style={[theme.text.primary, styles.container, style]}
 			inputStyle={styles.input}
-			placeholder="Public Address"
+			placeholder={t("PublicAddress")}
 			onChangeText={input.set}
 			onFocus={input.focusON}
 			onBlur={input.focusOFF}

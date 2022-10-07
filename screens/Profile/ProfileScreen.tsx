@@ -24,10 +24,12 @@ import { FAQ_URL, PRIVACY_POLICY_URL, TERMS_AND_CONDITIONS_URL } from "constants
 import { WalletTypes } from "core/types/storing/Generic"
 import { capitalize } from "utils/string"
 import { mvs, s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">
 
 export default observer<Props>(function MainScreen({ navigation }) {
+	const { t } = useTranslation()
 	const { settings, wallet } = useStore()
 
 	// ------- BottomSheet ----------
@@ -130,7 +132,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						scrollEventThrottle={1}
 					>
 						<animated.View style={[styles.wrapper, hidden]}>
-							<Subtitle style={styles.subtitle}>Connected with</Subtitle>
+							<Subtitle style={styles.subtitle}>
+								{t("ConnectedWith")}
+							</Subtitle>
 							<WalletButton
 								onPress={openModal.changeWallet}
 								wallet={wallet.activeWallet}
@@ -138,14 +142,14 @@ export default observer<Props>(function MainScreen({ navigation }) {
 							/>
 
 							<ListButton
-								text="Add a new account"
+								text={t("AddNewAccount")}
 								onPress={openModal.addAccount}
 								icon="wallet"
 								arrow
 								style={styles.listButton}
 							/>
 							<ListButton
-								text="Add a Watch account"
+								text={t("AddWatchAccount")}
 								onPress={openModal.addWatchAccount}
 								icon="eye"
 								arrow
@@ -158,26 +162,26 @@ export default observer<Props>(function MainScreen({ navigation }) {
 							/>
 
 							<View>
-								<Title style={styles.title}>Settings</Title>
+								<Title style={styles.title}>{t("SettingsTitle")}</Title>
 
 								<View style={styles.section}>
-									<Subtitle style={styles.subtitle}>Account</Subtitle>
+									<Subtitle style={styles.subtitle}>{t("AccountSection")}</Subtitle>
 									<ListButton
 										onPress={openSecurity}
 										icon="star_shield"
-										text="Security"
+										text={t("Security")}
 										arrow
 										style={styles.listButton}
 									/>
 									<ListButton
 										onPress={openAddressBook}
 										icon="address_book"
-										text="Address Book"
+										text={t("AddressBook")}
 										arrow
 										style={styles.listButton}
 									/>
 									<ListButton
-										text="Notifications"
+										text={t("Notifications")}
 										onPress={openNotifications}
 										icon="bell"
 										style={styles.listButton}
@@ -187,7 +191,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 									/>
 									<ListButton
 										disabled={wallet.activeProfile?.type == WalletTypes.WATCH}
-										text="Wallet Connect"
+										text={t("WalletConnect")}
 										icon="wallet_connect"
 										onPress={openWalletConnect}
 										style={styles.listButton}
@@ -195,16 +199,16 @@ export default observer<Props>(function MainScreen({ navigation }) {
 									/>
 								</View>
 								<View style={styles.section}>
-									<Subtitle style={styles.subtitle}>App Preferences</Subtitle>
+									<Subtitle style={styles.subtitle}>{t("PreferencesSection")}</Subtitle>
 									<ListButton
-										text="Language"
+										text={t("Language")}
 										onPress={openModal.changeLanguage}
 										icon="translate"
 										style={styles.listButton}
 										Right={<Value text={capitalize(settings.prettyLanguage.name)} />}
 									/>
 									<ListButton
-										text="Currency"
+										text={t("Currency")}
 										onPress={openModal.channgeCurrency}
 										icon="circle_dollar"
 										style={styles.listButton}
@@ -215,7 +219,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 										}
 									/>
 									<ListButton
-										text="Night Mode"
+										text={t("NightMode")}
 										onPress={toggleNightMode}
 										icon="moon"
 										style={styles.listButton}
@@ -231,9 +235,9 @@ export default observer<Props>(function MainScreen({ navigation }) {
 								</View>
 
 								<View style={styles.section}>
-									<Subtitle style={styles.subtitle}>Support</Subtitle>
+									<Subtitle style={styles.subtitle}>{t("SupportSection")}</Subtitle>
 									<ListButton
-										text="Currency App"
+										text={t("CurrencyApp")}
 										onPress={openCurrencyApp}
 										icon="star"
 										arrow
@@ -241,21 +245,21 @@ export default observer<Props>(function MainScreen({ navigation }) {
 										disabled={true}
 									/>
 									<ListButton
-										text="FAQ"
+										text={t("FAQ")}
 										onPress={openFAQ}
 										icon="chat_dots"
 										arrow
 										style={styles.listButton}
 									/>
 									<ListButton
-										text="Terms and conditions"
+										text={t("TermsAndConditions")}
 										onPress={openTermsAndConditions}
 										icon="file_text"
 										arrow
 										style={styles.listButton}
 									/>
 									<ListButton
-										text="Privacy Policy"
+										text={t("PrivacyPolicy")}
 										onPress={openPrivacyPolicy}
 										icon="file_text"
 										style={styles.listButton}
@@ -265,7 +269,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 								<Button
 									mode="fill"
-									text="Disconnect and Remove Wallet"
+									text={t("DisconnectAndRemoveWallet")}
+									textAlignment="center"
 									onPress={disconnectAndRemove}
 									style={styles.button}
 									textStyle={styles.buttonText}

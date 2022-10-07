@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetScrollView, BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet"
@@ -14,6 +14,7 @@ import JSONTree from 'react-native-json-tree'
 import { fromCoinToAmount } from "core/utils/Coin"
 import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type ValueTabs = "Details" | "Data"
 const tabs: ValueTabs[] = ["Details", "Data"]
@@ -23,6 +24,7 @@ type Props = {
 }
 
 export default observer(function SelectReceiver({ controller }: Props) {
+	const { t } = useTranslation()
 	const { coin: coinStore } = useStore()
 
 	const [activeTab, setActiveTab] = useState<ValueTabs>("Details")
@@ -46,9 +48,16 @@ export default observer(function SelectReceiver({ controller }: Props) {
 		})()
 	}, [controller])
 
+	const titleExtractor = useCallback((tab: ValueTabs) =>
+	{
+		if(tab === "Data") return t("Data")
+		if(tab === "Details") return t("Details")
+		return ""
+	}, [])
+
 	return (
 		<View style={styles.container}>
-			<Tabs values={tabs} active={activeTab} onPress={setActiveTab} style={styles.tabs} />
+			<Tabs values={tabs} active={activeTab} titleExtractor={titleExtractor} onPress={setActiveTab} style={styles.tabs} />
 			{activeTab === "Details" && (
 				<BottomSheetScrollView
 					ref={scrollview}

@@ -10,12 +10,14 @@ import currencies from "constants/currencies"
 import { ICurrency } from "screens/Profile/type"
 import { Icon2 } from "components/atoms"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	close(): void
 }
 
 export default observer<Props>(({ close }) => {
+	const { t } = useTranslation()
 	const { settings } = useStore()
 	// --------- Search ---------
 
@@ -52,9 +54,9 @@ export default observer<Props>(({ close }) => {
 
 	return (
 		<View style={styles.container}>
-			<Title style={styles.title}>Seleziona Valuta</Title>
+			<Title style={styles.title}>{t("SelectCurrency")}</Title>
 			<StyledInput
-				placeholder="Cerca Valuta"
+				placeholder={t("SearchCurrency")}
 				value={input.value}
 				onChangeText={input.set}
 				style={styles.search}

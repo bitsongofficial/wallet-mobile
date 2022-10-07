@@ -5,6 +5,7 @@ import { Footer, CreateSeed } from "../organisms"
 import { Phrase } from "classes"
 import { vs } from "react-native-size-matters"
 import { TitledParagraph } from "components/moleculs"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	phrase: Phrase
@@ -14,30 +15,34 @@ type Props = {
 	onPressNext(): void
 }
 
-export default observer<Props>(({ isHidden, onPressToggle, phrase, onPressBack, onPressNext }) => (
-	<>
-		<TitledParagraph
-			title={"Create New Mnemonic"}
-			text={"This is the only way you will be able to \n recover your account. Please store it\n somewhere safe!"}
-			style={styles.title}
-		></TitledParagraph>
-
-		{phrase.words && (
-			<CreateSeed
-				isHidden={isHidden}
-				onPressToggle={onPressToggle}
-				phrase={phrase}
-				//
+export default observer<Props>(({ isHidden, onPressToggle, phrase, onPressBack, onPressNext }) =>
+{
+	const { t } = useTranslation()
+	return (
+		<>
+			<TitledParagraph
+				title={t("CreateNewMnemonic")}
+				text={t("OnlyWayToRecoverMnemonic")}
+				style={styles.title}
+			></TitledParagraph>
+	
+			{phrase.words && (
+				<CreateSeed
+					isHidden={isHidden}
+					onPressToggle={onPressToggle}
+					phrase={phrase}
+					//
+				/>
+			)}
+	
+			<Footer
+				onPressBack={onPressBack}
+				onPressNext={onPressNext}
+				nextButtonText={isHidden ? t("Skip") : t("Continue")}
 			/>
-		)}
-
-		<Footer
-			onPressBack={onPressBack}
-			onPressNext={onPressNext}
-			nextButtonText={isHidden ? "Skip" : "Continue"}
-		/>
-	</>
-))
+		</>
+	)
+})
 
 const styles = StyleSheet.create({
 	title: { marginTop: vs(50) },

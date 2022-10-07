@@ -160,6 +160,13 @@ export default
 
 		const rewards = validators.totalRewardAsDollars
 
+		const titleExtractor = useCallback((tab: ValueTabs) =>
+		{
+			if(tab === "Coins") return t("Coins")
+			if(tab === "Fan Tokens") return t("FanTokens")
+			return ""
+		}, [])
+
 		return (
 			<SafeAreaView style={styles.container}>
 				<BottomNavigator
@@ -201,7 +208,7 @@ export default
 						<Tabs
 							values={tabs}
 							active={activeTab}
-							// @ts-ignore TODO: create cool types
+							titleExtractor={titleExtractor}
 							onPress={setActiveTab}
 							style={styles.tabs}
 						/>

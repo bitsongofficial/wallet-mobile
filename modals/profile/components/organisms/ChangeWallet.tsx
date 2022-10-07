@@ -17,6 +17,7 @@ import { WalletTypes } from "core/types/storing/Generic"
 import { ListButton } from "screens/Profile/components/atoms"
 import { ControllerChangeWallet } from "../../controllers"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	close(): void
@@ -25,6 +26,7 @@ type Props = {
 }
 
 export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
+	const { t } = useTranslation()
 	const { wallet } = useStore()
 	const { steps, edited, inputSearch, inputWalletName, setEdited, setSelected, seedPhrase } =
 		controller
@@ -84,12 +86,14 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 					<View style={styles.wrapper}>
 						<View style={styles.header}>
 							<View style={styles.headerCenter}>
-								<Title style={styles.title}>Seleziona Wallet</Title>
+								<Title style={styles.title}>
+									{t("SelectWallet")}
+								</Title>
 							</View>
 						</View>
 
 						<StyledInput
-							placeholder="Cerca Wallet"
+							placeholder={t("SearchWallet")}
 							style={styles.search}
 							value={inputSearch.value}
 							onChangeText={inputSearch.set}
@@ -126,13 +130,13 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						</View>
 
 						<View style={styles.headerCenter}>
-							<Title style={styles.title}>Edit Wallet</Title>
+							<Title style={styles.title}>{t("EditWallet")}</Title>
 						</View>
 						<View style={styles.headerRight} />
 					</View>
 
 					<StyledInput
-						placeholder="Modifica nome"
+						placeholder={t("NewName")}
 						style={styles.search}
 						value={inputWalletName.value}
 						onChangeText={inputWalletName.set}
@@ -145,7 +149,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 								<ListButton
 									style={styles.listButton}
 									icon="eye"
-									text="View Mnemonic"
+									text={t("ViewMnemonic")}
 									arrow
 									onPress={onPressViewMnemonic}
 								/>
@@ -153,15 +157,14 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 							<ListButton
 								style={styles.listButton}
 								icon="power"
-								text="Disconnect Wallet"
+								text={t("DisconnectWallet")}
 								arrow
 								onPress={onPressDelete}
 							/>
 						</View>
 
 						<Text style={styles.caption}>
-							Access VIP experiences, exclusive previews,{"\n"}
-							finance your own and have your say.
+							{t("VIP")}
 						</Text>
 					</View>
 				</View>
@@ -183,7 +186,7 @@ export default observer<Props>(({ close, controller, onPressViewMnemonic }) => {
 						</View>
 
 						<View style={styles.headerCenter}>
-							<Title style={styles.title}>View Mnemonic Seed</Title>
+							<Title style={styles.title}>{t("ViewMnemonicSeed")}</Title>
 						</View>
 						<View style={styles.headerRight} />
 					</View>
@@ -207,6 +210,7 @@ type FooterProps = {
 }
 
 export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, controller }) => {
+	const { t } = useTranslation()
 	const insent = useSafeAreaInsets()
 	const copyToClipboard = useCallback(
 		() => Clipboard.setStringAsync(controller.seedPhrase.join(" ")),
@@ -216,7 +220,7 @@ export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, contr
 		<View style={[styles.buttons, { bottom: insent.bottom }]}>
 			{controller.steps.active === 0 && (
 				<Button
-					text="Select"
+					text={t("Select")}
 					onPress={onPressSelect}
 					textStyle={styles.buttonText}
 					contentContainerStyle={styles.buttonContent}
@@ -225,7 +229,7 @@ export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, contr
 			{controller.steps.active === 1 && (
 				<Button
 					disable={controller.inputWalletName.value.length < 4}
-					text="Save"
+					text={t("Save")}
 					onPress={onPressSave}
 					textStyle={styles.buttonText}
 					contentContainerStyle={styles.buttonContent}
@@ -233,7 +237,9 @@ export const Footer = observer<FooterProps>(({ onPressSave, onPressSelect, contr
 			)}
 			{controller.steps.active === 2 && (
 				<TouchableOpacity onPress={copyToClipboard}>
-					<Text style={[styles.editTitle, { color: COLOR.White }]}>Copy to Clipboard</Text>
+					<Text style={[styles.editTitle, { color: COLOR.White }]}>
+						{t("CopyToClipboard")}
+					</Text>
 				</TouchableOpacity>
 			)}
 		</View>

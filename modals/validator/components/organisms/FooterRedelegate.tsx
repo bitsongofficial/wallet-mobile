@@ -5,6 +5,7 @@ import { COLOR } from "utils"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { s } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	onPressBack?(): void
@@ -14,6 +15,7 @@ type Props = {
 }
 
 export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
+	const { t } = useTranslation()
 	const insets = useSafeAreaInsets()
 	return (
 		<Footer
@@ -22,7 +24,7 @@ export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
 			Center={
 				steps.active === 1 ? (
 					<Button
-						text="Continue"
+						text={t("Continue")}
 						contentContainerStyle={styles.buttonContentCenter}
 						textStyle={styles.buttonText}
 						onPress={steps.next}
@@ -39,7 +41,7 @@ export default observer<Props>(({ onPressBack, onPressDone, style, steps }) => {
 			Right={
 				steps.active === 0 && (
 					<Button
-						text="Continue"
+						text={t("Continue")}
 						contentContainerStyle={styles.buttonContent}
 						textStyle={styles.buttonText}
 						onPress={steps.next}

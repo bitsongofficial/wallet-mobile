@@ -69,7 +69,7 @@ export default ({
 	)
 
 	return (
-		<View>
+		<View style={styles.w100}>
 			{label &&
 			<Text style={styles.label}>
 				{label}
@@ -81,7 +81,7 @@ export default ({
 					</Text>
 				)}
 
-				<View style={styles.row}>
+				<View style={[styles.row, styles.w100]}>
 					<Component
 						style={[theme.input.component, styles.input, inputStyle]}
 						placeholderTextColor={theme.input.placeholder}
@@ -106,6 +106,9 @@ const ErrorMessage = ({ message, style }: ErrorProps) => (
 )
 
 const styles = StyleSheet.create({
+	w100: {
+		width: "100%",
+	},
 	container: {
 		borderRadius: BORDER_RADIUS,
 		width: "100%",

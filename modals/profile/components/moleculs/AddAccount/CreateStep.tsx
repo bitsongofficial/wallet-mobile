@@ -7,6 +7,7 @@ import { Phrase as PhraseView } from "components/moleculs";
 import { COLOR } from "utils";
 import { observer } from "mobx-react-lite";
 import { useTheme } from "hooks";
+import { useTranslation } from "react-i18next";
 
 type CreateStepProps = {
   isHidden: boolean;
@@ -16,21 +17,20 @@ type CreateStepProps = {
 
 export default observer(
   ({ isHidden, onPressToggle, phrase }: CreateStepProps) => {
+    const { t } = useTranslation()
     const theme = useTheme();
     return (
       <>
-        <Title style={styles.title}>Create new Mnemonics</Title>
+        <Title style={styles.title}>{t("CreateNewMnemonic")}</Title>
         <Text style={styles.caption}>
-          This is the only way you will be able to{"\n"}
-          recover your account.Please store it {"\n"}
-          somewhere safe!
+          {t("OnlyWayToRecoverMnemonic")}
         </Text>
         <View style={{ alignItems: "center" }}>
           {isHidden ? (
             <Button
               style={styles.button}
               onPress={onPressToggle}
-              text="Show"
+              text={t("Show")}
               contentContainerStyle={styles.buttonContainer}
             />
           ) : (
@@ -41,7 +41,7 @@ export default observer(
               contentContainerStyle={styles.buttonContainer_gradient}
             >
               <GradientText style={[styles.text, theme.text.primary]}>
-                Hide
+                {t("Hide")}
               </GradientText>
             </Button>
           )}

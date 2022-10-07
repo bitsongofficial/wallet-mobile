@@ -25,6 +25,7 @@ import moment from "moment"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { vs } from "react-native-size-matters"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useTranslation } from "react-i18next"
 
 type Props = NativeStackScreenProps<RootStackParamList, "PinRequest">
 
@@ -34,14 +35,15 @@ const TIME = 200
 const EASING = Easing.elastic(1.5)
 
 export default observer<Props>(({ navigation, route }) => {
+	const { t } = useTranslation()
 	const {
 		callback,
-		title = "Confirm with PIN",
+		title = t("ConfirmWithPin"),
 		errorMax = 3,
 		disableVerification = false,
 		isRandomKeyboard = true,
 	} = route.params
-	const { wallet, settings } = useStore()
+	const { settings } = useStore()
 
 	const goBack = useCallback(() => navigation.goBack(), [])
 
@@ -146,9 +148,7 @@ export default observer<Props>(({ navigation, route }) => {
 					<View style={styles.wrapper}>
 						<Title text={title} style={styles.title} />
 						<Caption style={styles.caption}>
-							This is the only way you will be able to {"\n"}
-							recover your account. Please store it {"\n"}
-							somewhere safe!
+							{t("AskPinText")}
 						</Caption>
 
 						<Animated.View style={[animErrorStyle, styles.pin]}>
@@ -171,8 +171,8 @@ export default observer<Props>(({ navigation, route }) => {
 				{isConfirm && !settings.isAppBlock && (
 					<View style={styles.confirm}>
 						<StepSuccess
-							title="Operation Confirmed"
-							caption={`Congratulations,${"\n"} Operation successfully confirmed.`}
+							title={t("OperationConfirmed")}
+							caption={t("OperationSuccessfullText")}
 						/>
 					</View>
 				)}
@@ -181,7 +181,7 @@ export default observer<Props>(({ navigation, route }) => {
 						<StepLock timer={settings.blockingTimer} style={styles.lock} />
 						<View style={[styles.buttonBackContainer, { bottom: insets.bottom }]}>
 							<Button
-								text="Back to homescreen"
+								text={t("BackToHome")}
 								mode="fill"
 								disable={settings.blockingTimer.isActive}
 								onPress={goBack}
