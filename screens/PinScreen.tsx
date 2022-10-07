@@ -23,7 +23,7 @@ import { StepLock, StepSuccess } from "./LoaderScreen/components/organisms"
 import { Button, Caption, Title } from "./LoaderScreen/components/atoms"
 import moment from "moment"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
-import { vs } from "react-native-size-matters"
+import { s, vs } from "react-native-size-matters"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
 
@@ -197,6 +197,7 @@ export default observer<Props>(({ navigation, route }) => {
 
 const styles = StyleSheet.create({
 	container: {
+		paddingTop: s(24),
 		backgroundColor: COLOR.Dark3,
 		flex: 1,
 	},

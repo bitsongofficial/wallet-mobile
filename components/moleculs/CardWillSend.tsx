@@ -13,7 +13,7 @@ import { s } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
 
 type Props = {
-	/** How many $ we will send */
+	/** How many coin we will send */
 	amount: string
 	/** Account details from which we send */
 	coinData: ICoin
@@ -45,10 +45,10 @@ export default observer(function CardWillSend({
 		})
 	}, [address])
 
-	const coinsValue = useMemo(
-		() => coin.fromFIATToCoin(parseFloat(amount), SupportedCoins.BITSONG),
-		[amount],
-	)
+	const coinsValue = parseFloat(amount)
+	const dollars = useMemo(() => coin.fromCoinBalanceToFiat(parseFloat(amount), coinData.coin), [amount])
+	const coinsIntegerValue = Math.floor(coinsValue)
+	const coinsDecimalValue = coinsValue - coinsIntegerValue
 
 	const shortAddress = `${address.substring(0, 10)}..${address.slice(-7)}`
 	const shortFrom = `${coinData.address.substring(0, 10)}..${coinData.address.slice(-7)}`
@@ -64,11 +64,13 @@ export default observer(function CardWillSend({
 			</View>
 
 			<Text style={[styles.transferAmount, theme.text.primary]}>
-				{coinsValue} <Text style={{fontSize: s(20)}}>{coinData.coinName.toUpperCase()}</Text>
+				{coinsIntegerValue}
+				{coinsDecimalValue != 0 && <Text style={styles.transferAmountDecimal}>.{coinsDecimalValue.toString().substring(2)}</Text>}
+				<Text style={styles.coinName}> {coinData.coinName.toUpperCase()}</Text>
 			</Text>
 
 			<Text style={[styles.fiatText]}>
-				{amount} {settings.currency?.symbol}
+				{dollars} {settings.currency?.symbol}
 			</Text>
 
 			<View style={styles.row}>
@@ -131,6 +133,12 @@ const styles = StyleSheet.create({
 		lineHeight: 53,
 
 		marginTop: 4,
+	},
+	transferAmountDecimal: {
+		fontSize: s(15),
+	},
+	coinName: {
+		fontSize: s(20),
 	},
 	avatar: {
 		width: 20,
