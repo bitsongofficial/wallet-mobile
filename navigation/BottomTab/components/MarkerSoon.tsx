@@ -1,12 +1,18 @@
+import { useTranslation } from "react-i18next"
 import { View, Text, StyleSheet } from "react-native"
 import { s } from "react-native-size-matters"
 import { COLOR } from "utils"
 
-export default () => (
-	<View style={styles.container}>
-		<Text style={styles.text}>SOON</Text>
-	</View>
-)
+export default () =>
+{
+	const { t } = useTranslation()
+
+	return (
+		<View style={styles.container}>
+			<Text style={styles.text}>{t("Soon")}</Text>
+		</View>
+	)
+}
 
 const styles = StyleSheet.create({
 	container: {
