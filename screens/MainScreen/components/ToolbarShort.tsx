@@ -46,12 +46,12 @@ export default observer(function ToolbarShort({
 				onPress={onPressScan}
 				Icon={<Icon2 stroke={COLOR.White} size={18} name="scan" />}
 			/>
-			<ToolbarAction
+			{/* <ToolbarAction
 				title={t("All")}
 				onPress={onPressAll}
 				mode="outline"
 				Icon={<Icon2 stroke={COLOR.White} size={18} name="settings" />}
-			/>
+			/> */}
 		</View>
 	)
 })
