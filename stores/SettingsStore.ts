@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx"
 import { ICurrency, ILang } from "screens/Profile/type"
 import { LanguageData, Languages } from "constants/languages"
-import currencies from "constants/currencies"
+import currencies, { Currencies, CurrenciesData } from "constants/currencies"
 import { CheckMethod, NotifSettings } from "./type"
 import LocalStorageManager from "./LocalStorageManager"
 import { clearPin, savePin } from "utils/biometrics"
@@ -14,7 +14,7 @@ export default class SettingsStore {
 
 	theme: "light" | "dark" = "dark"
 	language: Languages = Languages.En
-	currency: ICurrency | null = currencies[0]
+	currency: Currencies = Currencies.USD
 	checkMethod: CheckMethod | null = null
 	biometric_enable = false
 
@@ -46,8 +46,13 @@ export default class SettingsStore {
 		return LanguageData[this.language]
 	}
 
-	setCurrency(currency: ICurrency) {
+	setCurrency(currency: Currencies) {
 		this.currency = currency
+	}
+
+	get prettyCurrency()
+	{
+		return CurrenciesData[this.currency]
 	}
 
 	setNotifications(settings: Partial<NotifSettings>) {

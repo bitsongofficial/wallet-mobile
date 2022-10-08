@@ -15,6 +15,7 @@ import { Header } from "../components/atoms"
 import { SelectCoin, SelectNetwork } from "../components/templates"
 import { coinsFromSupportedCoins } from "utils/coins"
 import { SupportedCoins } from "constants/Coins"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	style: StyleProp<ViewStyle>
@@ -22,6 +23,7 @@ type Props = {
 }
 
 export default observer<Props>(function ReceiveModal({ style, close }) {
+	const { t } = useTranslation()
 	const { wallet, coin } = useStore()
 	const { screen } = useDimensions()
 	const [address, setAddress] = useState("")
@@ -72,13 +74,13 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 				</View>
 
 				<View style={styles.card}>
-					<Text style={styles.address}>{isCopied ? "Address copied!" : shortAddress}</Text>
+					<Text style={styles.address}>{isCopied ? t("AddressCopied") : shortAddress}</Text>
 					<TouchableOpacity style={styles.buttonCopy} onPress={copyToClipboard}>
 						<Icon2 name="copy" stroke={hexAlpha(COLOR.White, 30)} size={17} />
 					</TouchableOpacity>
 				</View>
 				<Text style={styles.subtitle} onPress={copyToClipboard}>
-					{"Copy address"}
+					{t("CopyAddress")}
 				</Text>	
 			</>}
 		</BottomSheetView>

@@ -18,12 +18,14 @@ import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1"
 import SwipeableItem from "components/organisms/SwipeableItem"
 import { s, vs } from "react-native-size-matters"
 import moment from "moment"
+import { withFullHeight } from "screens/layout/hocs"
+import { t } from "i18next"
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">
 
 const WRAPPER = s(34)
 
-export default observer<Props>(function WalletConnect({ navigation }) {
+export default withFullHeight(observer<Props>(function WalletConnect({ navigation }) {
 	const { dapp } = useStore()
 
 	// ------- Wallets ------
@@ -60,18 +62,16 @@ export default observer<Props>(function WalletConnect({ navigation }) {
 
 	const goBack = useCallback(() => navigation.goBack(), [])
 
-	const insets = useSafeAreaInsets()
-
 	return (
 		<>
 			<StatusBar style="light" />
 
-			<ThemedGradient invert style={styles.container}>
-				<View style={[styles.safeArea, { paddingTop: insets.top }]}>
+			<View style={styles.container}>
+				<View style={[styles.safeArea]}>
 					<Header
 						onPressBack={goBack}
 						style={styles.header}
-						title="Wallet Connect"
+						title={t("WalletConnect")}
 						onPressScan={navToScanner}
 					/>
 					{connections.length > 0 && (
@@ -79,7 +79,7 @@ export default observer<Props>(function WalletConnect({ navigation }) {
 							<Subtitle style={styles.caption}>Connessioni attive</Subtitle>
 							<FlatList
 								bounces={false}
-								styles={styles.flatlist}
+								style={styles.flatlist}
 								contentContainerStyle={styles.flatlistContent}
 								data={connections}
 								renderItem={renderWallet}
@@ -89,7 +89,7 @@ export default observer<Props>(function WalletConnect({ navigation }) {
 					<View style={[styles.wrapper, { flex: 1 }]}>
 						{connections.length === 0 && (
 							<>
-								<Circles>
+								<Circles style={styles.circles}>
 									<Icon2 name="qr_code" size={70} stroke={COLOR.White} />
 								</Circles>
 								<View style={{ flex: 1 }}>
@@ -104,18 +104,16 @@ export default observer<Props>(function WalletConnect({ navigation }) {
 						<View style={styles.buttonContainer}>
 							<Button
 								onPress={navToScanner}
-								textStyle={styles.buttonText}
-								contentContainerStyle={styles.buttonContent}
-								mode="fill"
-								text="Scan QR Code"
+								mode="gradient"
+								text={t("ScanQRCode")}
 							/>
 						</View>
 					</View>
 				</View>
-			</ThemedGradient>
+			</View>
 		</>
 	)
-})
+}))
 
 type PropsHeader = {
 	onPressBack(): void
@@ -154,6 +152,9 @@ const styles = StyleSheet.create({
 	head: {
 		marginHorizontal: s(25), // <- wrapper
 		marginBottom: vs(30),
+	},
+	circles: {
+		marginBottom: s(10),
 	},
 
 	wrapper: { marginHorizontal: WRAPPER },

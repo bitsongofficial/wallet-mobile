@@ -3,30 +3,33 @@ import { StyleSheet, Text, View } from "react-native"
 import { s, vs } from "react-native-size-matters"
 import { COLOR, hexAlpha } from "utils"
 
-export type Props = {
-	item: any
+export type Props<T> = {
+	item: T
 	isActive: boolean
 	hideSelector?: boolean
-	labelExtractor?:(item: any) => string
-	leftExtractor?:(item: any) => JSX.Element
-	rightExtractor?:(item: any) => JSX.Element
+	labelExtractor?:(item: T) => string
+	leftExtractor?:(item: T) => JSX.Element
+	rightExtractor?:(item: T) => JSX.Element
 }
 
-export default ({
+export default function SelectItem<T> ({
 	item,
 	isActive,
 	hideSelector = false,
 	leftExtractor,
 	rightExtractor,
 	labelExtractor
-}: Props) => {
+}: Props<T>)
+{
 	return (
 		<View style={[styles.container]}>
 			<View style={[styles.content, hideSelector ? styles.contentWithoutSelector : styles.contentWithSelector]}>
-				{leftExtractor && leftExtractor(item)}
-				<Text style={[styles.title, (isActive || hideSelector) && styles.text_active]}>
-					{labelExtractor ? labelExtractor(item) : item.toString()}
-				</Text>
+				<View style={styles.row}>
+					{leftExtractor && leftExtractor(item)}
+					<Text style={[styles.title, (isActive || hideSelector) && styles.text_active]}>
+						{labelExtractor ? labelExtractor(item) : item?.toString()}
+					</Text>
+				</View>
 				{rightExtractor && rightExtractor(item)}
 			</View>
 			{!hideSelector && <RadioButton isActive={isActive} />}
@@ -43,6 +46,10 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "space-between",
 		height: vs(55),
+	},
+	row: {
+		flexDirection: "row",
+		alignItems: "center",
 	},
 	name: {
 		fontFamily: "CircularStd",

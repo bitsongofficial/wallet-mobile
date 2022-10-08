@@ -7,7 +7,7 @@ import { RootStackParamList } from "types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { useStore, useTheme } from "hooks"
 import { Agreement, Button, Switch, ThemedGradient } from "components/atoms"
-import { COLOR, InputHandler } from "utils"
+import { COLOR, hexAlpha, InputHandler } from "utils"
 import { animated, useSpring } from "@react-spring/native"
 import Animated, {
 	Extrapolation,
@@ -25,10 +25,11 @@ import { WalletTypes } from "core/types/storing/Generic"
 import { capitalize } from "utils/string"
 import { mvs, s, vs } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
+import { withFullHeight } from "screens/layout/hocs"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">
 
-export default observer<Props>(function MainScreen({ navigation }) {
+export default withFullHeight(observer<Props>(function MainScreen({ navigation }) {
 	const { t } = useTranslation()
 	const { settings, wallet } = useStore()
 
@@ -106,17 +107,14 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		return { transform: [{ translateY }] }
 	})
 
-	const insets = useSafeAreaInsets()
-	const topInsetsStyle = useMemo<ViewStyle>(() => ({ marginTop: insets.top }), [])
-
 	return (
 		<>
 			<StatusBar style="inverted" />
 
-			<ThemedGradient style={styles.container} invert>
-				<Animated.View style={[styles.animContainer, topInsetsStyle, animStyle]}>
+			<View style={styles.container}>
+				<Animated.View style={[styles.animContainer, animStyle]}>
 					<Header onPressClose={goBack} style={styles.header} animtedValue={translationY} />
-					<Animated.View style={[headerContainerAnimatedStyle, styles.containerHead]}>
+					<View style={[styles.containerHead]}>
 						<Head
 							style={styles.head}
 							input={inputNick}
@@ -125,7 +123,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 							avatar={wallet.activeProfile?.avatar}
 							animtedValue={translationY}
 						/>
-					</Animated.View>
+					</View>
 					<Animated.ScrollView
 						onScroll={scrollHandler}
 						contentContainerStyle={styles.scrollContent}
@@ -174,22 +172,6 @@ export default observer<Props>(function MainScreen({ navigation }) {
 										style={styles.listButton}
 									/>
 									<ListButton
-										onPress={openAddressBook}
-										icon="address_book"
-										text={t("AddressBook")}
-										arrow
-										style={styles.listButton}
-									/>
-									<ListButton
-										text={t("Notifications")}
-										onPress={openNotifications}
-										icon="bell"
-										style={styles.listButton}
-										Right={
-											<Switch active={settings.notifications.enable} onPress={toggleNotification} />
-										}
-									/>
-									<ListButton
 										disabled={wallet.activeProfile?.type == WalletTypes.WATCH}
 										text={t("WalletConnect")}
 										icon="wallet_connect"
@@ -214,7 +196,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 										style={styles.listButton}
 										Right={
 											settings.currency != null && (
-												<Value text={settings.currency?.name.toUpperCase()} />
+												<Value text={settings.currency.toUpperCase()} />
 											)
 										}
 									/>
@@ -229,6 +211,7 @@ export default observer<Props>(function MainScreen({ navigation }) {
 												active={settings.theme == "dark"}
 												onPress={toggleNightMode}
 												disabled={true}
+												gradient={true}
 											/>
 										}
 									/>
@@ -280,35 +263,37 @@ export default observer<Props>(function MainScreen({ navigation }) {
 						</animated.View>
 					</Animated.ScrollView>
 				</Animated.View>
-			</ThemedGradient>
+			</View>
 		</>
 	)
-})
+}))
 
 const styles = StyleSheet.create({
-	container: { flex: 1 },
+	container: {
+		flex: 1,
+		backgroundColor: COLOR.Dark3,
+		position: "relative"
+	},
 	animContainer: { opacity: 1 },
 	header: {
-		marginLeft: s(27.5),
-		marginRight: s(17),
 		zIndex: 5,
+		position: "absolute",
+		width: "100%",
 	},
 
 	containerHead: {
-		position: "absolute",
 		zIndex: 1,
-		top: s(70),
 		width: "100%",
+		paddingVertical: s(7),
 	},
 	head: {
-		marginHorizontal: s(25), // <- wrapper
 		marginBottom: vs(30),
 	},
 
 	activeWallet: { marginBottom: mvs(16) },
-	scrollContent: { paddingTop: s(100) },
+	scrollContent: {  },
 
-	wrapper: { marginHorizontal: s(34) },
+	wrapper: { },
 	wrapper_opacity: { opacity: 0.1 },
 	agreement: { marginBottom: vs(54), marginTop: vs(25) },
 	title: { marginBottom: s(38) },
@@ -317,7 +302,7 @@ const styles = StyleSheet.create({
 
 	listButton: { marginTop: s(4) },
 
-	button: { backgroundColor: COLOR.Dark3, marginBottom: s(8) },
+	button: { backgroundColor: hexAlpha(COLOR.White, 10), marginBottom: s(8) },
 	buttonContent: { paddingVertical: s(18) },
 	buttonText: {
 		fontSize: s(14),

@@ -100,7 +100,7 @@ export const Footer = observer(
 							<ButtonBack onPress={onPressBack} />
 							<View style={{ width: "66%" }}>
 								<Button
-									text={t("Add Account")}
+									text={t("AddAccount")}
 									textAlignment="center"
 									disable={!phrase.isValid || nameInput.value.length < 3}
 									contentContainerStyle={styles.buttonContinueContent}

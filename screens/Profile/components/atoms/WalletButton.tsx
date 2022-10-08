@@ -30,14 +30,13 @@ export default ({ onPress, wallet, style }: Props) => {
 				<Icon2
 					size={18}
 					name={wallet?.profile.type == WalletTypes.WATCH ? "eye" : "wallet"}
-					stroke={hexAlpha(COLOR.White, 20)}
+					stroke={hexAlpha(COLOR.White, 40)}
 					style={styles.icon}
 				/>
 				<View style={styles.info}>
 					<Text style={styles.name}>{wallet?.profile.name}</Text>
-					<Text style={styles.address}>{address}</Text>
 				</View>
-				<Icon2 size={13} name="chevron_down" stroke={COLOR.RoyalBlue} />
+				<Icon2 size={13} name="chevron_down" stroke={hexAlpha(COLOR.White, 80)} />
 			</View>
 		</RectButton>
 	)
@@ -45,8 +44,8 @@ export default ({ onPress, wallet, style }: Props) => {
 
 const styles = StyleSheet.create({
 	container: {
-		height: s(73),
-		backgroundColor: COLOR.Dark3,
+		height: s(64),
+		backgroundColor: hexAlpha(COLOR.White, 10),
 		paddingLeft: s(24),
 		paddingRight: s(24),
 		borderRadius: s(20),

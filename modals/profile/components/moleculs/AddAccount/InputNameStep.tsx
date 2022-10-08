@@ -3,33 +3,40 @@ import { observer } from "mobx-react-lite"
 import { COLOR, InputHandler } from "utils"
 import { StyledInput, Subtitle, Title } from "../../atoms"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type InputNameStepProps = {
 	input: InputHandler
 }
 
-export default observer(({ input }: InputNameStepProps) => (
-	<>
-		<Title style={styles.title}>Name your Wallet</Title>
-		<Text style={styles.caption}>
-			This is the only way you will be able to recover your account. Please store it somewhere safe!
-		</Text>
-		<StyledInput
-			value={input.value}
-			onChangeText={input.set}
-			placeholder="Write a name"
-			autoFocus
-			isFocus={input.isFocused}
-			onFocus={input.focusON}
-			onBlur={input.focusOFF}
-			style={styles.input}
-			keyboardAppearance="dark"
-		/>
-		<Subtitle style={styles.subtitle}>
-			Access VIP experiences, exclusive previews, finance your own music projects and have your say.
-		</Subtitle>
-	</>
-))
+export default observer(({ input }: InputNameStepProps) =>
+{
+	const { t } = useTranslation()
+
+	return (
+		<>
+			<Title style={styles.title}>{t("NameYourWallet")}</Title>
+			<Text style={styles.caption}>
+				{t("NameWalletDescription")}
+			</Text>
+			<StyledInput
+				value={input.value}
+				onChangeText={input.set}
+				placeholder={t("NameWalletPlaceholder")}
+				autoFocus
+				dark
+				isFocus={input.isFocused}
+				onFocus={input.focusON}
+				onBlur={input.focusOFF}
+				style={styles.input}
+				keyboardAppearance="dark"
+			/>
+			<Subtitle style={styles.subtitle}>
+				{t("VIP")}
+			</Subtitle>
+		</>
+	)
+})
 
 const styles = StyleSheet.create({
 	title: {

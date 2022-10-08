@@ -179,7 +179,7 @@ export default
 					}>
 						<View style={styles.info}>
 							<Title
-								title={coin.totalBalance.toLocaleString("en") + " " + settings.currency?.symbol}
+								title={coin.totalBalance.toLocaleString("en") + " " + settings.prettyCurrency?.symbol}
 								uppertitle={t("TotalBalance")}
 								size={{title: 32, uppertitle: 18}}
 								style={styles.mb34}
@@ -188,7 +188,7 @@ export default
 
 							<View style={[styles.reward]}>
 								<Title
-									title={formatNumber(rewards) + " " + settings.currency?.symbol}
+									title={formatNumber(rewards) + " " + settings.prettyCurrency?.symbol}
 									uppertitle={t("Reward")}
 									size={{title: 32, uppertitle: 16}}
 								></Title>

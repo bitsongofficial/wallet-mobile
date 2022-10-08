@@ -4,10 +4,11 @@ import { Button, GradientText } from "components/atoms";
 import { StyleSheet, Text, View } from "react-native";
 import { Title } from "../../atoms";
 import { Phrase as PhraseView } from "components/moleculs";
-import { COLOR } from "utils";
+import { COLOR, hexAlpha } from "utils";
 import { observer } from "mobx-react-lite";
 import { useTheme } from "hooks";
 import { useTranslation } from "react-i18next";
+import { s } from "react-native-size-matters";
 
 type CreateStepProps = {
   isHidden: boolean;
@@ -52,6 +53,7 @@ export default observer(
         >
           <PhraseView
             style={styles.phrase}
+            hiddenStyle={styles.phraseWordHidden}
             hidden={isHidden}
             value={phrase.words}
           />
@@ -83,12 +85,14 @@ const styles = StyleSheet.create({
   phrase: {
     alignItems: "center",
   },
-
+  phraseWordHidden: {
+    backgroundColor: hexAlpha(COLOR.Dark3, 40),
+  },
   text: {
     fontFamily: "CircularStd",
     fontStyle: "normal",
     fontWeight: "500",
-    fontSize: 12,
+    fontSize: s(16),
     lineHeight: 15,
   },
 
@@ -101,7 +105,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer_gradient: {
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingTop: 12,
+    paddingBottom: 8,
     borderRadius: 50,
     backgroundColor: COLOR.Dark3,
   },

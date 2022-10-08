@@ -1,16 +1,17 @@
 import { useCallback, useMemo } from "react"
-import { Dimensions, ListRenderItem, StyleSheet, View } from "react-native"
+import { Dimensions, ListRenderItem, StyleSheet, Text, View } from "react-native"
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet"
 import { observer } from "mobx-react-lite"
 import { useStore } from "hooks"
 import { COLOR, hexAlpha, InputHandler } from "utils"
 import { StyledInput, Title } from "../atoms"
 import { CurrencyItem } from "../moleculs"
-import currencies from "constants/currencies"
 import { ICurrency } from "screens/Profile/type"
 import { Icon2 } from "components/atoms"
 import { s, vs } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
+import { Select } from "modals/general/organisms"
+import { Currencies, CurrenciesData } from "constants/currencies"
 
 type Props = {
 	close(): void
@@ -19,60 +20,25 @@ type Props = {
 export default observer<Props>(({ close }) => {
 	const { t } = useTranslation()
 	const { settings } = useStore()
-	// --------- Search ---------
 
-	const input = useMemo(() => new InputHandler(), [])
-
-	const filtred = useMemo(() => {
-		if (input.value) {
-			const lowerCase = input.value.toLowerCase()
-			return currencies.filter(({ name }) => name.toLowerCase().includes(lowerCase))
-		} else {
-			return currencies
-		}
-	}, [input.value])
-
-	// ------- FlatList ----------
-
-	const setCurrency = useCallback((currency: ICurrency) => {
+	const setCurrency = useCallback((currency: Currencies) => {
 		settings.setCurrency(currency)
 		close()
 	}, [])
 
-	const keyExtractor = ({ _id }: ICurrency) => _id
-	const renderCurrencies = useCallback<ListRenderItem<ICurrency>>(
-		({ item }) => (
-			<CurrencyItem
-				value={item}
-				key={item._id}
-				isActive={settings.currency?._id === item._id}
-				onPress={setCurrency}
-			/>
-		),
-		[settings.currency],
-	)
 
 	return (
 		<View style={styles.container}>
-			<Title style={styles.title}>{t("SelectCurrency")}</Title>
-			<StyledInput
-				placeholder={t("SearchCurrency")}
-				value={input.value}
-				onChangeText={input.set}
-				style={styles.search}
-				Right={
-					<View style={styles.iconContainer}>
-						<Icon2 name="magnifying_glass" stroke={hexAlpha(COLOR.White, 20)} size={21} />
-					</View>
-				}
-			/>
-			<BottomSheetFlatList
-				data={filtred}
-				style={styles.scroll}
-				contentContainerStyle={styles.scrollContent}
-				keyExtractor={keyExtractor}
-				renderItem={renderCurrencies}
-			/>
+			<Select
+				title={t("SelectCurrency")}
+				items={Object.values(Currencies)}
+				searchCriteria={(item, search) => CurrenciesData[item].title.toLowerCase().includes(search.toLowerCase())}
+				onPress={setCurrency}
+				onGray={true}
+				active={settings.currency}
+				keyExtractor={(item: Currencies) => item}
+				labelExtractor={item => CurrenciesData[item].title}
+			></Select>
 		</View>
 	)
 })
@@ -81,7 +47,6 @@ const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
 		marginTop: vs(15),
-		marginHorizontal: s(26),
 	},
 	title: {
 		fontSize: s(16),
@@ -89,6 +54,15 @@ const styles = StyleSheet.create({
 
 		marginBottom: vs(30),
 		textAlign: "center",
+	},
+	currencyName: {
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "500",
+		fontSize: s(13),
+		lineHeight: s(50),
+		color: COLOR.RoyalBlue3,
+		marginRight: s(42),
 	},
 	search: {
 		marginBottom: vs(9),

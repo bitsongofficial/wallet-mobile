@@ -53,7 +53,6 @@ export default function useBottomSheetModals() {
 
 const styles = StyleSheet.create({
 	background: {
-		backgroundColor: COLOR.Dark3,
 		paddingTop: 30,
 	},
 })

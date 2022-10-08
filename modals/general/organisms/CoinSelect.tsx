@@ -5,7 +5,7 @@ import { Coin } from "classes"
 import { CoinStat } from "components/organisms"
 import { useTranslation } from "react-i18next"
 
-export type Props = Omit<SelectProps, "title" | "description" | "renderFunction" | "items"> & {
+export type Props = Omit<SelectProps<Coin>, "title" | "description" | "renderFunction" | "items"> & {
 	active?: Coin
 	activeIndex?: number
 	hideSelector?: boolean

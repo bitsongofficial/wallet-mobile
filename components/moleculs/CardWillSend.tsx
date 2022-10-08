@@ -70,7 +70,7 @@ export default observer(function CardWillSend({
 			</Text>
 
 			<Text style={[styles.fiatText]}>
-				{dollars} {settings.currency?.symbol}
+				{dollars} {settings.prettyCurrency?.symbol}
 			</Text>
 
 			<View style={styles.row}>

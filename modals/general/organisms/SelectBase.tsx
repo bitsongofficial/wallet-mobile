@@ -6,29 +6,31 @@ import { Icon2, Paragraph, Title } from "components/atoms"
 import { s, vs } from "react-native-size-matters"
 import { StyledInput } from "modals/profile/components/atoms"
 
-export type Props = {
-	items: any[]
-	keyExtractor?:((item: any, index: number) => string) | ((item: any) => string)
-	renderFunction: ListRenderItem<any>
-	onPress?(item: any): void
+export type Props<T> = {
+	items: T[]
+	keyExtractor?:((item: T, index: number) => string) | ((item: T) => string)
+	renderFunction: ListRenderItem<T>
+	onPress?(item: T): void
+	onGray?: boolean,
 	title: string
 	description?: string
 	searchText?: string
-	searchCriteria?:(item:any, search: string) => boolean
+	searchCriteria?:(item:T, search: string) => boolean
 }
 
-export default (
+export default function SelectBase<T>(
 	{
 		title,
 		description,
 		searchText,
 		items,
+		onGray = false,
 		onPress,
 		searchCriteria,
-		keyExtractor = (item, index) => index.toString(),
+		keyExtractor = (item: T, index: number) => index.toString(),
 		renderFunction,
 		
-	}: Props) =>
+	}: Props<T>)
 {
 	// --------- Search ---------
 
@@ -57,13 +59,14 @@ export default (
 	return (
 		<View style={styles.container}>
 			<Title style={styles.title} title={title} alignment="center" size={20} />
-			<Paragraph style={[styles.paragraph, searchCriteria ? styles.mb30 : styles.mb10]}>
+			{description && <Paragraph style={[styles.paragraph, searchCriteria ? styles.mb30 : styles.mb10]}>
 				{description}
-			</Paragraph>
+			</Paragraph>}
 			{searchCriteria && <StyledInput
 				placeholder={searchText ?? "Search"}
 				value={input.value}
 				onChangeText={input.set}
+				dark={onGray}
 				style={[styles.search, styles.mb10]}
 				Right={
 					<View style={styles.iconContainer}>

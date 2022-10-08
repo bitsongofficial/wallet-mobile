@@ -31,7 +31,7 @@ export default observer(({ coin, style }: Props) => {
 			title={name}
 			subtitle={display}
 			description={balance}
-			subdescription={balanceUSD ? (balanceUSD + " " + settings.currency?.symbol) : undefined}
+			subdescription={balanceUSD ? (balanceUSD + " " + settings.prettyCurrency?.symbol) : undefined}
 			style={style}
 		/>
 	)

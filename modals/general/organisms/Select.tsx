@@ -3,13 +3,13 @@ import { ListRenderItem } from "react-native"
 import { SelectItem, SelectItemProps } from "../moleculus"
 import SelectBase, { Props as SelectProps } from "./SelectBase"
 
-export type Props =  {
-	active?: any
+export type Props<T> =  {
+	active?: T
 	activeIndex?: number
-} & Omit<SelectProps, "renderFunction"> &
-	Omit<SelectItemProps, "isActive" | "item">
+} & Omit<SelectProps<T>, "renderFunction"> &
+	Omit<SelectItemProps<T>, "isActive" | "item">
 
-export default (
+export default function Select<T>(
 	{
 		active,
 		activeIndex,
@@ -18,7 +18,7 @@ export default (
 		leftExtractor,
 		rightExtractor,
 		...props
-	}: Props) =>
+	}: Props<T>)
 {
 	const render = useCallback<ListRenderItem<any>>(
 		({ item, index }) => (

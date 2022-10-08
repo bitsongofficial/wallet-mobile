@@ -49,24 +49,6 @@ export default observer<Props>(
 
 		const hidden = useSpring({ opacity: input.isFocused ? 0.3 : 1 })
 
-		const titleStyle = useAnimatedStyle(() => {
-			const scale = interpolate(animtedValue.value, [0, 32], [1, 0.8], Extrapolation.CLAMP)
-			return {
-				transform: [{ scale }],
-				flexDirection: "row",
-				alignItems: "center",
-			}
-		})
-
-		const buttonStyle = useAnimatedStyle(() => {
-			const scale = interpolate(animtedValue.value, [0, 16], [1, 0], Extrapolation.CLAMP)
-			return {
-				transform: [{ scale }],
-			}
-		})
-
-		const setNick = t("SetNick")
-		const edit = t("Edit")
 
 		return (
 			<View style={[styles.container, style]}>
@@ -74,8 +56,8 @@ export default observer<Props>(
 					<TouchableOpacity onPress={onPressAvatar}>
 						<Avatar style={styles.avatar} source={avatar ? { uri: avatar } : undefined} />
 					</TouchableOpacity>
-					<View style={{ flexDirection: "row" }}>
-						<Animated.View style={titleStyle}>
+					<View style={{ flexDirection: "row" }} onPress={openInput}>
+						<View style={styles.row}>
 							<Title style={hidden}>{input.value || input.isFocused ? `@` : "Profile"}</Title>
 							<TextInput
 								// editable={editable}
@@ -83,28 +65,15 @@ export default observer<Props>(
 								style={styles.input}
 								value={input.value}
 								onChangeText={input.set}
-								onPressIn={(e) => e.preventDefault()}
 								enabled={false}
 								onFocus={input.focusON}
 								onBlur={input.focusOFF}
 								focusable={false}
 								onEndEditing={onNickEdited}
 							/>
-						</Animated.View>
+						</View>
 					</View>
 				</View>
-				{!input.isFocused && (
-					<Animated.View style={buttonStyle}>
-						<Button
-							text={!input.value ? setNick : edit}
-							onPress={openInput}
-							style={styles.button}
-							contentContainerStyle={styles.buttonContent}
-							textStyle={styles.buttonText}
-							mode="fill"
-						/>
-					</Animated.View>
-				)}
 			</View>
 		)
 	},
@@ -116,7 +85,9 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		alignItems: "center",
 	},
-
+	row: {
+		flexDirection: "row"
+	},
 	user: {
 		flexDirection: "row",
 		alignItems: "center",

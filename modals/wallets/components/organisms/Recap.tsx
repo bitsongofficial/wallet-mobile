@@ -40,7 +40,7 @@ export default observer<Props>(function CardWallet({
         </View>
 
         <Text style={[styles.transferAmount, theme.text.primary]}>
-          {CoinStore.fromCoinBalanceToFiat(balance ?? 0, coin ? coin?.info.coin: SupportedCoins.BITSONG)} {settings.currency?.symbol}
+          {CoinStore.fromCoinBalanceToFiat(balance ?? 0, coin ? coin?.info.coin: SupportedCoins.BITSONG)} {settings.prettyCurrency?.symbol}
         </Text>
 
         {coin && coin.info.coin && <View style={styles.row}>

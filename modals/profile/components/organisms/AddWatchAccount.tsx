@@ -96,7 +96,7 @@ export const Footer = observer(({ controller, onPressSave }: FooterProps) => {
 			{steps.title === "Name" && (
 				<Button
 					disable={inputName.value.length < 4}
-					text={t("Add Account")}
+					text={t("AddAccount")}
 					textAlignment="center"
 					onPress={onPressSave}
 					contentContainerStyle={styles.buttonContent}

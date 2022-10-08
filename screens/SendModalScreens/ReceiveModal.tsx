@@ -51,7 +51,7 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 				{address != "" && <QRCode value={address} size={screen.width * 0.7} />}
 			</View>
 
-			<Text style={styles.subtitle}>Copy address</Text>
+			<Text style={styles.subtitle}>{t("CopyAddress")}</Text>
 
 			<View style={styles.card}>
 				<Text style={styles.address}>{isCopied ? "Address Copied!" : shortAddress}</Text>

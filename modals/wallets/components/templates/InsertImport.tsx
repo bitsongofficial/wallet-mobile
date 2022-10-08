@@ -23,7 +23,7 @@ export default observer<Props>(function InsertImport({ controller, onPressSelect
 	const theme = useTheme()
 	const { settings } = useStore()
 	const creater: TransactionCreater = controller.creater
-	const fiatSymbol = settings.currency?.symbol
+	const fiatSymbol = settings.prettyCurrency?.symbol
 
 	return (
 		<BottomSheetView style={[styles.container, style]}>

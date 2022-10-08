@@ -11,6 +11,7 @@ import { ILang } from "screens/Profile/type"
 import { Icon2 } from "components/atoms"
 import { s, vs } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
+import { Select } from "modals/general/organisms"
 
 type Props = {
 	close(): void
@@ -20,58 +21,25 @@ export default observer<Props>(({ close }) => {
 	const { t } = useTranslation()
 	const { settings } = useStore()
 
-	// --------- Search ---------
-	const input = useMemo(() => new InputHandler(), [])
-
-	const filtered = useMemo<Languages[]>(() => {
-		if (input.value) {
-			const lowerCase = input.value.toLowerCase()
-			return Object.values(Languages).filter(code => LanguageData[code].name.toLowerCase().includes(lowerCase))
-		} else {
-			return Object.values(Languages)
-		}
-	}, [input.value])
-
-	// ------- FlatList ----------
-
 	const setLanguage = useCallback((lang: Languages) => {
 		settings.setLanguage(lang)
 		close()
 	}, [])
 
 	const keyExtractor = (code: Languages) => code
-	const renderLanguage = useCallback<ListRenderItem<Languages>>(
-		({item}) => (
-			<LanguageItem
-				value={LanguageData[item]}
-				isActive={item === settings.language}
-				onPress={() => setLanguage(item)}
-			/>
-		),
-		[settings.language],
-	)
 
 	return (
 		<View style={styles.container}>
-			<Title style={styles.title}>{t("SelectLanguage")}</Title>
-			<StyledInput
-				placeholder={t("SearchLanguage")}
-				style={styles.search}
-				value={input.value}
-				onChangeText={input.set}
-				Right={
-					<View style={styles.iconContainer}>
-						<Icon2 name="magnifying_glass" stroke={hexAlpha(COLOR.White, 20)} size={21} />
-					</View>
-				}
-			/>
-			<BottomSheetFlatList
-				data={filtered}
-				style={styles.scroll}
-				contentContainerStyle={styles.scrollContent}
+			<Select
+				title={t("SelectLanguage")}
+				items={Object.values(Languages)}
+				active={settings.language}
 				keyExtractor={keyExtractor}
-				renderItem={renderLanguage}
-			/>
+				onGray={true}
+				labelExtractor={item => LanguageData[item as Languages].name}
+				searchCriteria={(item, search) => LanguageData[item as Languages].name.toLowerCase().includes(search.toLowerCase())}
+				onPress={setLanguage}
+			></Select>
 		</View>
 	)
 })
@@ -80,7 +48,6 @@ const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
 		marginTop: vs(15),
-		marginHorizontal: s(26),
 	},
 	title: {
 		fontSize: s(16),

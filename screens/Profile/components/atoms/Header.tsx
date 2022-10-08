@@ -28,10 +28,7 @@ export default ({ onPressClose, style, animtedValue }: Props) => {
 	})
 
 	return (
-		<View style={[styles.container, style]}>
-			<Animated.View style={logoStyle}>
-				<Icon2 name="logo_black" size={40} />
-			</Animated.View>
+		<View style={[styles.container, style]} pointerEvents={"box-none"}>
 			<TouchableOpacity style={styles.button} onPress={onPressClose}>
 				<Icon2 name="close" size={18} stroke={COLOR.White} />
 			</TouchableOpacity>
@@ -42,10 +39,9 @@ export default ({ onPressClose, style, animtedValue }: Props) => {
 const styles = StyleSheet.create({
 	container: {
 		height: s(55),
-
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "space-between",
+		justifyContent: "flex-end",
 	},
 	button: {
 		backgroundColor: hexAlpha(COLOR.White, 10),

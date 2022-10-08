@@ -31,7 +31,7 @@ export default function StakingScreen() {
 				<ScrollView>
 					<View style={styles.info}>
 						<Text style={styles.balance_title}>My Staking</Text>
-						<Text style={styles.balance_value}>{staking} {settings.currency?.symbol}</Text>
+						<Text style={styles.balance_value}>{staking} {settings.prettyCurrency?.symbol}</Text>
 					</View>
 
 					<View style={styles.toolbar}>

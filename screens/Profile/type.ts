@@ -12,8 +12,6 @@ export type ILang = {
 };
 
 export type ICurrency = {
-  _id: string;
-  name: SupportedFiats;
   title: string;
   symbol: string;
 };

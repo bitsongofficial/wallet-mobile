@@ -3,22 +3,22 @@ import { ListRenderItem, StyleSheet } from "react-native"
 import ListItem, { Props as ListItemProps } from "components/moleculs/ListItem"
 import SelectBase, { Props as SelectProps } from "./SelectBase"
 
-export type Props = Omit<SelectProps, "renderFunction"> & {
-	active?: any
+export type Props<T> = Omit<SelectProps<T>, "renderFunction"> & {
+	active?: T
 	activeIndex?: number
 	hideSelector?: boolean
-	infoExtractor(item: any): Omit<ListItemProps, "style">
+	infoExtractor(item: T): Omit<ListItemProps, "style">
 }
 
-export default (
+export default function DetailedSelect<T> (
 	{
 		active,
 		activeIndex,
 		infoExtractor,
 		...props
-	}: Props) =>
+	}: Props<T>)
 {
-	const render = useCallback<ListRenderItem<any>>(
+	const render = useCallback<ListRenderItem<T>>(
 		({ item, index }) =>
 		{
 			const infos = infoExtractor(item)

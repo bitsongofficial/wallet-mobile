@@ -100,5 +100,8 @@
 	"SearchLanguage": "Search Language",
 	"SelectCurrency": "Choose a Currency",
 	"SearchCurrency": "Search Currency",
-	"Soon": "SOON"
+	"Soon": "SOON",
+	"ScanQRCode": "Scan QR Code",
+	"CopyAddress": "Copy address",
+	"AddressCopied": "Address copied!"
 }
