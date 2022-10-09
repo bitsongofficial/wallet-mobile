@@ -18,7 +18,7 @@ import { Contact } from "stores/ContactsStore"
 import { SendController } from "../../controllers"
 import { CardAddress, CardAdressSelf } from "../moleculs"
 import { Contact as ContactItem } from "../atoms"
-import { FOOTER_HEIGHT, HORIZONTAL_WRAPPER } from "utils/constants"
+import { FOOTER_HEIGHT } from "utils/constants"
 
 type Props = {
 	controller: SendController

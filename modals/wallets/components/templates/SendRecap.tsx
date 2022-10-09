@@ -9,7 +9,7 @@ import { Data } from "../organisms"
 import { SupportedCoins } from "constants/Coins"
 import { formatNumber } from "utils/numbers"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { FOOTER_HEIGHT, HORIZONTAL_WRAPPER } from "utils/constants"
+import { FOOTER_HEIGHT } from "utils/constants"
 import JSONTree from 'react-native-json-tree'
 import { fromCoinToAmount } from "core/utils/Coin"
 import { COLOR } from "utils"
