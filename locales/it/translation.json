@@ -30,6 +30,7 @@
 	"SendImportTitle": "Inserisci l'importo",
 	"SendReceiverTitle": "Seleziona il destinatario",
 	"SelectCoinTitle": "Seleziona la coin",
+	"SelectNetworkTitle": "Seleziona il network",
 	"SelectCoinDescription": "Seleziona la chain da cui la tua coin \nproviene",
 	"ConnectedWith": "Connesso con",
 	"AddNewAccount": "Aggiungi un Account",

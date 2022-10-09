@@ -11,23 +11,22 @@ import { CoinSelect } from "modals/general/organisms"
 type Props = {
 	activeCoin?: Coin | null
 	onPress(coin: Coin): void
-	onBack(): void
 	style?: StyleProp<ViewStyle>
+	filter?(coin: Coin): boolean
 }
 
-export default function SelectCoin({ activeCoin, onPress, onBack, style }: Props) {
+export default function SelectCoin({ activeCoin, onPress, filter, style }: Props) {
 	const { coin } = useStore()
 
 	const selectCoin = useCallback(
 		(coin) =>
 		{
 			onPress(coin)
-			onBack()
 		},
-		[onPress, onBack],
+		[onPress],
 	)
-	const coinsFromSupported = Object.values(SupportedCoins).map((sc) => coin.findAssetWithCoin(sc))
-	const availableCoins = coinsFromSupported.filter((c) => c != undefined) as Coin[]
+	const nonZeroCoins = coin.coins.filter(c => c.balance > 0)
+	const availableCoins = filter ? nonZeroCoins.filter(filter) : nonZeroCoins
 
 	return (
 		<BottomSheetView style={[styles.container, style]}>

@@ -4,7 +4,7 @@ import { BottomSheetFooter, BottomSheetFooterProps, BottomSheetView } from "@gor
 import { Pagination } from "components/moleculs"
 import { SendController } from "../controllers"
 import { Header } from "../components/atoms"
-import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "../components/templates"
+import { InsertImport, SendRecap, SelectReceiver, SelectCoin, SelectNetwork } from "../components/templates"
 import { COLOR } from "utils"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -15,6 +15,9 @@ import { toJS } from "mobx"
 import { s, vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { useTranslation } from "react-i18next"
+import { useState } from "react"
+import { SupportedCoins } from "constants/Coins"
+import { Coin } from "classes"
 
 type Props = {
 	controller: SendController
@@ -30,6 +33,7 @@ export default observer<Props>(function SendModal({
 	const { t } = useTranslation()
 	const store = useStore()
 	const hasCoins = toJS(store.coin.coins).length > 0
+	const [chain, setChain] = useState(SupportedCoins.BITSONG)
 
 	const { steps } = controller
 
@@ -39,39 +43,65 @@ export default observer<Props>(function SendModal({
 		if(steps.title === "Insert Import") return t("SendImportTitle")
 		if(steps.title === "Select Receiver") return t("SendReceiverTitle")
 		if(steps.title === "Select coin") return t("SelectCoinTitle")
+		if(steps.title === "Select network") return t("SelectNetworkTitle")
 		return ""
+	}
+
+	const coinSelect = (coin: Coin) =>
+	{
+		controller.creater.setCoin(coin)
+		steps.clear()
+		steps.goTo("Insert Import")
+	}
+
+	const networkSelect = (c: SupportedCoins) =>
+	{
+		steps.next()
+		setChain(c)
 	}
 
 	return (
 		<BottomSheetView style={styles.container}>
 			{hasCoins ? (
 				<>
-					{steps.title === "Select coin" ? (
-						<SelectCoin onPress={controller.creater.setCoin} activeCoin={controller.creater.coin} onBack={onPressBack} />
+					{steps.title === "Select coin" ? 
+					(
+						<SelectCoin
+							onPress={coinSelect}
+							activeCoin={controller.creater.coin}
+							filter={coin => coin.info.coin == chain}
+						/>
 					) : (
-						<>
-							<Header
-								title={steps.title === "Send Recap" ? stepsToTitle() : t("Send")}
-								subtitle={steps.title !== "Send Recap" ? stepsToTitle() : undefined}
-								Pagination={<Pagination acitveIndex={steps.active} count={3} />}
-								style={styles.header}
+						steps.title === "Select network" ?
+						(
+							<SelectNetwork
+								onPress={networkSelect}
 							/>
-							{steps.title === "Insert Import" && (
-								<InsertImport
-									controller={controller}
-									onPressSelectCoin={() => steps.goTo("Select coin")}
-									style={styles.insertImport}
+						) : (
+							<>
+								<Header
+									title={steps.title === "Send Recap" ? stepsToTitle() : t("Send")}
+									subtitle={steps.title !== "Send Recap" ? stepsToTitle() : undefined}
+									Pagination={<Pagination acitveIndex={steps.active} count={3} />}
+									style={styles.header}
 								/>
-							)}
-							{steps.title === "Select Receiver" && (
-								<SelectReceiver
-									controller={controller}
-									onPressScanner={onPressScanQRReciver}
-									style={styles.selectReceiver}
-								/>
-							)}
-							{steps.title === "Send Recap" && <SendRecap controller={controller} />}
-						</>
+								{steps.title === "Insert Import" && (
+									<InsertImport
+										controller={controller}
+										onPressSelectCoin={() => steps.goTo("Select network")}
+										style={styles.insertImport}
+									/>
+								)}
+								{steps.title === "Select Receiver" && (
+									<SelectReceiver
+										controller={controller}
+										onPressScanner={onPressScanQRReciver}
+										style={styles.selectReceiver}
+									/>
+								)}
+								{steps.title === "Send Recap" && <SendRecap controller={controller} />}
+							</>
+						)
 					)}
 				</>
 			) : (

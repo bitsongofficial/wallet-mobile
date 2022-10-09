@@ -13,7 +13,6 @@ import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { Icon2 } from "components/atoms"
 import { Header } from "../components/atoms"
 import { SelectCoin, SelectNetwork } from "../components/templates"
-import { coinsFromSupportedCoins } from "utils/coins"
 import { SupportedCoins } from "constants/Coins"
 import { useTranslation } from "react-i18next"
 
@@ -61,8 +60,8 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 			{isSelectingCoin && <SelectNetwork
 				onPress={(chain) => {
 					setSelectedChain(chain)
-				}}
-				onBack={() => setIsSelectingCoin(false)} />
+					setIsSelectingCoin(false)
+				}} />
 			}
 			{!isSelectingCoin && <>
 				<Header title="Qr Code" subtitle="Scan to receive import" style={styles.header} />

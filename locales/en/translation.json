@@ -30,6 +30,7 @@
 	"SendImportTitle": "Insert Import",
 	"SendReceiverTitle": "Select Receiver",
 	"SelectCoinTitle": "Select coin",
+	"SelectNetworkTitle": "Select network",
 	"SelectCoinDescription": "Select also the chain where your coin\ncome from",
 	"ConnectedWith": "Connected with",
 	"AddNewAccount": "Add a new account",

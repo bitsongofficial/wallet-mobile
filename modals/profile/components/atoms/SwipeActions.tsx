@@ -36,7 +36,7 @@ export default memo(
       </View>
     )
   }
-);
+)
 
 const styles = StyleSheet.create({
   container: {

@@ -17,19 +17,17 @@ type Props = {
 	title?: string
 	activeChain?: SupportedCoins | null
 	onPress(chain: SupportedCoins): void
-	onBack(): void
 	style?: StyleProp<ViewStyle>
 }
 
-export default function SelectCoin({ activeChain, onPress, onBack, style }: Props) {
+export default function SelectCoin({ activeChain, onPress, style }: Props) {
 	const theme = useTheme()
 
 	const selectCoin = useCallback(
 		(chain) => {
 			onPress(chain)
-			onBack()
 		},
-		[onPress, onBack],
+		[onPress],
 	)
 	const chains = Object.values(SupportedCoins).map((c: SupportedCoins) => ({chain: c, name: getCoinName(c)}))
 
