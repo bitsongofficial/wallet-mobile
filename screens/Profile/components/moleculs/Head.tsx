@@ -22,12 +22,11 @@ type Props = {
 	input: InputHandler
 	onPressAvatar?(): void
 	avatar?: string
-	animtedValue: SharedValue<number>
 	onNickEdited?(): void
 }
 
 export default observer<Props>(
-	({ style, input, onPressAvatar, avatar, animtedValue, onNickEdited }) => {
+	({ style, input, onPressAvatar, avatar, onNickEdited }) => {
 		const { t } = useTranslation()
 		const inputRef = useRef<TextInput>(null)
 		const { dapp, wallet } = useStore()

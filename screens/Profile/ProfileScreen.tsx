@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Linking, StyleSheet, View, ViewStyle } from "react-native"
+import { Linking, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewStyle } from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
@@ -26,6 +26,8 @@ import { capitalize } from "utils/string"
 import { mvs, s, vs } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
 import { withFullHeight } from "screens/layout/hocs"
+import Scroll from "screens/layout/Scroll"
+import HorizontalWrapper from "screens/layout/HorizontalWrapper"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">
 
@@ -97,37 +99,28 @@ export default withFullHeight(observer<Props>(function MainScreen({ navigation }
 		}
 	}, [inputNick.value])
 
-	const translationY = useSharedValue(0)
-	const scrollHandler = useAnimatedScrollHandler({
-		onScroll: (e) => (translationY.value = e.contentOffset.y),
-	})
-
-	const headerContainerAnimatedStyle = useAnimatedStyle(() => {
-		const translateY = interpolate(translationY.value, [0, 64], [0, -64], Extrapolation.CLAMP)
-		return { transform: [{ translateY }] }
-	})
-
 	return (
 		<>
 			<StatusBar style="inverted" />
 
 			<View style={styles.container}>
 				<Animated.View style={[styles.animContainer, animStyle]}>
-					<Header onPressClose={goBack} style={styles.header} animtedValue={translationY} />
-					<View style={[styles.containerHead]}>
-						<Head
-							style={styles.head}
-							input={inputNick}
-							onPressAvatar={openModal.changeAvatar}
-							onNickEdited={onChangeNick}
-							avatar={wallet.activeProfile?.avatar}
-							animtedValue={translationY}
-						/>
-					</View>
-					<Animated.ScrollView
-						onScroll={scrollHandler}
+					<HorizontalWrapper>
+						<View>
+							<Header onPressClose={goBack} style={styles.header} />
+							<View style={[styles.containerHead]}>
+								<Head
+									style={styles.head}
+									input={inputNick}
+									onPressAvatar={openModal.changeAvatar}
+									onNickEdited={onChangeNick}
+									avatar={wallet.activeProfile?.avatar}
+								/>
+							</View>
+						</View>
+					</HorizontalWrapper>
+					<Scroll
 						contentContainerStyle={styles.scrollContent}
-						scrollEventThrottle={1}
 					>
 						<animated.View style={[styles.wrapper, hidden]}>
 							<Subtitle style={styles.subtitle}>
@@ -261,12 +254,12 @@ export default withFullHeight(observer<Props>(function MainScreen({ navigation }
 								/>
 							</View>
 						</animated.View>
-					</Animated.ScrollView>
+					</Scroll>
 				</Animated.View>
 			</View>
 		</>
 	)
-}))
+}), false)
 
 const styles = StyleSheet.create({
 	container: {

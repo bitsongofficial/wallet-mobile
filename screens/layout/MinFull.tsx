@@ -3,32 +3,25 @@ import { s, vs } from "react-native-size-matters"
 import { COLOR } from "utils"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 
-type Props = {
-	horizontalPadding: boolean
-}
+type Props = {}
 
-const FullHeight = ({
-	horizontalPadding = true,
-	...props
-}: React.PropsWithChildren<Props>) => {
+const MinFull = (props: React.PropsWithChildren<Props>) => {
 	return (
-		<View style={[styles.container, horizontalPadding && styles.horizontalPadding]}>
+		<ScrollView style={styles.container}>
 			{props.children}
-		</View>
+		</ScrollView>
 	)
 }
 
-export default FullHeight
+export default MinFull
 
 const styles = StyleSheet.create({
 	container: {
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 		paddingTop: vs(64),
 		paddingBottom: s(24),
 		backgroundColor: COLOR.Dark3,
 		felx: 1,
 		height: "100%",
-	},
-	horizontalPadding: {
-		paddingHorizontal: HORIZONTAL_WRAPPER,
 	}
 })

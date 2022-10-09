@@ -4,6 +4,8 @@ import { PropsWithChildren, PropsWithRef } from "react";
 import { RefreshControlProps } from "react-native";
 import BottomNavigator from "./BottomNavigator";
 import FullHeight from "./FullHeight";
+import MinFull from "./MinFull";
+import Scroll from "./Scroll";
 import Standard from "./Standard";
 
 type RefreshControl = React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>
@@ -20,14 +22,38 @@ export function withStandard(Component: React.FC<any>)
 	}
 }
 
-export function withFullHeight(Component: React.FC<any>)
+export function withFullHeight(Component: React.FC<any>, horizontalPadding: boolean = true)
 {
 	return function(props: PropsWithChildren<any> & PropsWithRef<any>) 
 	{
 		return (
-			<FullHeight>
+			<FullHeight horizontalPadding={horizontalPadding}>
 				<Component {...props}></Component>
 			</FullHeight>
+		)
+	}
+}
+
+export function withMinFull(Component: React.FC<any>)
+{
+	return function(props: PropsWithChildren<any> & PropsWithRef<any>)
+	{
+		return (
+			<MinFull>
+				<Component {...props}></Component>
+			</MinFull>
+		)
+	}
+}
+
+export function withScroll(Component: React.FC<any>)
+{
+	return function(props: PropsWithChildren<any> & PropsWithRef<any>)
+	{
+		return (
+			<Scroll>
+				<Component {...props}></Component>
+			</Scroll>
 		)
 	}
 }
