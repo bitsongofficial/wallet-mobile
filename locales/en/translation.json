@@ -31,6 +31,8 @@
 	"SendReceiverTitle": "Select Receiver",
 	"SelectCoinTitle": "Select coin",
 	"SelectNetworkTitle": "Select network",
+	"SelectNetworkForReceive": "Select the network you want to show the address for",
+	"SelectNetworkForSend": "Select the network you want to send from",
 	"SelectCoinDescription": "Select also the chain where your coin\ncome from",
 	"ConnectedWith": "Connected with",
 	"AddNewAccount": "Add a new account",

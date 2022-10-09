@@ -110,7 +110,6 @@ export default observer(function SelectReceiver({ controller }: Props) {
 const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
-		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 	self: { marginTop: 19 },
 

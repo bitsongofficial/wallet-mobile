@@ -61,7 +61,7 @@ export default observer<Props>(function SendModal({
 	}
 
 	return (
-		<BottomSheetView style={styles.container}>
+		<BottomSheetView style={[styles.container, styles.wrapper]}>
 			{hasCoins ? (
 				<>
 					{steps.title === "Select coin" ? 
@@ -76,6 +76,7 @@ export default observer<Props>(function SendModal({
 						(
 							<SelectNetwork
 								onPress={networkSelect}
+								description={t("SelectNetworkForSend")}
 							/>
 						) : (
 							<>
@@ -196,7 +197,7 @@ export const FooterSendModal = observer(
 const styles = StyleSheet.create({
 	container: { flexGrow: 1 },
 	wrapper: {
-		// marginHorizontal: 30,
+		marginHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,
 	},
 	verticallyCentered: {
@@ -207,12 +208,10 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		marginTop: vs(10),
-		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 	//
 	selectCoin: { marginTop: 15 },
 	insertImport: {
-		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 	selectReceiver: { flex: 1 },
 

@@ -89,7 +89,6 @@ const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
 		marginTop: vs(15),
-		marginHorizontal: s(26),
 	},
 	title: {
 		fontSize: s(16),

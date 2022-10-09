@@ -10,17 +10,19 @@ import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { SendController } from "../../controllers"
 import { ButtonCoinSelect } from "../moleculs"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
-import { Select } from "modals/general/organisms"
-import { getCoinName } from "core/utils/Coin"
+import { DetailedSelect, Select } from "modals/general/organisms"
+import { getCoinIcon, getCoinName } from "core/utils/Coin"
+import { t } from "i18next"
 
 type Props = {
 	title?: string
+	description?: string
 	activeChain?: SupportedCoins | null
 	onPress(chain: SupportedCoins): void
 	style?: StyleProp<ViewStyle>
 }
 
-export default function SelectCoin({ activeChain, onPress, style }: Props) {
+export default function SelectCoin({title, description, activeChain, onPress, style }: Props) {
 	const theme = useTheme()
 
 	const selectCoin = useCallback(
@@ -29,20 +31,28 @@ export default function SelectCoin({ activeChain, onPress, style }: Props) {
 		},
 		[onPress],
 	)
-	const chains = Object.values(SupportedCoins).map((c: SupportedCoins) => ({chain: c, name: getCoinName(c)}))
+	const chains = Object.values(SupportedCoins)
+
+	const infoExtractor = (item: SupportedCoins) =>
+	{
+		return {
+			title: getCoinName(item),
+			description: item.toString(),
+			uri: getCoinIcon(item),
+		}
+	}
 
 	return (
 		<BottomSheetView style={[styles.container, style]}>
-			<Select
-				title={"Select network"}
-				description={"Select the chain you want to show the address for"}
-				labelExtractor={(item) => item.name}
+			<DetailedSelect
+				title={title ?? t("SelectNetworkTitle")}
+				description={description}
+				infoExtractor={infoExtractor}
 				items={chains}
+				active={activeChain}
 				hideSelector={true}
-				onPress={item => selectCoin(item.chain)}
-				// searchCriteria={(item, search) => item.info.brand.toLowerCase().includes(search.toLowerCase())}
-				rightExtractor={item => <Text style={[{fontWeight: "bold"}, theme.text.colorText]}>{item.chain.toUpperCase()}</Text>}
-			></Select>
+				onPress={item => selectCoin(item)}
+			/>
 		</BottomSheetView>
 	)
 }
@@ -52,7 +62,6 @@ const styles = StyleSheet.create({
 
 	back: {
 		marginBottom: 24,
-		marginHorizontal: HORIZONTAL_WRAPPER,
 	},
 	title: {
 		fontFamily: "CircularStd",
@@ -76,11 +85,9 @@ const styles = StyleSheet.create({
 	},
 
 	flatList: {
-		marginHorizontal: HORIZONTAL_WRAPPER / 2,
 		flex: 1,
 	},
 	flatlistContent: {
 		paddingBottom: 40,
-		paddingHorizontal: HORIZONTAL_WRAPPER / 2,
 	},
 })

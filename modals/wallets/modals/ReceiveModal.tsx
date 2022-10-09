@@ -61,7 +61,9 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 				onPress={(chain) => {
 					setSelectedChain(chain)
 					setIsSelectingCoin(false)
-				}} />
+				}}
+				description={t("SelectNetworkForSend")}
+				/>
 			}
 			{!isSelectingCoin && <>
 				<Header title="Qr Code" subtitle="Scan to receive import" style={styles.header} />
