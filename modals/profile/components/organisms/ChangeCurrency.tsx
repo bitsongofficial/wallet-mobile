@@ -12,6 +12,7 @@ import { s, vs } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
 import { Select } from "modals/general/organisms"
 import { Currencies, CurrenciesData } from "constants/currencies"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = {
 	close(): void
@@ -47,6 +48,7 @@ const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
 		marginTop: vs(15),
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 	},
 	title: {
 		fontSize: s(16),
