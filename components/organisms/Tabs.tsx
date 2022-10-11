@@ -5,18 +5,19 @@ import { COLOR } from "utils"
 type Props<T extends string> = {
 	values: T[]
 	active: T
-	onPress(value: T): void
+	titleExtractor(arg0: T): string
+	onPress(value: T): any
 	style?: StyleProp<ViewStyle>
 }
 
-export default function Tabs<T extends string>({ active, values, style, onPress }: Props<T>) {
+export default function Tabs<T extends string>({ active, values, titleExtractor, style, onPress }: Props<T>) {
 	return (
 		<View style={[styles.container, style]}>
 			{values.map((value, i) => (
 				<TouchableOpacity key={value + i} onPress={() => onPress(value)}>
 					<View style={styles.tab}>
 						<Text style={[styles.tab_value, value !== active && styles.tab_not_active]}>
-							{value}
+							{titleExtractor ? titleExtractor(value) : value}
 						</Text>
 						{value === active && <ThemedGradient style={styles.marker} />}
 					</View>

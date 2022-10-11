@@ -1,19 +1,20 @@
 import { makeAutoObservable } from "mobx"
 import { ICurrency, ILang } from "screens/Profile/type"
-import languages from "constants/languages"
-import currencies from "constants/currencies"
+import { LanguageData, Languages } from "constants/languages"
+import currencies, { Currencies, CurrenciesData } from "constants/currencies"
 import { CheckMethod, NotifSettings } from "./type"
 import LocalStorageManager from "./LocalStorageManager"
 import { clearPin, savePin } from "utils/biometrics"
 import { askPin } from "navigation/AskPin"
 import { TimerCountdown } from "classes"
+import { changeLanguage } from "i18next"
 
 export default class SettingsStore {
 	localStorageManager?: LocalStorageManager
 
 	theme: "light" | "dark" = "dark"
-	language: ILang = languages[0]
-	currency: ICurrency | null = currencies[0]
+	language: Languages = Languages.En
+	currency: Currencies = Currencies.USD
 	checkMethod: CheckMethod | null = null
 	biometric_enable = false
 
@@ -32,12 +33,26 @@ export default class SettingsStore {
 		this.theme = theme
 	}
 
-	setLanguage(language: ILang) {
-		this.language = language
+	setLanguage(language: Languages) {
+		if(language != this.language)
+		{
+			changeLanguage(language)
+			this.language = language
+		}
 	}
 
-	setCurrency(currency: ICurrency) {
+	get prettyLanguage()
+	{
+		return LanguageData[this.language]
+	}
+
+	setCurrency(currency: Currencies) {
 		this.currency = currency
+	}
+
+	get prettyCurrency()
+	{
+		return CurrenciesData[this.currency]
 	}
 
 	setNotifications(settings: Partial<NotifSettings>) {

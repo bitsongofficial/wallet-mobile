@@ -7,8 +7,9 @@ import { CoinOperationEnum } from "core/types/coin/OperationTypes"
 import { PublicWallet } from "core/storing/Generic"
 import { Amount } from "core/types/coin/Generic"
 import { fromAmountToCoin, fromDenomToPrice } from "core/utils/Coin"
+import { store } from "stores/Store"
 
-export default class CoinComplitedData {
+export default class CoinCompletedData {
 	Coin: CosmosCoin
 	address: string | null = null
 	assets: Amount[] = []
@@ -23,7 +24,6 @@ export default class CoinComplitedData {
 	}
 
 	setRemoteData(data: Partial<IRemoteCoinData> = {}) {
-		console.log("setRemoteData", data)
 		this.remoteData = data
 	}
 
@@ -40,7 +40,6 @@ export default class CoinComplitedData {
 			const assets: Amount[] = await this.Coin.Do(CoinOperationEnum.Balance, {
 				wallet: new PublicWallet(this.address),
 			})
-			console.log("assets", this.key, assets)
 			runInAction(() => {
 				this.assets = assets
 			})
@@ -50,7 +49,7 @@ export default class CoinComplitedData {
 	// send(address: string, dollar: number) {}
 
 	static createList() {
-		return Object.values(SupportedCoins).map((id) => new CoinComplitedData(id))
+		return store.configs.remote.enabledCoins.map((id) => new CoinCompletedData(id))
 	}
 
 	// get balance() {

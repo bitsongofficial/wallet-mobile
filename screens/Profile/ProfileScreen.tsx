@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Linking, StyleSheet, View, ViewStyle } from "react-native"
+import { Linking, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewStyle } from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
@@ -7,7 +7,7 @@ import { RootStackParamList } from "types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { useStore, useTheme } from "hooks"
 import { Agreement, Button, Switch, ThemedGradient } from "components/atoms"
-import { COLOR, InputHandler } from "utils"
+import { COLOR, hexAlpha, InputHandler } from "utils"
 import { animated, useSpring } from "@react-spring/native"
 import Animated, {
 	Extrapolation,
@@ -24,10 +24,15 @@ import { FAQ_URL, PRIVACY_POLICY_URL, TERMS_AND_CONDITIONS_URL } from "constants
 import { WalletTypes } from "core/types/storing/Generic"
 import { capitalize } from "utils/string"
 import { mvs, s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
+import { withFullHeight } from "screens/layout/hocs"
+import Scroll from "screens/layout/Scroll"
+import HorizontalWrapper from "screens/layout/HorizontalWrapper"
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">
 
-export default observer<Props>(function MainScreen({ navigation }) {
+export default withFullHeight(observer<Props>(function MainScreen({ navigation }) {
+	const { t } = useTranslation()
 	const { settings, wallet } = useStore()
 
 	// ------- BottomSheet ----------
@@ -94,43 +99,33 @@ export default observer<Props>(function MainScreen({ navigation }) {
 		}
 	}, [inputNick.value])
 
-	const translationY = useSharedValue(0)
-	const scrollHandler = useAnimatedScrollHandler({
-		onScroll: (e) => (translationY.value = e.contentOffset.y),
-	})
-
-	const headerContainerAnimatedStyle = useAnimatedStyle(() => {
-		const translateY = interpolate(translationY.value, [0, 64], [0, -64], Extrapolation.CLAMP)
-		return { transform: [{ translateY }] }
-	})
-
-	const insets = useSafeAreaInsets()
-	const topInsetsStyle = useMemo<ViewStyle>(() => ({ marginTop: insets.top }), [])
-
 	return (
 		<>
 			<StatusBar style="inverted" />
 
-			<ThemedGradient style={styles.container} invert>
-				<Animated.View style={[styles.animContainer, topInsetsStyle, animStyle]}>
-					<Header onPressClose={goBack} style={styles.header} animtedValue={translationY} />
-					<Animated.View style={[headerContainerAnimatedStyle, styles.containerHead]}>
-						<Head
-							style={styles.head}
-							input={inputNick}
-							onPressAvatar={openModal.changeAvatar}
-							onNickEdited={onChangeNick}
-							avatar={wallet.activeProfile?.avatar}
-							animtedValue={translationY}
-						/>
-					</Animated.View>
-					<Animated.ScrollView
-						onScroll={scrollHandler}
+			<View style={styles.container}>
+				<Animated.View style={[styles.animContainer, animStyle]}>
+					<HorizontalWrapper>
+						<View>
+							<Header onPressClose={goBack} style={styles.header} />
+							<View style={[styles.containerHead]}>
+								<Head
+									style={styles.head}
+									input={inputNick}
+									onPressAvatar={openModal.changeAvatar}
+									onNickEdited={onChangeNick}
+									avatar={wallet.activeProfile?.avatar}
+								/>
+							</View>
+						</View>
+					</HorizontalWrapper>
+					<Scroll
 						contentContainerStyle={styles.scrollContent}
-						scrollEventThrottle={1}
 					>
 						<animated.View style={[styles.wrapper, hidden]}>
-							<Subtitle style={styles.subtitle}>Connected with</Subtitle>
+							<Subtitle style={styles.subtitle}>
+								{t("ConnectedWith")}
+							</Subtitle>
 							<WalletButton
 								onPress={openModal.changeWallet}
 								wallet={wallet.activeWallet}
@@ -138,14 +133,14 @@ export default observer<Props>(function MainScreen({ navigation }) {
 							/>
 
 							<ListButton
-								text="Add a new account"
+								text={t("AddNewAccount")}
 								onPress={openModal.addAccount}
 								icon="wallet"
 								arrow
 								style={styles.listButton}
 							/>
 							<ListButton
-								text="Add a Watch account"
+								text={t("AddWatchAccount")}
 								onPress={openModal.addWatchAccount}
 								icon="eye"
 								arrow
@@ -158,36 +153,20 @@ export default observer<Props>(function MainScreen({ navigation }) {
 							/>
 
 							<View>
-								<Title style={styles.title}>Settings</Title>
+								<Title style={styles.title}>{t("SettingsTitle")}</Title>
 
 								<View style={styles.section}>
-									<Subtitle style={styles.subtitle}>Account</Subtitle>
+									<Subtitle style={styles.subtitle}>{t("AccountSection")}</Subtitle>
 									<ListButton
 										onPress={openSecurity}
 										icon="star_shield"
-										text="Security"
+										text={t("Security")}
 										arrow
 										style={styles.listButton}
-									/>
-									<ListButton
-										onPress={openAddressBook}
-										icon="address_book"
-										text="Address Book"
-										arrow
-										style={styles.listButton}
-									/>
-									<ListButton
-										text="Notifications"
-										onPress={openNotifications}
-										icon="bell"
-										style={styles.listButton}
-										Right={
-											<Switch active={settings.notifications.enable} onPress={toggleNotification} />
-										}
 									/>
 									<ListButton
 										disabled={wallet.activeProfile?.type == WalletTypes.WATCH}
-										text="Wallet Connect"
+										text={t("WalletConnect")}
 										icon="wallet_connect"
 										onPress={openWalletConnect}
 										style={styles.listButton}
@@ -195,27 +174,27 @@ export default observer<Props>(function MainScreen({ navigation }) {
 									/>
 								</View>
 								<View style={styles.section}>
-									<Subtitle style={styles.subtitle}>App Preferences</Subtitle>
+									<Subtitle style={styles.subtitle}>{t("PreferencesSection")}</Subtitle>
 									<ListButton
-										text="Language"
+										text={t("Language")}
 										onPress={openModal.changeLanguage}
 										icon="translate"
 										style={styles.listButton}
-										Right={<Value text={capitalize(settings.language.name)} />}
+										Right={<Value text={capitalize(settings.prettyLanguage.name)} />}
 									/>
 									<ListButton
-										text="Currency"
+										text={t("Currency")}
 										onPress={openModal.channgeCurrency}
 										icon="circle_dollar"
 										style={styles.listButton}
 										Right={
 											settings.currency != null && (
-												<Value text={settings.currency?.name.toUpperCase()} />
+												<Value text={settings.currency.toUpperCase()} />
 											)
 										}
 									/>
 									<ListButton
-										text="Night Mode"
+										text={t("NightMode")}
 										onPress={toggleNightMode}
 										icon="moon"
 										style={styles.listButton}
@@ -225,15 +204,16 @@ export default observer<Props>(function MainScreen({ navigation }) {
 												active={settings.theme == "dark"}
 												onPress={toggleNightMode}
 												disabled={true}
+												gradient={true}
 											/>
 										}
 									/>
 								</View>
 
 								<View style={styles.section}>
-									<Subtitle style={styles.subtitle}>Support</Subtitle>
+									<Subtitle style={styles.subtitle}>{t("SupportSection")}</Subtitle>
 									<ListButton
-										text="Currency App"
+										text={t("CurrencyApp")}
 										onPress={openCurrencyApp}
 										icon="star"
 										arrow
@@ -241,21 +221,21 @@ export default observer<Props>(function MainScreen({ navigation }) {
 										disabled={true}
 									/>
 									<ListButton
-										text="FAQ"
+										text={t("FAQ")}
 										onPress={openFAQ}
 										icon="chat_dots"
 										arrow
 										style={styles.listButton}
 									/>
 									<ListButton
-										text="Terms and conditions"
+										text={t("TermsAndConditions")}
 										onPress={openTermsAndConditions}
 										icon="file_text"
 										arrow
 										style={styles.listButton}
 									/>
 									<ListButton
-										text="Privacy Policy"
+										text={t("PrivacyPolicy")}
 										onPress={openPrivacyPolicy}
 										icon="file_text"
 										style={styles.listButton}
@@ -265,7 +245,8 @@ export default observer<Props>(function MainScreen({ navigation }) {
 
 								<Button
 									mode="fill"
-									text="Disconnect and Remove Wallet"
+									text={t("DisconnectAndRemoveWallet")}
+									textAlignment="center"
 									onPress={disconnectAndRemove}
 									style={styles.button}
 									textStyle={styles.buttonText}
@@ -273,37 +254,39 @@ export default observer<Props>(function MainScreen({ navigation }) {
 								/>
 							</View>
 						</animated.View>
-					</Animated.ScrollView>
+					</Scroll>
 				</Animated.View>
-			</ThemedGradient>
+			</View>
 		</>
 	)
-})
+}), false)
 
 const styles = StyleSheet.create({
-	container: { flex: 1 },
+	container: {
+		flex: 1,
+		backgroundColor: COLOR.Dark3,
+		position: "relative"
+	},
 	animContainer: { opacity: 1 },
 	header: {
-		marginLeft: s(27.5),
-		marginRight: s(17),
 		zIndex: 5,
+		position: "absolute",
+		width: "100%",
 	},
 
 	containerHead: {
-		position: "absolute",
 		zIndex: 1,
-		top: s(70),
 		width: "100%",
+		paddingVertical: s(7),
 	},
 	head: {
-		marginHorizontal: s(25), // <- wrapper
 		marginBottom: vs(30),
 	},
 
 	activeWallet: { marginBottom: mvs(16) },
-	scrollContent: { paddingTop: s(100) },
+	scrollContent: {  },
 
-	wrapper: { marginHorizontal: s(34) },
+	wrapper: { },
 	wrapper_opacity: { opacity: 0.1 },
 	agreement: { marginBottom: vs(54), marginTop: vs(25) },
 	title: { marginBottom: s(38) },
@@ -312,7 +295,7 @@ const styles = StyleSheet.create({
 
 	listButton: { marginTop: s(4) },
 
-	button: { backgroundColor: COLOR.Dark3, marginBottom: s(8) },
+	button: { backgroundColor: hexAlpha(COLOR.White, 10), marginBottom: s(8) },
 	buttonContent: { paddingVertical: s(18) },
 	buttonText: {
 		fontSize: s(14),

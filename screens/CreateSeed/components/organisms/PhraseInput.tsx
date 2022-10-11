@@ -58,7 +58,7 @@ export default observer(({ phrase, inputStyle, scrollStyle, bottomsheet }: Props
 					onChangeText={phrase.inputSet}
 					onSubmitEditing={phrase.inputSubmit}
 					keyboardAppearance="dark" // TODO: theme me
-					autocomplite={phrase.hint}
+					autocomplete={phrase.hint}
 					inputStyle={{ height: 62 }}
 					style={{ borderRadius: 20 }}
 					autoCorrect={false}

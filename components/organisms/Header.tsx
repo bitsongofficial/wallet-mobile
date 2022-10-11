@@ -4,10 +4,10 @@ import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs"
 import { NativeStackHeaderProps, NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { observer } from "mobx-react-lite"
-import { COLOR } from "utils"
-import { useStore } from "hooks"
+import { COLOR, hexAlpha } from "utils"
+import { useLoading, useStore } from "hooks"
 import { RootStackParamList } from "types"
-import { Icon2 } from "components/atoms"
+import { Icon2, Loader } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { s } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
@@ -19,6 +19,7 @@ type Props = {
 
 export default observer(function Header({ navigation, style }: Props) {
 	const { wallet } = useStore()
+	const { isOpen } = useLoading()
 	const openProfile = useCallback(() => navigation?.navigate("Profile"), [])
 
 	const insets = useSafeAreaInsets()
@@ -26,25 +27,28 @@ export default observer(function Header({ navigation, style }: Props) {
 	return (
 		<Animated.View style={[styles.container, style, { paddingTop: insets.top }]}>
 			<View style={styles.header}>
-				<View style={styles.right}>
-					<Icon2 name="logo" size={40} />
-				</View>
-				{/* TODO: need center position title */}
-				<View style={styles.center}>
-					<Text style={styles.title}>Cosmonautico</Text>
-				</View>
+				{/* <View style={styles.left}>
+					{!isOpen && <Icon2 name="logo" size={40} />}
+					{isOpen && <Loader size={40} />}
+				</View> */}
 
-				<View style={styles.left}>
-					<Icon2 name="bell_1" size={16} stroke={COLOR.Marengo} />
+				<View style={styles.right}>
+					{/* <Icon2 name="bell_1" size={16} stroke={COLOR.Marengo} /> */}
 					<TouchableOpacity onPress={openProfile}>
-						<Image
+						<Icon2
+							name="user"
+							style={styles.avatar}
+							stroke={hexAlpha(COLOR.White, 80)}
+							size={40}
+						/>
+						{/* <Image
 							source={
 								wallet.activeProfile && wallet.activeProfile.avatar
 									? { uri: wallet.activeProfile.avatar }
 									: require("assets/images/mock/avatar.png")
 							}
 							style={styles.avatar}
-						/>
+						/> */}
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -54,27 +58,30 @@ export default observer(function Header({ navigation, style }: Props) {
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: COLOR.Dark3,
+		position: "absolute",
+		width: "100%",
 	},
 	header: {
 		flexDirection: "row",
 		paddingHorizontal: HORIZONTAL_WRAPPER,
-		justifyContent: "space-between",
+		justifyContent: "flex-end",
 		paddingVertical: s(10),
 	},
-	right: {},
+	left: {
+		position: "relative",
+		left: -4,
+	},
 	center: {
 		flex: 1,
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
 	},
-
 	icon: {
 		position: "absolute",
 		right: 0,
 	},
-	left: {
+	right: {
 		flexDirection: "row",
 		justifyContent: "center",
 

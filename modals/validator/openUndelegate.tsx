@@ -29,7 +29,7 @@ export default async function openUndelegate({ controller, onClose, onDone, onDi
 
 	const { steps, amountInput } = controller
 
-	amountInput.maxValue = validators.validatorDelegations(validator)
+	if(validator) amountInput.maxValue = validators.validatorDelegations(validator)
 
 	const disposer = reaction(
 		() => steps.active,

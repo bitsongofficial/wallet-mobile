@@ -10,6 +10,7 @@ import { BottomSheet, Phrase as PhraseView } from "components/moleculs";
 import { Title } from "../atoms";
 import { SharedValue } from "react-native-reanimated";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   isOpen?: boolean;
@@ -22,6 +23,7 @@ type Props = {
 
 export default observer<Props>(
   ({ backgroundStyle, animatedPosition, isOpen, onClose }: Props) => {
+    const { t } = useTranslation()
     const theme = useTheme();
 
     // ------ BottomSheet -------
@@ -74,7 +76,7 @@ export default observer<Props>(
             onPress={toggle}
             contentContainerStyle={styles.buttonToggleContainer}
           >
-            Show
+            {t("Show")}
           </Button>
           <View style={{ height: 320, width: "100%" }}>
             <BottomSheetScrollView style={{ height: 370 }}>

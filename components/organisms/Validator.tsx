@@ -8,6 +8,8 @@ import { useStore } from "hooks"
 import { validatorIdentity } from "core/rest/keybase"
 import { SupportedCoins } from "constants/Coins"
 import { s } from "react-native-size-matters"
+import ListItem from "components/moleculs/ListItem"
+import { formatNumber } from "utils/numbers"
 
 type ValidatorProps = {
 	item: Validator
@@ -42,29 +44,13 @@ export default ({ item, onPressKebab, style }: ValidatorProps) => {
 	// }, [validator, validator.identity])
 
 	return (
-		<View style={[styles.container, style]}>
-			<View style={[styles.row, { marginBottom: s(14) }]}>
-				<View style={styles.info}>
-					{source && <Image style={styles.avatar} source={source} />}
-					<Text style={styles.title}>{validator.name}</Text>
-				</View>
-				<RectButton onPress={handlePressKebab}>
-					<Icon2 name="kebab" stroke={COLOR.Marengo} size={24} />
-				</RectButton>
-			</View>
-			<View style={styles.footer}>
-				<View style={styles.left}>
-					<Text style={styles.percent}>{validators.apr(validator).toFixed(2)} %</Text>
-					<Text style={styles.text}>APR</Text>
-				</View>
-				<View style={styles.right}>
-					<Text style={styles.percent}>
-						{validators.percentageVotingPower(validator).toFixed(2)} %
-					</Text>
-					<Text style={styles.text}>VOTING POWER</Text>
-				</View>
-			</View>
-		</View>
+		<ListItem
+			uri={validator?.logo}
+			title={validator.name}
+			subtitle={validators.apr(validator).toFixed(2) + "% APR"}
+			description={validators.percentageVotingPower(validator).toFixed(2) + "%"}
+			subdescription="VOTING POWER"
+		></ListItem>
 	)
 }
 

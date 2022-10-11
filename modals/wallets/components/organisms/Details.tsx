@@ -6,6 +6,7 @@ import { useTheme } from "hooks";
 import { COLOR, InputHandler } from "utils";
 import { Badge, Input } from "components/atoms";
 import { Message } from "../atoms";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   gas: InputHandler;
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export default observer(({ gas, memo, speed, onFocus }: Props) => {
+  const { t } = useTranslation()
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(true);
   const toggle = useCallback(() => setIsOpen((value) => !value), []);
@@ -34,7 +36,7 @@ export default observer(({ gas, memo, speed, onFocus }: Props) => {
       <View style={styles.toggleHide}>
         <TouchableOpacity onPress={toggle}>
           <Text style={[theme.text.primary, styles.text]}>
-            {isOpen ? "Hide Advanced" : "Show Advanced"}
+            {isOpen ? t("HideAdvanced") : t("ShowAdvanced")}
           </Text>
         </TouchableOpacity>
       </View>

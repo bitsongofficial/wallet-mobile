@@ -12,6 +12,7 @@ import { Proposal } from "core/types/coin/cosmos/Proposal"
 import { SupportedCoins } from "constants/Coins"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 // -------------- Controller ---------------------
 
@@ -81,6 +82,7 @@ type FooterProps = {
 
 export const FooterDeposit = observer(
 	({ onPressBack, onPressDone, controller, style }: FooterProps) => {
+		const { t } = useTranslation()
 		const insets = useSafeAreaInsets()
 		const { steps, minDeposit, amountInput } = controller
 		return (
@@ -100,7 +102,7 @@ export const FooterDeposit = observer(
 				Right={
 					steps.active === 0 && (
 						<Button
-							text="Continue"
+							text={t("Continue")}
 							disable={!!minDeposit && Number(amountInput.value) < minDeposit}
 							contentContainerStyle={styles.buttonContent}
 							textStyle={styles.buttonText}

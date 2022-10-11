@@ -1,4 +1,5 @@
 import { Icon2 } from "components/atoms"
+import { useTranslation } from "react-i18next"
 import { Image, StyleSheet, View } from "react-native"
 import { s, vs } from "react-native-size-matters"
 import { COLOR } from "utils"
@@ -8,31 +9,34 @@ type Props = {
 	onPressBack(): void
 }
 
-export default ({ onPressBack }: Props) => (
-	<>
-		<View style={styles.iconContainer}>
-			<Image source={require("assets/images/error.png")} style={styles.icon} />
-		</View>
+export default ({ onPressBack }: Props) =>
+{
+	const { t } = useTranslation()
 
-		<View>
-			<Title style={styles.title}>Transaction Error</Title>
-			<Caption style={styles.caption}>
-				Lorem ipsum dolor sit amet,{"\n"}
-				consectetur adipiscing elit,{"\n"}
-				sed do eiusmod tempor.
-			</Caption>
-		</View>
-
-		<View style={styles.buttonContainer}>
-			<Button
-				text="Back to homescreen"
-				mode="fill"
-				onPress={onPressBack}
-				Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
-			/>
-		</View>
-	</>
-)
+	return (
+		<>
+			<View style={styles.iconContainer}>
+				<Image source={require("assets/images/error.png")} style={styles.icon} />
+			</View>
+	
+			<View>
+				<Title style={styles.title}>{t("TransactionError")}</Title>
+				<Caption style={styles.caption}>
+					{t("TransactionErrorDescription")}
+				</Caption>
+			</View>
+	
+			<View style={styles.buttonContainer}>
+				<Button
+					text={t("BackToHomescreen")}
+					mode="fill"
+					onPress={onPressBack}
+					Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
+				/>
+			</View>
+		</>
+	)
+}
 
 const styles = StyleSheet.create({
 	title: {

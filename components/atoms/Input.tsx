@@ -15,9 +15,10 @@ import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
 
 export type Props = TextInputProps & {
+	label?: string
 	style?: StyleProp<ViewStyle>
 	inputStyle?: StyleProp<TextStyle>
-	autocomplite?: string | null
+	autocomplete?: string | null
 	bottomsheet?: boolean
 	Right?: JSX.Element
 
@@ -25,13 +26,15 @@ export type Props = TextInputProps & {
 	errorStyle?: StyleProp<ViewStyle>
 }
 
+const HEIGHT = s(62)
 const LINE_HEIGHT = s(18)
-const BORDER_RADIUS = s(50)
+const BORDER_RADIUS = s(20)
 
 export default ({
+	label,
 	inputStyle,
 	style,
-	autocomplite,
+	autocomplete,
 	bottomsheet,
 	Right,
 	errorMessage,
@@ -41,7 +44,7 @@ export default ({
 	const theme = useTheme()
 	const Component = useMemo(() => (bottomsheet ? BottomSheetTextInput : TextInput), [bottomsheet])
 
-	const autocomplitPosition = useMemo(
+	const autocompletePosition = useMemo(
 		() =>
 			inputStyle?.height
 				? {
@@ -66,23 +69,29 @@ export default ({
 	)
 
 	return (
-		<View style={[styles.container, theme.input.container, style, errorBorder]}>
-			{autocomplite && (
-				<Text style={[theme.input.autocomplite, styles.autocomplite, autocomplitPosition]}>
-					{autocomplite}
-				</Text>
-			)}
+		<View style={styles.w100}>
+			{label &&
+			<Text style={styles.label}>
+				{label}
+			</Text>}
+			<View style={[styles.container, theme.input.container, style, errorBorder]}>
+				{autocomplete && (
+					<Text style={[theme.input.autocomplete, styles.autocomplete, autocompletePosition]}>
+						{autocomplete}
+					</Text>
+				)}
 
-			<View style={styles.row}>
-				<Component
-					style={[theme.input.component, styles.input, inputStyle]}
-					placeholderTextColor={theme.input.placeholder}
-					{...props}
-				/>
-				{Right}
+				<View style={[styles.row, styles.w100]}>
+					<Component
+						style={[theme.input.component, styles.input, inputStyle]}
+						placeholderTextColor={theme.input.placeholder}
+						{...props}
+					/>
+					{Right}
+				</View>
+
+				{errorText && <ErrorMessage message={errorText} style={errorStyle} />}
 			</View>
-
-			{errorText && <ErrorMessage message={errorText} style={errorStyle} />}
 		</View>
 	)
 }
@@ -97,6 +106,9 @@ const ErrorMessage = ({ message, style }: ErrorProps) => (
 )
 
 const styles = StyleSheet.create({
+	w100: {
+		width: "100%",
+	},
 	container: {
 		borderRadius: BORDER_RADIUS,
 		width: "100%",
@@ -104,6 +116,13 @@ const styles = StyleSheet.create({
 	row: {
 		flexDirection: "row",
 		overflow: "hidden",
+	},
+	label: {
+		fontFamily: "CircularStd",
+		fontWeight: "400",
+		fontSize: s(12),
+		color: COLOR.Marengo,
+		marginBottom: s(12),
 	},
 	input: {
 		fontFamily: "CircularStd",
@@ -113,10 +132,10 @@ const styles = StyleSheet.create({
 		// https://stackoverflow.com/a/68458803
 		paddingHorizontal: s(24),
 		paddingVertical: s(19),
-		height: LINE_HEIGHT,
+		height: HEIGHT,
 		flex: 1,
 	},
-	autocomplite: {
+	autocomplete: {
 		position: "absolute",
 		fontFamily: "CircularStd",
 		fontStyle: "normal",

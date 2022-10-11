@@ -12,6 +12,7 @@ import { s, vs } from "react-native-size-matters"
 import { makeAutoObservable } from "mobx"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useTranslation } from "react-i18next"
 
 export class Controller {
 	steps = new Steps(["Add", "Name", "Avatar"])
@@ -34,6 +35,7 @@ type Props = {
 }
 
 export default observer<Props>(({ onPressScan, controller }) => {
+	const { t } = useTranslation()
 	const { inputName, inputWallet, steps } = controller
 
 	const source = useMemo(
@@ -48,7 +50,7 @@ export default observer<Props>(({ onPressScan, controller }) => {
 					<Title style={styles.title}>Add Contact</Title>
 					<StyledInput
 						style={styles.search}
-						placeholder="Public Address"
+						placeholder={t("PublicAddress")}
 						value={inputWallet.value}
 						onChangeText={inputWallet.set}
 						Right={
@@ -82,7 +84,7 @@ export default observer<Props>(({ onPressScan, controller }) => {
 
 			{steps.title === "Avatar" && (
 				<>
-					<Title style={styles.title}>Edit Profile Photo</Title>
+					<Title style={styles.title}>{t("EditProfilePhoto")}</Title>
 
 					<View style={styles.avatar}>
 						<ButtonAvatar source={source} onChange={controller.setImage} />
@@ -102,6 +104,7 @@ type FooterProps = {
 
 export const Footer = observer(
 	({ onPressBack, controller, onPressNext, onPressSave }: FooterProps) => {
+		const { t } = useTranslation()
 		const { steps, inputName, inputWallet } = controller
 
 		const insets = useSafeAreaInsets()
@@ -111,7 +114,7 @@ export const Footer = observer(
 				<ButtonBack onPress={onPressBack} />
 				{steps.title !== "Avatar" ? (
 					<Button
-						text="Continue"
+						text={t("Continue")}
 						disable={
 							(steps.title === "Name" && inputName.value.length < 4) ||
 							(steps.title === "Add" && !isValidAddress(inputWallet.value.trim()))
@@ -163,7 +166,6 @@ const styles = StyleSheet.create({
 
 	iconTouchable: {
 		paddingHorizontal: s(23),
-		backgroundColor: "red",
 		alignItems: "center",
 		justifyContent: "center",
 	},

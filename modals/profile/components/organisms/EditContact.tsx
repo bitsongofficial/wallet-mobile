@@ -10,6 +10,7 @@ import { StyledInput, Title } from "../atoms"
 import { ButtonAvatar } from "../moleculs"
 import { Contact } from "stores/ContactsStore"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useTranslation } from "react-i18next"
 
 export class Controller {
 	steps = new Steps(["Data", "Photo"])
@@ -33,6 +34,7 @@ type Props = {
 }
 
 export default observer<Props>(({ contact, onPressScan, controller }) => {
+	const { t } = useTranslation()
 	const { steps, inputAddress, inputNickname, image } = controller
 
 	const source = useMemo(
@@ -44,10 +46,10 @@ export default observer<Props>(({ contact, onPressScan, controller }) => {
 		<View style={styles.container}>
 			{steps.title === "Data" && (
 				<>
-					<Title style={styles.title}>Edit Contact</Title>
+					<Title style={styles.title}>{t("EditContact")}</Title>
 
 					<View style={{ marginBottom: 24 }}>
-						<Text style={styles.label}>Edit address</Text>
+						<Text style={styles.label}>{t("EditAddress")}</Text>
 						<StyledInput
 							value={inputAddress.value}
 							onChangeText={inputAddress.set}
@@ -60,7 +62,7 @@ export default observer<Props>(({ contact, onPressScan, controller }) => {
 					</View>
 
 					<View>
-						<Text style={styles.label}>Edit name</Text>
+						<Text style={styles.label}>{t("EditName")}</Text>
 						<StyledInput value={inputNickname.value} onChangeText={inputNickname.set} />
 					</View>
 				</>
@@ -68,7 +70,7 @@ export default observer<Props>(({ contact, onPressScan, controller }) => {
 
 			{steps.title === "Photo" && (
 				<>
-					<Title style={styles.title}>Edit Profile Photo</Title>
+					<Title style={styles.title}>{t("EditProfilePhoto")}</Title>
 					<View style={styles.avatar}>
 						<ButtonAvatar source={source} onChange={controller.setImage} />
 					</View>
@@ -86,6 +88,7 @@ type FooterProps = {
 }
 
 export const Footer = observer(({ steps, onPressBack, onPressDone, onPressNext }: FooterProps) => {
+	const { t } = useTranslation()
 	const insets = useSafeAreaInsets()
 	return (
 		<View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
@@ -94,7 +97,7 @@ export const Footer = observer(({ steps, onPressBack, onPressDone, onPressNext }
 
 				{steps.title === "Data" ? (
 					<Button
-						text="Continue"
+						text={t("Continue")}
 						onPress={onPressNext}
 						textStyle={styles.buttonText}
 						contentContainerStyle={styles.buttonContent}
@@ -102,7 +105,7 @@ export const Footer = observer(({ steps, onPressBack, onPressDone, onPressNext }
 				) : (
 					<Button
 						onPress={onPressDone}
-						text="Save"
+						text={t("Save")}
 						textStyle={styles.buttonText}
 						contentContainerStyle={styles.buttonContent}
 					/>

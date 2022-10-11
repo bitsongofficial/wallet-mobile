@@ -5,6 +5,7 @@ import { useTheme } from "hooks"
 import { COLOR, hexAlpha } from "utils"
 import { Card, Icon2 } from "components/atoms"
 import { mvs, s, vs } from "react-native-size-matters"
+import { formatNumber } from "utils/numbers"
 
 type Props = {
 	coin?: Coin | null
@@ -25,12 +26,11 @@ export default observer<Props>(function CardWallet({ coin, style }) {
 					}}
 				>
 					<Text style={styles.balance}>
-						{coin?.info.balance} {coin?.info.coinName}
+						{formatNumber(coin?.info.balance ?? 0)} {coin?.info.coinName}
 					</Text>
-					<Image source={require("assets/images/mock/logo_bitsong.png")} style={styles.image} />
 				</View>
 			</View>
-			<Icon2 name="chevron_right" size={18} stroke={COLOR.RoyalBlue} />
+			<Icon2 name="chevron_right" size={18} stroke={COLOR.White} />
 		</Card>
 	)
 })

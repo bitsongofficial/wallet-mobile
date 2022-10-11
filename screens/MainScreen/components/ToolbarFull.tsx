@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite"
 import { COLOR } from "utils"
 import { vs } from "react-native-size-matters"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	onPressSend?(): void
@@ -36,6 +37,7 @@ export default observer(function ToolbarFull({
 	onPressBurn,
 	style,
 }: Props) {
+	const { t } = useTranslation()
 	const theme = useTheme()
 	return (
 		<BottomSheetView style={style}>
@@ -44,28 +46,28 @@ export default observer(function ToolbarFull({
 				<View style={styles.row}>
 					<ToolbarAction
 						onPress={onPressSend}
-						title="Send"
+						title={t("Send")}
 						mode="gradient"
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="arrow_up" />}
 						size={62}
 					/>
 					<ToolbarAction
 						backgroundStyle={styles.actionBackground}
-						title="Receive"
+						title={t("Receive")}
 						onPress={onPressReceive}
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="arrow_down" />}
 						size={62}
 					/>
 					<ToolbarAction
 						backgroundStyle={styles.actionBackground}
-						title="Inquire"
+						title={t("Inquire")}
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="inquire" />}
 						size={62}
 					/>
 					<ToolbarAction
 						onPress={onPressScan}
 						backgroundStyle={styles.actionBackground}
-						title="Scan"
+						title={t("Scan")}
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="scan" />}
 						size={62}
 					/>
@@ -74,36 +76,36 @@ export default observer(function ToolbarFull({
 					<ToolbarAction
 						onPress={onPressClaim}
 						backgroundStyle={styles.actionBackground}
-						title="Claim"
+						title={t("Claim")}
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="claim" />}
 						size={62}
 					/>
 					<ToolbarAction
 						onPress={onPressStake}
 						backgroundStyle={styles.actionBackground}
-						title="Stake"
+						title={t("Stake")}
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="stake" />}
 						size={62}
 					/>
 					<ToolbarAction
 						onPress={onPressUnstake}
 						backgroundStyle={styles.actionBackground}
-						title="Unstake"
+						title={t("Unstake")}
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="unstake" />}
 						size={62}
 					/>
 					<ToolbarAction
 						onPress={onPressRestake}
 						backgroundStyle={styles.actionBackground}
-						title="Restake"
+						title={t("Restake")}
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="restake" />}
 						size={62}
 					/>
 				</View>
 				<View style={styles.row}>
-					<ToolbarAction backgroundStyle={styles.actionBackground} title="Issue" size={65} />
-					<ToolbarAction backgroundStyle={styles.actionBackground} title="Mint" size={65} />
-					<ToolbarAction backgroundStyle={styles.actionBackground} title="Burn" size={65} />
+					<ToolbarAction backgroundStyle={styles.actionBackground} title={t("Issue")} size={65} />
+					<ToolbarAction backgroundStyle={styles.actionBackground} title={t("Mint")} size={65} />
+					<ToolbarAction backgroundStyle={styles.actionBackground} title={t("Burn")} size={65} />
 
 					<ToolbarAction nullContent size={65} />
 				</View>

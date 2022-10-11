@@ -1,5 +1,5 @@
 import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, set, toJS } from "mobx";
-import { CosmosWalletGenerator, prefixToCoin } from "core/storing/Wallet";
+import { CosmosWalletGenerator } from "core/storing/Wallet";
 import { WalletTypes } from "core/types/storing/Generic";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import { ExportKeyRingData, QRCodeSharedData, WCExportKeyRingDatasResponse } from "core/types/storing/Keplr";
@@ -15,6 +15,8 @@ import { askPin } from "navigation/AskPin";
 import uuid from 'react-native-uuid';
 import { navigate } from "navigation/utils";
 import { isPinSaved } from "utils/biometrics";
+import { fromPrefixToCoin } from "core/utils/Coin";
+import { globalLoading } from "modals";
 
 export const cosmos_mnemonic_prefix = "mnemonic_"
 
@@ -254,6 +256,7 @@ export default class WalletStore {
       const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
       this.pinAsked = true
+      globalLoading.open()
       await Promise.all(toJS(this.profiles).map(async (profile, index) =>
       {
         switch(profile.type)
@@ -291,7 +294,7 @@ export default class WalletStore {
             try
             {
               const prefix = getPrefixFromAddress(profile.data.address)
-              const coin = prefixToCoin(prefix)
+              const coin = fromPrefixToCoin(prefix)
               if(coin)
               {
                 const pubWallets: SupportedCoinsMap = {}
@@ -319,6 +322,7 @@ export default class WalletStore {
       this.firstLoad = true
       this.loading = false
     })
+    globalLoading.close()
   }
 
   get activeWallet()

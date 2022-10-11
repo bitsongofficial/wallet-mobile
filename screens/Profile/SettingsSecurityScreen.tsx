@@ -13,10 +13,13 @@ import { COLOR, InputHandler } from "utils"
 import { ListButton, Subtitle } from "./components/atoms"
 import { askPin } from "navigation/AskPin"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
+import { withFullHeight } from "screens/layout/hocs"
 
 type Props = NativeStackScreenProps<RootStackParamList, "SettingsSecurity">
 
-export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
+export default withFullHeight(observer<Props>(function SettingsSecurityScreen({ navigation }) {
+	const { t } = useTranslation()
 	const { settings, localStorageManager } = useStore()
 	const loading = useLoading()
 
@@ -41,53 +44,49 @@ export default observer<Props>(function SettingsSecurityScreen({ navigation }) {
 
 	return (
 		<>
-			<StatusBar style="light" />
+			<View style={styles.container}>
+				<View>
+					<Header onPressBack={goBack} style={styles.header} />
+					<ScrollView>
+						<View style={styles.section}>
+							<Subtitle style={styles.subtitle}>PIN settings</Subtitle>
+							{/* <ListButton
+				icon="lock_key_open"
+				text="Enable PIN code"
+				onPress={toggleEnablePIN}
+				Right={
+				<Switch
+					active={settings.pin.enable}
+					onPress={toggleEnablePIN}
+				/>
+				}
+				// Right={}
+			/> */}
+							<ListButton icon="password" text={t("ChangePIN")} arrow onPress={goToChangePin} />
+						</View>
 
-			<ThemedGradient style={styles.container} invert>
-				<SafeAreaView style={styles.container}>
-					<View style={styles.wrapper}>
-						<Header onPressBack={goBack} style={styles.header} />
-						<ScrollView>
-							<View style={styles.section}>
-								<Subtitle style={styles.subtitle}>PIN settings</Subtitle>
-								{/* <ListButton
-                  icon="lock_key_open"
-                  text="Enable PIN code"
-                  onPress={toggleEnablePIN}
-                  Right={
-                    <Switch
-                      active={settings.pin.enable}
-                      onPress={toggleEnablePIN}
-                    />
-                  }
-                  // Right={}
-                /> */}
-								<ListButton icon="password" text="Change PIN" arrow onPress={goToChangePin} />
-							</View>
+						{/* <View style={styles.section}>
+			<Subtitle style={styles.subtitle}>Account</Subtitle>
+			<ListButton icon="key" text="View Mnemonic" arrow />
+			</View> */}
 
-							{/* <View style={styles.section}>
-                <Subtitle style={styles.subtitle}>Account</Subtitle>
-                <ListButton icon="key" text="View Mnemonic" arrow />
-              </View> */}
-
-							<View style={styles.section}>
-								<Subtitle style={styles.subtitle}>Account</Subtitle>
-								<ListButton
-									icon="fingerprint_simple"
-									text="Enable Biometrics"
-									onPress={toggleEnableBiometric}
-									Right={
-										<Switch active={settings.biometric_enable} onPress={toggleEnableBiometric} />
-									}
-								/>
-							</View>
-						</ScrollView>
-					</View>
-				</SafeAreaView>
-			</ThemedGradient>
+						<View style={styles.section}>
+							<Subtitle style={styles.subtitle}>{t("Account")}</Subtitle>
+							<ListButton
+								icon="fingerprint_simple"
+								text={t("EnableBiometrics")}
+								onPress={toggleEnableBiometric}
+								Right={
+									<Switch gradient active={settings.biometric_enable} onPress={toggleEnableBiometric} />
+								}
+							/>
+						</View>
+					</ScrollView>
+				</View>
+			</View>
 		</>
 	)
-})
+}))
 
 type PropsHeader = {
 	onPressBack(): void
@@ -109,17 +108,15 @@ const Header = ({ onPressBack, style }: PropsHeader) => (
 )
 
 const styles = StyleSheet.create({
-	container: { flex: 1 },
+	container: {
+		flex: 1,
+	},
 	header: {
 		marginBottom: vs(25),
 	},
-
 	head: {
-		marginHorizontal: s(25), // <- wrapper
 		marginBottom: vs(30),
 	},
-
-	wrapper: { marginHorizontal: s(34) },
 	wrapper_opacity: { opacity: 0.1 },
 	agreement: { marginBottom: vs(54), marginTop: vs(25) },
 	title: { marginBottom: vs(38) },

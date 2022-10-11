@@ -18,7 +18,7 @@ import { Contact } from "stores/ContactsStore"
 import { SendController } from "../../controllers"
 import { CardAddress, CardAdressSelf } from "../moleculs"
 import { Contact as ContactItem } from "../atoms"
-import { FOOTER_HEIGHT, HORIZONTAL_WRAPPER } from "utils/constants"
+import { FOOTER_HEIGHT } from "utils/constants"
 
 type Props = {
 	controller: SendController
@@ -107,7 +107,7 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 const styles = StyleSheet.create({
 	container: { flexGrow: 1 },
 
-	wrapper: { marginHorizontal: HORIZONTAL_WRAPPER },
+	wrapper: { },
 	input: {
 		marginTop: 31,
 		marginBottom: 40,
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
 	contacts: { marginBottom: 32 },
 	contactList: { marginTop: 18 },
 	contactListContent: {
-		paddingHorizontal: HORIZONTAL_WRAPPER,
 		paddingBottom: 8,
 	},
 })

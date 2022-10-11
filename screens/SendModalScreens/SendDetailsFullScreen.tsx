@@ -15,7 +15,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "ScannerQR">
 
 export default observer<Props>(function SendDetails({ navigation }: Props) {
 	const theme = useTheme()
-	const { coin } = useStore()
+	const { coin, settings } = useStore()
 
 	const [value1, setValue1] = useState("0")
 	const [value2, setValue2] = useState("0")
@@ -33,7 +33,7 @@ export default observer<Props>(function SendDetails({ navigation }: Props) {
 
 				<Text style={[styles.transferAmount, theme.text.primary, styles.mt6]}>
 					{amount}
-					{settings.currency?.symbol}
+					{settings.prettyCurrency?.symbol}
 				</Text>
 
 				<Text style={[styles.text, theme.text.secondary2, styles.mt6]}>

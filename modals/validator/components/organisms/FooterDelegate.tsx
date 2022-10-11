@@ -6,6 +6,7 @@ import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { DelegateController } from "modals/validator/controllers"
 import { s } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	controller: DelegateController
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export default observer<Props>(({ controller, onPressBack, onPressDone, style, steps }) => {
+	const { t } = useTranslation()
 	const insets = useSafeAreaInsets()
 	return (
 		<Footer
@@ -24,7 +26,7 @@ export default observer<Props>(({ controller, onPressBack, onPressDone, style, s
 			Center={
 				steps.active === 1 ? (
 					<Button
-						text="Continue"
+						text={t("Continue")}
 						contentContainerStyle={styles.buttonContentCenter}
 						textStyle={styles.buttonText}
 						onPress={steps.next}
@@ -48,7 +50,7 @@ export default observer<Props>(({ controller, onPressBack, onPressDone, style, s
 									(controller.amountInput.coin?.balance ?? 0)
 							)
 						}
-						text="Continue"
+						text={t("Continue")}
 						contentContainerStyle={styles.buttonContent}
 						textStyle={styles.buttonText}
 						onPress={steps.next}

@@ -103,12 +103,6 @@ const App = observer(() => {
 			<SafeAreaProvider>
 				<StatusBar />
 				<Navigation colorScheme={colorScheme} />
-
-				<FullscreenOverlay showing={loading.isOpen}>
-					<View style={styles.loaderContainer}>
-						<Loader size={60} />
-					</View>
-				</FullscreenOverlay>
 				{!!globalAlert.text && <AlertView message={globalAlert.text} />}
 				<BottomSheet
 					{...toJS(bottomsheet.defaultProps)}

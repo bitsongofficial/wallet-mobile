@@ -1,14 +1,17 @@
 import { SupportedCoins } from "constants/Coins";
 
-export interface ICoin {
+export interface ICoinMultiChain {
 	_id: string;
 	logo: any;
 	balance: number;
 	brand: string;
 	coinName: string;
 	address: string;
-	coin: SupportedCoins;
 	denom: string;
+}
+
+export interface ICoin extends ICoinMultiChain {
+	coin: SupportedCoins;
 }
 
 export type IPerson = {

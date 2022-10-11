@@ -12,6 +12,7 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 	const { coin } = store
 	const controller = new SendController()
 	const { creater, steps } = controller
+	steps.goTo("Select coin")
 	creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
 
 	const scanReciver = async () => {
@@ -30,15 +31,12 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 		const { coin, addressInput, balance } = creater
 		if (store.coin.hasCoins && coin && addressInput && balance) {
 			navigate("Loader", {
-				callback: () => store.coin.sendCoin(coin.info.coin, addressInput.value, balance),
+				callback: async () =>
+				{
+					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
+				},
 			})
 		}
-		// navigate("Loader", {
-		// 	callback: async () => {
-		// 		await wait(2000) // for example
-		// 		return true
-		// 	},
-		// })
 		gbs.close()
 	}
 

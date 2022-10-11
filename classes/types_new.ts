@@ -12,7 +12,7 @@ export interface ICoin {
 }
 
 export interface IChainCoinData {
-	coin: SupportedCoins.BITSONG
+	coin: SupportedCoins
 	balance: number
 }
 export interface IRemoteCoinData {

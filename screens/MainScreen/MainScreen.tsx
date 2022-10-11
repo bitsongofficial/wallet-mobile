@@ -16,18 +16,21 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { observer } from "mobx-react-lite"
 import { ToolbarFull, ToolbarShort } from "./components"
 import { RootStackParamList, RootTabParamList } from "types"
-import { COLOR, wait } from "utils"
+import { COLOR } from "utils"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { ReceiveModal } from "modals/wallets/modals"
 import { SupportedCoins } from "constants/Coins"
-import { Button } from "components/atoms"
+import { Button, Title } from "components/atoms"
 import { openClaim } from "modals/validator"
 import { formatNumber } from "utils/numbers"
 import { openSend } from "modals/wallets"
 import { s, vs } from "react-native-size-matters"
-import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { withStatusBar } from "screens/layout/hocs"
+import BottomNavigator from "screens/layout/BottomNavigator"
+import { useTranslation } from "react-i18next"
+import { toJS } from "mobx"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -38,203 +41,197 @@ type Props = CompositeScreenProps<
 	BottomTabScreenProps<RootTabParamList, "MainTab">
 >
 
-export default observer<Props>(function MainScreen({ navigation }) {
-	const { coin, dapp, settings, validators } = useStore()
-	// need culc by wallet
+export default
+	withStatusBar(
+	observer<Props>(
+	function MainScreen({ navigation }) {
+		const { coin, dapp, settings, validators } = useStore()
+		// need culc by wallet
 
-	const [activeTab, setActiveTab] = useState<ValueTabs>("Coins")
+		const [activeTab, setActiveTab] = useState<ValueTabs>("Coins")
 
-	const callback = useCallback(() => {}, [])
+		const { t } = useTranslation()
 
-	// ------------- bottom sheet -----------
-	const gbs = useGlobalBottomsheet()
+		// ------------- bottom sheet -----------
+		const gbs = useGlobalBottomsheet()
 
-	const safeAreaInsets = useSafeAreaInsets()
-	const sendCoinContainerStyle = useMemo(
-		() => ({ paddingBottom: safeAreaInsets.bottom }),
-		[safeAreaInsets.bottom],
-	)
+		const safeAreaInsets = useSafeAreaInsets()
+		const sendCoinContainerStyle = useMemo(
+			() => ({ paddingBottom: safeAreaInsets.bottom }),
+			[safeAreaInsets.bottom],
+		)
 
-	const openSendModal = useCallback(() => openSend(sendCoinContainerStyle), [])
+		const openSendModal = useCallback(() => openSend(sendCoinContainerStyle), [])
 
-	const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
+		const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
-	const openReceive = useCallback(async () => {
-		gbs.backHandler = () => gbs.close()
+		const openReceive = useCallback(async () => {
+			gbs.backHandler = () => gbs.close()
 
-		await gbs.setProps({
-			snapPoints: ["85%"],
-			onClose: async () => {
-				gbs.removeBackHandler()
-			},
-			children: () => (
-				<ReceiveModal style={sendCoinContainerStyle} close={closeGlobalBottomSheet} />
-			),
-		})
-		requestAnimationFrame(() => gbs.expand())
-	}, [])
-
-	const openScannerMemorized = useCallback(
-		() =>
-			navigation.navigate("ScannerQR", {
-				onBarCodeScanned: (uri: string) => {
-					try {
-						if (uri.startsWith("wc")) {
-							dapp.connect(uri)
-						}
-					} catch (e) {
-						console.error("Catched", e)
-					}
+			await gbs.setProps({
+				snapPoints: ["85%"],
+				onClose: async () => {
+					gbs.removeBackHandler()
 				},
-			}),
-		[],
-	)
+				children: () => (
+					<ReceiveModal style={sendCoinContainerStyle} close={closeGlobalBottomSheet} />
+				),
+			})
+			requestAnimationFrame(() => gbs.expand())
+		}, [])
 
-	const onPressClaim = () => {
-		navigation.push("Loader", {
-			// @ts-ignore
-			callback: async () => {
-				return await validators.claimAll()
-			},
-		})
-	}
+		const openScannerMemorized = useCallback(
+			() =>
+				navigation.navigate("ScannerQR", {
+					onBarCodeScanned: (uri: string) => {
+						try {
+							if (uri.startsWith("wc")) {
+								dapp.connect(uri)
+							}
+						} catch (e) {
+							console.error("Catched", e)
+						}
+					},
+				}),
+			[],
+		)
 
-	const openScanner = coin.CanSend ? openScannerMemorized : undefined
-
-	const openToolbar = useCallback(async () => {
-		gbs.backHandler = () => gbs.close()
-
-		const onPressScann = () => {
-			openScanner && openScanner()
-			Platform.OS === "android" && gbs.close()
+		const onPressClaim = () => {
+			navigation.push("Loader", {
+				// @ts-ignore
+				callback: async () => {
+					return await validators.claimAll()
+				},
+			})
 		}
 
-		await gbs.setProps({
-			snapPoints: ["70%"],
-			onClose: () => {
-				gbs.removeBackHandler()
-			},
-			children: () => (
-				<ToolbarFull
-					style={styles.toolbar_full}
-					onPressSend={openSendModal}
-					onPressReceive={openReceive}
-					onPressInquire={undefined}
-					onPressScan={onPressScann}
-					onPressClaim={validators.totalReward > 0 ? onPressClaim : undefined}
-					onPressStake={undefined}
-					onPressUnstake={undefined}
-					onPressRestake={undefined}
-					onPressIssue={undefined}
-					onPressMint={undefined}
-					onPressBurn={undefined}
-				/>
-			),
-		})
-		requestAnimationFrame(() => gbs.expand())
-	}, [coin.CanSend])
+		const openScanner = coin.CanSend ? openScannerMemorized : undefined
 
-	const openClaimAll = useCallback(() => {
-		openClaim({
-			amount: validators.totalReward,
-			coinName: "BTSG",
-			onDone: async () => await validators.claimAll(),
-			navigation,
-		})
-	}, [validators.totalReward])
+		const openToolbar = useCallback(async () => {
+			gbs.backHandler = () => gbs.close()
 
-	const [isRefreshing, setRefreshing] = useState(false)
+			const onPressScann = () => {
+				openScanner && openScanner()
+				Platform.OS === "android" && gbs.close()
+			}
 
-	const onRefresh = useCallback(async () => {
-		setRefreshing(true)
-		await coin.updateBalances()
-		setRefreshing(false)
-	}, [])
+			await gbs.setProps({
+				snapPoints: ["70%"],
+				onClose: () => {
+					gbs.removeBackHandler()
+				},
+				children: () => (
+					<ToolbarFull
+						style={styles.toolbar_full}
+						onPressSend={openSendModal}
+						onPressReceive={openReceive}
+						onPressInquire={undefined}
+						onPressScan={onPressScann}
+						onPressClaim={validators.totalReward > 0 ? onPressClaim : undefined}
+						onPressStake={undefined}
+						onPressUnstake={undefined}
+						onPressRestake={undefined}
+						onPressIssue={undefined}
+						onPressMint={undefined}
+						onPressBurn={undefined}
+					/>
+				),
+			})
+			requestAnimationFrame(() => gbs.expand())
+		}, [coin.CanSend])
 
-	const rewards = validators.totalRewardAsDollars
+		const openClaimAll = useCallback(() => {
+			openClaim({
+				amount: validators.totalReward,
+				coinName: "BTSG",
+				onDone: async () => await validators.claimAll(),
+				navigation,
+			})
+		}, [validators.totalReward])
 
-	return (
-		<>
-			<StatusBar style="light" />
+		const [isRefreshing, setRefreshing] = useState(false)
 
+		const onRefresh = useCallback(async () => {
+			setRefreshing(true)
+			await coin.updateBalances()
+			setRefreshing(false)
+		}, [])
+
+		const rewards = validators.totalRewardAsDollars
+
+		const titleExtractor = useCallback((tab: ValueTabs) =>
+		{
+			if(tab === "Coins") return t("Coins")
+			if(tab === "Fan Tokens") return t("FanTokens")
+			return ""
+		}, [])
+		return (
 			<SafeAreaView style={styles.container}>
-				<ScrollView
-					style={styles.scrollviewContent}
+				<BottomNavigator
 					refreshControl={
 						<RefreshControl
 							tintColor={COLOR.White}
 							refreshing={isRefreshing}
 							onRefresh={onRefresh}
 						/>
-					}
-				>
-					<View style={styles.info}>
-						<View style={styles.balance}>
-							<Text style={styles.balance_title}>Total Balance</Text>
-							<Text style={styles.balance_value}>
-								{coin.totalBalance.toLocaleString("en")} {settings.currency?.symbol}
-							</Text>
+					}>
+						<View style={styles.info}>
+							<Title
+								title={formatNumber(coin.totalBalance) + " " + settings.prettyCurrency?.symbol}
+								uppertitle={t("TotalBalance")}
+								size={{title: 32, uppertitle: 18}}
+								style={styles.mb34}
+							></Title>
 							{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}
-						</View>
 
-						<View style={styles.reward}>
-							<Text style={styles.reward_title}>Reward</Text>
-							<View style={styles.reward_row}>
-								<Text style={styles.reward_value}>
-									{formatNumber(rewards)} {settings.currency?.symbol}
-								</Text>
-								<Button disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>
-									CLAIM
+							<View style={[styles.reward]}>
+								<Title
+									title={formatNumber(rewards) + " " + settings.prettyCurrency?.symbol}
+									uppertitle={t("Reward")}
+									size={{title: 32, uppertitle: 16}}
+								></Title>
+								<Button uppercase size="thin" disable={!validators.CanStake || rewards <= 0} onPress={openClaimAll}>
+									{t("Claim")}
 								</Button>
 							</View>
 						</View>
-					</View>
-					<ToolbarShort
-						style={styles.toolbar_short}
-						onPressAll={openToolbar}
-						onPressInquire={undefined}
-						onPressReceive={openReceive}
-						onPressScan={openScanner}
-						onPressSend={openSendModal}
-					/>
-					<Tabs
-						values={tabs}
-						active={activeTab}
-						// @ts-ignore TODO: create cool types
-						onPress={setActiveTab}
-						style={styles.tabs}
-					/>
+						<ToolbarShort
+							style={styles.toolbar_short}
+							onPressAll={openToolbar}
+							onPressInquire={undefined}
+							onPressReceive={openReceive}
+							onPressScan={openScanner}
+							onPressSend={openSendModal}
+						/>
+						<Tabs
+							values={tabs}
+							active={activeTab}
+							titleExtractor={titleExtractor}
+							onPress={setActiveTab}
+							style={styles.tabs}
+						/>
 
-					<View style={styles.coins}>
-						{coin.coins
-							.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
-							.map((coin) => (
-								<TouchableOpacity key={coin.info._id} disabled={true}>
-									<CoinStat coin={coin} style={{ marginBottom: 9 }} />
-								</TouchableOpacity>
-							))}
-					</View>
-				</ScrollView>
+							<View style={styles.coins}>
+								{coin.multiChainCoins
+									.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
+									.map((coin) => (
+										<TouchableOpacity key={coin.info._id} disabled={true}>
+											<CoinStat coin={coin} style={{ marginBottom: 9 }} />
+										</TouchableOpacity>
+									))}
+							</View>
+				</BottomNavigator>
 			</SafeAreaView>
-		</>
-	)
-})
+		)
+	}
+))
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: COLOR.Dark3,
 	},
-
-	scrollviewContent: {
-		marginTop: vs(40),
-		paddingTop: vs(40),
-		flex: 1,
-		flexShrink: 1,
-	},
 	info: {
-		marginRight: s(22),
-		marginLeft: s(32),
 		marginBottom: vs(60),
 	},
 	balance: {
@@ -269,48 +266,26 @@ const styles = StyleSheet.create({
 		color: COLOR.White,
 		opacity: 0.5,
 	},
-
+	mb34: {
+		marginBottom: vs(34),
+	},
 	reward: {
-		// backgroundColor: "red",
-	},
-	reward_title: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "400",
-		fontSize: s(16),
-		lineHeight: s(20),
-		color: COLOR.RoyalBlue2,
-		marginBottom: vs(10),
-	},
-	reward_value: {
-		fontFamily: "CircularStd",
-		fontStyle: "normal",
-		fontWeight: "500",
-		fontSize: s(30),
-		color: COLOR.White,
-	},
-
-	reward_row: {
-		flexDirection: "row",
 		justifyContent: "space-between",
+		alignItems: "flex-end",
+		flexDirection: "row",
 	},
 
 	toolbar_short: {
-		marginHorizontal: s(24),
 		marginBottom: vs(40),
 	},
 	toolbar_full: {
-		paddingHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,
 	},
 
 	tabs: {
-		paddingHorizontal: HORIZONTAL_WRAPPER,
 		marginBottom: vs(18),
 	},
 	coins: {
 		paddingTop: vs(8),
-		paddingBottom: vs(164),
-		marginHorizontal: s(14),
 	},
 })

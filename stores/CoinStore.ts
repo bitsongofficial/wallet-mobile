@@ -16,6 +16,8 @@ import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmo
 import SettingsStore from "./SettingsStore";
 import { ICoin } from "classes/types";
 import { isValidAddress } from "core/utils/Address";
+import { getSendMessage } from "core/coin/cosmos/operations/Send";
+import { globalLoading } from "modals";
 
 const maxRecentRecipients = 10
 
@@ -44,12 +46,12 @@ export default class CoinStore {
 	get Prices()
 	{
 		const prices: SupportedCoinsMap = {}
-		for(const k of keys(this.remoteConfigs.prices))
+		for(const k of this.remoteConfigs.enabledCoins)
 		{
 			const realKey = k as SupportedCoins
 			if(realKey)
 			{
-				const currency: SupportedFiats = this.settingsStore.currency ? this.settingsStore.currency.name : SupportedFiats.USD
+				const currency: SupportedFiats = this.settingsStore.currency ? this.settingsStore.currency : SupportedFiats.USD
 				let price: number | undefined
 				const currenciesPrices = this.remoteConfigs.prices[realKey]
 				if(currenciesPrices) price = currenciesPrices[currency]
@@ -79,6 +81,7 @@ export default class CoinStore {
 			{
 				if(this.walletStore.activeProfile)
 				{
+					globalLoading.open()
 					waitings.push((async () =>
 					{
 						const profile = this.walletStore.activeWallet
@@ -139,7 +142,7 @@ export default class CoinStore {
 			})
 			runInAction(() =>
 			{
-				this.coins.splice(0, this.coins.length, ...coins.sort((c1, c2) => (c2.balanceUSD ?? 0) - (c1.balanceUSD ?? 0)))
+				this.coins.splice(0, this.coins.length, ...coins.sort((c1, c2) => (this.fromCoinToFiat(c2) ?? 0) - (this.fromCoinToFiat(c1) ?? 0)))
 				this.loading.balance = false
 				this.results.balance = errors
 			})
@@ -148,16 +151,21 @@ export default class CoinStore {
 		{
 			console.error("Catched", e)
 		}
+		globalLoading.close()
 	}
 
 	get totalBalance()
 	{
-	  return round(
-		this.coins.reduce(
-		  (total, coin) => (coin.balanceUSD ? coin.balanceUSD + total : total),
-		  0
+		return round(
+			this.coins.reduce(
+				(total, coin) =>
+				{
+					const b = this.fromCoinToFiat(coin)
+					return (b ? b + total : total)
+				},
+				0
+			)
 		)
-	  )
 	}
 
 	get hasCoins() {
@@ -167,6 +175,22 @@ export default class CoinStore {
 	get CanSend()
 	{
 		return this.walletStore.activeProfile?.type != WalletTypes.WATCH
+	}
+
+	get multiChainCoins() {
+		return this.coins.reduce((prev: Coin[], current: Coin) =>
+		{
+			const sameCoin = prev.find(p => p.info.denom == current.info.denom)
+			if(sameCoin)
+			{
+				sameCoin.info.balance += current.balance
+			}
+			else
+			{
+				return prev.concat(new Coin(toJS(current.info), 1))
+			}
+			return prev
+		}, [])
 	}
 
 	async sendAmount(coin: SupportedCoins, address: string, amount: Amount)
@@ -212,6 +236,34 @@ export default class CoinStore {
 		}
 	}
 
+	async sendMessage(coin: SupportedCoins, address: string, amount: Amount)
+	{
+		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
+		const wallet = this.walletStore.activeWallet.wallets[coin]
+		if(!(wallet instanceof CosmosWallet) || !this.CanSend)
+		{
+			runInAction(() =>
+			{
+				this.loading.send = false
+				this.results.send = false
+			})
+			throw {error: "operation not permitted"}
+		}
+		try
+		{
+			const data: FromToAmount = {
+				from:  wallet as CosmosWallet,
+				to: new PublicWallet(address),
+				amount,
+			}
+			return await getSendMessage(data)
+		}
+		catch(e)
+		{
+			console.error("Catched", e)
+		}
+	}
+
 	findAssetWithDenom(denom: Denom)
 	{
 		return this.coins.find(c => c.info.denom == denom)
@@ -224,11 +276,7 @@ export default class CoinStore {
 
 	async sendCoin(coin: SupportedCoins, address: string, balance: number)
 	{
-		const denom = fromCoinToDefaultDenom(coin)
-		return await this.sendAmount(coin, address, {
-			amount: (balance * convertRateFromDenom(denom)).toString(),
-			denom: denom,
-		})
+		return await this.sendAmount(coin, address, fromCoinToAmount(balance, coin))
 	}
 
 	async sendFiat(coin: SupportedCoins, address: string, fiat: number)
@@ -253,20 +301,14 @@ export default class CoinStore {
 		return fromAmountToFIAT(amount, this.Prices)
 	}
 
-	fromCoinToFiat(balance: number, coin: SupportedCoins)
+	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins)
 	{
 		return this.fromAmountToFIAT(fromCoinToAmount(balance, coin))
 	}
 
-	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins)
+	fromCoinToFiat(coin: Coin)
 	{
-		const a = CoinClasses[coin]
-		if(a)
-		{
-			return this.fromCoinToFiat(balance, coin)
-		}
-
-		return 0
+		return this.fromCoinBalanceToFiat(coin.balance, coin.info.coin)
 	}
 
 	addToRecent(address : string, date?: Date)

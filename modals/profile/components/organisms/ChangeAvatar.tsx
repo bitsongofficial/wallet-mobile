@@ -14,6 +14,7 @@ import { Title } from "../atoms";
 import { useCallback, useMemo, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { RectButton } from "react-native-gesture-handler";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   close(): void;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export default observer<Props>(({ close }) => {
+  const { t } = useTranslation()
   const theme = useTheme();
   const { wallet } = useStore()
 
@@ -57,8 +59,10 @@ export default observer<Props>(({ close }) => {
 
   return (
     <View style={styles.container}>
-      <Title style={styles.title}>Add Photos</Title>
-      <Text style={[styles.subtitle, theme.text.primary]}>optional</Text>
+      <Title style={styles.title}>
+        {t("AddPhoto")}
+      </Title>
+      <Text style={[styles.subtitle, theme.text.primary]}>{t("Optional")}</Text>
 
       <RectButton onPress={pickImage}>
         <View style={styles.avatar}>
@@ -79,7 +83,7 @@ export default observer<Props>(({ close }) => {
 
       {image ? (
         <Button
-          text="Proceed"
+          text={t("Proceed")}
           onPress={save}
           contentContainerStyle={styles.buttonContent}
           textStyle={styles.buttonText}
@@ -87,7 +91,7 @@ export default observer<Props>(({ close }) => {
       ) : (
         <Button
           mode="fill"
-          text="Skip"
+          text={t("Skip")}
           onPress={close}
           contentContainerStyle={[
             styles.buttonContent,

@@ -82,16 +82,14 @@ export default ({ onDone, authTypes, pin }: Props) => {
         <Button
           text="Activate now"
           onPress={activate}
-          contentContainerStyle={styles.footerButtonContent}
-          textStyle={styles.buttonText}
+          textAlignment={"center"}
           style={styles.footerButton}
         />
         <Button
           text="Cancel"
           mode="fill"
+          textAlignment={"center"}
           onPress={skip}
-          contentContainerStyle={styles.footerButtonContent}
-          textStyle={styles.buttonText}
         />
       </View>
     </>

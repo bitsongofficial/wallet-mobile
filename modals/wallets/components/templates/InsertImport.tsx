@@ -9,7 +9,7 @@ import { SendController } from "../../controllers"
 import { CardSelectCoin } from "../moleculs"
 import { TransactionCreater } from "classes/Transaction"
 import { StyleProp } from "react-native"
-import { mvs, vs } from "react-native-size-matters"
+import { mvs, s, vs } from "react-native-size-matters"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { FOOTER_HEIGHT } from "utils/constants"
 
@@ -23,20 +23,21 @@ export default observer<Props>(function InsertImport({ controller, onPressSelect
 	const theme = useTheme()
 	const { settings } = useStore()
 	const creater: TransactionCreater = controller.creater
-	const fiatSymbol = settings.currency?.symbol
+	const fiatSymbol = settings.prettyCurrency?.symbol
 
 	return (
 		<BottomSheetView style={[styles.container, style]}>
 			<View style={styles.row}>
 				<Text style={[styles.usd, theme.text.primary]}>
 					{controller.readableInput}{" "}
-					{controller.inverted ? fiatSymbol : creater.coin?.info.coinName}
+					<Text style={!controller.inverted && {fontSize: s(24)}}>{controller.inverted ? fiatSymbol : creater.coin?.info.coinName}</Text>
 				</Text>
 				<View>
 					<Button
 						text="MAX"
 						onPress={controller.setMax}
 						contentContainerStyle={styles.maxButtonContent}
+						size="thin"
 					/>
 				</View>
 			</View>
@@ -90,9 +91,10 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: mvs(21, 1.5),
-		lineHeight: mvs(27, 1.5),
+		fontSize: mvs(19, 1.5),
+		lineHeight: mvs(24, 1.5),
 		color: COLOR.RoyalBlue,
+		marginLeft: s(3),
 	},
 	select: {
 		marginTop: mvs(39, 1.5),

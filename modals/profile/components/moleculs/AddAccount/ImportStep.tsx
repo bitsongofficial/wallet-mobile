@@ -6,35 +6,39 @@ import { Button } from "components/atoms"
 import { PhraseHorisontal } from "components/moleculs"
 import { Title } from "../../atoms"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type CreateStepProps = {
 	onPressPaste(): void
 	phrase: Phrase
 }
 
-export default observer(({ phrase, onPressPaste }: CreateStepProps) => (
-	<>
-		<View style={styles.wrapper}>
-			<Title style={styles.title}>Import Mnemonics</Title>
-			<Text style={styles.caption}>
-				This is the only way you will be able to recover your account. Please store it somewhere
-				safe!
-			</Text>
-		</View>
-		{phrase.words.length > 0 ? (
-			<PhraseHorisontal phrase={phrase} contentContainerStyle={styles.phrase} />
-		) : (
-			<View style={{ alignItems: "center" }}>
-				<Button
-					text="Paste"
-					onPress={onPressPaste}
-					textStyle={styles.buttonText}
-					contentContainerStyle={styles.buttonContent}
-				/>
+export default observer(({ phrase, onPressPaste }: CreateStepProps) =>
+{
+	const { t } = useTranslation()
+	return (
+		<>
+			<View style={styles.wrapper}>
+				<Title style={styles.title}>{t("ImportMnemonics")}</Title>
+				<Text style={styles.caption}>
+					{t("OnlyWayToRecoverMnemonic")}
+				</Text>
 			</View>
-		)}
-	</>
-))
+			{phrase.words.length > 0 ? (
+				<PhraseHorisontal phrase={phrase} contentContainerStyle={styles.phrase} />
+			) : (
+				<View style={{ alignItems: "center" }}>
+					<Button
+						text="Paste"
+						onPress={onPressPaste}
+						textStyle={styles.buttonText}
+						contentContainerStyle={styles.buttonContent}
+					/>
+				</View>
+			)}
+		</>
+	)
+})
 
 const styles = StyleSheet.create({
 	wrapper: {

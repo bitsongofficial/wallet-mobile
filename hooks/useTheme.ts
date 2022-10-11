@@ -27,7 +27,7 @@ interface ITheme {
     container: ViewStyle;
     placeholder: string;
     component: TextStyle;
-    autocomplite: TextStyle;
+    autocomplete: TextStyle;
   };
   bottomsheet: {
     background: Omit<
@@ -71,7 +71,7 @@ const Theme = {
         color: COLOR.White,
       },
       placeholder: COLOR.Marengo,
-      autocomplite: {
+      autocomplete: {
         color: hexAlpha(COLOR.White, 20),
       },
     },

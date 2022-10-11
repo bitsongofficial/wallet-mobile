@@ -90,7 +90,7 @@ export default observer<Props>(function ValidatorScreen({ navigation, route }) {
 			},
 			{
 				title: "TOTAL STAKE",
-				value: `${settings.currency?.symbol}${formatNumber(
+				value: `${settings.prettyCurrency?.symbol}${formatNumber(
 					validators.totalStakeAsFIAT(validator),
 				)}`,
 			},

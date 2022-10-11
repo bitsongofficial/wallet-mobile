@@ -13,6 +13,7 @@ import { convertRateFromDenom, fromAmountToCoin } from "core/utils/Coin"
 import { autorun, makeAutoObservable, runInAction, set, toJS } from "mobx"
 import { has } from "utils/mobx"
 import CoinStore from "./CoinStore"
+import RemoteConfigsStore from "./RemoteConfigsStore"
 import WalletStore from "./WalletStore"
 
 type validatorIndexer = string | number | Validator | { operator: string } | { id: string }
@@ -30,11 +31,12 @@ export default class ValidatorStore {
 
 	totalVotingPower: SupportedCoinsFullMap<number> = {
 		[SupportedCoins.BITSONG]: 0,
+		[SupportedCoins.BITSONG118]: 0,
 	}
 
 	private aprRatio: SupportedCoinsMap = {}
 
-	constructor(private coinStore: CoinStore, private walletStore: WalletStore) {
+	constructor(private remoteConfigStore: RemoteConfigsStore, private coinStore: CoinStore, private walletStore: WalletStore) {
 		makeAutoObservable(
 			this,
 			{
@@ -56,7 +58,7 @@ export default class ValidatorStore {
 	private async loadValidators()
 	{
 		let validators: Validator[] = []
-		for(const chain of Object.values(SupportedCoins))
+		for(const chain of this.remoteConfigStore.enabledCoins)
 		{
 			this.totalVotingPower[chain] = 0
 			try {
@@ -99,7 +101,7 @@ export default class ValidatorStore {
 		let delegations: any[] = []
 		const wallet = this.walletStore.activeWallet
 		if(wallet == null) return
-		for(const chain of Object.values(SupportedCoins))
+		for(const chain of this.remoteConfigStore.enabledCoins)
 		{
 			try
 			{

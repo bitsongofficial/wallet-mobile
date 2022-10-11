@@ -7,6 +7,7 @@ import { Steps } from "classes"
 import { Button } from "components/atoms"
 import { StyledInput, Subtitle, Title } from "../atoms"
 import { isValidAddress } from "core/utils/Address"
+import { useTranslation } from "react-i18next"
 
 export class Controller {
 	inputWallet = new InputHandler()
@@ -19,6 +20,7 @@ type Props = {
 }
 
 export default observer<Props>(({ controller }) => {
+	const { t } = useTranslation()
 	const { inputName, inputWallet, steps } = controller
 
 	const pasteFromClipboard = useCallback(
@@ -30,37 +32,42 @@ export default observer<Props>(({ controller }) => {
 		<View style={styles.container}>
 			{steps.title === "Address" && (
 				<>
-					<Title style={styles.title}>Add Watch Account</Title>
+					<Title style={styles.title}>{t("AddWatchAccount")}</Title>
 					<StyledInput
 						style={styles.search}
-						placeholder="Public Address"
+						inputStyle={styles.searchInput}
+						placeholder={t("PublicAddress")}
 						value={inputWallet.value}
 						onChangeText={inputWallet.set}
+
 						Right={
-							<Button
-								text="Paste"
-								onPress={pasteFromClipboard}
-								style={styles.buttonPaste}
-								contentContainerStyle={styles.buttonPasteContent}
-							/>
+							<View style={styles.verticallyCentered}>
+								<Button
+									text={t("Paste")}
+									size="thin"
+									onPress={pasteFromClipboard}
+									style={styles.buttonPaste}
+									contentContainerStyle={styles.buttonPasteContent}
+								/>
+							</View>
 						}
 					/>
 				</>
 			)}
 			{steps.title === "Name" && (
 				<>
-					<Title style={styles.title}>Name your Wallet</Title>
+					<Title style={styles.title}>{t("NameYourWallet")}</Title>
 					<StyledInput
 						value={inputName.value}
 						onChangeText={inputName.set}
 						style={styles.search}
-						placeholder="Write a name"
+						placeholder={t("NameYourWallet")}
 					/>
 				</>
 			)}
 
 			<Subtitle style={styles.subtitle}>
-				Insert the address you want to explore{"\n"} and discover data.
+				{t("AddressYouWantToExplore")}
 			</Subtitle>
 		</View>
 	)
@@ -72,6 +79,7 @@ type FooterProps = {
 }
 
 export const Footer = observer(({ controller, onPressSave }: FooterProps) => {
+	const { t } = useTranslation()
 	const { inputWallet, steps, inputName } = controller
 	return (
 		<View style={styles.footer}>
@@ -79,7 +87,7 @@ export const Footer = observer(({ controller, onPressSave }: FooterProps) => {
 			{steps.title === "Address" && (
 				<Button
 					disable={!isValidAddress(inputWallet.value.trim())}
-					text="Proceed"
+					text={t("Proceed")}
 					onPress={() => steps.goTo("Name")}
 					contentContainerStyle={styles.buttonContent}
 					textStyle={styles.buttonText}
@@ -88,7 +96,8 @@ export const Footer = observer(({ controller, onPressSave }: FooterProps) => {
 			{steps.title === "Name" && (
 				<Button
 					disable={inputName.value.length < 4}
-					text="Add Account"
+					text={t("AddAccount")}
+					textAlignment="center"
 					onPress={onPressSave}
 					contentContainerStyle={styles.buttonContent}
 					textStyle={styles.buttonText}
@@ -126,6 +135,12 @@ const styles = StyleSheet.create({
 
 	search: {
 		marginBottom: 24,
+		borderColor: "red",
+		alignSelf: "stretch",
+		flexDirection: "row",
+	},
+
+	searchInput: {
 	},
 
 	// -------- Button ----------
@@ -150,5 +165,8 @@ const styles = StyleSheet.create({
 	buttonText: {
 		fontSize: 14,
 		lineHeight: 18,
+	},
+	verticallyCentered: {
+		justifyContent: "center",
 	},
 })

@@ -6,70 +6,41 @@ import { useStore } from "hooks"
 import { COLOR, hexAlpha, InputHandler } from "utils"
 import { StyledInput, Title } from "../atoms"
 import { LanguageItem } from "../moleculs"
-import languages from "constants/languages"
+import { LanguageData, Languages } from "constants/languages"
 import { ILang } from "screens/Profile/type"
 import { Icon2 } from "components/atoms"
 import { s, vs } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
+import { Select } from "modals/general/organisms"
+import { HORIZONTAL_WRAPPER } from "utils/constants"
 
 type Props = {
 	close(): void
 }
 
 export default observer<Props>(({ close }) => {
+	const { t } = useTranslation()
 	const { settings } = useStore()
 
-	// --------- Search ---------
-	const input = useMemo(() => new InputHandler(), [])
-
-	const filtred = useMemo(() => {
-		if (input.value) {
-			const lowerCase = input.value.toLowerCase()
-			return languages.filter(({ name }) => name.toLowerCase().includes(lowerCase))
-		} else {
-			return languages
-		}
-	}, [input.value])
-
-	// ------- FlatList ----------
-
-	const setLanguage = useCallback((lang: ILang) => {
+	const setLanguage = useCallback((lang: Languages) => {
 		settings.setLanguage(lang)
 		close()
 	}, [])
 
-	const keyExtractor = ({ id }: ILang) => id
-	const renderLanguage = useCallback<ListRenderItem<ILang>>(
-		({ item }) => (
-			<LanguageItem
-				value={item}
-				isActive={item.id === settings.language.id}
-				onPress={setLanguage}
-			/>
-		),
-		[settings.language],
-	)
+	const keyExtractor = (code: Languages) => code
 
 	return (
 		<View style={styles.container}>
-			<Title style={styles.title}>Seleziona Lingua</Title>
-			<StyledInput
-				placeholder="Cerca Lingua"
-				style={styles.search}
-				value={input.value}
-				onChangeText={input.set}
-				Right={
-					<View style={styles.iconContainer}>
-						<Icon2 name="magnifying_glass" stroke={hexAlpha(COLOR.White, 20)} size={21} />
-					</View>
-				}
-			/>
-			<BottomSheetFlatList
-				data={filtred}
-				style={styles.scroll}
-				contentContainerStyle={styles.scrollContent}
+			<Select
+				title={t("SelectLanguage")}
+				items={Object.values(Languages)}
+				active={settings.language}
 				keyExtractor={keyExtractor}
-				renderItem={renderLanguage}
-			/>
+				onGray={true}
+				labelExtractor={item => LanguageData[item as Languages].name}
+				searchCriteria={(item, search) => LanguageData[item as Languages].name.toLowerCase().includes(search.toLowerCase())}
+				onPress={setLanguage}
+			></Select>
 		</View>
 	)
 })
@@ -78,7 +49,7 @@ const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
 		marginTop: vs(15),
-		marginHorizontal: s(26),
+		paddingHorizontal: HORIZONTAL_WRAPPER,
 	},
 	title: {
 		fontSize: s(16),

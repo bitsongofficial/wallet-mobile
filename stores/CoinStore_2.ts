@@ -95,14 +95,12 @@ export default class CoinStore {
 	}
 
 	async updInfo() {
-		console.log("updInfo()")
 		const activeWallet = this.walletStore.activeWallet
 		console.log("activeWallet", toJS(activeWallet))
 		if (activeWallet) {
 			await Promise.all(
 				this.coinsList.map(async (coin) => {
 					coin?.setAddress(await activeWallet?.wallets[coin.key].Address())
-					console.log("coin.address", coin.address)
 					// coin?.setRemoteData()
 					// coin?.key
 				}),

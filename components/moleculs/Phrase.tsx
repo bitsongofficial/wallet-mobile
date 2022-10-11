@@ -8,14 +8,16 @@ type Props = {
 	value: string[]
 	hidden?: boolean
 	style?: StyleProp<ViewStyle>
+	wordStyle?: StyleProp<ViewStyle>
+	hiddenStyle? : StyleProp<ViewStyle>
 }
 
-export default memo(({ value, style, hidden = true }: Props) => (
+export default memo(({ value, style, wordStyle, hiddenStyle, hidden = true }: Props) => (
 	<View style={style}>
 		{sliceIntoChunks(value, 2).map(([first, second], index) => (
 			<View key={index} style={styles.container}>
-				<Word hidden={hidden} index={index * 2 + 1} text={first} style={styles.word} />
-				{second && <Word hidden={hidden} index={index * 2 + 2} text={second} />}
+				<Word hidden={hidden} index={index * 2 + 1} text={first} hiddenStyle={hiddenStyle} style={[styles.word, wordStyle]} />
+				{second && <Word hidden={hidden} index={index * 2 + 2} text={second} hiddenStyle={hiddenStyle}  style={[wordStyle]} />}
 			</View>
 		))}
 	</View>

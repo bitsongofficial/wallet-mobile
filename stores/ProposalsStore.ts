@@ -13,6 +13,7 @@ import { get, makeAutoObservable, runInAction, set, values } from "mobx"
 import moment from "moment"
 import { has } from "utils/mobx"
 import LocalStorageManager from "./LocalStorageManager"
+import RemoteConfigsStore from "./RemoteConfigsStore"
 import ValidatorStore from "./ValidatorStore"
 import WalletStore from "./WalletStore"
 
@@ -26,9 +27,14 @@ export default class ProposalsStore {
 	recentChains: SupportedCoins[] = []
 	quorums: SupportedCoinsFullMap<number> = {
 		[SupportedCoins.BITSONG]: 0,
+		[SupportedCoins.BITSONG118]: 0,
 	}
 	minDeposits: SupportedCoinsFullMap<Amount> = {
 		[SupportedCoins.BITSONG]: {
+			denom: Denom.UBTSG,
+			amount: "0",
+		},
+		[SupportedCoins.BITSONG118]: {
 			denom: Denom.UBTSG,
 			amount: "0",
 		},
@@ -40,7 +46,7 @@ export default class ProposalsStore {
 		deposit: number,
 	}
 
-	constructor(private walletStore: WalletStore, private validatorsStore: ValidatorStore) {
+	constructor(private remoteConfigStore: RemoteConfigsStore, private walletStore: WalletStore, private validatorsStore: ValidatorStore) {
 		makeAutoObservable(this, {}, { autoBind: true })
 
 		this.load()
@@ -48,7 +54,7 @@ export default class ProposalsStore {
 
 	async load()
 	{
-		for(const chain of Object.values(SupportedCoins))
+		for(const chain of this.remoteConfigStore.enabledCoins)
 		{
 			try
 			{

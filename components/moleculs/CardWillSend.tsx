@@ -3,15 +3,16 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { Button, Icon2 } from "components/atoms"
 import { useStore, useTheme } from "hooks"
-import { COLOR } from "utils"
+import { COLOR, hexAlpha } from "utils"
 import { ICoin, IPerson } from "classes/types"
 import { observer } from "mobx-react-lite"
 import { useCallback } from "react"
-import { SupportedCoins } from "constants/Coins"
 import { Contact } from "stores/ContactsStore"
+import { s } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
-	/** How many $ we will send */
+	/** How many coin we will send */
 	amount: string
 	/** Account details from which we send */
 	coinData: ICoin
@@ -30,6 +31,7 @@ export default observer(function CardWillSend({
 	onPressUp,
 	style,
 }: Props) {
+	const { t } = useTranslation()
 	const theme = useTheme()
 	const { settings, contacts, coin } = useStore()
 
@@ -42,10 +44,10 @@ export default observer(function CardWillSend({
 		})
 	}, [address])
 
-	const coinsValue = useMemo(
-		() => coin.fromFIATToCoin(parseFloat(amount), SupportedCoins.BITSONG),
-		[amount],
-	)
+	const coinsValue = parseFloat(amount)
+	const dollars = useMemo(() => coin.fromCoinBalanceToFiat(parseFloat(amount), coinData.coin), [amount])
+	const coinsIntegerValue = Math.floor(coinsValue)
+	const coinsDecimalValue = coinsValue - coinsIntegerValue
 
 	const shortAddress = `${address.substring(0, 10)}..${address.slice(-7)}`
 	const shortFrom = `${coinData.address.substring(0, 10)}..${coinData.address.slice(-7)}`
@@ -53,47 +55,30 @@ export default observer(function CardWillSend({
 	return (
 		<View style={[styles.container, style]}>
 			<View style={styles.title}>
-				<Text style={[styles.text, styles.titleText, theme.text.colorText]}>Total Balance</Text>
+				<Text style={[styles.text, styles.titleText, theme.text.colorText]}>
+					{t("YouAreSending")}</Text>
 				<TouchableOpacity onPress={onPressUp}>
 					<Icon2 name="arrow_up" size={18} stroke={COLOR.Marengo} />
 				</TouchableOpacity>
 			</View>
 
 			<Text style={[styles.transferAmount, theme.text.primary]}>
-				{amount} {settings.currency?.symbol}
+				{coinsIntegerValue}
+				{coinsDecimalValue != 0 && <Text style={styles.transferAmountDecimal}>.{coinsDecimalValue.toString().substring(2)}</Text>}
+				<Text style={styles.coinName}> {coinData.coinName.toUpperCase()}</Text>
+			</Text>
+
+			<Text style={[styles.fiatText]}>
+				{dollars} {settings.prettyCurrency?.symbol}
 			</Text>
 
 			<View style={styles.row}>
-				<Text style={[styles.text, styles.w30, theme.text.colorText]}>as</Text>
-				<Text style={[styles.text, theme.text.primary]}>
-					{coinsValue} {coinData.coinName.toUpperCase()}
-				</Text>
-			</View>
-
-			<View style={styles.row}>
-				<Text style={[styles.text, styles.w66, theme.text.colorText]}>from</Text>
+				<Text style={[styles.text, styles.w66, theme.text.colorText]}>{t("From")}</Text>
 				<Text style={[styles.text, theme.text.primary]}>{shortFrom}</Text>
 			</View>
 
 			<View style={styles.row}>
-				<Text style={[styles.text, styles.w30, theme.text.colorText]}>to</Text>
-				{receiver ? (
-					<>
-						<View style={styles.avatar} />
-						{/* <Image style={styles.avatar} source={{ uri: receiver.avatar }} /> */}
-						<Text style={[styles.text, theme.text.primary]}>{receiver.name}</Text>
-					</>
-				) : (
-					<Button
-						text="Add Contact"
-						onPress={addContact}
-						contentContainerStyle={styles.buttonAdd}
-					/>
-				)}
-			</View>
-
-			<View style={styles.row}>
-				<Text style={[styles.text, styles.w66, theme.text.colorText]}>address</Text>
+				<Text style={[styles.text, styles.w30, theme.text.colorText]}>{t("To")}</Text>
 				<Text style={[styles.text, theme.text.primary]}>{shortAddress}</Text>
 			</View>
 		</View>
@@ -121,9 +106,16 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		lineHeight: 18,
 	},
+	fiatText: {
+		fontFamily: "CircularStd",
+		fontStyle: "normal",
+		fontWeight: "500",
+		fontSize: 16,
+		lineHeight: 18,
+		color: hexAlpha(COLOR.White, 50),
+	},
 	titleText: {
 		fontWeight: "400",
-
 		fontSize: 16,
 		lineHeight: 20,
 	},
@@ -136,10 +128,16 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: 42,
+		fontSize: 36,
 		lineHeight: 53,
 
-		marginTop: 16,
+		marginTop: 4,
+	},
+	transferAmountDecimal: {
+		fontSize: s(15),
+	},
+	coinName: {
+		fontSize: s(20),
 	},
 	avatar: {
 		width: 20,

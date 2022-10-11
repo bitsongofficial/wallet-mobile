@@ -41,15 +41,25 @@ export default () => (
 				name="ValidatorsList"
 				component={Screens.ValidatorsList}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon2 name="stake" size={20} stroke={getStroke(focused)} />,
+					tabBarIcon: ({ focused }) => (
+						<View>
+							<Icon2 name="stake" size={20} stroke={hexAlpha(COLOR.White, 10)} />
+						</View>
+					),
 				}}
+				listeners={{ tabPress: (e) => e.preventDefault() }}
 			/>
 			<BottomTab.Screen
 				name="Proposal"
 				component={Screens.Proposal}
 				options={() => ({
-					tabBarIcon: ({ focused }) => <Icon2 name="like" size={20} stroke={getStroke(focused)} />,
+					tabBarIcon: ({ focused }) => (
+						<View>
+							<Icon2 name="like" size={20} stroke={hexAlpha(COLOR.White, 10)} />
+						</View>
+					),
 				})}
+				listeners={{ tabPress: (e) => e.preventDefault() }}
 			/>
 			<BottomTab.Screen
 				name="Tab2"

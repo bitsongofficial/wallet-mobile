@@ -10,10 +10,11 @@ export default class SendController {
     "Select Receiver",
     "Send Recap",
     "Select coin",
+    "Select network",
   ]);
 
   private currentInput = ""
-  private invertedInner = true
+  private invertedInner = false
 
   creater = new Transaction.Creater();
 
@@ -39,7 +40,7 @@ export default class SendController {
       max = coin.balance
       if(this.inverted)
       {
-        max = coinStore.fromCoinToFiat(max, coin.info.coin)
+        max = coinStore.fromCoinBalanceToFiat(max, coin.info.coin)
       }
     }
 

@@ -20,6 +20,7 @@ import Animated, {
   SharedValue,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   style: StyleProp<ViewStyle>;
@@ -32,6 +33,7 @@ type Props = {
 
 export default observer<Props>(
   ({ style, input, onPressAvatar, avatar, animtedValue, onNickEdited }) => {
+    const { t } = useTranslation()
     const inputRef = useRef<TextInput>(null);
     const { dapp, user } = useStore();
 
@@ -112,7 +114,7 @@ export default observer<Props>(
         {!input.isFocused && (
           <Animated.View style={buttonStyle}>
             <Button
-              text={!input.value ? "Set nick" : "Edit"}
+              text={!input.value ? t("SetNick") : t("Edit")}
               onPress={openInput}
               style={styles.button}
               contentContainerStyle={styles.buttonContent}

@@ -1,7 +1,7 @@
 import { SupportedCoins } from "constants/Coins"
-import { CoinClasses } from "core/types/coin/Dictionaries"
+import { ChainRegistryNames, CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
-import { assets } from 'chain-registry'
+import { assets, chains } from 'chain-registry'
 
 export enum SupportedFiats {
 	USD = "usd",
@@ -78,8 +78,56 @@ export function fromDenomToCoin(denom: Denom): SupportedCoins | undefined
 function resolveAsset(asset: string | SupportedCoins)
 {
 	const chain = asset as SupportedCoins
-	if(asset && Object.values(SupportedCoins).includes(asset as SupportedCoins)) return fromCoinToDefaultDenom(asset as SupportedCoins)
+	if(asset && Object.values(SupportedCoins).includes(chain)) return fromCoinToDefaultDenom(chain)
 	return asset
+}
+
+function resolveCoin(coin: SupportedCoins)
+{
+	return chains.find((c: any) =>
+	{
+		return c.chain_name == ChainRegistryNames[coin]
+	})
+}
+
+export function getCoinGasUnit(coin: SupportedCoins)
+{
+	const c = resolveCoin(coin)
+	if(c && c.fees && c.fees.fee_tokens && c.fees.fee_tokens.length > 0)
+	{
+		const token = c.fees.fee_tokens[0]
+		return token.fixed_min_gas_price + token.denom
+	}
+
+	return undefined
+}
+
+export function getCoinPrefix(coin: SupportedCoins)
+{
+	return resolveCoin(coin).bech32_prefix
+}
+
+export function getCoinName(coin: SupportedCoins)
+{
+	return resolveCoin(coin).pretty_name
+}
+
+export function getCoinIcon(coin: SupportedCoins)
+{
+	return getAssetIcon(coin)
+}
+
+export function fromPrefixToCoin(prefix: string)
+{
+	const chain = chains.find((c: any) => c.bech32_prefix == prefix)
+	const a = Object.entries(ChainRegistryNames).find(e => e[1] == chain.chain_name)?.[0] as SupportedCoins
+	return a
+}
+
+export function getCoinDerivationPath(coin: SupportedCoins)
+{
+	const c = resolveCoin(coin)	
+	return ""
 }
 
 export function getAssetsInfos(asset: string | SupportedCoins)
@@ -92,6 +140,12 @@ export function getAssetName(asset: string | SupportedCoins)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.name.replace("Fantoken", "") : "undefined"
+}
+
+export function getAssetSymbol(asset: string | SupportedCoins)
+{
+	const infos = getAssetsInfos(asset)
+	return infos ? infos.symbol : ""
 }
 
 export function getAssetTag(asset: string | SupportedCoins)

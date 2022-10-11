@@ -1,56 +1,42 @@
 import { useCallback } from "react"
-import { ListRenderItem, StyleSheet, Text, ViewStyle, StyleProp } from "react-native"
+import { StyleSheet, Text, ViewStyle, StyleProp } from "react-native"
 import { useStore, useTheme } from "hooks"
-import { ButtonBack } from "components/atoms"
-import { SupportedCoins } from "constants/Coins"
 import { Coin } from "classes"
 import { COLOR } from "utils"
-import { FlatList } from "react-native-gesture-handler"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
-import { SendController } from "../../controllers"
-import { ButtonCoinSelect } from "../moleculs"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
+import { CoinSelect, CoinSelectProps } from "modals/general/organisms"
 
 type Props = {
-	controller: SendController
-	onBack(): void
+	activeCoin?: Coin | null
+	onPress(coin: Coin): void
 	style?: StyleProp<ViewStyle>
-}
+	filter?(coin: Coin): boolean
+	coins?: Coin[]
+} & CoinSelectProps
 
-export default function SelectCoin({ controller, onBack, style }: Props) {
-	const theme = useTheme()
+export default function SelectCoin({ coins, activeCoin, onPress, filter, style, ...props }: Props) {
 	const { coin } = useStore()
 
 	const selectCoin = useCallback(
-		(coin) => {
-			controller.creater.setCoin(coin)
-			onBack()
+		(coin) =>
+		{
+			onPress(coin)
 		},
-		[controller, onBack],
+		[onPress],
 	)
-	const coinsFromSupported = Object.values(SupportedCoins).map((sc) => coin.findAssetWithCoin(sc))
-	const availableCoins = coinsFromSupported.filter((c) => c != undefined) as Coin[]
-
-	const renderCoin = useCallback<ListRenderItem<Coin>>(
-		({ item }) => <ButtonCoinSelect key={item?.info._id} coin={item} onPress={selectCoin} />,
-		[],
-	)
+	const baseCoins = coins ?? coin.coins
+	const nonZeroCoins = baseCoins.filter(c => c.balance > 0)
+	const availableCoins = filter ? nonZeroCoins.filter(filter) : nonZeroCoins
 
 	return (
 		<BottomSheetView style={[styles.container, style]}>
-			<ButtonBack onPress={onBack} style={styles.back} />
-			<Text style={[styles.title, theme.text.primary]}>Select coin</Text>
-			<Text style={styles.caption}>
-				Select also the chain where your coin{"\n"}
-				come from
-			</Text>
-
-			<FlatList
-				renderItem={renderCoin}
-				data={availableCoins}
-				style={styles.flatList}
-				contentContainerStyle={styles.flatlistContent}
-			/>
+			<CoinSelect
+				coins={availableCoins}
+				onPress={selectCoin}
+				active={activeCoin ? activeCoin : undefined}
+				{...props}
+			></CoinSelect>
 		</BottomSheetView>
 	)
 }
@@ -72,7 +58,6 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		marginBottom: 8,
 	},
-
 	caption: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",

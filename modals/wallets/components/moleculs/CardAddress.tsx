@@ -6,6 +6,7 @@ import { TouchableOpacity } from "react-native-gesture-handler"
 import { COLOR, InputHandler } from "utils"
 import { useMemo } from "react"
 import { trimAddress } from "utils/string"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	input: InputHandler
@@ -15,6 +16,7 @@ type Props = {
 }
 
 export default observer<Props>(function CardWallet({ onPressQR, input, style, isError }: Props) {
+	const { t } = useTranslation()
 	const theme = useTheme()
 
 	const value = useMemo(() => {
@@ -28,7 +30,7 @@ export default observer<Props>(function CardWallet({ onPressQR, input, style, is
 			bottomsheet
 			style={[theme.text.primary, styles.container, style]}
 			inputStyle={styles.input}
-			placeholder="Public Address"
+			placeholder={t("PublicAddress")}
 			onChangeText={input.set}
 			onFocus={input.focusON}
 			onBlur={input.focusOFF}

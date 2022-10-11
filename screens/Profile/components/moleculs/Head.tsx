@@ -15,20 +15,21 @@ import Animated, {
 	useAnimatedStyle,
 } from "react-native-reanimated"
 import { s } from "react-native-size-matters"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	style: StyleProp<ViewStyle>
 	input: InputHandler
 	onPressAvatar?(): void
 	avatar?: string
-	animtedValue: SharedValue<number>
 	onNickEdited?(): void
 }
 
 export default observer<Props>(
-	({ style, input, onPressAvatar, avatar, animtedValue, onNickEdited }) => {
+	({ style, input, onPressAvatar, avatar, onNickEdited }) => {
+		const { t } = useTranslation()
 		const inputRef = useRef<TextInput>(null)
-		const { dapp, user } = useStore()
+		const { dapp, wallet } = useStore()
 
 		const openInput = useCallback(() => {
 			inputRef.current?.focus()
@@ -40,28 +41,13 @@ export default observer<Props>(
 
 		useEffect(() => reaction(() => input.value, checkNick), [input])
 		useEffect(() => {
-			if (!input.isFocused && isNickValid) {
-				user?.setNick(input.value)
+			if (!input.isFocused && isNickValid && wallet.activeProfile) {
+				wallet.changeActiveProfileName(input.value)
 			}
-		}, [input.isFocused, isNickValid, user, input])
+		}, [input.isFocused, isNickValid, wallet.activeProfile, input])
 
 		const hidden = useSpring({ opacity: input.isFocused ? 0.3 : 1 })
 
-		const titleStyle = useAnimatedStyle(() => {
-			const scale = interpolate(animtedValue.value, [0, 32], [1, 0.8], Extrapolation.CLAMP)
-			return {
-				transform: [{ scale }],
-				flexDirection: "row",
-				alignItems: "center",
-			}
-		})
-
-		const buttonStyle = useAnimatedStyle(() => {
-			const scale = interpolate(animtedValue.value, [0, 16], [1, 0], Extrapolation.CLAMP)
-			return {
-				transform: [{ scale }],
-			}
-		})
 
 		return (
 			<View style={[styles.container, style]}>
@@ -69,8 +55,8 @@ export default observer<Props>(
 					<TouchableOpacity onPress={onPressAvatar}>
 						<Avatar style={styles.avatar} source={avatar ? { uri: avatar } : undefined} />
 					</TouchableOpacity>
-					<View style={{ flexDirection: "row" }}>
-						<Animated.View style={titleStyle}>
+					<View style={{ flexDirection: "row" }} onPress={openInput}>
+						<View style={styles.row}>
 							<Title style={hidden}>{input.value || input.isFocused ? `@` : "Profile"}</Title>
 							<TextInput
 								// editable={editable}
@@ -78,28 +64,15 @@ export default observer<Props>(
 								style={styles.input}
 								value={input.value}
 								onChangeText={input.set}
-								onPressIn={(e) => e.preventDefault()}
 								enabled={false}
 								onFocus={input.focusON}
 								onBlur={input.focusOFF}
 								focusable={false}
 								onEndEditing={onNickEdited}
 							/>
-						</Animated.View>
+						</View>
 					</View>
 				</View>
-				{!input.isFocused && (
-					<Animated.View style={buttonStyle}>
-						<Button
-							text={!input.value ? "Set nick" : "Edit"}
-							onPress={openInput}
-							style={styles.button}
-							contentContainerStyle={styles.buttonContent}
-							textStyle={styles.buttonText}
-							mode="fill"
-						/>
-					</Animated.View>
-				)}
 			</View>
 		)
 	},
@@ -111,7 +84,9 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		alignItems: "center",
 	},
-
+	row: {
+		flexDirection: "row"
+	},
 	user: {
 		flexDirection: "row",
 		alignItems: "center",

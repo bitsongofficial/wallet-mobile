@@ -16,12 +16,13 @@ type Props = {
 	index?: number
 	style?: StyleProp<ViewStyle>
 	hidden?: boolean
+	hiddenStyle?: StyleProp<ViewStyle>
 
 	onPress?(text: string): void
 	isActive?: boolean
 }
 
-export default ({ index, text, style, hidden, onPress, isActive }: Props) => {
+export default ({ index, text, style, hidden, hiddenStyle, onPress, isActive }: Props) => {
 	const handlePress = useCallback(
 		(e: GestureResponderEvent) => {
 			e.preventDefault()
@@ -36,6 +37,7 @@ export default ({ index, text, style, hidden, onPress, isActive }: Props) => {
 					styles.container,
 					hidden && styles.containerHidden,
 					isActive && styles.containerHidden,
+					hidden && hiddenStyle,
 					style,
 				]}
 			>
@@ -54,8 +56,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: s(20),
 		paddingVertical: s(11),
 		borderRadius: s(50),
-		borderWidth: s(2),
-		borderColor: COLOR.Dark2,
 	},
 	containerHidden: {
 		backgroundColor: COLOR.Dark2,
