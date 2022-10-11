@@ -15,7 +15,7 @@ import { toJS } from "mobx"
 import { s, vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { useTranslation } from "react-i18next"
-import { useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { SupportedCoins } from "constants/Coins"
 import { Coin } from "classes"
 
@@ -33,7 +33,12 @@ export default observer<Props>(function SendModal({
 	const { t } = useTranslation()
 	const store = useStore()
 	const hasCoins = toJS(store.coin.coins).length > 0
-	const [chain, setChain] = useState(SupportedCoins.BITSONG)
+	const [tempCoin, setTempCoin] = useState<Coin>()
+
+	const specificCoins = useMemo(() =>
+	{
+		return store.coin.coins.filter(c => (tempCoin != undefined && c.balance > 0 && c.info.denom == tempCoin.info.denom))
+	}, [tempCoin, store.coin.coins])
 
 	const { steps } = controller
 
@@ -47,17 +52,37 @@ export default observer<Props>(function SendModal({
 		return ""
 	}
 
-	const coinSelect = (coin: Coin) =>
+	const networkSelect = useCallback((coin: Coin) =>
 	{
 		controller.creater.setCoin(coin)
 		steps.clear()
 		steps.goTo("Insert Import")
-	}
+	}, [])
 
-	const networkSelect = (c: SupportedCoins) =>
+	const coinSelect = useCallback((coin: Coin) =>
 	{
-		steps.next()
-		setChain(c)
+		setTempCoin(coin)		
+	}, [specificCoins])
+
+	useEffect(() =>
+	{
+		if(specificCoins.length > 0)
+		{
+			if(specificCoins.length > 1)
+			{
+				steps.next()
+			}
+			else
+			{
+				networkSelect(specificCoins[0])
+			}
+		}
+	}, [specificCoins])
+
+	const selectCoinStep = () =>
+	{
+		setTempCoin(undefined)
+		steps.goTo("Select coin")
 	}
 
 	return (
@@ -68,15 +93,18 @@ export default observer<Props>(function SendModal({
 					(
 						<SelectCoin
 							onPress={coinSelect}
-							activeCoin={controller.creater.coin}
-							filter={coin => coin.info.coin == chain}
+							activeCoin={tempCoin}
+							coins={store.coin.multiChainCoins}
 						/>
 					) : (
 						steps.title === "Select network" ?
 						(
-							<SelectNetwork
+							<SelectCoin
+								activeCoin={controller.creater.coin}
 								onPress={networkSelect}
 								description={t("SelectNetworkForSend")}
+								title={t("SelectNetworkTitle")}
+								coins={specificCoins}
 							/>
 						) : (
 							<>
@@ -89,7 +117,7 @@ export default observer<Props>(function SendModal({
 								{steps.title === "Insert Import" && (
 									<InsertImport
 										controller={controller}
-										onPressSelectCoin={() => steps.goTo("Select network")}
+										onPressSelectCoin={selectCoinStep}
 										style={styles.insertImport}
 									/>
 								)}

@@ -78,7 +78,7 @@ export function fromDenomToCoin(denom: Denom): SupportedCoins | undefined
 function resolveAsset(asset: string | SupportedCoins)
 {
 	const chain = asset as SupportedCoins
-	if(asset && Object.values(SupportedCoins).includes(asset as SupportedCoins)) return fromCoinToDefaultDenom(asset as SupportedCoins)
+	if(asset && Object.values(SupportedCoins).includes(chain)) return fromCoinToDefaultDenom(chain)
 	return asset
 }
 
@@ -140,6 +140,12 @@ export function getAssetName(asset: string | SupportedCoins)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.name.replace("Fantoken", "") : "undefined"
+}
+
+export function getAssetSymbol(asset: string | SupportedCoins)
+{
+	const infos = getAssetsInfos(asset)
+	return infos ? infos.symbol : ""
 }
 
 export function getAssetTag(asset: string | SupportedCoins)

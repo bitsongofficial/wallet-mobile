@@ -10,6 +10,8 @@ export type Props = Omit<SelectProps<Coin>, "title" | "description" | "renderFun
 	activeIndex?: number
 	hideSelector?: boolean
 	coins: Coin[]
+	title?: string,
+	description?: string,
 }
 
 export default (
@@ -17,6 +19,8 @@ export default (
 		active,
 		activeIndex,
 		coins,
+		title,
+		description,
 		...props
 	}: Props) =>
 {
@@ -32,8 +36,8 @@ export default (
 	return (
 		<SelectBase
 			{...props}
-			title={t("SelectCoinTitle")}
-			description={t("SelectCoinDescription")}
+			title={title ?? t("SelectCoinTitle")}
+			description={description ?? t("SelectCoinDescription")}
 			items={coins}
 			renderFunction = {render}
 		/>

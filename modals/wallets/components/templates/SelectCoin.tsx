@@ -5,16 +5,17 @@ import { Coin } from "classes"
 import { COLOR } from "utils"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
-import { CoinSelect } from "modals/general/organisms"
+import { CoinSelect, CoinSelectProps } from "modals/general/organisms"
 
 type Props = {
 	activeCoin?: Coin | null
 	onPress(coin: Coin): void
 	style?: StyleProp<ViewStyle>
 	filter?(coin: Coin): boolean
-}
+	coins?: Coin[]
+} & CoinSelectProps
 
-export default function SelectCoin({ activeCoin, onPress, filter, style }: Props) {
+export default function SelectCoin({ coins, activeCoin, onPress, filter, style, ...props }: Props) {
 	const { coin } = useStore()
 
 	const selectCoin = useCallback(
@@ -24,7 +25,8 @@ export default function SelectCoin({ activeCoin, onPress, filter, style }: Props
 		},
 		[onPress],
 	)
-	const nonZeroCoins = coin.coins.filter(c => c.balance > 0)
+	const baseCoins = coins ?? coin.coins
+	const nonZeroCoins = baseCoins.filter(c => c.balance > 0)
 	const availableCoins = filter ? nonZeroCoins.filter(filter) : nonZeroCoins
 
 	return (
@@ -33,6 +35,7 @@ export default function SelectCoin({ activeCoin, onPress, filter, style }: Props
 				coins={availableCoins}
 				onPress={selectCoin}
 				active={activeCoin ? activeCoin : undefined}
+				{...props}
 			></CoinSelect>
 		</BottomSheetView>
 	)

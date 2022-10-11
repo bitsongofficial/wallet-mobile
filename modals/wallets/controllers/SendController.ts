@@ -9,8 +9,8 @@ export default class SendController {
     "Insert Import",
     "Select Receiver",
     "Send Recap",
-    "Select network",
     "Select coin",
+    "Select network",
   ]);
 
   private currentInput = ""

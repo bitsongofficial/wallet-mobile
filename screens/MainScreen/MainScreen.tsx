@@ -52,8 +52,6 @@ export default
 
 		const { t } = useTranslation()
 
-		const callback = useCallback(() => {}, [])
-
 		// ------------- bottom sheet -----------
 		const gbs = useGlobalBottomsheet()
 
@@ -179,7 +177,7 @@ export default
 					}>
 						<View style={styles.info}>
 							<Title
-								title={coin.totalBalance.toLocaleString("en") + " " + settings.prettyCurrency?.symbol}
+								title={formatNumber(coin.totalBalance) + " " + settings.prettyCurrency?.symbol}
 								uppertitle={t("TotalBalance")}
 								size={{title: 32, uppertitle: 18}}
 								style={styles.mb34}
@@ -214,7 +212,7 @@ export default
 						/>
 
 							<View style={styles.coins}>
-								{coin.coins
+								{coin.multiChainCoins
 									.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
 									.map((coin) => (
 										<TouchableOpacity key={coin.info._id} disabled={true}>

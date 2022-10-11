@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: "row",
 		justifyContent: "space-between",
+		alignItems: "center",
 	},
 	imageContainer: {
 		marginRight: s(14),
@@ -67,11 +68,11 @@ const styles = StyleSheet.create({
 		backgroundColor: COLOR.Dark3,
 	},
 	texts: {
-		flex: 1,
+		flex: 2,
 		alignItems: "flex-start",
 	},
 	numbers: {
-		flex: 1,
+		flexShrink: 0,
 		alignItems: "flex-end",
 	},
 	primary: {

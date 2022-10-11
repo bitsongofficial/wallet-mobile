@@ -3,13 +3,13 @@ import { s, vs } from "react-native-size-matters"
 import { Caption, Title } from "../atoms"
 
 type Props = {
-	title?: string
-	caption?: string
+	title: string
+	caption: string
 }
 
 export default ({
-	title = "Transaction Successful",
-	caption = `Congratulations!${"\n"} Your transaction has been completed${"\n"} and confirmed by the blockchain.`,
+	title,
+	caption,
 }: Props) => {
 	return (
 		<>

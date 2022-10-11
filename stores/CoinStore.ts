@@ -156,16 +156,16 @@ export default class CoinStore {
 
 	get totalBalance()
 	{
-	  return round(
-		this.coins.reduce(
-		  (total, coin) =>
-		  {
-			const b = this.fromCoinToFiat(coin)
-			return b ? b + total : total
-		  },
-		  0
+		return round(
+			this.coins.reduce(
+				(total, coin) =>
+				{
+					const b = this.fromCoinToFiat(coin)
+					return (b ? b + total : total)
+				},
+				0
+			)
 		)
-	  )
 	}
 
 	get hasCoins() {
@@ -175,6 +175,22 @@ export default class CoinStore {
 	get CanSend()
 	{
 		return this.walletStore.activeProfile?.type != WalletTypes.WATCH
+	}
+
+	get multiChainCoins() {
+		return this.coins.reduce((prev: Coin[], current: Coin) =>
+		{
+			const sameCoin = prev.find(p => p.info.denom == current.info.denom)
+			if(sameCoin)
+			{
+				sameCoin.info.balance += current.balance
+			}
+			else
+			{
+				return prev.concat(new Coin(toJS(current.info), 1))
+			}
+			return prev
+		}, [])
 	}
 
 	async sendAmount(coin: SupportedCoins, address: string, amount: Amount)

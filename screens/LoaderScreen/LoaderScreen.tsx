@@ -11,6 +11,7 @@ import { StepError, StepLoad, StepSuccess } from "./components/organisms"
 import { vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { EventListenerCallback, EventMapBase, EventMapCore } from "@react-navigation/native"
+import { useTranslation } from "react-i18next"
 
 type Status = "pending" | "fulfilled" | "rejected"
 
@@ -18,6 +19,7 @@ export default function LoaderScreen({
 	navigation,
 	route,
 }: NativeStackScreenProps<RootStackParamList, "Loader">) {
+	const { t } = useTranslation()
 	const Header = route.params?.header
 	const goBack = useCallback(() => navigation.goBack(), [])
 
@@ -95,7 +97,7 @@ export default function LoaderScreen({
 
 				<View style={styles.content}>
 					{status == "pending" && <StepLoad />}
-					{status == "fulfilled" && <StepSuccess />}
+					{status == "fulfilled" && <StepSuccess title={t("TransactionSuccess")} caption={t("TransactionSuccessfullText")} />}
 					{status == "rejected" && <StepError onPressBack={goBack} />}
 
 					<FooterSuccess

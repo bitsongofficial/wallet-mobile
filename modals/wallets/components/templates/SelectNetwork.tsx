@@ -5,18 +5,19 @@ import { SupportedCoins } from "constants/Coins"
 import { COLOR } from "utils"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { DetailedSelect, Select } from "modals/general/organisms"
-import { getCoinIcon, getCoinName } from "core/utils/Coin"
+import { getAssetSymbol, getCoinIcon, getCoinName, getCoinPrefix } from "core/utils/Coin"
 import { t } from "i18next"
 
 type Props = {
 	title?: string
 	description?: string
 	activeChain?: SupportedCoins | null
+	filter?(chain: SupportedCoins): boolean
 	onPress(chain: SupportedCoins): void
 	style?: StyleProp<ViewStyle>
 }
 
-export default function SelectCoin({title, description, activeChain, onPress, style }: Props) {
+export default function SelectCoin({title, description, activeChain, filter, onPress, style }: Props) {
 	const { configs } = useStore()
 	const theme = useTheme()
 
@@ -26,14 +27,15 @@ export default function SelectCoin({title, description, activeChain, onPress, st
 		},
 		[onPress],
 	)
-	const chains = configs.remote.enabledCoins
+	const chains = filter ? configs.remote.enabledCoins.filter(filter) : configs.remote.enabledCoins
 
 	const infoExtractor = (item: SupportedCoins) =>
 	{
 		return {
 			title: getCoinName(item),
-			description: item.toString(),
+			description: getAssetSymbol(item),
 			uri: getCoinIcon(item),
+			subtitle: item == SupportedCoins.BITSONG118 ? "(cosmos compatible)" : undefined
 		}
 	}
 
