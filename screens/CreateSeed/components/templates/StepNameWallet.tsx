@@ -28,7 +28,7 @@ export default observer<Props>(({ onPressBack, onPressNext, input, isDisableNext
 				></TitledParagraph>
 				<View style={styles.flex1}>
 					<Input
-						placeholder={t("WalletNamePlaceholder")}
+						placeholder={t("NameYourWallet")}
 						style={styles.input}
 						value={input.value}
 						onChangeText={input.set}

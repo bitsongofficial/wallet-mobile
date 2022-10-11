@@ -1,7 +1,6 @@
 import { useCallback } from "react"
 import { StyleSheet, Text, ViewStyle, StyleProp } from "react-native"
 import { useStore, useTheme } from "hooks"
-import { SupportedCoins } from "constants/Coins"
 import { Coin } from "classes"
 import { COLOR } from "utils"
 import { BottomSheetView } from "@gorhom/bottom-sheet"

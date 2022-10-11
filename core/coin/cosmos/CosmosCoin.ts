@@ -11,7 +11,6 @@ export abstract class CosmosCoin extends Coin {
 	public gasUnit(): string
 	{
 		const gas = getCoinGasUnit(this.chain()) ?? "0.025" + this.denom()
-		console.log(gas)
 		return gas
 	}
 	public abstract RPCEndpoint(): string

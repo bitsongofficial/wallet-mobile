@@ -1,12 +1,5 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { SupportedCoins } from "constants/Coins";
-import { DelegateData } from "core/types/coin/cosmos/DelegateData";
-import { RedelegateData } from "core/types/coin/cosmos/RedelegateData";
 import { Validator } from "core/types/coin/cosmos/Validator";
-import { CoinClasses } from "core/types/coin/Dictionaries";
-import { CoinOperationEnum } from "core/types/coin/OperationTypes";
-import { convertRateFromDenom } from "core/utils/Coin";
-import navigation from "navigation";
 import { store } from "stores/Store";
 import { DelegateController, RedelegateController, UndelegateController } from "./controllers";
 import openDelegate from "./openDelegate";

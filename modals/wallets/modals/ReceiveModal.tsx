@@ -24,7 +24,6 @@ type Props = {
 export default observer<Props>(function ReceiveModal({ style, close }) {
 	const { t } = useTranslation()
 	const { wallet, coin } = useStore()
-	const { screen } = useDimensions()
 	const [address, setAddress] = useState("")
 
 	const [isCopied, setCopied] = useState(false)

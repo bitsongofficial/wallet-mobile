@@ -22,7 +22,7 @@ export default ({ onPress, active = false, gradient, disabled = false }: SwitchP
   // TODO:Check on phisic IOS
   return (
     <BaseButton onPress={onPress} enabled={!disabled}>
-      <View style={[styles.container, !gradient && styles.background]}>
+      <View style={[styles.container, !(gradient && active) && styles.background]}>
         <Background style={{ flex: 1 }}>
           <animated.View style={[styles.dot, activeStyle]}>
             <></>

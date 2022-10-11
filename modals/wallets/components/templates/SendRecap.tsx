@@ -5,9 +5,7 @@ import { BottomSheetScrollView, BottomSheetScrollViewMethods } from "@gorhom/bot
 import { useStore } from "hooks"
 import { Tabs, Recap } from "components/organisms"
 import { SendController } from "../../controllers"
-import { Data } from "../organisms"
 import { SupportedCoins } from "constants/Coins"
-import { formatNumber } from "utils/numbers"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { FOOTER_HEIGHT } from "utils/constants"
 import JSONTree from 'react-native-json-tree'

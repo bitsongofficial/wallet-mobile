@@ -16,7 +16,8 @@ export const coinGeckoApi = axios.create({
 const coinIds: {
 	[k in SupportedCoins]: string
 } = {
-	[SupportedCoins.BITSONG]: "bitsong"
+	[SupportedCoins.BITSONG]: "bitsong",
+	[SupportedCoins.BITSONG118]: "bitsong"
 }
 
 function coingeckoCoinName(coin: SupportedCoins)

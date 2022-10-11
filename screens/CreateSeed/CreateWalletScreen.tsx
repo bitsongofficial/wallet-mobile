@@ -66,8 +66,6 @@ export default withStatusBarFullHeight(observer<Props>(({ navigation }) => {
 
 	const insets = useSafeAreaInsets()
 
-	console.log(controller.isPhraseShown)
-
 	return (
 		<>
 			<KeyboardAvoidingView

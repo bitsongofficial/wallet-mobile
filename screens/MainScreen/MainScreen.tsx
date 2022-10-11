@@ -30,6 +30,7 @@ import { s, vs } from "react-native-size-matters"
 import { withStatusBar } from "screens/layout/hocs"
 import BottomNavigator from "screens/layout/BottomNavigator"
 import { useTranslation } from "react-i18next"
+import { toJS } from "mobx"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -166,7 +167,6 @@ export default
 			if(tab === "Fan Tokens") return t("FanTokens")
 			return ""
 		}, [])
-
 		return (
 			<SafeAreaView style={styles.container}>
 				<BottomNavigator

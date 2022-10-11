@@ -31,9 +31,6 @@ export default observer(({ input }: InputNameStepProps) =>
 				style={styles.input}
 				keyboardAppearance="dark"
 			/>
-			<Subtitle style={styles.subtitle}>
-				{t("VIP")}
-			</Subtitle>
 		</>
 	)
 })

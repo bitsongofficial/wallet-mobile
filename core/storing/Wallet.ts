@@ -16,8 +16,10 @@ function chainToDerivationPath(chain: SupportedCoins)
 {
 	switch(chain)
 	{
-		default:
+		case SupportedCoins.BITSONG:
 			return `m/44'/639'/0'/`
+		default:
+			return `m/44'/118'/0'/`
 	}
 }
 

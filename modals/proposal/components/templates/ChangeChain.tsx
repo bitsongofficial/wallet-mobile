@@ -19,8 +19,8 @@ type Props = {
 }
 
 export default observer<Props>(({ searchInput, setActiveChain }) => {
-	const { proposals } = useStore()
-	const chains: SupportedCoins[] = Object.values(SupportedCoins)
+	const { proposals, configs } = useStore()
+	const chains: SupportedCoins[] = configs.remote.enabledCoins
 
 	const filtredChains = useMemo(
 		() =>

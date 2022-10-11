@@ -1,15 +1,9 @@
 import { useCallback } from "react"
-import { ListRenderItem, StyleSheet, Text, ViewStyle, StyleProp } from "react-native"
+import { StyleSheet, ViewStyle, StyleProp } from "react-native"
 import { useStore, useTheme } from "hooks"
-import { ButtonBack } from "components/atoms"
 import { SupportedCoins } from "constants/Coins"
-import { Coin } from "classes"
 import { COLOR } from "utils"
-import { FlatList } from "react-native-gesture-handler"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
-import { SendController } from "../../controllers"
-import { ButtonCoinSelect } from "../moleculs"
-import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { DetailedSelect, Select } from "modals/general/organisms"
 import { getCoinIcon, getCoinName } from "core/utils/Coin"
 import { t } from "i18next"
@@ -23,6 +17,7 @@ type Props = {
 }
 
 export default function SelectCoin({title, description, activeChain, onPress, style }: Props) {
+	const { configs } = useStore()
 	const theme = useTheme()
 
 	const selectCoin = useCallback(
@@ -31,7 +26,7 @@ export default function SelectCoin({title, description, activeChain, onPress, st
 		},
 		[onPress],
 	)
-	const chains = Object.values(SupportedCoins)
+	const chains = configs.remote.enabledCoins
 
 	const infoExtractor = (item: SupportedCoins) =>
 	{

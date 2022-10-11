@@ -40,7 +40,7 @@ export default class SendController {
       max = coin.balance
       if(this.inverted)
       {
-        max = coinStore.fromCoinToFiat(max, coin.info.coin)
+        max = coinStore.fromCoinBalanceToFiat(max, coin.info.coin)
       }
     }
 

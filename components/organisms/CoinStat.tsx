@@ -7,6 +7,7 @@ import { useStore } from "hooks"
 import { toJS } from "mobx"
 import { s } from "react-native-size-matters"
 import ListItem from "components/moleculs/ListItem"
+import { formatNumber } from "utils/numbers"
 
 type Props = {
 	coin: Coin
@@ -14,16 +15,15 @@ type Props = {
 }
 
 export default observer(({ coin, style }: Props) => {
-	const { settings } = useStore()
+	const { settings, coin: cs } = useStore()
 	const asset = assets
 		.reduce((res: any[], a: any) => res.concat(a.assets), [])
 		.find((a: any) => a.base === coin.info.denom)
 	const logo = asset && asset.logo_URIs && asset.logo_URIs.png ? asset.logo_URIs.png : undefined
-	const source: ImageURISource = { uri: logo }
 	const name = asset ? asset.name.replace("Fantoken", "") : "undefined"
 	const display = asset ? asset.display.toUpperCase() : "Undefined"
 	const balance = coin.balance.toLocaleString("en")
-	const balanceUSD = coin.balanceUSD ? coin.balanceUSD.toLocaleString("en") : undefined
+	const balanceFIAT = cs.fromCoinToFiat(coin)
 
 	return (
 		<ListItem
@@ -31,7 +31,7 @@ export default observer(({ coin, style }: Props) => {
 			title={name}
 			subtitle={display}
 			description={balance}
-			subdescription={balanceUSD ? (balanceUSD + " " + settings.prettyCurrency?.symbol) : undefined}
+			subdescription={balanceFIAT ? (formatNumber(balanceFIAT) + " " + settings.prettyCurrency?.symbol) : undefined}
 			style={style}
 		/>
 	)
