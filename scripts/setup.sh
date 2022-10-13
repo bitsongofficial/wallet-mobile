@@ -10,4 +10,3 @@ sed -i '/android {/a\
   }' "$PWD/node_modules/react-native-keychain/android/build.gradle"
 npx rn-nodeify --install --hack
 find ${PWD}/node_modules/*/ -name "build.gradle" -type f | xargs perl -pi -e 's/\bcompile\b/implementation/g;'
-jetify
