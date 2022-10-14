@@ -1,0 +1,39 @@
+{
+	"project_info": {
+	  "project_number": "324540826167",
+	  "project_id": "cosmonautico-wallet",
+	  "storage_bucket": "cosmonautico-wallet.appspot.com"
+	},
+	"client": [
+	  {
+		"client_info": {
+		  "mobilesdk_app_id": "1:324540826167:android:48e9d6ebd15e4f96a575b2",
+		  "android_client_info": {
+			"package_name": "com.bitsong.wallet"
+		  }
+		},
+		"oauth_client": [
+		  {
+			"client_id": "324540826167-s6dnrve3v7go9apva058qdevpcj6f07j.apps.googleusercontent.com",
+			"client_type": 3
+		  }
+		],
+		"api_key": [
+		  {
+			"current_key": "AIzaSyA9n50qaE88hJU3I3Bz0_0uiEp5BPs3Oqg"
+		  }
+		],
+		"services": {
+		  "appinvite_service": {
+			"other_platform_oauth_client": [
+			  {
+				"client_id": "324540826167-s6dnrve3v7go9apva058qdevpcj6f07j.apps.googleusercontent.com",
+				"client_type": 3
+			  }
+			]
+		  }
+		}
+	  }
+	],
+	"configuration_version": "1"
+}
