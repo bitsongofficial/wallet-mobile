@@ -63,7 +63,7 @@ buck-out/
 \.buckd/
 *.keystore
 !debug.keystore
-
+!my-upload-key.keystore
 # Bundle artifacts
 *.jsbundle
 
