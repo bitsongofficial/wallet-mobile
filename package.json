@@ -10,7 +10,8 @@
     "eject": "expo eject",
     "test": "jest --watchAll",
     "clean": "expo start -c",
-    "setup": "./scripts/setup.sh"
+    "setup": "./scripts/setup.sh",
+    "env": "./scripts/env_file_from_env.sh"
   },
   "jest": {
     "preset": "jest-expo"
