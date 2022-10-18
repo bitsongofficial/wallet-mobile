@@ -12,7 +12,7 @@ SetAppSecretFromEnv () {
 	SetAppSecretFromEnvToFile APPCENTERSECRET_ANDROID "./android/app/src/main/assets/appcenter-config.json"
 }
 
-# yarn setup
+yarn setup
 yarn env
 SetAppSecretFromEnv
-# yarn build
+yarn build
