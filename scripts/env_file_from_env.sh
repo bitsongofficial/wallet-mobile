@@ -12,7 +12,11 @@ ReplaceWithEnv () {
 	escapedValue=$(SafeSedEscape $value)
 	echo $escapedValue
 	if [[ -n "${value}" ]]; then
-		sed -i -r "s/^($envName=).*/\1$escapedValue/" $2
+		if [[ $OSTYPE == 'darwin'* ]]; then
+			sed -i "" -r "s/^($envName=).*/\1$escapedValue/" $2
+		else
+			sed -i -r "s/^($envName=).*/\1$escapedValue/" $2
+		fi
 	fi
 }
 
