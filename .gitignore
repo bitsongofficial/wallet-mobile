@@ -51,8 +51,6 @@ build/
 local.properties
 *.iml
 *.hprof
-android/app/google-services.json
-ios/GoogleService-Info.plist
 
 # node.js
 #
@@ -65,7 +63,7 @@ buck-out/
 \.buckd/
 *.keystore
 !debug.keystore
-
+!my-upload-key.keystore
 # Bundle artifacts
 *.jsbundle
 
