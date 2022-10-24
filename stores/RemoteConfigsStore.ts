@@ -72,7 +72,7 @@ export default class RemoteConfigsStore {
 		{
 			setTimeout(() => {resolve([SupportedCoins.BITSONG, SupportedCoins.BITSONG118])}, 1000)
 		}))
-		promises.push(getCoinGeckoPrices([SupportedCoins.BITSONG]))
+		promises.push(getCoinGeckoPrices(Object.values(SupportedCoins)))
 		promises.push(requestToken())
 		try
 		{

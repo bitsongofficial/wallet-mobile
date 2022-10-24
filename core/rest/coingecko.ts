@@ -43,18 +43,29 @@ export async function getCoinGeckoPrices(coins: SupportedCoins[])
 		currencies += SupportedFiats[c] + ","
 	}
 	currencies = currencies.slice(0, currencies.length-1)
-	const data = (await coinGeckoApi.get<CoingeckoPrices>(`simple/price`, {
-		params: {
-			ids: coins.map(coin => coingeckoCoinName(coin)).join(","),
-			vs_currencies: currencies,
-		}
-	})).data
+	let data:CoingeckoPrices
+	try
+	{
+		data = (await coinGeckoApi.get<CoingeckoPrices>(`simple/price`, {
+			params: {
+				ids: coins.map(coin => coingeckoCoinName(coin)).filter((item, index, arr) => index == arr.indexOf(item)).join(","),
+				vs_currencies: currencies,
+			}
+		})).data
+	}
+	catch(e)
+	{
+		console.error("Catched", e)
+	}
 	const formattedData: {
 		[k in SupportedCoins]?: CoingeckoPrice
 	} = {}
-	for(const k in data)
+	coins.forEach(c =>
 	{
-		formattedData[fromCoingeckoNameToCoin(k)] = data[k]
-	}
+		for(const k in data)
+		{
+			if(fromCoingeckoNameToCoin(k) == c) formattedData[c] = data
+		}
+	})
 	return formattedData
 }
