@@ -177,6 +177,7 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = Y457WX4AF5;
 						LastSwiftMigration = 1250;
 					};
 				};
@@ -327,6 +328,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = walletmobile/walletmobile.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y457WX4AF5;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -341,7 +343,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bitsong.wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = io.bitsong.wallet;
 				PRODUCT_NAME = walletmobile;
 				SWIFT_OBJC_BRIDGING_HEADER = "walletmobile/walletmobile-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -359,6 +361,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = walletmobile/walletmobile.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y457WX4AF5;
 				INFOPLIST_FILE = walletmobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -368,7 +371,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bitsong.wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = io.bitsong.wallet;
 				PRODUCT_NAME = walletmobile;
 				SWIFT_OBJC_BRIDGING_HEADER = "walletmobile/walletmobile-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
