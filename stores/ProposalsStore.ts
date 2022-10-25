@@ -28,6 +28,7 @@ export default class ProposalsStore {
 	quorums: SupportedCoinsFullMap<number> = {
 		[SupportedCoins.BITSONG]: 0,
 		[SupportedCoins.BITSONG118]: 0,
+		[SupportedCoins.OSMOSIS]: 0,
 	}
 	minDeposits: SupportedCoinsFullMap<Amount> = {
 		[SupportedCoins.BITSONG]: {
@@ -36,6 +37,10 @@ export default class ProposalsStore {
 		},
 		[SupportedCoins.BITSONG118]: {
 			denom: Denom.UBTSG,
+			amount: "0",
+		},
+		[SupportedCoins.OSMOSIS]: {
+			denom: Denom.UOSMO,
 			amount: "0",
 		},
 	}

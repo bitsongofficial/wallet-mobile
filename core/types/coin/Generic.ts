@@ -11,7 +11,8 @@ export interface Operation
 }
 
 export enum Denom {
-	UCOSM = "ucosm",
+	OSMO = "osmo",
+	UOSMO = "uosmo",
 	BTSGN = "btsg",
 	UBTSG = "ubtsg"
 }

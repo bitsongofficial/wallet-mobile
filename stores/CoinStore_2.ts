@@ -66,7 +66,7 @@ export default class CoinStore {
 
 			if (realKey) {
 				const currency: SupportedFiats = this.settingsStore.currency
-					? this.settingsStore.currency.name
+					? this.settingsStore.currency
 					: SupportedFiats.USD
 
 				let price: number | undefined

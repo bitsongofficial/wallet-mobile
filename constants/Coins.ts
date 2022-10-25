@@ -1,9 +1,9 @@
 export enum SupportedCoins {
 	BITSONG = "btsg",
 	BITSONG118 = "btsg118",
+	OSMOSIS = "osmo",
 	// JUNO = "juno",
 	// ATOM = "cosmos",
-	// OSMO = "osmo",
 	// STARGATE = "stars",
 }
 

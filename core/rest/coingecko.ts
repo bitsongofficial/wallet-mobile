@@ -17,7 +17,8 @@ const coinIds: {
 	[k in SupportedCoins]: string
 } = {
 	[SupportedCoins.BITSONG]: "bitsong",
-	[SupportedCoins.BITSONG118]: "bitsong"
+	[SupportedCoins.BITSONG118]: "bitsong",
+	[SupportedCoins.OSMOSIS]: "osmosis",
 }
 
 function coingeckoCoinName(coin: SupportedCoins)

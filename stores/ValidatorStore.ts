@@ -32,6 +32,7 @@ export default class ValidatorStore {
 	totalVotingPower: SupportedCoinsFullMap<number> = {
 		[SupportedCoins.BITSONG]: 0,
 		[SupportedCoins.BITSONG118]: 0,
+		[SupportedCoins.OSMOSIS]: 0,
 	}
 
 	private aprRatio: SupportedCoinsMap = {}

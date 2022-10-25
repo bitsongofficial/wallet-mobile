@@ -13,6 +13,7 @@ export function convertRateFromDenom(denom: Denom)
 	switch(denom)
 	{
 		case Denom.UBTSG:
+		case Denom.UOSMO:
 			return 1000000
 		default:
 			return 0
@@ -41,6 +42,9 @@ export function fromDenomToPrice(denom: Denom, prices:any): number
 		case Denom.UBTSG:
 		case Denom.BTSGN:
 			return prices.btsg
+		case Denom.UOSMO:
+		case Denom.OSMO:
+			return prices.osmo
 		default:
 			return 0
 	}
