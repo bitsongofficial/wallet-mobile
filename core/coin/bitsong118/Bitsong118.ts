@@ -32,7 +32,7 @@ export class Bitsong118 extends CosmosCoin {
 		return this.innerExplorer
 	}
 	public RPCEndpoint(): string {
-		return Config.BITSONG_RPC
+		return Config.BITSONG_RPC ?? ""
 	}
 	operations: OperationMap = {
 		[CoinOperationEnum.Balance]: new Balance(this),
