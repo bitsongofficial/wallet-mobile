@@ -110,5 +110,6 @@
 	"Soon": "SOON",
 	"ScanQRCode": "Scan QR Code",
 	"CopyAddress": "Copy address",
-	"AddressCopied": "Address copied!"
+	"AddressCopied": "Address copied!",
+	"ChangeDestinationNetwork": "Change destination network"
 }

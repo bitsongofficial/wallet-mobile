@@ -110,5 +110,6 @@
 	"Soon": "SOON",
 	"ScanQRCode": "Inquadra il QR Code",
 	"CopyAddress": "Copia address",
-	"AddressCopied": "Address copiato!"
+	"AddressCopied": "Address copiato!",
+	"ChangeDestinationNetwork": "Cambia il network di destinazione"
 }
