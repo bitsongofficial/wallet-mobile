@@ -18,6 +18,6 @@ export enum Denom {
 }
 
 export interface Amount {
-	denom: Denom,
+	denom: Denom | string,
 	amount: string,
 }
