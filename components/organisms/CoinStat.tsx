@@ -9,6 +9,7 @@ import { s } from "react-native-size-matters"
 import ListItem from "components/moleculs/ListItem"
 import { formatNumber } from "utils/numbers"
 import { SupportedCoins } from "constants/Coins"
+import { getAssetIcon, getAssetName, getAssetTag } from "core/utils/Coin"
 
 type Props = {
 	coin: Coin
@@ -17,12 +18,10 @@ type Props = {
 
 export default observer(({ coin, style }: Props) => {
 	const { settings, coin: cs } = useStore()
-	const asset = assets
-		.reduce((res: any[], a: any) => res.concat(a.assets), [])
-		.find((a: any) => a.base === coin.info.denom)
-	const logo = asset && asset.logo_URIs && asset.logo_URIs.png ? asset.logo_URIs.png : undefined
-	const name = asset ? asset.name.replace("Fantoken", "") : "undefined"
-	const display = asset ? asset.display.toUpperCase() + (coin.info.coin == SupportedCoins.BITSONG118 ? " (cosmos compatible)" : "") : "Undefined"
+	const denom = coin.info.denom
+	const logo = getAssetIcon(denom)
+	const name = getAssetName(denom)
+	const display = getAssetTag(denom) + (coin.info.coin == SupportedCoins.BITSONG118 ? " (cosmos compatible)" : "")
 	const balance = coin.balance.toLocaleString("en")
 	const balanceFIAT = cs.fromCoinToFiat(coin)
 
