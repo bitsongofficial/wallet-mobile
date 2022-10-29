@@ -1,6 +1,8 @@
 import { AminoMsgSend, assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
 import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
 import { Denom, Operation } from "core/types/coin/Generic";
+import { getPrefixFromAddress } from "core/utils/Address";
+import Long from "long";
 import { CosmosOperation } from "./CosmosOperation";
 
 export async function getSendMessage(data: FromToAmount): Promise<AminoMsgSend>
@@ -29,8 +31,13 @@ export class Send extends CosmosOperation {
 
 		try
 		{
+			let result
+			const srcAddress = firstAccount.address
+			const destAddress = await data.to.Address()
 			const amount = Array.isArray(data.amount) ? data.amount : [data.amount]
-			const result = await client.sendTokens(firstAccount.address, await data.to.Address(), amount, "auto", data.description)
+			console.log(srcAddress, destAddress, amount, data)
+			result = await client.sendTokens(srcAddress, destAddress, amount, "auto", data.description)
+
 			assertIsDeliverTxSuccess(result)
 			return {
 				hash: result.transactionHash
