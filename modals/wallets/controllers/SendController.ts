@@ -1,6 +1,7 @@
 import { Steps } from "classes";
 import Transaction from "classes/Transaction";
 import TransactionCreater from "classes/Transaction/Creater";
+import { SupportedCoins } from "constants/Coins";
 import { makeAutoObservable } from "mobx";
 import { store } from "stores/Store";
 
@@ -57,7 +58,7 @@ export default class SendController {
 
   get fiat(): string {
     const balance = this.creater.balance
-    const coin = this.creater.coin?.info.coin
+    const coin = this.creater.coin?.info.denom
     if(balance && coin) return this.limitDecimal(store.coin.fromCoinBalanceToFiat(balance, coin).toString(), 2)
     return ""
   }

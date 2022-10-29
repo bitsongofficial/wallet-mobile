@@ -4,7 +4,7 @@ import { BottomSheetFooter, BottomSheetFooterProps, BottomSheetView } from "@gor
 import { Pagination } from "components/moleculs"
 import { SendController } from "../controllers"
 import { Header } from "../components/atoms"
-import { InsertImport, SendRecap, SelectReceiver, SelectCoin, SelectNetwork } from "../components/templates"
+import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "../components/templates"
 import { COLOR } from "utils"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { SupportedCoins } from "constants/Coins"
 import { Coin } from "classes"
+import SelectCoinByNetwork from "../components/templates/SelectCoinByNetwork"
 
 type Props = {
 	controller: SendController
@@ -54,6 +55,7 @@ export default observer<Props>(function SendModal({
 
 	const networkSelect = useCallback((coin: Coin) =>
 	{
+		controller.creater.setDestinationChain(undefined)
 		controller.creater.setCoin(coin)
 		steps.clear()
 		steps.goTo("Insert Import")
@@ -99,7 +101,7 @@ export default observer<Props>(function SendModal({
 					) : (
 						steps.title === "Select network" ?
 						(
-							<SelectCoin
+							<SelectCoinByNetwork
 								activeCoin={controller.creater.coin}
 								onPress={networkSelect}
 								description={t("SelectNetworkForSend")}

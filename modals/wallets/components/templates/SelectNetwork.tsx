@@ -17,7 +17,7 @@ type Props = {
 	style?: StyleProp<ViewStyle>
 }
 
-export default function SelectCoin({title, description, activeChain, filter, onPress, style }: Props) {
+export default function SelectNetwork({title, description, activeChain, filter, onPress, style }: Props) {
 	const { configs } = useStore()
 	const theme = useTheme()
 
@@ -32,7 +32,7 @@ export default function SelectCoin({title, description, activeChain, filter, onP
 	const infoExtractor = (item: SupportedCoins) =>
 	{
 		return {
-			title: getCoinName(item),
+			title: getCoinName(item) ?? "",
 			description: getAssetSymbol(item),
 			uri: getCoinIcon(item),
 			subtitle: item == SupportedCoins.BITSONG118 ? "(cosmos compatible)" : undefined

@@ -28,12 +28,13 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 	}
 
 	const send = () => {
-		const { coin, addressInput, balance } = creater
+		const { coin, addressInput, balance, destinationChain } = creater
 		if (store.coin.hasCoins && coin && addressInput && balance) {
 			navigate("Loader", {
 				callback: async () =>
 				{
-					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance)
+					if(coin.info.coin == destinationChain) return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance, coin.info.denom)
+					else return await store.coin.sendCoinIbc(coin.info.coin, destinationChain ?? coin.info.coin, addressInput.value, balance, coin.info.denom)
 				},
 			})
 		}
