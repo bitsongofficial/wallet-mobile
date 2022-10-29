@@ -28,7 +28,7 @@ export default ({ onPressBack }: Props) =>
 	
 			<View style={styles.buttonContainer}>
 				<Button
-					text={t("BackToHomescreen")}
+					text={t("BackToHome")}
 					mode="fill"
 					onPress={onPressBack}
 					Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
