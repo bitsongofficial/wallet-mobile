@@ -26,15 +26,6 @@ function coingeckoCoinName(coin: SupportedCoins)
 	return coinIds[coin]
 }
 
-function fromCoingeckoNameToCoin(name: string): SupportedCoins
-{
-	for(const [key, value] of Object.entries(coinIds))
-	{
-		if(value == name) return key as SupportedCoins
-	}
-	return SupportedCoins.BITSONG
-}
-
 export async function getCoinGeckoPrices(coins: SupportedCoins[])
 {
 	let currencies = ""
@@ -44,7 +35,7 @@ export async function getCoinGeckoPrices(coins: SupportedCoins[])
 		currencies += SupportedFiats[c] + ","
 	}
 	currencies = currencies.slice(0, currencies.length-1)
-	let data:CoingeckoPrices
+	let data:CoingeckoPrices | undefined = undefined
 	try
 	{
 		data = (await coinGeckoApi.get<CoingeckoPrices>(`simple/price`, {
@@ -65,7 +56,7 @@ export async function getCoinGeckoPrices(coins: SupportedCoins[])
 	{
 		for(const k in data)
 		{
-			if(fromCoingeckoNameToCoin(k) == c) formattedData[c] = data
+			if(coingeckoCoinName(c) == k) formattedData[c] = data[k]
 		}
 	})
 	return formattedData
