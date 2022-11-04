@@ -31,7 +31,6 @@ export default class ControllerChangeWallet {
 	}
 
 	setPhrase(phrase: string[]) {
-		console.log("phrase isArray", Array.isArray(phrase))
 		this.seedPhrase = phrase
 	}
 }

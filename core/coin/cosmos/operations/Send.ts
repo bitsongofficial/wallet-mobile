@@ -35,7 +35,6 @@ export class Send extends CosmosOperation {
 			const srcAddress = firstAccount.address
 			const destAddress = await data.to.Address()
 			const amount = Array.isArray(data.amount) ? data.amount : [data.amount]
-			console.log(srcAddress, destAddress, amount, data)
 			result = await client.sendTokens(srcAddress, destAddress, amount, "auto", data.description)
 
 			assertIsDeliverTxSuccess(result)

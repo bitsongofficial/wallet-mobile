@@ -27,7 +27,6 @@ export class SendIbc extends CosmosOperation {
 			const srcAddress = firstAccount.address
 			const destAddress = await data.to.Address()
 			const amount = Array.isArray(data.amount) ? data.amount[0] : data.amount
-			console.log(data, srcAddress, destAddress, amount)
 			result = await client.sendIbcTokens(srcAddress, destAddress, amount, "transfer", "channel-0", undefined, ibcTimeout(), "auto", data.description)
 
 			assertIsDeliverTxSuccess(result)
