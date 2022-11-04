@@ -46,11 +46,11 @@ for (const [key, value] of Object.entries(ibcMap))
 
 export function convertRateFromDenom(denom: Denom | string)
 {
-	
-	switch(denom)
+	const resolvedDenom = resolveAsset(denom)
+	switch(resolvedDenom)
 	{
 		default:
-			const denomFromChainRegistry = getDenomExponent(denom)
+			const denomFromChainRegistry = getDenomExponent(resolvedDenom)
 			return denomFromChainRegistry !== undefined ? Math.pow(10, 6 - denomFromChainRegistry) : 0
 	}
 }
@@ -106,10 +106,11 @@ export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
 
 export function fromDenomToCoin(denom: Denom | string): SupportedCoins | undefined
 {
+	const resolvedDenom = resolveAsset(denom)
 	for(const chain of Object.values(SupportedCoins))
 	{
 		const chainAssets = assets.find(a => a.chain_name == ChainRegistryNames[chain])?.assets
-		if(chainAssets && chainAssets.find(ca => ca.base == denom)) return chain
+		if(chainAssets && chainAssets.find(ca => ca.base == resolvedDenom)) return chain
 	}
 
 	return undefined
@@ -117,7 +118,6 @@ export function fromDenomToCoin(denom: Denom | string): SupportedCoins | undefin
 
 export function resolveAsset(asset: string | SupportedCoins)
 {
-	// if(asset.startsWith("ibc")) return getIbcDenomByBase(asset)
 	const chain = asset as SupportedCoins
 	if(asset && Object.values(SupportedCoins).includes(chain)) return fromCoinToDefaultDenom(chain)
 	if(asset.startsWith(ibcPrefix)) return ibcMap[asset]

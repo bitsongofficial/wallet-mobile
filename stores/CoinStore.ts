@@ -118,11 +118,11 @@ export default class CoinStore {
 						try
 						{
 							const currentInfo = Object.assign({}, infos[i])
-							asset.denom = resolveAsset(asset.denom)
 							currentInfo.denom = asset.denom
 							currentInfo._id = asset.denom
 							currentInfo.balance = fromAmountToCoin(asset)
-							coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices)))
+							const coin = new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices))
+							coins.push(coin)
 						}
 						catch(e){
 							console.error("Catched", e)
@@ -182,14 +182,14 @@ export default class CoinStore {
 	get multiChainCoins() {
 		return this.coins.reduce((prev: Coin[], current: Coin) =>
 		{
-			const sameCoin = prev.find(p => p.info.denom == current.info.denom)
+			const sameCoin = prev.find(p => resolveAsset(p.info.denom) == resolveAsset(current.info.denom))
 			if(sameCoin)
 			{
 				sameCoin.info.balance += current.balance
 			}
 			else
 			{
-				return prev.concat(new Coin(toJS(current.info), 1))
+				return prev.concat(new Coin(Object.assign(toJS(current.info), {denom: resolveAsset(current.info.denom)}), 1))
 			}
 			return prev
 		}, [])
@@ -205,7 +205,6 @@ export default class CoinStore {
 		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
 		const coinClass = CoinClasses[coin]
 		const wallet = this.walletStore.activeWallet.wallets[coin]
-		console.log(wallet)
 		if(!(wallet instanceof CosmosWallet) || !this.CanSend)
 		{
 			runInAction(() =>
