@@ -17,6 +17,7 @@ import arrow_down from "./arrow-down.svg"
 import arrow_up from "./arrow-up.svg"
 import arrow_left from "./arrow-left.svg"
 import arrow_right from "./arrow-right.svg"
+import arrow_up_right from "./arrow_up_right.svg"
 import inquire from "./inquire.svg"
 import scan from "./scan.svg"
 import settings from "./settings.svg"
@@ -107,6 +108,7 @@ export default <const>{
 	arrow_up,
 	arrow_left,
 	arrow_right,
+	arrow_up_right,
 	inquire,
 	scan,
 	scan_1,
