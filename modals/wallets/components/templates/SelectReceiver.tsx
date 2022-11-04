@@ -40,8 +40,6 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 	const hidden = useSpring({ opacity: addressInput.isFocused ? 0.1 : 1 })
 	useEffect(() => addressInput.focusOFF, [])
 
-	const [ selectNetwork, setSelectNetwork ] = useState(false)
-
 	const setAddress = (contact?: Contact | string) => {
 		if (contact) {
 			if (typeof contact == "string") addressInput.set(contact)
@@ -62,77 +60,53 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 		[contactsStore.contacts.length],
 	)
 
-	const changeDestinationNetwork = (chain: SupportedCoins) =>
-	{
-		creater.setDestinationChain(chain)
-		setSelectNetwork(false)
-	}
-
-	const openChangeNetwowrk = () =>
-	{
-		setSelectNetwork(true)
-	}
-
 	return (
 		<View style={style}>
-			{selectNetwork ?
-				(
-					<SelectNetwork
-						activeChain={creater.destinationChain}
-						onPress={changeDestinationNetwork}
-						description={t("SelectNetworkForSend")}
-						title={t("SelectNetworkTitle")}
-					/>
-				) : 
-				(
-					<BottomSheetScrollView
-						style={{ flexGrow: 1 }}
-						contentContainerStyle={{
-							paddingBottom: FOOTER_HEIGHT + 16,
-						}}
-						scrollEnabled={!addressInput.isFocused}
-					>
-						<View style={[styles.columnEnd, styles.inputBox]}>
-							<View style={styles.wrapper}>
-								<CardAddress
-									input={addressInput}
-									onPressQR={onPressScanner}
-									style={styles.input}
-									isError={
-										addressInput.value != "" &&
-										!addressInput.isFocused &&
-										!isValidAddress(addressInput.value)
-									}
-								/>
-							</View>					
-							<InputActionText text={t("ChangeDestinationNetwork")} onPress={openChangeNetwowrk}></InputActionText>
+			<BottomSheetScrollView
+				style={{ flexGrow: 1 }}
+				contentContainerStyle={{
+					paddingBottom: FOOTER_HEIGHT + 16,
+				}}
+				scrollEnabled={!addressInput.isFocused}
+			>
+				<View style={[styles.columnEnd, styles.inputBox]}>
+					<View style={styles.wrapper}>
+						<CardAddress
+							input={addressInput}
+							onPressQR={onPressScanner}
+							style={styles.input}
+							isError={
+								addressInput.value != "" &&
+								!addressInput.isFocused &&
+								!isValidAddress(addressInput.value)
+							}
+						/>
+					</View>
+				</View>
+
+				<animated.View style={hidden}>
+					{contactsStore.contacts.length > 0 && (
+						<View style={styles.contacts}>
+							<Text style={[styles.subtitle, styles.wrapper, theme.text.primary]}>Contacts</Text>
+							<FlatList
+								horizontal
+								scrollEnabled={!addressInput.isFocused}
+								data={contactsStore.contacts}
+								renderItem={renderContacts}
+								style={styles.contactList}
+								contentContainerStyle={styles.contactListContent}
+							/>
 						</View>
+					)}
 
-						<animated.View style={hidden}>
-							{contactsStore.contacts.length > 0 && (
-								<View style={styles.contacts}>
-									<Text style={[styles.subtitle, styles.wrapper, theme.text.primary]}>Contacts</Text>
-									<FlatList
-										horizontal
-										scrollEnabled={!addressInput.isFocused}
-										data={contactsStore.contacts}
-										renderItem={renderContacts}
-										style={styles.contactList}
-										contentContainerStyle={styles.contactListContent}
-									/>
-								</View>
-							)}
-
-							<View style={styles.wrapper}>
-								<Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
-								<TouchableOpacity onPress={() => setAddress(creater.coin?.info.address)}>
-									<CardAdressSelf address={creater.coin?.info.address ?? ""} style={styles.self} />
-								</TouchableOpacity>
-							</View>
-						</animated.View>
-					</BottomSheetScrollView>
-				)
-			}
+					<View style={styles.wrapper}>
+						<Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
+						<TouchableOpacity onPress={() => setAddress(creater.coin?.info.address)}>
+							<CardAdressSelf address={creater.coin?.info.address ?? ""} style={styles.self} />
+						</TouchableOpacity>
+					</View>
+				</animated.View>
+			</BottomSheetScrollView>
 		</View>
 	)
 })
