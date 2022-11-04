@@ -4,7 +4,7 @@ import { BottomSheetFooter, BottomSheetFooterProps, BottomSheetView } from "@gor
 import { Pagination } from "components/moleculs"
 import { SendController } from "../controllers"
 import { Header } from "../components/atoms"
-import { InsertImport, SendRecap, SelectReceiver, SelectCoin } from "../components/templates"
+import { InsertImport, SendRecap, SelectReceiver, SelectCoin, SelectNetwork } from "../components/templates"
 import { COLOR } from "utils"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -19,6 +19,8 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { SupportedCoins } from "constants/Coins"
 import { Coin } from "classes"
 import SelectCoinByNetwork from "../components/templates/SelectCoinByNetwork"
+import { SendSteps } from "../controllers/SendController"
+import { resolveAsset } from "core/utils/Coin"
 
 type Props = {
 	controller: SendController
@@ -38,18 +40,19 @@ export default observer<Props>(function SendModal({
 
 	const specificCoins = useMemo(() =>
 	{
-		return store.coin.coins.filter(c => (tempCoin != undefined && c.balance > 0 && c.info.denom == tempCoin.info.denom))
+		return store.coin.coins.filter(c => (tempCoin != undefined && c.balance > 0 && resolveAsset(c.info.denom) == resolveAsset(tempCoin.info.denom)))
 	}, [tempCoin, store.coin.coins])
 
 	const { steps } = controller
 
 	const stepsToTitle = () =>
 	{
-		if(steps.title === "Send Recap") return t("SendRecap")
-		if(steps.title === "Insert Import") return t("SendImportTitle")
-		if(steps.title === "Select Receiver") return t("SendReceiverTitle")
-		if(steps.title === "Select coin") return t("SelectCoinTitle")
-		if(steps.title === "Select network") return t("SelectNetworkTitle")
+		if(steps.title === SendSteps.Recap) return t("SendRecap")
+		if(steps.title === SendSteps.Import) return t("SendImportTitle")
+		if(steps.title === SendSteps.Receiver) return t("SendReceiverTitle")
+		if(steps.title === SendSteps.Coin) return t("SelectCoinTitle")
+		if(steps.title === SendSteps.SourceNetwork) return t("SelectNetworkTitle")
+		if(steps.title === SendSteps.DestinationNetwork) return t("SelectNetworkTitle")
 		return ""
 	}
 
@@ -58,7 +61,7 @@ export default observer<Props>(function SendModal({
 		controller.creater.setDestinationChain(undefined)
 		controller.creater.setCoin(coin)
 		steps.clear()
-		steps.goTo("Insert Import")
+		steps.goTo(SendSteps.Import)
 	}, [])
 
 	const coinSelect = useCallback((coin: Coin) =>
@@ -84,14 +87,20 @@ export default observer<Props>(function SendModal({
 	const selectCoinStep = () =>
 	{
 		setTempCoin(undefined)
-		steps.goTo("Select coin")
+		steps.goTo(SendSteps.Coin)
+	}
+
+	const changeDestinationNetwork = (chain: SupportedCoins) =>
+	{
+		controller.creater.setDestinationChain(chain)
+		steps.goTo(SendSteps.Receiver)
 	}
 
 	return (
 		<BottomSheetView style={[styles.container, styles.wrapper]}>
 			{hasCoins ? (
 				<>
-					{steps.title === "Select coin" ? 
+					{steps.title === SendSteps.Coin ? 
 					(
 						<SelectCoin
 							onPress={coinSelect}
@@ -99,7 +108,7 @@ export default observer<Props>(function SendModal({
 							coins={store.coin.multiChainCoins}
 						/>
 					) : (
-						steps.title === "Select network" ?
+						steps.title === SendSteps.SourceNetwork ?
 						(
 							<SelectCoinByNetwork
 								activeCoin={controller.creater.coin}
@@ -109,29 +118,38 @@ export default observer<Props>(function SendModal({
 								coins={specificCoins}
 							/>
 						) : (
+						steps.title === SendSteps.DestinationNetwork ? (
+							<SelectNetwork
+								activeChain={controller.creater.destinationChain}
+								onPress={changeDestinationNetwork}
+								description={t("SelectNetworkForSend")}
+								title={t("SelectNetworkTitle")}
+							/>
+						) : (
 							<>
 								<Header
-									title={steps.title === "Send Recap" ? stepsToTitle() : t("Send")}
-									subtitle={steps.title !== "Send Recap" ? stepsToTitle() : undefined}
+									title={steps.title === SendSteps.Recap ? stepsToTitle() : t("Send")}
+									subtitle={steps.title !== SendSteps.Recap ? stepsToTitle() : undefined}
 									Pagination={<Pagination acitveIndex={steps.active} count={3} />}
 									style={styles.header}
 								/>
-								{steps.title === "Insert Import" && (
+								{steps.title === SendSteps.Import && (
 									<InsertImport
 										controller={controller}
 										onPressSelectCoin={selectCoinStep}
 										style={styles.insertImport}
 									/>
 								)}
-								{steps.title === "Select Receiver" && (
+								{steps.title === SendSteps.Receiver && (
 									<SelectReceiver
 										controller={controller}
 										onPressScanner={onPressScanQRReciver}
 										style={styles.selectReceiver}
 									/>
 								)}
-								{steps.title === "Send Recap" && <SendRecap controller={controller} />}
+								{steps.title === SendSteps.Recap && <SendRecap controller={controller} />}
 							</>
+						)
 						)
 					)}
 				</>
@@ -163,7 +181,7 @@ export const FooterSendModal = observer(
 		const hasCoins = toJS(store.coin.coins).length > 0
 
 		if (!hasCoins) return null
-		if (steps.title === "Send Recap" && keyboard.keyboardShown) return null
+		if (steps.title === SendSteps.Recap && keyboard.keyboardShown) return null
 
 		return (
 			<BottomSheetFooter
@@ -175,16 +193,16 @@ export const FooterSendModal = observer(
 					Left={<ButtonBack onPress={onPressBack} />}
 					Center={
 						<>
-							{steps.title === "Select Receiver" && (
+							{steps.title === SendSteps.Receiver && (
 								<Button
 									text={t("PreviewSend")}
-									onPress={() => steps.goTo("Send Recap")}
+									onPress={() => steps.goTo(SendSteps.Recap)}
 									disable={!(addressInput.value != "" && isValidAddress(addressInput.value))}
 									contentContainerStyle={styles.buttonPreviewSend}
 									textStyle={styles.buttonText}
 								/>
 							)}
-							{steps.title === "Send Recap" && (
+							{steps.title === SendSteps.Recap && (
 								<Button
 									text={t("Send")}
 									onPress={onPressSend}
@@ -196,10 +214,10 @@ export const FooterSendModal = observer(
 					}
 					Right={
 						<>
-							{steps.title === "Insert Import" && (
+							{steps.title === SendSteps.Import && (
 								<Button
 									text={t("Continue")}
-									onPress={() => steps.goTo("Select Receiver")}
+									onPress={() => controller.isIbc ? steps.goTo(SendSteps.DestinationNetwork) :  steps.goTo(SendSteps.Receiver)}
 									disable={
 										!(Number(creater.balance) <= (creater.coin?.balance ?? 0) &&
 										Number(creater.balance) > 0)

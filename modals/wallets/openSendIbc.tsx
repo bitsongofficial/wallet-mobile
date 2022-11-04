@@ -9,9 +9,9 @@ import { wait } from "utils"
 import { BottomSheetFooterProps } from "@gorhom/bottom-sheet"
 import { SendSteps } from "./controllers/SendController"
 
-export default function openSendModal(style: StyleProp<ViewStyle>) {
+export default function openSendIbcModal(style: StyleProp<ViewStyle>) {
 	const { coin } = store
-	const controller = new SendController()
+	const controller = new SendController(true)
 	const { creater, steps } = controller
 	steps.goTo(SendSteps.Coin)
 	creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
@@ -29,12 +29,12 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 	}
 
 	const send = () => {
-		const { coin, addressInput, balance } = creater
+		const { coin, addressInput, balance, destinationChain } = creater
 		if (store.coin.hasCoins && coin && addressInput && balance) {
 			navigate("Loader", {
 				callback: async () =>
 				{
-					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance, coin.info.denom)
+					return await store.coin.sendCoinIbc(coin.info.coin, destinationChain ?? coin.info.coin, addressInput.value, balance, coin.info.denom)
 				},
 			})
 		}
