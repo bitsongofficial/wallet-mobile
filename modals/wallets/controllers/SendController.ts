@@ -5,22 +5,40 @@ import { SupportedCoins } from "constants/Coins";
 import { makeAutoObservable } from "mobx";
 import { store } from "stores/Store";
 
+export enum SendSteps {
+  Import="Insert Import",
+  Receiver="Select Receiver",
+  Recap="Send Recap",
+  Coin="Select Coin",
+  SourceNetwork="Select Network",
+  DestinationNetwork="Select Destination Network",
+}
+
 export default class SendController {
-  steps = new Steps([
-    "Insert Import",
-    "Select Receiver",
-    "Send Recap",
-    "Select coin",
-    "Select network",
-  ]);
+  steps: Steps<SendSteps>;
 
   private currentInput = ""
   private invertedInner = false
 
   creater = new Transaction.Creater();
 
-  constructor() {
+  constructor(isIbc = false) {
+    const innerSteps: SendSteps[] = [
+      SendSteps.Import,
+      SendSteps.Receiver,
+      SendSteps.Recap,
+      SendSteps.Coin,
+      SendSteps.SourceNetwork,
+    ]
+    if(isIbc) {
+      innerSteps.splice(1, 0, SendSteps.DestinationNetwork)
+    }
+    this.steps = new Steps(innerSteps)
     makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  get isIbc() {
+    return this.steps.titles.includes(SendSteps.DestinationNetwork)
   }
 
   get readableInput () {
