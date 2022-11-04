@@ -16,6 +16,7 @@
 	"Continue": "Continue",
 	"LetsStart": "Let’s Start",
 	"Send": "Send",
+	"SendIbc": "IBC",
 	"Receive": "Receive",
 	"Inquire": "Inquire",
 	"Issue": "Issue",
