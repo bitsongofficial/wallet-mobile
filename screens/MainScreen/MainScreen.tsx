@@ -25,7 +25,7 @@ import { SupportedCoins } from "constants/Coins"
 import { Button, Title } from "components/atoms"
 import { openClaim } from "modals/validator"
 import { formatNumber } from "utils/numbers"
-import { openSend } from "modals/wallets"
+import { openSend, openSendIbc } from "modals/wallets"
 import { s, vs } from "react-native-size-matters"
 import { withStatusBar } from "screens/layout/hocs"
 import BottomNavigator from "screens/layout/BottomNavigator"
@@ -62,6 +62,7 @@ export default
 		)
 
 		const openSendModal = useCallback(() => openSend(sendCoinContainerStyle), [])
+		const openSendIbcModal = useCallback(() => openSendIbc(sendCoinContainerStyle), [])
 
 		const closeGlobalBottomSheet = useCallback(() => gbs.close(), [])
 
@@ -124,6 +125,7 @@ export default
 					<ToolbarFull
 						style={styles.toolbar_full}
 						onPressSend={openSendModal}
+						onPressSendIbc={openSendModal}
 						onPressReceive={openReceive}
 						onPressInquire={undefined}
 						onPressScan={onPressScann}
@@ -202,6 +204,7 @@ export default
 							onPressReceive={openReceive}
 							onPressScan={openScanner}
 							onPressSend={openSendModal}
+							onPressSendIbc={openSendIbcModal}
 						/>
 						<Tabs
 							values={tabs}

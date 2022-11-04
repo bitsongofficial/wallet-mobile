@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next"
 
 type Props = {
 	onPressSend?(): void
+	onPressSendIbc?(): void
 	onPressReceive?(): void
 	onPressInquire?(): void
 	onPressScan?(): void
@@ -16,6 +17,7 @@ type Props = {
 
 export default observer(function ToolbarShort({
 	onPressSend,
+	onPressSendIbc,
 	onPressReceive,
 	onPressInquire,
 	onPressScan,
@@ -40,6 +42,12 @@ export default observer(function ToolbarShort({
 				title={t("Inquire")}
 				onPress={onPressInquire}
 				Icon={<Icon2 stroke={COLOR.White} size={18} name="inquire" />}
+			/>
+			<ToolbarAction
+				title={t("SendIbc")}
+				onPress={onPressSendIbc}
+				mode="gradient"
+				Icon={<Icon2 stroke={COLOR.White} size={18} name="arrow_up_right" />}
 			/>
 			<ToolbarAction
 				title={t("Scan")}
