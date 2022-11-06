@@ -35,6 +35,7 @@
 	"SelectNetworkTitle": "Seleziona il network",
 	"SelectNetworkForReceive": "Selezionata il network di cui vuoi mostrare l'address",
 	"SelectNetworkForSend": "Selezionata il network da cui vuoi inviare i tuoi assets",
+	"SelectNetworkForIBC": "Selezionata il network a cui vuoi inviare i tuoi assets",
 	"SelectCoinDescription": "Seleziona la chain da cui la tua coin \nproviene",
 	"ConnectedWith": "Connesso con",
 	"AddNewAccount": "Aggiungi un Account",

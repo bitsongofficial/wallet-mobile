@@ -35,6 +35,7 @@
 	"SelectNetworkTitle": "Select network",
 	"SelectNetworkForReceive": "Select the network you want to show the address for",
 	"SelectNetworkForSend": "Select the network you want to send from",
+	"SelectNetworkForIBC": "Select the network you want to send to",
 	"SelectCoinDescription": "Select also the chain where your coin\ncome from",
 	"ConnectedWith": "Connected with",
 	"AddNewAccount": "Add a new account",

@@ -123,7 +123,7 @@ export default observer<Props>(function SendModal({
 								activeChain={controller.creater.destinationChain}
 								onPress={changeDestinationNetwork}
 								description={t("SelectNetworkForSend")}
-								title={t("SelectNetworkTitle")}
+								title={t("SelectNetworkForIBC")}
 							/>
 						) : (
 							<>
