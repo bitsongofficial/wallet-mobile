@@ -64,9 +64,6 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 		<View style={style}>
 			<BottomSheetScrollView
 				style={{ flexGrow: 1 }}
-				contentContainerStyle={{
-					paddingBottom: FOOTER_HEIGHT + 16,
-				}}
 				scrollEnabled={!addressInput.isFocused}
 			>
 				<View style={[styles.columnEnd, styles.inputBox]}>

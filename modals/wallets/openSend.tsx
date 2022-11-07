@@ -87,7 +87,7 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 const styles = StyleSheet.create({
 	container: {
 		minHeight: "100%",
-		paddingBottom: s(20),
+		paddingBottom: s(8),
 		display: "flex",
 		flexDirection: "column",
 	},
