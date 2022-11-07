@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, View, ViewStyle } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetFooter, BottomSheetFooterProps, BottomSheetView } from "@gorhom/bottom-sheet"
 import { Pagination } from "components/moleculs"
@@ -7,7 +7,6 @@ import { Header } from "../components/atoms"
 import { InsertImport, SendRecap, SelectReceiver, SelectCoin, SelectNetwork } from "../components/templates"
 import { COLOR } from "utils"
 import { Button, ButtonBack, Footer, Icon2 } from "components/atoms"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { isValidAddress } from "core/utils/Address"
 import { useKeyboard } from "@react-native-community/hooks"
 import { useStore } from "hooks"
@@ -162,19 +161,19 @@ export default observer<Props>(function SendModal({
 	)
 })
 
-type FooterProps = BottomSheetFooterProps & {
+type FooterProps = {
 	controller: SendController
 	onPressBack(): void
 	onPressSend(): void
+	style?: ViewStyle,
 }
 
-export const FooterSendModal = observer(
-	({ controller, onPressBack, onPressSend, animatedFooterPosition }: FooterProps) => {
+export const FooterSend = observer(
+	({ style, controller, onPressBack, onPressSend }: FooterProps) => {
 		const { t } = useTranslation()
 		const { steps, creater } = controller
 		const { addressInput } = creater
 
-		const insets = useSafeAreaInsets()
 		const keyboard = useKeyboard()
 
 		const store = useStore()
@@ -184,66 +183,80 @@ export const FooterSendModal = observer(
 		if (steps.title === SendSteps.Recap && keyboard.keyboardShown) return null
 
 		return (
+			<Footer
+				style={style}
+				Left={<ButtonBack onPress={onPressBack} />}
+				Center={
+					<>
+						{steps.title === SendSteps.Recap && (
+							<Button
+								text={t("Send")}
+								onPress={onPressSend}
+								contentContainerStyle={styles.buttonSend}
+								textStyle={styles.buttonText}
+							/>
+						)}
+					</>
+				}
+				Right={
+					<>
+						{steps.title === SendSteps.Import && (
+							<Button
+								text={t("Continue")}
+								onPress={() => controller.isIbc ? steps.goTo(SendSteps.DestinationNetwork) :  steps.goTo(SendSteps.Receiver)}
+								disable={
+									!(Number(creater.balance) <= (creater.coin?.balance ?? 0) &&
+									Number(creater.balance) > 0)
+								}
+								contentContainerStyle={styles.buttonContinue}
+								textStyle={styles.buttonText}
+								Right={
+									<Icon2
+										name="chevron_right_2"
+										stroke={COLOR.White}
+										size={18}
+										style={{ marginLeft: 24 }}
+									/>
+								}
+							/>
+						)}
+						{steps.title === SendSteps.Receiver && (
+							<Button
+								text={t("PreviewSend")}
+								onPress={() => steps.goTo(SendSteps.Recap)}
+								disable={!(addressInput.value != "" && isValidAddress(addressInput.value))}
+								contentContainerStyle={styles.buttonPreviewSend}
+								textStyle={styles.buttonText}
+							/>
+						)}
+					</>
+				}
+			/>
+		)
+	},
+)
+
+export const FooterSendModal = observer(
+	({ animatedFooterPosition, ...props }: BottomSheetFooterProps & FooterProps) => {
+
+		return (
 			<BottomSheetFooter
 				animatedFooterPosition={animatedFooterPosition}
 				style={{ paddingBottom: 16 }}
-				bottomInset={insets.bottom}
 			>
-				<Footer
-					Left={<ButtonBack onPress={onPressBack} />}
-					Center={
-						<>
-							{steps.title === SendSteps.Receiver && (
-								<Button
-									text={t("PreviewSend")}
-									onPress={() => steps.goTo(SendSteps.Recap)}
-									disable={!(addressInput.value != "" && isValidAddress(addressInput.value))}
-									contentContainerStyle={styles.buttonPreviewSend}
-									textStyle={styles.buttonText}
-								/>
-							)}
-							{steps.title === SendSteps.Recap && (
-								<Button
-									text={t("Send")}
-									onPress={onPressSend}
-									contentContainerStyle={styles.buttonSend}
-									textStyle={styles.buttonText}
-								/>
-							)}
-						</>
-					}
-					Right={
-						<>
-							{steps.title === SendSteps.Import && (
-								<Button
-									text={t("Continue")}
-									onPress={() => controller.isIbc ? steps.goTo(SendSteps.DestinationNetwork) :  steps.goTo(SendSteps.Receiver)}
-									disable={
-										!(Number(creater.balance) <= (creater.coin?.balance ?? 0) &&
-										Number(creater.balance) > 0)
-									}
-									contentContainerStyle={styles.buttonContinue}
-									textStyle={styles.buttonText}
-									Right={
-										<Icon2
-											name="chevron_right_2"
-											stroke={COLOR.White}
-											size={18}
-											style={{ marginLeft: 24 }}
-										/>
-									}
-								/>
-							)}
-						</>
-					}
-				/>
+				<FooterSend {...props}>
+
+				</FooterSend>
 			</BottomSheetFooter>
 		)
 	},
 )
 
 const styles = StyleSheet.create({
-	container: { flexGrow: 1 },
+	container: {
+		flexGrow: 1,
+		flexShrink: 1,
+	},
 	wrapper: {
 		marginHorizontal: HORIZONTAL_WRAPPER,
 		flex: 1,

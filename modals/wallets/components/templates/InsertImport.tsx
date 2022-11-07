@@ -10,7 +10,7 @@ import { CardSelectCoin } from "../moleculs"
 import { TransactionCreater } from "classes/Transaction"
 import { StyleProp } from "react-native"
 import { mvs, s, vs } from "react-native-size-matters"
-import { BottomSheetView } from "@gorhom/bottom-sheet"
+import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet"
 import { FOOTER_HEIGHT } from "utils/constants"
 
 type Props = {
@@ -26,7 +26,7 @@ export default observer<Props>(function InsertImport({ controller, onPressSelect
 	const fiatSymbol = settings.prettyCurrency?.symbol
 
 	return (
-		<BottomSheetView style={[styles.container, style]}>
+		<BottomSheetScrollView style={[styles.container, style]}>
 			<View style={styles.row}>
 				<Text style={[styles.usd, theme.text.primary]}>
 					{controller.readableInput}{" "}
@@ -61,12 +61,13 @@ export default observer<Props>(function InsertImport({ controller, onPressSelect
 				onPressRemove={controller.removeNumber}
 				style={styles.numpad}
 			/>
-		</BottomSheetView>
+		</BottomSheetScrollView>
 	)
 })
 
 const styles = StyleSheet.create({
-	container: {},
+	container: {
+	},
 	row: {
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -106,6 +107,5 @@ const styles = StyleSheet.create({
 	},
 
 	numpad: {
-		marginBottom: FOOTER_HEIGHT,
 	},
 })

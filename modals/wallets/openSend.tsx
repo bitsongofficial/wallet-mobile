@@ -1,13 +1,15 @@
 import { SupportedCoins } from "constants/Coins"
 import { gbs } from "modals"
 import { navigate } from "navigation/utils"
-import { Keyboard, StyleProp, ViewStyle } from "react-native"
+import { Keyboard, StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 import { SendController } from "./controllers"
 import { FooterSendModal, SendModal } from "./modals"
 import { store } from "stores/Store"
 import { wait } from "utils"
-import { BottomSheetFooterProps } from "@gorhom/bottom-sheet"
+import { BottomSheetFooterProps, BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet"
 import { SendSteps } from "./controllers/SendController"
+import { FooterSend } from "./modals/SendModal"
+import { s } from "react-native-size-matters"
 
 export default function openSendModal(style: StyleProp<ViewStyle>) {
 	const { coin } = store
@@ -60,19 +62,19 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 				}
 			},
 			children: () => (
-				<SendModal
-					controller={controller}
-					onPressScanQRReciver={scanReciver}
-					onPressBack={goBack}
-				/>
-			),
-			footerComponent: (props: BottomSheetFooterProps) => (
-				<FooterSendModal
-					{...props}
-					controller={controller}
-					onPressBack={goBack}
-					onPressSend={send}
-				/>
+				<BottomSheetView style={styles.container}>
+					<SendModal
+						controller={controller}
+						onPressScanQRReciver={scanReciver}
+						onPressBack={goBack}
+					/>
+					<FooterSend
+						controller={controller}
+						onPressBack={goBack}
+						onPressSend={send}
+						style={styles.footer}
+					></FooterSend>
+				</BottomSheetView>
 			),
 		})
 
@@ -81,3 +83,15 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 
 	coin.CanSend && open()
 }
+
+const styles = StyleSheet.create({
+	container: {
+		minHeight: "100%",
+		paddingBottom: s(20),
+		display: "flex",
+		flexDirection: "column",
+	},
+	footer: {
+		flexShrink: 0,
+	}
+})
