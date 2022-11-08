@@ -14,6 +14,8 @@ import { BottomSheetTextInput } from "@gorhom/bottom-sheet"
 import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
 
+export type errorType = string | (string | false | undefined)[] | boolean
+
 export type Props = TextInputProps & {
 	label?: string
 	style?: StyleProp<ViewStyle>
@@ -22,7 +24,7 @@ export type Props = TextInputProps & {
 	bottomsheet?: boolean
 	Right?: JSX.Element
 
-	errors?: string | string[] | boolean
+	errors?: errorType
 	errorStyle?: StyleProp<ViewStyle>
 }
 
