@@ -30,6 +30,6 @@ export function getPrefixFromAddress(address: string)
 	}
 	catch
 	{
-		return false
+		return undefined
 	}
 }
