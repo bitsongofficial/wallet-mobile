@@ -3,10 +3,10 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { RectButton } from "react-native-gesture-handler"
 import { COLOR, hexAlpha } from "utils"
 import { Icon2 } from "components/atoms"
-import { trimAddress } from "utils/string"
 import { ProfileWallets } from "stores/WalletStore"
 import { WalletTypes } from "core/types/storing/Generic"
 import { s } from "react-native-size-matters"
+import { trimAddress } from "core/utils/Address"
 
 type Props = {
 	wallet: ProfileWallets | null

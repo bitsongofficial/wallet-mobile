@@ -8,7 +8,6 @@ import { BottomSheetView, TouchableOpacity } from "@gorhom/bottom-sheet"
 import * as Clipboard from "expo-clipboard"
 import { useStore } from "hooks"
 import { COLOR, hexAlpha, wait } from "utils"
-import { trimAddress } from "utils/string"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { Icon2 } from "components/atoms"
 import { Header } from "../components/atoms"
@@ -16,6 +15,7 @@ import { SelectNetwork } from "../components/templates"
 import { SupportedCoins } from "constants/Coins"
 import { useTranslation } from "react-i18next"
 import InputActionText from "components/moleculs/InputActionText"
+import { trimAddress } from "core/utils/Address"
 
 type Props = {
 	style: StyleProp<ViewStyle>
