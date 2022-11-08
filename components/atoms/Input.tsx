@@ -22,7 +22,7 @@ export type Props = TextInputProps & {
 	bottomsheet?: boolean
 	Right?: JSX.Element
 
-	errorMessage?: string | string[] | false
+	errorMessage?: string | string[] | boolean
 	errorStyle?: StyleProp<ViewStyle>
 }
 
@@ -56,7 +56,7 @@ export default ({
 
 	const errorBorder = useMemo<false | ViewStyle>(
 		() =>
-			!!errorMessage && {
+			(errorMessage === false || errorMessage === "" || (Array.isArray(errorMessage) && errorMessage.length > 0)) && {
 				borderWidth: 1,
 				borderColor: COLOR.Pink3,
 			},

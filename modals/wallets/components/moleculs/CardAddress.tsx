@@ -12,7 +12,7 @@ type Props = {
 	input: InputHandler
 	onPressQR(): void
 	style?: StyleProp<ViewStyle>
-	isError?: boolean
+	isError?: boolean | string | string[]
 }
 
 export default observer<Props>(function CardWallet({ onPressQR, input, style, isError }: Props) {
@@ -36,7 +36,7 @@ export default observer<Props>(function CardWallet({ onPressQR, input, style, is
 			onBlur={input.focusOFF}
 			placeholderTextColor={theme.input.placeholder}
 			value={value}
-			errorMessage={isError && "Invalid address"}
+			errorMessage={isError}
 			errorStyle={styles.error}
 			Right={
 				<View style={styles.buttonContainer}>
