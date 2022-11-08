@@ -22,7 +22,7 @@ export type Props = TextInputProps & {
 	bottomsheet?: boolean
 	Right?: JSX.Element
 
-	errorMessage?: string | string[] | boolean
+	errors?: string | string[] | boolean
 	errorStyle?: StyleProp<ViewStyle>
 }
 
@@ -37,12 +37,14 @@ export default ({
 	autocomplete,
 	bottomsheet,
 	Right,
-	errorMessage,
+	errors,
 	errorStyle,
 	...props
 }: Props) => {
 	const theme = useTheme()
 	const Component = useMemo(() => (bottomsheet ? BottomSheetTextInput : TextInput), [bottomsheet])
+
+	const filteredErrors = Array.isArray(errors) ? errors.filter(e => (typeof(e) === "string")) : errors
 
 	const autocompletePosition = useMemo(
 		() =>
@@ -56,16 +58,16 @@ export default ({
 
 	const errorBorder = useMemo<false | ViewStyle>(
 		() =>
-			(errorMessage === false || errorMessage === "" || (Array.isArray(errorMessage) && errorMessage.length > 0)) && {
+			(filteredErrors === true || filteredErrors !== "" || (Array.isArray(filteredErrors) && filteredErrors.length > 0)) && {
 				borderWidth: 1,
 				borderColor: COLOR.Pink3,
 			},
-		[errorMessage],
+		[errors],
 	)
 
 	const errorText = useMemo(
-		() => (Array.isArray(errorMessage) ? errorMessage[0] : errorMessage),
-		[errorMessage],
+		() => (Array.isArray(filteredErrors) ? filteredErrors[0] : filteredErrors),
+		[errors],
 	)
 
 	return (

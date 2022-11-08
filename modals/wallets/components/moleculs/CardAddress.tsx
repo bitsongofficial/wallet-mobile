@@ -36,7 +36,7 @@ export default observer<Props>(function CardWallet({ onPressQR, input, style, is
 			onBlur={input.focusOFF}
 			placeholderTextColor={theme.input.placeholder}
 			value={value}
-			errorMessage={isError}
+			errors={isError}
 			errorStyle={styles.error}
 			Right={
 				<View style={styles.buttonContainer}>
