@@ -5,14 +5,15 @@ import { useTheme } from "hooks"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { COLOR, InputHandler } from "utils"
 import { useMemo } from "react"
-import { trimAddress } from "utils/string"
 import { useTranslation } from "react-i18next"
+import { errorType } from "components/atoms/Input"
+import { trimAddress } from "core/utils/Address"
 
 type Props = {
 	input: InputHandler
 	onPressQR(): void
 	style?: StyleProp<ViewStyle>
-	isError?: boolean | string | string[]
+	isError?: errorType
 }
 
 export default observer<Props>(function CardWallet({ onPressQR, input, style, isError }: Props) {

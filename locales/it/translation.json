@@ -31,6 +31,8 @@
 	"SendRecap": "Riepilogo",
 	"SendImportTitle": "Inserisci l'importo",
 	"SendReceiverTitle": "Seleziona il destinatario",
+	"InvalidAddress": "Il formato dell'address non è valido",
+	"AddressFromDifferentChain": "L'address è di un network different da quello di destinazione",
 	"SelectCoinTitle": "Seleziona la coin",
 	"SelectNetworkTitle": "Seleziona il network",
 	"SelectNetworkForReceive": "Selezionata il network di cui vuoi mostrare l'address",

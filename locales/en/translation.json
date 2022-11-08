@@ -31,6 +31,8 @@
 	"SendRecap": "Send Recap",
 	"SendImportTitle": "Insert Import",
 	"SendReceiverTitle": "Select Receiver",
+	"InvalidAddress": "Address is invalid",
+	"AddressFromDifferentChain": "Address is from a network different than the selected one",
 	"SelectCoinTitle": "Select coin",
 	"SelectNetworkTitle": "Select network",
 	"SelectNetworkForReceive": "Select the network you want to show the address for",

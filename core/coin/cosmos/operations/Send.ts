@@ -1,8 +1,5 @@
 import { AminoMsgSend, assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
 import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
-import { Denom, Operation } from "core/types/coin/Generic";
-import { getPrefixFromAddress } from "core/utils/Address";
-import Long from "long";
 import { CosmosOperation } from "./CosmosOperation";
 
 export async function getSendMessage(data: FromToAmount): Promise<AminoMsgSend>

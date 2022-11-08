@@ -12,7 +12,7 @@ import { observer } from "mobx-react-lite"
 import { animated, useSpring } from "@react-spring/native"
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet"
 import { useStore, useTheme } from "hooks"
-import { isValidAddress } from "core/utils/Address"
+import { getPrefixFromAddress, isValidAddress } from "core/utils/Address"
 import { FlatList } from "react-native-gesture-handler"
 import { Contact } from "stores/ContactsStore"
 import { SendController } from "../../controllers"
@@ -23,6 +23,8 @@ import InputActionText from "components/moleculs/InputActionText"
 import { useTranslation } from "react-i18next"
 import SelectNetwork from "./SelectNetwork"
 import { SupportedCoins } from "constants/Coins"
+import { getCoinPrefix } from "core/utils/Coin"
+import { Coin } from "classes"
 
 type Props = {
 	controller: SendController
@@ -72,11 +74,10 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 							input={addressInput}
 							onPressQR={onPressScanner}
 							style={styles.input}
-							isError={
-								addressInput.value != "" &&
-								!addressInput.isFocused &&
-								!isValidAddress(addressInput.value)
-							}
+							isError={addressInput.value == "" ? false : [
+								!isValidAddress(addressInput.value) && t("InvalidAddress"),
+								(getPrefixFromAddress(addressInput.value) != getCoinPrefix(creater.destinationChain ?? (creater.coin as Coin).info.coin)) && t("AddressFromDifferentChain")
+							]}
 						/>
 					</View>
 				</View>
