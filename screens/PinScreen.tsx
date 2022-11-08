@@ -58,8 +58,10 @@ export default observer<Props>(({ navigation, route }) => {
 	const { localStorageManager } = useStore()
 
 	useEffect(() => {
-		if (pin.isValid) {
-			;(async () => {
+		if (pin.isValid)
+		{
+			(async () =>
+			{
 				const isConfirm = (await localStorageManager.verifyPin(pin.value)) || disableVerification
 				setConfirm(isConfirm)
 				if (isConfirm) {
@@ -138,13 +140,15 @@ export default observer<Props>(({ navigation, route }) => {
 
 	const insets = useSafeAreaInsets()
 
+	console.log("confirm", typeof isConfirm, isConfirm)
+
 	return (
 		<>
 			<StatusBar style="light" />
 
 			<Header />
 			<View style={styles.container}>
-				{!isConfirm && !settings.isAppBlock && (
+				{!settings.isAppBlock && (
 					<View style={styles.wrapper}>
 						<Title text={title} style={styles.title} />
 						<Caption style={styles.caption}>
@@ -154,6 +158,7 @@ export default observer<Props>(({ navigation, route }) => {
 						<Animated.View style={[animErrorStyle, styles.pin]}>
 							<PinCode
 								isError={isError}
+								isConfirm={isConfirm === true}
 								isHidden={route.params.isHiddenCode}
 								value={pin.value}
 								style={styles.pin}
@@ -165,14 +170,6 @@ export default observer<Props>(({ navigation, route }) => {
 							onPress={pin.push}
 							style={styles.numpad}
 							numpad={numpad}
-						/>
-					</View>
-				)}
-				{isConfirm && !settings.isAppBlock && (
-					<View style={styles.confirm}>
-						<StepSuccess
-							title={t("OperationConfirmed")}
-							caption={t("OperationSuccessfullText")}
 						/>
 					</View>
 				)}

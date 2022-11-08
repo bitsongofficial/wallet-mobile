@@ -10,9 +10,10 @@ type Props = {
 	style?: StyleProp<ViewStyle>
 	isHidden?: boolean
 	isError?: boolean
+	isConfirm?: boolean
 }
 
-export default ({ value = "", style, isHidden, isError }: Props) => {
+export default ({ value = "", style, isHidden, isError, isConfirm }: Props) => {
 	const theme = useTheme()
 	const nums = useMemo(
 		() => [...value.split(""), ...new Array(Pin.max - value.length).fill(null)],
@@ -30,10 +31,11 @@ export default ({ value = "", style, isHidden, isError }: Props) => {
 									styles.placeholder,
 									styles.placeholder_fill,
 									isError && { backgroundColor: COLOR.Pink },
+									isConfirm && { backgroundColor: COLOR.GreenCrayola },
 								]}
 							/>
 						) : (
-							<Text style={[styles.num, theme.text.primary, isError && { color: COLOR.Pink }]}>
+							<Text style={[styles.num, theme.text.primary, isError && { color: COLOR.Pink }, isConfirm && { color: COLOR.GreenCrayola }]}>
 								{num}
 							</Text>
 						)
