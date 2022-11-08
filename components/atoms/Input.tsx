@@ -45,8 +45,7 @@ export default ({
 }: Props) => {
 	const theme = useTheme()
 	const Component = useMemo(() => (bottomsheet ? BottomSheetTextInput : TextInput), [bottomsheet])
-
-	const filteredErrors = Array.isArray(errors) ? errors.filter(e => (typeof(e) === "string")) : errors
+	const filteredErrors = Array.isArray(errors) ? (errors.filter(e => (typeof(e) === "string")) as string[]) : errors
 
 	const autocompletePosition = useMemo(
 		() =>
@@ -58,9 +57,13 @@ export default ({
 		[inputStyle?.height],
 	)
 
+	const errorOccured = useMemo(() =>
+	(filteredErrors === true || (typeof(filteredErrors) === "string" && filteredErrors !== "") || (Array.isArray(filteredErrors) && filteredErrors.length > 0)),
+	[errors])
+
 	const errorBorder = useMemo<false | ViewStyle>(
 		() =>
-			(filteredErrors === true || filteredErrors !== "" || (Array.isArray(filteredErrors) && filteredErrors.length > 0)) && {
+			errorOccured && {
 				borderWidth: 1,
 				borderColor: COLOR.Pink3,
 			},
@@ -68,7 +71,7 @@ export default ({
 	)
 
 	const errorText = useMemo(
-		() => (Array.isArray(filteredErrors) ? filteredErrors[0] : filteredErrors),
+		() => (Array.isArray(filteredErrors) ? filteredErrors[0] : (typeof(filteredErrors) === "string" ? filteredErrors : "")),
 		[errors],
 	)
 
@@ -94,7 +97,7 @@ export default ({
 					{Right}
 				</View>
 
-				{errorText && <ErrorMessage message={errorText} style={errorStyle} />}
+				{errorOccured && errorText != "" && <ErrorMessage message={errorText} style={errorStyle} />}
 			</View>
 		</View>
 	)
@@ -152,8 +155,9 @@ const styles = StyleSheet.create({
 
 	error: {
 		position: "absolute",
-		bottom: s(-19),
+		top: "104%",
 		left: s(24),
+		width: "100%",
 
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
