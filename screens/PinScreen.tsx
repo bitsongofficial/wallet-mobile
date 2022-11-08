@@ -140,8 +140,6 @@ export default observer<Props>(({ navigation, route }) => {
 
 	const insets = useSafeAreaInsets()
 
-	console.log("confirm", typeof isConfirm, isConfirm)
-
 	return (
 		<>
 			<StatusBar style="light" />
