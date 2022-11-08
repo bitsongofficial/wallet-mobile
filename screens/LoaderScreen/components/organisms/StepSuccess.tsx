@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 	icon: {
-		width: s(205),
-		height: s(205),
+		width: s(110),
+		height: s(110),
 	},
 })

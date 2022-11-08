@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
 	},
 
 	icon: {
-		width: s(205),
-		height: s(205),
+		width: s(110),
+		height: s(110),
 	},
 })
