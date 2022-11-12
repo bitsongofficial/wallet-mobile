@@ -4,6 +4,7 @@ enum OperationTypeEnum {}
 
 export enum CoinOperationEnum {
 	Send = 'SEND',
+	SendIbc = 'SEND_IBC',
 	Delegations = 'DELEGATIONS',
 	Delegate = 'DELEGATE',
 	Undelegate = 'UNDELEGATE',

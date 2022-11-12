@@ -1,7 +1,7 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { useTheme } from "hooks"
-import { s, vs } from "react-native-size-matters"
+import { mvs, s, vs } from "react-native-size-matters"
 
 const defaultNumpad = [
 	["1", "2", "3"],
@@ -55,17 +55,17 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 	},
 	num: {
-		width: vs(60),
-		height: vs(60),
+		width: mvs(50, 1.1),
+		height: mvs(50, 1.1),
 		alignItems: "center",
 		justifyContent: "center",
-		borderRadius: vs(60),
+		borderRadius: mvs(50, 1.1),
 	},
 	text: {
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: vs(24),
-		lineHeight: vs(27),
+		fontSize: mvs(20, 1.1),
+		lineHeight: mvs(27),
 	},
 })

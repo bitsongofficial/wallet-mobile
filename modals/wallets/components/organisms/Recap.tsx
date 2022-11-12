@@ -3,13 +3,10 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { observer } from "mobx-react-lite";
 import { Card, Icon, Input } from "components/atoms";
 import { useStore, useTheme } from "hooks";
-import { IPerson } from "classes/types";
-import { Coin, Transaction } from "classes";
 import { COLOR, InputHandler } from "utils";
 import { SendController } from "../../controllers";
-import { fromAmountToCoin, fromCoinToDefaultDenom } from "core/utils/Coin";
-import { trimAddress } from "utils/string";
 import { SupportedCoins } from "constants/Coins";
+import { trimAddress } from "core/utils/Address";
 
 type Props = {
   creater: SendController["creater"];

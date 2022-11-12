@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next"
 
 type Props = {
 	onPressSend?(): void
+	onPressSendIbc?(): void
 	onPressReceive?(): void
 	onPressInquire?(): void
 	onPressScan?(): void
@@ -25,6 +26,7 @@ type Props = {
 
 export default observer(function ToolbarFull({
 	onPressSend,
+	onPressSendIbc,
 	onPressReceive,
 	onPressInquire,
 	onPressScan,
@@ -49,6 +51,13 @@ export default observer(function ToolbarFull({
 						title={t("Send")}
 						mode="gradient"
 						Icon={<Icon2 size={18} stroke={COLOR.White} name="arrow_up" />}
+						size={62}
+					/>
+					<ToolbarAction
+						onPress={onPressSendIbc}
+						title={t("SendIbc")}
+						mode="gradient"
+						Icon={<Icon2 size={18} stroke={COLOR.White} name="arrow_up_right" />}
 						size={62}
 					/>
 					<ToolbarAction

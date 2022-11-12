@@ -16,6 +16,7 @@
 	"Continue": "Continua",
 	"LetsStart": "Iniziamo",
 	"Send": "Invia",
+	"SendIbc": "IBC",
 	"Receive": "Ricevi",
 	"Inquire": "Richiedi",
 	"Issue": "Distribuisci",
@@ -30,10 +31,13 @@
 	"SendRecap": "Riepilogo",
 	"SendImportTitle": "Inserisci l'importo",
 	"SendReceiverTitle": "Seleziona il destinatario",
+	"InvalidAddress": "Il formato dell'address non è valido",
+	"AddressFromDifferentChain": "L'address è di un network different da quello di destinazione",
 	"SelectCoinTitle": "Seleziona la coin",
 	"SelectNetworkTitle": "Seleziona il network",
 	"SelectNetworkForReceive": "Selezionata il network di cui vuoi mostrare l'address",
 	"SelectNetworkForSend": "Selezionata il network da cui vuoi inviare i tuoi assets",
+	"SelectNetworkForIBC": "Selezionata il network a cui vuoi inviare i tuoi assets",
 	"SelectCoinDescription": "Seleziona la chain da cui la tua coin \nproviene",
 	"ConnectedWith": "Connesso con",
 	"AddNewAccount": "Aggiungi un Account",
@@ -110,5 +114,6 @@
 	"Soon": "SOON",
 	"ScanQRCode": "Inquadra il QR Code",
 	"CopyAddress": "Copia address",
-	"AddressCopied": "Address copiato!"
+	"AddressCopied": "Address copiato!",
+	"ChangeDestinationNetwork": "Cambia il network di destinazione"
 }

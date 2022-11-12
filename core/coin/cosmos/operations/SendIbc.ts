@@ -1,24 +1,19 @@
-import { AminoMsgSend, assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
+import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
 import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
+import Long from "long";
 import { CosmosOperation } from "./CosmosOperation";
 
-export async function getSendMessage(data: FromToAmount): Promise<AminoMsgSend>
+function ibcTimeout()
 {
-	const addresses = await Promise.all([
-		data.from.Address(),
-		data.to.Address()
-	])
-	return {
-		type: "cosmos-sdk/MsgSend",
-		value: {
-			from_address: addresses[0],
-			to_address: addresses[1],
-			amount: Array.isArray(data.amount) ? data.amount : [data.amount]
-		}
-	}
+	const timeoutTimestamp = Math.floor(new Date().getTime() / 1000) + 600
+
+	const timeoutTimestampNanoseconds = timeoutTimestamp
+		? Long.fromNumber(timeoutTimestamp).multiply(1_000_000_000)
+		: undefined
+	return timeoutTimestampNanoseconds?.toNumber()
 }
 
-export class Send extends CosmosOperation {
+export class SendIbc extends CosmosOperation {
 	async Run(data: FromToAmount) {
 		const wallet = await data.from.Signer()
 		const [firstAccount] = await wallet.getAccounts();
@@ -31,8 +26,8 @@ export class Send extends CosmosOperation {
 			let result
 			const srcAddress = firstAccount.address
 			const destAddress = await data.to.Address()
-			const amount = Array.isArray(data.amount) ? data.amount : [data.amount]
-			result = await client.sendTokens(srcAddress, destAddress, amount, "auto", data.description)
+			const amount = Array.isArray(data.amount) ? data.amount[0] : data.amount
+			result = await client.sendIbcTokens(srcAddress, destAddress, amount, "transfer", "channel-0", undefined, ibcTimeout(), "auto", data.description)
 
 			assertIsDeliverTxSuccess(result)
 			return {

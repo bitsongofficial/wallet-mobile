@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
 	ListRenderItem,
 	StyleProp,
@@ -12,13 +12,19 @@ import { observer } from "mobx-react-lite"
 import { animated, useSpring } from "@react-spring/native"
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet"
 import { useStore, useTheme } from "hooks"
-import { isValidAddress } from "core/utils/Address"
+import { getPrefixFromAddress, isValidAddress } from "core/utils/Address"
 import { FlatList } from "react-native-gesture-handler"
 import { Contact } from "stores/ContactsStore"
 import { SendController } from "../../controllers"
 import { CardAddress, CardAdressSelf } from "../moleculs"
 import { Contact as ContactItem } from "../atoms"
 import { FOOTER_HEIGHT } from "utils/constants"
+import InputActionText from "components/moleculs/InputActionText"
+import { useTranslation } from "react-i18next"
+import SelectNetwork from "./SelectNetwork"
+import { SupportedCoins } from "constants/Coins"
+import { getCoinPrefix } from "core/utils/Coin"
+import { Coin } from "classes"
 
 type Props = {
 	controller: SendController
@@ -27,6 +33,7 @@ type Props = {
 }
 
 export default observer(function SelectReceiver({ controller, onPressScanner, style }: Props) {
+	const { t } = useTranslation()
 	const { contacts: contactsStore, coin } = useStore()
 	const theme = useTheme()
 	const { creater } = controller
@@ -59,22 +66,20 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 		<View style={style}>
 			<BottomSheetScrollView
 				style={{ flexGrow: 1 }}
-				contentContainerStyle={{
-					paddingBottom: FOOTER_HEIGHT + 16,
-				}}
 				scrollEnabled={!addressInput.isFocused}
 			>
-				<View style={styles.wrapper}>
-					<CardAddress
-						input={addressInput}
-						onPressQR={onPressScanner}
-						style={styles.input}
-						isError={
-							addressInput.value != "" &&
-							!addressInput.isFocused &&
-							!isValidAddress(addressInput.value)
-						}
-					/>
+				<View style={[styles.columnEnd, styles.inputBox]}>
+					<View style={styles.wrapper}>
+						<CardAddress
+							input={addressInput}
+							onPressQR={onPressScanner}
+							style={styles.input}
+							isError={addressInput.value == "" ? false : [
+								!isValidAddress(addressInput.value) && t("InvalidAddress"),
+								(getPrefixFromAddress(addressInput.value) != getCoinPrefix(creater.destinationChain ?? (creater.coin as Coin).info.coin)) && t("AddressFromDifferentChain")
+							]}
+						/>
+					</View>
 				</View>
 
 				<animated.View style={hidden}>
@@ -108,9 +113,12 @@ const styles = StyleSheet.create({
 	container: { flexGrow: 1 },
 
 	wrapper: { },
-	input: {
+	inputBox: {
 		marginTop: 31,
 		marginBottom: 40,
+	},
+	input: {
+		marginBottom: 8,
 	},
 	hidden: { opacity: 0.1 },
 	self: { marginTop: 21 },
@@ -127,6 +135,11 @@ const styles = StyleSheet.create({
 		fontWeight: "500",
 		fontSize: 16,
 		lineHeight: 20,
+	},
+
+	columnEnd: {
+		flexDirection: "column",
+		alignItems: "flex-end",
 	},
 
 	touchContact: { marginRight: 22 },

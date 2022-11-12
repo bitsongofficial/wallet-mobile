@@ -4,8 +4,8 @@ import { Card, Icon } from "components/atoms";
 import { useTheme } from "hooks";
 import { Coin } from "classes";
 import { COLOR } from "utils";
-import { trimAddress } from "utils/string";
 import moment from "moment";
+import { trimAddress } from "core/utils/Address";
 
 type Props = {
   address: string;

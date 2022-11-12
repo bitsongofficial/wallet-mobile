@@ -14,6 +14,8 @@ import { BottomSheetTextInput } from "@gorhom/bottom-sheet"
 import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
 
+export type errorType = string | (string | false | undefined)[] | boolean
+
 export type Props = TextInputProps & {
 	label?: string
 	style?: StyleProp<ViewStyle>
@@ -22,7 +24,7 @@ export type Props = TextInputProps & {
 	bottomsheet?: boolean
 	Right?: JSX.Element
 
-	errorMessage?: string | string[] | false
+	errors?: errorType
 	errorStyle?: StyleProp<ViewStyle>
 }
 
@@ -37,12 +39,13 @@ export default ({
 	autocomplete,
 	bottomsheet,
 	Right,
-	errorMessage,
+	errors,
 	errorStyle,
 	...props
 }: Props) => {
 	const theme = useTheme()
 	const Component = useMemo(() => (bottomsheet ? BottomSheetTextInput : TextInput), [bottomsheet])
+	const filteredErrors = Array.isArray(errors) ? (errors.filter(e => (typeof(e) === "string")) as string[]) : errors
 
 	const autocompletePosition = useMemo(
 		() =>
@@ -54,18 +57,22 @@ export default ({
 		[inputStyle?.height],
 	)
 
+	const errorOccured = useMemo(() =>
+	(filteredErrors === true || (typeof(filteredErrors) === "string" && filteredErrors !== "") || (Array.isArray(filteredErrors) && filteredErrors.length > 0)),
+	[errors])
+
 	const errorBorder = useMemo<false | ViewStyle>(
 		() =>
-			!!errorMessage && {
+			errorOccured && {
 				borderWidth: 1,
 				borderColor: COLOR.Pink3,
 			},
-		[errorMessage],
+		[errors],
 	)
 
 	const errorText = useMemo(
-		() => (Array.isArray(errorMessage) ? errorMessage[0] : errorMessage),
-		[errorMessage],
+		() => (Array.isArray(filteredErrors) ? filteredErrors[0] : (typeof(filteredErrors) === "string" ? filteredErrors : "")),
+		[errors],
 	)
 
 	return (
@@ -90,7 +97,7 @@ export default ({
 					{Right}
 				</View>
 
-				{errorText && <ErrorMessage message={errorText} style={errorStyle} />}
+				{errorOccured && errorText != "" && <ErrorMessage message={errorText} style={errorStyle} />}
 			</View>
 		</View>
 	)
@@ -148,8 +155,9 @@ const styles = StyleSheet.create({
 
 	error: {
 		position: "absolute",
-		bottom: s(-19),
+		top: "104%",
 		left: s(24),
+		width: "100%",
 
 		fontFamily: "CircularStd",
 		fontStyle: "normal",

@@ -13,6 +13,7 @@ import { Proposals } from "../cosmos/operations/Proposals";
 import { Redelegate } from "../cosmos/operations/Redelegate";
 import { Rewards } from "../cosmos/operations/Rewards";
 import { Send } from "../cosmos/operations/Send";
+import { SendIbc } from "../cosmos/operations/SendIbc";
 import { SubmitProposal } from "../cosmos/operations/SubmitProposal";
 import { Undelegate } from "../cosmos/operations/Undelegate";
 import { Validators } from "../cosmos/operations/Validators";
@@ -32,7 +33,7 @@ export class Bitsong extends CosmosCoin {
 		return this.innerExplorer
 	}
 	public RPCEndpoint(): string {
-		return Config.BITSONG_RPC
+		return Config.BITSONG_RPC ?? ""
 	}
 	operations: OperationMap = {
 		[CoinOperationEnum.Balance]: new Balance(this),
@@ -41,6 +42,7 @@ export class Bitsong extends CosmosCoin {
 		[CoinOperationEnum.Delegate]: new Delegate(this),
 		[CoinOperationEnum.Redelegate]: new Redelegate(this),
 		[CoinOperationEnum.Send]: new Send(this),
+		[CoinOperationEnum.SendIbc]: new SendIbc(this),
 		[CoinOperationEnum.Undelegate]: new Undelegate(this),
 		[CoinOperationEnum.Validators]: new Validators(this),
 		[CoinOperationEnum.Vote]: new Vote(this),

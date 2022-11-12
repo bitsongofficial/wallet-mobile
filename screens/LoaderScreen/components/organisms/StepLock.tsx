@@ -35,8 +35,8 @@ const styles = StyleSheet.create({
 	container: { alignItems: "center" },
 	icon: {
 		marginBottom: vs(25),
-		width: vs(205),
-		height: vs(205),
+		width: vs(110),
+		height: vs(110),
 	},
 	title: { marginBottom: vs(8) },
 	caption: { textAlign: "center" },

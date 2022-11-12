@@ -12,12 +12,13 @@ import { autorun, keys, makeAutoObservable, runInAction, toJS, values } from "mo
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore, { ProfileWallets } from "./WalletStore";
-import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmount, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, SupportedFiats } from "core/utils/Coin";
+import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmount, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, resolveAsset, SupportedFiats } from "core/utils/Coin";
 import SettingsStore from "./SettingsStore";
 import { ICoin } from "classes/types";
 import { isValidAddress } from "core/utils/Address";
 import { getSendMessage } from "core/coin/cosmos/operations/Send";
 import { globalLoading } from "modals";
+import { FromToAmountIbc } from "core/types/coin/cosmos/FromToAmountIbc";
 
 const maxRecentRecipients = 10
 
@@ -120,7 +121,8 @@ export default class CoinStore {
 							currentInfo.denom = asset.denom
 							currentInfo._id = asset.denom
 							currentInfo.balance = fromAmountToCoin(asset)
-							coins.push(new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices)))
+							const coin = new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices))
+							coins.push(coin)
 						}
 						catch(e){
 							console.error("Catched", e)
@@ -180,20 +182,20 @@ export default class CoinStore {
 	get multiChainCoins() {
 		return this.coins.reduce((prev: Coin[], current: Coin) =>
 		{
-			const sameCoin = prev.find(p => p.info.denom == current.info.denom)
+			const sameCoin = prev.find(p => resolveAsset(p.info.denom) == resolveAsset(current.info.denom))
 			if(sameCoin)
 			{
 				sameCoin.info.balance += current.balance
 			}
 			else
 			{
-				return prev.concat(new Coin(toJS(current.info), 1))
+				return prev.concat(new Coin(Object.assign(toJS(current.info), {denom: resolveAsset(current.info.denom)}), 1))
 			}
 			return prev
 		}, [])
 	}
 
-	async sendAmount(coin: SupportedCoins, address: string, amount: Amount)
+	async sendAmount(coin: SupportedCoins, address: string, amount: Amount, destinationChain?: SupportedCoins)
 	{
 		runInAction(() =>
 		{
@@ -214,12 +216,26 @@ export default class CoinStore {
 		}
 		try
 		{
-			const data: FromToAmount = {
-				from:  wallet as CosmosWallet,
-				to: new PublicWallet(address),
-				amount,
+			let res: any
+			if(destinationChain)
+			{
+				const data: FromToAmountIbc = {
+					from:  wallet as CosmosWallet,
+					to: new PublicWallet(address),
+					amount,
+					destinationNetwork: destinationChain,
+				}
+				res = await coinClass.Do(CoinOperationEnum.SendIbc, data)
 			}
-			const res = await coinClass.Do(CoinOperationEnum.Send, data)
+			else
+			{
+				const data: FromToAmount = {
+					from:  wallet as CosmosWallet,
+					to: new PublicWallet(address),
+					amount,
+				}
+				res = await coinClass.Do(CoinOperationEnum.Send, data)
+			}
 			this.addToRecent(address)
 			runInAction(() =>
 			{
@@ -274,9 +290,14 @@ export default class CoinStore {
 		return this.findAssetWithDenom(CoinClasses[coin].denom())
 	}
 
-	async sendCoin(coin: SupportedCoins, address: string, balance: number)
+	async sendCoin(coin: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
 	{
-		return await this.sendAmount(coin, address, fromCoinToAmount(balance, coin))
+		return await this.sendAmount(coin, address, fromCoinToAmount(balance, denom ?? coin))
+	}
+
+	async sendCoinIbc(coin: SupportedCoins, destinationChain: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
+	{
+		return await this.sendAmount(coin, address, fromCoinToAmount(balance, denom ?? coin), destinationChain)
 	}
 
 	async sendFiat(coin: SupportedCoins, address: string, fiat: number)
@@ -301,14 +322,14 @@ export default class CoinStore {
 		return fromAmountToFIAT(amount, this.Prices)
 	}
 
-	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins)
+	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins | string)
 	{
 		return this.fromAmountToFIAT(fromCoinToAmount(balance, coin))
 	}
 
 	fromCoinToFiat(coin: Coin)
 	{
-		return this.fromCoinBalanceToFiat(coin.balance, coin.info.coin)
+		return this.fromCoinBalanceToFiat(coin.balance, coin.info.denom)
 	}
 
 	addToRecent(address : string, date?: Date)

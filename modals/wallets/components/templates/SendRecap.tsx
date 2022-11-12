@@ -29,8 +29,6 @@ export default observer(function SelectReceiver({ controller }: Props) {
 	const scrollview = useRef<BottomSheetScrollViewMethods>(null)
 	const insets = useSafeAreaInsets()
 
-	const footerInsets = FOOTER_HEIGHT + 24 + insets.bottom
-
 	const [json, setJson] = useState<any>({})
 
 	useEffect(() =>
@@ -61,7 +59,6 @@ export default observer(function SelectReceiver({ controller }: Props) {
 					ref={scrollview}
 					contentContainerStyle={{
 						paddingTop: 28,
-						paddingBottom: footerInsets,
 					}}
 				>
 					<Recap

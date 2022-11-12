@@ -45,7 +45,7 @@ export default observer(function CardWillSend({
 	}, [address])
 
 	const coinsValue = parseFloat(amount)
-	const dollars = useMemo(() => coin.fromCoinBalanceToFiat(parseFloat(amount), coinData.coin), [amount])
+	const dollars = useMemo(() => coin.fromCoinBalanceToFiat(parseFloat(amount), coinData.denom), [amount])
 	const coinsIntegerValue = Math.floor(coinsValue)
 	const coinsDecimalValue = coinsValue - coinsIntegerValue
 

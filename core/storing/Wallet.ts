@@ -31,7 +31,7 @@ const fromCosmosChain = function(chain: SupportedCoins) : HDWalletDataToWallet
 	const trailing = accountIndex + "/" + walletIndex
 	switch(chain) {
 		default:
-			chainSpecificDeriver = new MnemonicToHdWalletData(getCoinPrefix(chain), chainToDerivationPath(chain) + trailing)
+			chainSpecificDeriver = new MnemonicToHdWalletData(getCoinPrefix(chain) ?? "", chainToDerivationPath(chain) + trailing)
 	}
 
 	return new HDWalletDataToWallet(chainSpecificDeriver)

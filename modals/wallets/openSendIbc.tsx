@@ -1,19 +1,17 @@
 import { SupportedCoins } from "constants/Coins"
 import { gbs } from "modals"
 import { navigate } from "navigation/utils"
-import { Keyboard, StyleProp, StyleSheet, View, ViewStyle } from "react-native"
+import { Keyboard, StyleProp, ViewStyle } from "react-native"
 import { SendController } from "./controllers"
 import { FooterSendModal, SendModal } from "./modals"
 import { store } from "stores/Store"
 import { wait } from "utils"
-import { BottomSheetFooterProps, BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet"
+import { BottomSheetFooterProps } from "@gorhom/bottom-sheet"
 import { SendSteps } from "./controllers/SendController"
-import { FooterSend } from "./modals/SendModal"
-import { s } from "react-native-size-matters"
 
-export default function openSendModal(style: StyleProp<ViewStyle>) {
+export default function openSendIbcModal(style: StyleProp<ViewStyle>) {
 	const { coin } = store
-	const controller = new SendController()
+	const controller = new SendController(true)
 	const { creater, steps } = controller
 	steps.goTo(SendSteps.Coin)
 	creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
@@ -31,12 +29,12 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 	}
 
 	const send = () => {
-		const { coin, addressInput, balance } = creater
+		const { coin, addressInput, balance, destinationChain } = creater
 		if (store.coin.hasCoins && coin && addressInput && balance) {
 			navigate("Loader", {
 				callback: async () =>
 				{
-					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance, coin.info.denom)
+					return await store.coin.sendCoinIbc(coin.info.coin, destinationChain ?? coin.info.coin, addressInput.value, balance, coin.info.denom)
 				},
 			})
 		}
@@ -62,19 +60,19 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 				}
 			},
 			children: () => (
-				<BottomSheetView style={styles.container}>
-					<SendModal
-						controller={controller}
-						onPressScanQRReciver={scanReciver}
-						onPressBack={goBack}
-					/>
-					<FooterSend
-						controller={controller}
-						onPressBack={goBack}
-						onPressSend={send}
-						style={styles.footer}
-					></FooterSend>
-				</BottomSheetView>
+				<SendModal
+					controller={controller}
+					onPressScanQRReciver={scanReciver}
+					onPressBack={goBack}
+				/>
+			),
+			footerComponent: (props: BottomSheetFooterProps) => (
+				<FooterSendModal
+					{...props}
+					controller={controller}
+					onPressBack={goBack}
+					onPressSend={send}
+				/>
 			),
 		})
 
@@ -83,15 +81,3 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 
 	coin.CanSend && open()
 }
-
-const styles = StyleSheet.create({
-	container: {
-		minHeight: "100%",
-		paddingBottom: s(8),
-		display: "flex",
-		flexDirection: "column",
-	},
-	footer: {
-		flexShrink: 0,
-	}
-})

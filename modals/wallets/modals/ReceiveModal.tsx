@@ -8,13 +8,14 @@ import { BottomSheetView, TouchableOpacity } from "@gorhom/bottom-sheet"
 import * as Clipboard from "expo-clipboard"
 import { useStore } from "hooks"
 import { COLOR, hexAlpha, wait } from "utils"
-import { trimAddress } from "utils/string"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { Icon2 } from "components/atoms"
 import { Header } from "../components/atoms"
-import { SelectCoin, SelectNetwork } from "../components/templates"
+import { SelectNetwork } from "../components/templates"
 import { SupportedCoins } from "constants/Coins"
 import { useTranslation } from "react-i18next"
+import InputActionText from "components/moleculs/InputActionText"
+import { trimAddress } from "core/utils/Address"
 
 type Props = {
 	style: StyleProp<ViewStyle>
@@ -79,9 +80,7 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 						<Icon2 name="copy" stroke={hexAlpha(COLOR.White, 30)} size={17} />
 					</TouchableOpacity>
 				</View>
-				<Text style={styles.subtitle} onPress={copyToClipboard}>
-					{t("CopyAddress")}
-				</Text>	
+				<InputActionText text={t("CopyAddress")} onPress={copyToClipboard}></InputActionText>
 			</>}
 		</BottomSheetView>
 	)

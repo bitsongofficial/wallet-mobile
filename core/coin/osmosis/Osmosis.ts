@@ -19,21 +19,21 @@ import { Undelegate } from "../cosmos/operations/Undelegate";
 import { Validators } from "../cosmos/operations/Validators";
 import { Vote } from "../cosmos/operations/Vote";
 
-export class Bitsong118 extends CosmosCoin {
+export class Osmosis extends CosmosCoin {
 	private innerExplorer = axios.create({
-		baseURL: Config.BITSONG_EXPLORER
+		baseURL: Config.OSMOSIS_EXPLORER
 	})
 	public chain(): SupportedCoins {
-		return SupportedCoins.BITSONG118
+		return SupportedCoins.OSMOSIS
 	}
 	public denom(): Denom {
-		return Denom.UBTSG
+		return Denom.UOSMO
 	}
 	public explorer(): Axios {
 		return this.innerExplorer
 	}
 	public RPCEndpoint(): string {
-		return Config.BITSONG_RPC ?? ""
+		return Config.OSMOSIS_RPC ?? ""
 	}
 	operations: OperationMap = {
 		[CoinOperationEnum.Balance]: new Balance(this),

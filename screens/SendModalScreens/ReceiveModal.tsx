@@ -12,7 +12,7 @@ import { BottomSheetView, TouchableOpacity } from "@gorhom/bottom-sheet"
 import { useState } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useEffect } from "react"
-import { trimAddress } from "utils/string"
+import { trimAddress } from "core/utils/Address"
 
 type Props = {
 	style: StyleProp<ViewStyle>

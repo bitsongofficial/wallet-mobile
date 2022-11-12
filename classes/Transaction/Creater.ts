@@ -1,5 +1,6 @@
 import Coin from "classes/Coin";
 import { IPerson, ITransaction } from "classes/types";
+import { SupportedCoins } from "constants/Coins";
 import { makeAutoObservable, toJS } from "mobx";
 import { InputHandler } from "utils";
 
@@ -7,6 +8,7 @@ export default class TransactionCreater {
   coin: Coin | null = null;
   balance: number = 0
   receiver?: IPerson | null = null; //
+  destinationChain?: SupportedCoins
 
   addressInput = new InputHandler();
   memo = new InputHandler()
@@ -17,6 +19,7 @@ export default class TransactionCreater {
 
 	setCoin(coin: Coin | null) {
 		this.coin = coin
+    if(this.destinationChain === undefined) this.destinationChain = coin?.info.coin
 	}
   setBalance(balance: number) {
     const coin = this.coin
@@ -32,6 +35,11 @@ export default class TransactionCreater {
     if (this.coin?.balance) {
       this.balance = this.coin.balance;
     }
+  }
+
+  setDestinationChain(destinationChain: SupportedCoins | undefined)
+  {
+    this.destinationChain = destinationChain
   }
 
   get address() {

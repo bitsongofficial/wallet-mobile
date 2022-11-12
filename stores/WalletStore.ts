@@ -294,15 +294,18 @@ export default class WalletStore {
             try
             {
               const prefix = getPrefixFromAddress(profile.data.address)
-              const coin = fromPrefixToCoin(prefix)
-              if(coin)
+              if(prefix)
               {
-                const pubWallets: SupportedCoinsMap = {}
-                pubWallets[coin] = new PublicWallet(profile.data.address)
-                wallets.push({
-                  profile: this.profiles[index],
-                  wallets: pubWallets
-                })
+                const coin = fromPrefixToCoin(prefix)
+                if(coin)
+                {
+                  const pubWallets: SupportedCoinsMap = {}
+                  pubWallets[coin] = new PublicWallet(profile.data.address)
+                  wallets.push({
+                    profile: this.profiles[index],
+                    wallets: pubWallets
+                  })
+                }
               }
             }
             catch (e)
