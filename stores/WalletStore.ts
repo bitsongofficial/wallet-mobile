@@ -1,12 +1,12 @@
 import {autorun, IReactionDisposer, makeAutoObservable, reaction, runInAction, set, toJS } from "mobx";
 import { CosmosWalletGenerator } from "core/storing/Wallet";
-import { WalletTypes } from "core/types/storing/Generic";
+import { Wallet, WalletTypes } from "core/types/storing/Generic";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import { ExportKeyRingData, QRCodeSharedData, WCExportKeyRingDatasResponse } from "core/types/storing/Keplr";
 import WalletConnect from "@walletconnect/client";
 import { Counter, ModeOfOperation } from "aes-js"
 import { AskPinMnemonicStore } from "core/storing/MnemonicStore";
-import { SupportedCoinsMap } from "constants/Coins";
+import { SupportedCoins, SupportedCoinsMap } from "constants/Coins";
 import { getPrefixFromAddress } from "core/utils/Address";
 import { PublicWallet } from "core/storing/Generic";
 import SettingsStore from "./SettingsStore";
@@ -35,7 +35,7 @@ type profileIndexer = number | string | ProfileInner | Profile | ProfileWallets
 
 export interface ProfileWallets {
   profile: ProfileInner,
-  wallets: SupportedCoinsMap
+  wallets: SupportedCoinsMap<Wallet>
 }
 
 export default class WalletStore {
@@ -213,7 +213,7 @@ export default class WalletStore {
     }
   }
 
-  private resolveProfile(profile: profileIndexer)
+  private resolveProfile(profile: profileIndexer): ProfileInner | null
   {
     const inputProfile = profile as any
     if(inputProfile.id) return this.profiles.find(p => p.id == inputProfile.id) ?? null
@@ -222,6 +222,16 @@ export default class WalletStore {
     let targetProfile = inputProfile
     if(inputProfile.profile) targetProfile = inputProfile.profile
     return this.profiles.find(p => p.name == targetProfile.name) ?? null
+  }
+
+  name(profile: profileIndexer)
+  {
+    return this.resolveProfile(profile)?.name ?? ""
+  }
+
+  async address(profile: profileIndexer, chain: SupportedCoins)
+  {
+    return await this.wallet(profile)?.wallets[chain]?.Address()
   }
 
   changeActive(profile: profileIndexer | null)
@@ -328,9 +338,20 @@ export default class WalletStore {
     globalLoading.close()
   }
 
+  private wallet(profile: profileIndexer)
+  {
+    const actualProfile = this.resolveProfile(profile)
+    return this.wallets.find(w => w.profile.id == actualProfile?.id) ?? null
+  }
+
   get activeWallet()
   {
-    return this.wallets.find(w => w.profile.id == this.activeProfile?.id) ?? null
+    return this.activeProfile ? this.wallet(this.activeProfile) : null
+  }
+
+  chainWallet(profile: profileIndexer, chain: SupportedCoins)
+  {
+    return this.wallet(profile)?.wallets[chain]
   }
 
   changeProfileName(profile: profileIndexer, name: string)
