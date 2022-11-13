@@ -20,6 +20,28 @@ import { formatNumber } from "utils/numbers";
 import ProposalsStore from "./ProposalsStore";
 import { openDeposit, openVoteRecap } from "modals/proposal";
 import { DepositController } from "modals/proposal/components/templates";
+import { WalletInterface } from "core/connection/WalletConnect/ConnectorV1";
+import { Wallet } from "core/types/storing/Generic";
+
+class storeDrivenWalletInterface implements WalletInterface {
+	constructor(private walletStore: WalletStore, private profileId: string) {}
+	async Address(chain: SupportedCoins) {
+		return await this.walletStore.address(this.profileId, chain) ?? ""
+	}
+	Wallet(chain: SupportedCoins): Wallet {
+		throw new Error("Method not implemented.");
+	}
+	get Name() {
+		return this.walletStore.name(this.profileId)
+	}
+	Algorithm(chain: SupportedCoins | undefined) {
+		return "secp256k1"
+	}
+	async PubKey(chain: SupportedCoins) {
+		const key = await this.walletStore.chainWallet(this.profileId, chain)?.PubKey()
+		return key ?? new Uint8Array()
+	}
+}
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
