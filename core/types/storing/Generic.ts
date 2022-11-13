@@ -28,7 +28,8 @@ export interface CosmosWalletData extends WalletData {
 
 export interface Wallet extends Metadata {
 	Address(): Promise<string>,
-	Key(): Promise<string>,
+	PubKey(): Promise<Uint8Array>,
+	PrivateKey(): Promise<Uint8Array>,
 }
 
 export interface MnemonicStore extends Store {}
