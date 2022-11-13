@@ -11,8 +11,9 @@ export class WalletToKeys extends BaseDerivator {
 		const wallet = data as DirectSecp256k1HdWallet
 		const accounts = await wallet.getAccounts()
 		return {
-			public: accounts[0].address,
-			private: ""//wallet.privkey,
+			public: accounts[0].pubkey,
+			address: accounts[0].address,
+			private: new Uint8Array(),
 		}
 	}
 }

@@ -48,14 +48,17 @@ export class CosmosWallet implements Wallet {
 	{
 
 	}
+	async PubKey() {
+		return (await this.Keys()).public as Uint8Array
+	}
 	async Address()
 	{
-		if(this.address == "") this.address = (await this.Keys()).public
+		if(this.address == "") this.address = (await this.Keys()).address
 		return this.address
 	}
-	async Key()
+	async PrivateKey()
 	{
-		return (await this.Keys()).private
+		return (await this.Keys()).private as Uint8Array
 	}
 	async Mnemonic()
 	{
