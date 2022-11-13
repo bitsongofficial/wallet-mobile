@@ -1,12 +1,23 @@
 import WalletConnect from "@walletconnect/client"
 import { IWalletConnectSession, IWalletConnectOptions } from "@walletconnect/types"
+import { SupportedCoins } from "constants/Coins";
+import { Wallet } from "core/types/storing/Generic";
 import { makeAutoObservable } from "mobx";
 import Config from "react-native-config";
+
+export interface WalletInterface {
+	Address(chain: SupportedCoins): Promise<string>
+	Wallet(chain: SupportedCoins): Wallet
+	get Name(): string
+	Algorithm(chain?: SupportedCoins): string
+	PubKey(chain?: SupportedCoins): Promise<Uint8Array>
+}
 
 export type WalletConnectOptions = {
 	uri?: string,
 	session?: IWalletConnectSession,
 	fcmToken?: string,
+	walletInterface: WalletInterface,
 }
 
 enum WalletConnectEvents {
@@ -29,13 +40,17 @@ export interface WalletConnectBaseEvents extends WalletConnectEventsMap {
 	[WalletConnectEvents.CallRequest]: WalletConnectVersionedCallbacks,
 }
 
+
+
 export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents> {
 	connector: WalletConnect | null = null
-	name?: string
-	date?: Date
+	walletInterface: WalletInterface
+	name: string = ""
+	date: Date = new Date()
 	abstract events: E
 	constructor(options: WalletConnectOptions)
 	{
+		this.walletInterface = options.walletInterface
 		makeAutoObservable(this, {}, { autoBind: true })
 		const wcOptions: IWalletConnectOptions = 
 		{
@@ -100,5 +115,14 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 	setDate(date: Date)
 	{
 		this.date = date
+	}
+
+	approve(payload: any | null, result: any[])
+	{
+		this.connector?.approveRequest({
+			id: payload.id,
+			jsonrpc: payload.jsonrpc,
+			result,
+		})
 	}
 }
