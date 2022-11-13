@@ -5,6 +5,7 @@ import { s, vs } from "react-native-size-matters"
 import { TimerCountdown } from "classes"
 import { COLOR } from "utils"
 import { Title, Caption } from "../atoms"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	timer: TimerCountdown
@@ -12,6 +13,7 @@ type Props = {
 }
 
 export default observer(({ timer, style }: Props) => {
+	const { t } = useTranslation()
 	const [showNumber, setShowNumber] = useState(false)
 
 	useEffect(() => {
@@ -21,10 +23,10 @@ export default observer(({ timer, style }: Props) => {
 	return (
 		<View style={[styles.container, style]}>
 			<Image source={require("assets/images/lock.png")} style={styles.icon} />
-			<Title style={styles.title}>Wallet app is blocked</Title>
-			<Caption style={styles.caption}>Too many PIN attempts</Caption>
+			<Title style={styles.title}>{t("AppBlocked")}</Title>
+			<Caption style={styles.caption}>{t("TooManyPinAttempts")}</Caption>
 			<View style={styles.timerContainer}>
-				<Caption style={styles.caption}>Try again in:</Caption>
+				<Caption style={styles.caption}>{t("TryAgainIn")}:</Caption>
 				{showNumber && <Text style={styles.timer}>{timer.diffSec}</Text>}
 			</View>
 		</View>
