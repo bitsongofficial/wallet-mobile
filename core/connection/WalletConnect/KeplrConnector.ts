@@ -1,5 +1,6 @@
 import { StdSignDoc } from "@cosmjs-rn/amino";
 import { SupportedCoins } from "constants/Coins";
+import { chainIdToChain } from "core/utils/Coin";
 import * as CryptoJS from "react-native-crypto-js";
 import { WalletConnectBaseEvents, WalletConnectCallback, WalletConnectConnectorV1, WalletConnectOptions, WalletConnectVersionedCallbacks } from "./ConnectorV1";
 
@@ -86,14 +87,18 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
         const [chainId, signer, signDoc, signOptions] = payload.params as [string, string, StdSignDoc, KeplrSignOptions]
 
         const [identifier, version] = chainId.split("-")
-        const chain = 
-
-        const signedDoc = await this.walletInterface.Sign(chainId, signDoc, signer)
-        if(signedDoc)
+        const chain = chainIdToChain(identifier)
+        if(chain)
         {
-            this.approve(payload, [
-                signedDoc
-            ])
+            const signedDoc = await this.walletInterface.Sign(chain, signDoc, signer)
+            if(signedDoc)
+            {
+                this.approve(payload, [
+                    signedDoc
+                ])
+                return
+            }
         }
+        this.reject(payload, new Error("Chain not supported"))
     }
 }

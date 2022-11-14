@@ -127,4 +127,13 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			result,
 		})
 	}
+
+	reject(payload: any | null, error: Error)
+	{
+		this.connector?.rejectRequest({
+			id: payload.id,
+			jsonrpc: payload.jsonrpc,
+			error
+		})
+	}
 }
