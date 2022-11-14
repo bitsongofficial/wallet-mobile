@@ -1,5 +1,6 @@
 
 import { stringToPath } from "@cosmjs-rn/crypto";
+import { Secp256k1HdWallet } from "@cosmjs-rn/amino";
 import { DirectSecp256k1HdWallet } from "@cosmjs-rn/proto-signing";
 import { Derivator } from "core/types/utils/derivator";
 import { BaseDerivator } from "core/utils/Derivator";
@@ -33,6 +34,22 @@ export class HDWalletDataToWallet extends BaseDerivator {
 	{
 		try {
 			return await DirectSecp256k1HdWallet.fromMnemonic(data.mnemonic, {
+				hdPaths: [stringToPath(data.hdPath)],
+				prefix: data.prefix
+			})
+		}
+		catch(e)
+		{
+			return null
+		}
+	}
+}
+
+export class HDWalletDataToAminoSigner extends BaseDerivator {
+	protected async InnerDerive(data: any)
+	{
+		try {
+			return await Secp256k1HdWallet.fromMnemonic(data.mnemonic, {
 				hdPaths: [stringToPath(data.hdPath)],
 				prefix: data.prefix
 			})

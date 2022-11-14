@@ -1,10 +1,10 @@
 import { stringToPath } from "@cosmjs-rn/crypto";
 import { DirectSecp256k1HdWallet } from "@cosmjs-rn/proto-signing";
 import { SupportedCoins } from "constants/Coins";
-import { MnemonicToWallet } from "core/types/storing/Cosmos";
+import { MnemonicToAminoSigner, MnemonicToWallet } from "core/types/storing/Cosmos";
 import { CosmosWalletData, MnemonicStore, Store, Wallet } from "core/types/storing/Generic";
 import { getCoinPrefix } from "core/utils/Coin";
-import { HDWalletDataToWallet, MnemonicToHdWalletData, WalletToKeys } from "./derivers/Wallet";
+import { HDWalletDataToAminoSigner, HDWalletDataToWallet, MnemonicToHdWalletData, WalletToKeys } from "./derivers/Wallet";
 
 export async function mnemonicToAddress(mnemonic: string, chain: SupportedCoins) {
 	const deriver = MnemonicToWalletGenerator.fromCosmosChain(chain)
@@ -23,7 +23,7 @@ function chainToDerivationPath(chain: SupportedCoins)
 	}
 }
 
-const fromCosmosChain = function(chain: SupportedCoins) : HDWalletDataToWallet
+function getWalletDataDeriver(chain: SupportedCoins)
 {
 	let chainSpecificDeriver = null
 	const accountIndex = 0
@@ -34,7 +34,12 @@ const fromCosmosChain = function(chain: SupportedCoins) : HDWalletDataToWallet
 			chainSpecificDeriver = new MnemonicToHdWalletData(getCoinPrefix(chain) ?? "", chainToDerivationPath(chain) + trailing)
 	}
 
-	return new HDWalletDataToWallet(chainSpecificDeriver)
+	return chainSpecificDeriver
+}
+
+const fromCosmosChain = function(chain: SupportedCoins) : HDWalletDataToWallet
+{
+	return new HDWalletDataToWallet(getWalletDataDeriver(chain))
 }
 
 const MnemonicToWalletGenerator = {
@@ -42,9 +47,18 @@ const MnemonicToWalletGenerator = {
 	BitsongMnemonicToWallet: fromCosmosChain(SupportedCoins.BITSONG),
 }
 
+const aminoSignerfromCosmosChain = function(chain: SupportedCoins) : HDWalletDataToAminoSigner
+{
+	return new HDWalletDataToAminoSigner(getWalletDataDeriver(chain))
+}
+
+const MnemonicToAminoSignerGenerator = {
+	fromCosmosChain: aminoSignerfromCosmosChain,
+}
+
 export class CosmosWallet implements Wallet {
 	private address: string = ""
-	constructor(private mnemonicStore: MnemonicStore, private accountDeriver: MnemonicToWallet)
+	constructor(private mnemonicStore: MnemonicStore, private accountDeriver: MnemonicToWallet, private aminoSignerDeriver: MnemonicToAminoSigner)
 	{
 
 	}
@@ -74,14 +88,20 @@ export class CosmosWallet implements Wallet {
 	{
 		return await this.accountDeriver.Derive(await this.Mnemonic())
 	}
+
+	async AminoSigner()
+	{
+		return await this.aminoSignerDeriver.Derive(await this.Mnemonic())
+	}
 }
 
 const CosmosWalletFromChain = function(options: CosmosWalletData): CosmosWallet
 {
 	const store = options.store
 
-	let deriver = MnemonicToWalletGenerator.fromCosmosChain(options.chain)
-	const w = new CosmosWallet(store, deriver)
+	let directSignerDriver = MnemonicToWalletGenerator.fromCosmosChain(options.chain)
+	let aminoSignerDeriver = MnemonicToAminoSignerGenerator.fromCosmosChain(options.chain)
+	const w = new CosmosWallet(store, directSignerDriver, aminoSignerDeriver)
 	return w
 }
 
