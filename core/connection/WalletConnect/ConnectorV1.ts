@@ -1,3 +1,4 @@
+import { AminoSignResponse, StdSignDoc } from "@cosmjs-rn/amino";
 import WalletConnect from "@walletconnect/client"
 import { IWalletConnectSession, IWalletConnectOptions } from "@walletconnect/types"
 import { SupportedCoins } from "constants/Coins";
@@ -10,7 +11,8 @@ export interface WalletInterface {
 	Wallet(chain: SupportedCoins): Wallet
 	get Name(): string
 	Algorithm(chain?: SupportedCoins): string
-	PubKey(chain?: SupportedCoins): Promise<Uint8Array>
+	PubKey(chain: SupportedCoins): Promise<Uint8Array>
+	Sign(chain: SupportedCoins, signDoc: StdSignDoc, signerAddress?: string): Promise<AminoSignResponse | undefined>
 }
 
 export type WalletConnectOptions = {

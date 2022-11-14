@@ -1,4 +1,6 @@
+import { StdSignDoc } from "@cosmjs-rn/amino";
 import { SupportedCoins } from "constants/Coins";
+import * as CryptoJS from "react-native-crypto-js";
 import { WalletConnectBaseEvents, WalletConnectCallback, WalletConnectConnectorV1, WalletConnectOptions, WalletConnectVersionedCallbacks } from "./ConnectorV1";
 
 export interface KeplrEvents extends WalletConnectBaseEvents {
@@ -12,9 +14,7 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     events: KeplrEvents = {
         keplr_enable_wallet_connect_v1: this.KeplrEnableWallet,
         keplr_get_key_wallet_connect_v1: this.KeplrGetKeyWallet,
-        keplr_sign_amino_wallet_connect_v1: function (error: Error | null, payload: any): void {
-            throw new Error("Function not implemented.");
-        },
+        keplr_sign_amino_wallet_connect_v1: this.KeplrSign,
         session_request: this.SessionRequest,
         connect: function (error: Error | null, payload: any): void
         {
@@ -38,6 +38,17 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     {
         return this.availableChains
     }
+
+    private pubKeyToAddress(pubKey: Uint8Array)
+    {
+        let hash = CryptoJS.SHA256(
+            CryptoJS.lib.WordArray.create(pubKey as any)
+          ).toString();
+          hash = CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(hash)).toString();
+      
+          return new Uint8Array(Buffer.from(hash, "hex"))
+    }
+
     SessionRequest(error: Error | null, payload: any)
     {
         // Keplr do not uses default session request but the keplr_enable_wallet_connect_v1 custom one
@@ -58,15 +69,31 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     async KeplrGetKeyWallet(error: Error | null, payload: any)
     {
         const chain = payload.params[0]
-        const [pubKey, address] = await Promise.all([this.walletInterface.PubKey(), this.walletInterface.Address(chain)])
+        const [pubKey, address] = await Promise.all([this.walletInterface.PubKey(chain), this.walletInterface.Address(chain)])
 
         this.approve(payload, [{
-			name: this.walletInterface.Name, // profile name (?). It's taken from a meta array so it shouldn't be critic.
-			algo: this.walletInterface.Algorithm(), //if ethereum ethsecp256k1 else secp256k1
-			pubKey: Buffer.from(pubKey).toString("hex"), //key.pubKey Uint8Array
-			address: Buffer.from(pubKey).toString("hex"), //key.address Uint8Array
-			bech32Address: address, //See tobech32 function
-			isNanoLedger: false, //if ledger true else false
+			name: this.walletInterface.Name,
+			algo: this.walletInterface.Algorithm(),
+			pubKey: Buffer.from(pubKey).toString("hex"),
+			address: Buffer.from(this.pubKeyToAddress(pubKey)).toString("hex"),
+			bech32Address: address,
+			isNanoLedger: false,
         }])
+    }
+    
+    async KeplrSign(error: Error | null, payload: any)
+    {
+        const [chainId, signer, signDoc, signOptions] = payload.params as [string, string, StdSignDoc, KeplrSignOptions]
+
+        const [identifier, version] = chainId.split("-")
+        const chain = 
+
+        const signedDoc = await this.walletInterface.Sign(chainId, signDoc, signer)
+        if(signedDoc)
+        {
+            this.approve(payload, [
+                signedDoc
+            ])
+        }
     }
 }

@@ -22,6 +22,8 @@ import { openDeposit, openVoteRecap } from "modals/proposal";
 import { DepositController } from "modals/proposal/components/templates";
 import { WalletInterface } from "core/connection/WalletConnect/ConnectorV1";
 import { Wallet } from "core/types/storing/Generic";
+import { CosmosWallet } from "core/storing/Wallet";
+import { Secp256k1HdWallet, StdSignDoc } from "@cosmjs-rn/amino";
 
 class storeDrivenWalletInterface implements WalletInterface {
 	constructor(private walletStore: WalletStore, private profileId: string) {}
@@ -40,6 +42,20 @@ class storeDrivenWalletInterface implements WalletInterface {
 	async PubKey(chain: SupportedCoins) {
 		const key = await this.walletStore.chainWallet(this.profileId, chain)?.PubKey()
 		return key ?? new Uint8Array()
+	}
+	async Sign(chain: SupportedCoins, signDoc: StdSignDoc, signerAddress?: string) {
+		try
+		{
+			const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
+			const [address, signer] = await Promise.all([wallet.Address(), wallet.AminoSigner()])
+			return await signer.signAmino(signerAddress ?? address, signDoc)
+		}
+		catch(e)
+		{
+			console.error("Catched", e)
+		}
+
+		return undefined
 	}
 }
 
