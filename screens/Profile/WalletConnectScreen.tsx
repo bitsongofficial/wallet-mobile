@@ -14,12 +14,13 @@ import { Circles, Subtitle, Title } from "./components/atoms"
 import { observable } from "mobx"
 import { WalletItem } from "./components/moleculs"
 import { ProfileWallets } from "stores/WalletStore"
-import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1"
 import SwipeableItem from "components/organisms/SwipeableItem"
 import { s, vs } from "react-native-size-matters"
 import moment from "moment"
 import { withFullHeight } from "screens/layout/hocs"
 import { t } from "i18next"
+import { WalletConnectBaseEvents, WalletConnectConnectorV1 } from "core/connection/WalletConnect/ConnectorV1"
+import { DappConnection } from "stores/DappConnectionStore"
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">
 
@@ -32,17 +33,17 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 	const connections = dapp.connections
 	const mapItemsRef = useMemo(() => observable.map<string, React.RefObject<Swipeable>>(), [])
 
-	const renderWallet = useCallback<ListRenderItem<WalletConnectCosmosClientV1>>(
+	const renderWallet = useCallback<ListRenderItem<DappConnection>>(
 		({ item, index }) =>
 			item && item.connector ? (
-				<View key={item.connector.session.key} style={{ marginBottom: 13 }}>
+				<View key={index} style={{ marginBottom: 13 }}>
 					<SwipeableItem
 						wrapper={WRAPPER}
-						id={item.connector.session.key}
-						date={item.date ? moment(item.date).format("MMM D, LT") : ""}
+						id={index.toString()}
+						date={item.connector.date ? moment(item.connector.date).format("MMM D, LT") : ""}
 						mapItemsRef={mapItemsRef}
-						onPressDelete={() => dapp.disconnect(item)}
-						name={item.name ?? "Unknown"}
+						onPressDelete={() => dapp.disconnect(item.connector)}
+						name={item.connector.name ?? "Unknown"}
 						onPress={() => {}}
 					/>
 				</View>
