@@ -19,6 +19,8 @@ export type WalletConnectOptions = {
 	uri?: string,
 	session?: IWalletConnectSession,
 	fcmToken?: string,
+	name?: string,
+	date?: Date,
 	walletInterface: WalletInterface,
 }
 
@@ -42,18 +44,17 @@ export interface WalletConnectBaseEvents extends WalletConnectEventsMap {
 	[WalletConnectEvents.CallRequest]: WalletConnectVersionedCallbacks,
 }
 
-
-
 export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents> {
 	connector: WalletConnect | null = null
 	walletInterface: WalletInterface
 	name: string = ""
-	date: Date = new Date()
+	date: Date | null = null
 	abstract events: E
 	constructor(options: WalletConnectOptions)
 	{
 		this.walletInterface = options.walletInterface
-		makeAutoObservable(this, {}, { autoBind: true })
+		if(options.name) this.name = options.name
+		if(options.date) this.date = options.date
 		const wcOptions: IWalletConnectOptions = 
 		{
 			// Required
@@ -84,12 +85,15 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			if (error) {
 				throw error;
 			}
-			this.name = payload.params.peerMeta ? payload.params.peerMeta.name : undefined
+			if(this.name == "") this.name = payload.params.peerMeta ? payload.params.peerMeta.name : undefined
 			this.events[WalletConnectEvents.SessionRequest](error, payload)
 		})
 		connector.on(WalletConnectEvents.Connect, async (error, payload) =>
 		{
-			this.setDate(new Date())
+			if (error) {
+				throw error;
+			}
+			if(this.date != null) this.setDate(new Date())
 			this.events[WalletConnectEvents.Connect](error, payload)
 		})
 		connector.on(WalletConnectEvents.CallRequest, async (error, payload) =>
