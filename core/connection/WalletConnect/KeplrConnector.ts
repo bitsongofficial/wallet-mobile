@@ -1,7 +1,7 @@
 import { StdSignDoc } from "@cosmjs-rn/amino";
 import { SupportedCoins } from "constants/Coins";
 import { chainIdToChain } from "core/utils/Coin";
-import * as CryptoJS from "react-native-crypto-js";
+import * as CryptoJS from "crypto-js";
 import { WalletConnectBaseEvents, WalletConnectCallback, WalletConnectConnectorV1, WalletConnectOptions, WalletConnectVersionedCallbacks } from "./ConnectorV1";
 
 export interface KeplrEvents extends WalletConnectBaseEvents {
@@ -10,13 +10,14 @@ export interface KeplrEvents extends WalletConnectBaseEvents {
     keplr_sign_amino_wallet_connect_v1: WalletConnectVersionedCallbacks,
 }
 export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
+    static readonly VersionFormatRegExp = /(.+)-([\d]+)/
     private keplrChainsIds: string[] = [] 
     private availableChains: SupportedCoins[] = []
     events: KeplrEvents = {
-        keplr_enable_wallet_connect_v1: this.KeplrEnableWallet,
-        keplr_get_key_wallet_connect_v1: this.KeplrGetKeyWallet,
-        keplr_sign_amino_wallet_connect_v1: this.KeplrSign,
-        session_request: this.SessionRequest,
+        keplr_enable_wallet_connect_v1: this.KeplrEnableWallet.bind(this),
+        keplr_get_key_wallet_connect_v1: this.KeplrGetKeyWallet.bind(this),
+        keplr_sign_amino_wallet_connect_v1: this.KeplrSign.bind(this),
+        session_request: this.SessionRequest.bind(this),
         connect: function (error: Error | null, payload: any): void
         {
             // Not used
@@ -69,24 +70,32 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
 
     async KeplrGetKeyWallet(error: Error | null, payload: any)
     {
-        const chain = payload.params[0]
-        const [pubKey, address] = await Promise.all([this.walletInterface.PubKey(chain), this.walletInterface.Address(chain)])
-
-        this.approve(payload, [{
-			name: this.walletInterface.Name,
-			algo: this.walletInterface.Algorithm(),
-			pubKey: Buffer.from(pubKey).toString("hex"),
-			address: Buffer.from(this.pubKeyToAddress(pubKey)).toString("hex"),
-			bech32Address: address,
-			isNanoLedger: false,
-        }])
+        const chainId = payload.params[0]
+        const chain = chainIdToChain(chainId)
+        if(chain)
+        {
+            const [pubKey, address] = await Promise.all([this.walletInterface.PubKey(chain), this.walletInterface.Address(chain)])
+            const res = {
+                name: this.walletInterface.Name,
+                algo: this.walletInterface.Algorithm(),
+                pubKey: Buffer.from(pubKey).toString("hex"),
+                address: Buffer.from(this.pubKeyToAddress(pubKey)).toString("hex"),
+                bech32Address: address,
+                isNanoLedger: false,
+            }
+            this.approve(payload, [res])
+        }
+        else
+        {
+            this.reject(payload, new Error("chain id invalid"))
+        }
     }
     
     async KeplrSign(error: Error | null, payload: any)
     {
         const [chainId, signer, signDoc, signOptions] = payload.params as [string, string, StdSignDoc, KeplrSignOptions]
 
-        const [identifier, version] = chainId.split("-")
+        const [identifier, version] = chainId.split(KeplrConnector.VersionFormatRegExp)
         const chain = chainIdToChain(identifier)
         if(chain)
         {
@@ -98,6 +107,7 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
                 ])
                 return
             }
+            console.log(signedDoc)
         }
         this.reject(payload, new Error("Chain not supported"))
     }
