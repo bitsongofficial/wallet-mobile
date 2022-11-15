@@ -8,7 +8,7 @@ function ibcTimeout()
 	const timeoutTimestamp = Math.floor(new Date().getTime() / 1000) + 600
 
 	const timeoutTimestampNanoseconds = timeoutTimestamp
-		? Long.fromNumber(timeoutTimestamp).multiply(1_000_000_000)
+		? Long.fromNumber(timeoutTimestamp).multiply(1000000000)
 		: undefined
 	return timeoutTimestampNanoseconds?.toNumber()
 }
@@ -16,7 +16,7 @@ function ibcTimeout()
 export class SendIbc extends CosmosOperation {
 	async Run(data: FromToAmount) {
 		const wallet = await data.from.Signer()
-		const [firstAccount] = await wallet.getAccounts();
+		const [firstAccount] = await wallet.getAccounts()
 		const client = await SigningStargateClient.connectWithSigner(this.coin.RPCEndpoint(), wallet, {
 			gasPrice: GasPrice.fromString(this.coin.gasUnit()),
 		})
