@@ -3,12 +3,12 @@ import WalletConnect from "@walletconnect/client"
 import { IWalletConnectSession, IWalletConnectOptions } from "@walletconnect/types"
 import { SupportedCoins } from "constants/Coins";
 import { Wallet } from "core/types/storing/Generic";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import Config from "react-native-config";
 
 export interface WalletInterface {
 	Address(chain: SupportedCoins): Promise<string>
-	Wallet(chain: SupportedCoins): Wallet
+	Wallet(chain: SupportedCoins): Wallet | undefined
 	get Name(): string
 	Algorithm(chain?: SupportedCoins): string
 	PubKey(chain: SupportedCoins): Promise<Uint8Array>
@@ -85,7 +85,10 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			if (error) {
 				throw error;
 			}
-			if(this.name == "") this.name = payload.params.peerMeta ? payload.params.peerMeta.name : undefined
+			runInAction(() =>
+			{
+				if(this.name == "") this.name = payload.params.peerMeta ? payload.params.peerMeta.name : undefined
+			})
 			this.events[WalletConnectEvents.SessionRequest](error, payload)
 		})
 		connector.on(WalletConnectEvents.Connect, async (error, payload) =>
@@ -93,7 +96,10 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			if (error) {
 				throw error;
 			}
-			if(this.date != null) this.setDate(new Date())
+			runInAction(() =>
+			{
+				if(this.date != null) this.setDate(new Date())
+			})
 			this.events[WalletConnectEvents.Connect](error, payload)
 		})
 		connector.on(WalletConnectEvents.CallRequest, async (error, payload) =>
