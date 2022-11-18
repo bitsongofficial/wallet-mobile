@@ -38,7 +38,7 @@ export default observer<Props>(({ navigation, route }) => {
 	const { t } = useTranslation()
 	const {
 		callback,
-		title = t("ConfirmWithPin"),
+		titleTranslationString = "ConfirmWithPin",
 		errorMax = 3,
 		disableVerification = false,
 		isRandomKeyboard = true,
@@ -148,7 +148,7 @@ export default observer<Props>(({ navigation, route }) => {
 			<View style={styles.container}>
 				{!settings.isAppBlock && (
 					<View style={styles.wrapper}>
-						<Title text={title} style={styles.title} />
+						<Title text={t(titleTranslationString)} style={styles.title} />
 						<Caption style={styles.caption}>
 							{t("AskPinText")}
 						</Caption>
