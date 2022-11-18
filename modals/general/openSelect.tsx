@@ -9,7 +9,7 @@ type Props = {
 	onSelect?(item: any): void
 }
 
-export default async function openSelect(
+export default async function openSelect<T>(
 	{
 		onClose,
 		onDismiss,
@@ -28,7 +28,7 @@ export default async function openSelect(
 		rightExtractor,
 		snapPoints,
 		...props
-	}: Props & SelectProps & BottomSheetProps) {
+	}: Props & SelectProps<T> & BottomSheetProps) {
 	const status = { done: false }
 	const close = () => {
 		Keyboard.dismiss()
