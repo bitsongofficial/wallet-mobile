@@ -19,8 +19,8 @@ class StoreDrivenWalletInterface implements WalletInterface {
 	async Address(chain: SupportedCoins) {
 		return await this.walletStore.address(this.profileId, chain) ?? ""
 	}
-	Wallet(chain: SupportedCoins): Wallet {
-		throw new Error("Method not implemented.");
+	Wallet(chain: SupportedCoins): Wallet | undefined {
+		return this.walletStore.chainWallet(this.profileId, chain)
 	}
 	get Name() {
 		return this.walletStore.name(this.profileId)
@@ -68,14 +68,10 @@ export default class DappConnectionStore {
 
 	constructor(
 		private walletStore: WalletStore,
-		private coinStore: CoinStore,
-		private validatorsStore: ValidatorStore,
-		private proposalsStore: ProposalsStore,
 		private remoteConfigsStore: RemoteConfigsStore,
 		private settingsStore: SettingsStore)
 	{
 		makeAutoObservable(this, {}, { autoBind: true })
-		// AsyncStorageLib.removeItem(session_location)
 	}
 
 	connect(pairString?: string)

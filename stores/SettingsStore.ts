@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx"
 import { ICurrency, ILang } from "screens/Profile/type"
 import { LanguageData, Languages } from "constants/languages"
-import currencies, { Currencies, CurrenciesData } from "constants/currencies"
+import { Currencies, CurrenciesData } from "constants/currencies"
 import { CheckMethod, NotifSettings } from "./type"
 import LocalStorageManager from "./LocalStorageManager"
 import { clearPin, savePin } from "utils/biometrics"

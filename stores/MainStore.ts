@@ -23,9 +23,6 @@ export default class MainStore {
 	proposals = new ProposalsStore(this.configs.remote, this.wallet, this.validators)
 	dapp = new DappConnectionStore(
 		this.wallet,
-		this.coin,
-		this.validators,
-		this.proposals,
 		this.configs.remote,
 		this.settings,
 	)
