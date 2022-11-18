@@ -2,7 +2,11 @@ import { StdSignDoc } from "@cosmjs-rn/amino";
 import { SupportedCoins } from "constants/Coins";
 import { chainIdToChain } from "core/utils/Coin";
 import * as CryptoJS from "crypto-js";
+import openConfirm from "modals/general/openConfirm";
+import { askPin } from "navigation/AskPin";
+import { ListItem } from "components/moleculs"
 import { WalletConnectBaseEvents, WalletConnectCallback, WalletConnectConnectorV1, WalletConnectOptions, WalletConnectVersionedCallbacks } from "./ConnectorV1";
+import { aminoTypePrettyName } from "core/coin/cosmos/operations/utils";
 
 export interface KeplrEvents extends WalletConnectBaseEvents {
     keplr_enable_wallet_connect_v1: WalletConnectVersionedCallbacks,
@@ -74,16 +78,26 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
         const chain = chainIdToChain(chainId)
         if(chain)
         {
-            const [pubKey, address] = await Promise.all([this.walletInterface.PubKey(chain), this.walletInterface.Address(chain)])
-            const res = {
-                name: this.walletInterface.Name,
-                algo: this.walletInterface.Algorithm(),
-                pubKey: Buffer.from(pubKey).toString("hex"),
-                address: Buffer.from(this.pubKeyToAddress(pubKey)).toString("hex"),
-                bech32Address: address,
-                isNanoLedger: false,
-            }
-            this.approve(payload, [res])
+            openConfirm({
+                onConfirm: async () =>
+                {
+                        const [pubKey, address] = await Promise.all([this.walletInterface.PubKey(chain), this.walletInterface.Address(chain)])
+                        const res = {
+                            name: this.walletInterface.Name,
+                            algo: this.walletInterface.Algorithm(),
+                            pubKey: Buffer.from(pubKey).toString("hex"),
+                            address: Buffer.from(this.pubKeyToAddress(pubKey)).toString("hex"),
+                            bech32Address: address,
+                            isNanoLedger: false,
+                        }
+                        this.approve(payload, [res])
+
+                },
+                onDismiss: () =>
+                {
+                    this.reject(payload, new Error("user rejected permission"))
+                }
+            })
         }
         else
         {
@@ -95,19 +109,42 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     {
         const [chainId, signer, signDoc, signOptions] = payload.params as [string, string, StdSignDoc, KeplrSignOptions]
 
-        const [identifier, version] = chainId.split(KeplrConnector.VersionFormatRegExp)
+        const [identifier, version] = chainId.split(KeplrConnector.VersionFormatRegExp)/* 
+        const identifier = chainId
+        const version = 1
+        console.log(chainId, identifier, version) */
         const chain = chainIdToChain(identifier)
         if(chain)
         {
-            const signedDoc = await this.walletInterface.Sign(chain, signDoc, signer)
-            if(signedDoc)
-            {
-                this.approve(payload, [
-                    signedDoc
-                ])
-                return
-            }
-            console.log(signedDoc)
+            openConfirm({
+                children: <>
+                    {
+                        signDoc.msgs.map(msg =>
+                            <ListItem
+                                title={aminoTypePrettyName(msg.type) ?? "Name not found"}
+                                subtitle={msg.type}
+                            />
+                        )
+                    }
+                </>,
+                onConfirm: async () =>
+                {
+                    const signedDoc = await this.walletInterface.Sign(chain, signDoc, signer)
+                    if(signedDoc)
+                    {
+                        this.approve(payload, [
+                            signedDoc
+                        ])
+                        return
+                    }
+                    console.log(signedDoc)
+                },
+                onDismiss: () =>
+                {
+                    this.reject(payload, new Error("user rejected permission"))
+                }
+            })
+
         }
         this.reject(payload, new Error("Chain not supported"))
     }
