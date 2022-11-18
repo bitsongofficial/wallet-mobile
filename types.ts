@@ -59,7 +59,7 @@ export type RootStackParamList = {
 		callback(pin?: string): void
 
 		errorMax?: number
-		title?: string
+		titleTranslationString?: string
 		isRandomKeyboard?: boolean
 		isHiddenCode?: boolean
 		disableVerification?: boolean
