@@ -1,13 +1,10 @@
-import { makeAutoObservable } from "mobx";
-import CoinStore from "./CoinStore";
+import { action, autorun, makeAutoObservable, makeObservable, observable, runInAction, toJS } from "mobx";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
 import { IWalletConnectSession } from "@walletconnect/types"
 import LocalStorageManager from "./LocalStorageManager";
 import SettingsStore from "./SettingsStore";
-import ValidatorStore from "./ValidatorStore";
 import { SupportedCoins } from "constants/Coins";
-import ProposalsStore from "./ProposalsStore";
 import { WalletConnectBaseEvents, WalletConnectConnectorV1, WalletInterface } from "core/connection/WalletConnect/ConnectorV1";
 import { Wallet } from "core/types/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
@@ -99,23 +96,41 @@ export default class DappConnectionStore {
 				uri: pairString,
 				session,
 				fcmToken: this.settingsStore.notifications.enable ? this.remoteConfigsStore.pushNotificationToken : undefined,
-				walletInterface: new StoreDrivenWalletInterface(this.walletStore, profileId)
+				walletInterface: new StoreDrivenWalletInterface(this.walletStore, profileId),
+				name,
+				date,
 			})
 			const oldConnect = connector.events.connect
 			connector.events.connect = (error, payload) =>
 			{
-				this.onConnect()
 				oldConnect(error, payload)
+				this.onConnect()
 			}
 			const oldDisconnect = connector.events.disconnect
 			connector.events.disconnect = (error, payload) =>
 			{
-				this.onDisconnect(connector)
 				oldDisconnect(error, payload)
+				this.onDisconnect(connector)
 			}
-			this.connections.push({
-				profileId,
-				connector
+			runInAction(() =>
+			{
+				
+				this.connections.push(makeObservable({
+					profileId,
+					connector: makeObservable(connector, {
+						name: observable,
+						date: observable,
+						setDate: action,
+						setName: action,
+					}),
+				}, {
+					connector: observable,
+				}))
+			})
+
+			autorun(() =>
+			{
+				console.log(toJS(this.connections).map(c => ({name: c.connector.name, date: c.connector.date})))
 			})
 		}
 		catch(e)
@@ -126,26 +141,31 @@ export default class DappConnectionStore {
 
 	async disconnect(connection: WalletConnectConnectorV1<WalletConnectBaseEvents>)
 	{
+		const connectionIndex = this.connections.findIndex(c => c.connector.connector?.key == connection.connector?.key)
 		try
 		{
 			await connection.connector?.killSession()
 		}
 		catch(e){}
-		const connectionIndex = this.connections.findIndex(c => c.connector == connection)
 		if(connectionIndex >= 0)
 		{
 			this.connections.splice(connectionIndex, 1)
-			if(this.localStorageManager) this.localStorageManager.saveConnections()
+			this.saveConnections()
 		}
 	}
 
 	private onConnect()
 	{
-		if(this.localStorageManager) this.localStorageManager.saveConnections()
+		this.saveConnections()
 	}
 
 	private onDisconnect(connection: WalletConnectConnectorV1<WalletConnectBaseEvents>)
 	{
 		this.disconnect(connection)
+	}
+
+	private saveConnections()
+	{
+		if(this.localStorageManager) this.localStorageManager.saveConnections()
 	}
 }
