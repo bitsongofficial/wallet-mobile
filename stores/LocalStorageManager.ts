@@ -178,6 +178,7 @@ export default class LocalStorageManager
 			{
 				const connections = JSON.parse(storedConnections) as connectionRaw[]
 				connections.forEach(c => {
+					console.log("Restored date", c.date, new Date(c.date))
 					this.dappConnection.restoreConnection(c.profileId, c.name, new Date(c.date), c.session)
 				})
 			}

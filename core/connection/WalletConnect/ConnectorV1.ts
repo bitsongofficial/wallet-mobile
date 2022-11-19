@@ -87,7 +87,8 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			}
 			runInAction(() =>
 			{
-				if(this.name == "") this.name = payload.params.peerMeta ? payload.params.peerMeta.name : undefined
+				const peerMeta = payload.params[0].peerMeta
+				if(this.name == "") this.setName(peerMeta ? peerMeta.name : undefined)
 			})
 			this.events[WalletConnectEvents.SessionRequest](error, payload)
 		})
@@ -98,7 +99,7 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			}
 			runInAction(() =>
 			{
-				if(this.date != null) this.setDate(new Date())
+				if(this.date == null) this.setDate(new Date())
 			})
 			this.events[WalletConnectEvents.Connect](error, payload)
 		})
@@ -127,6 +128,11 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 	setDate(date: Date)
 	{
 		this.date = date
+	}
+
+	setName(name: string)
+	{
+		this.name = name
 	}
 
 	approve(payload: any | null, result: any[])
