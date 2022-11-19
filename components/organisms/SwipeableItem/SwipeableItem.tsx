@@ -62,6 +62,14 @@ export default ({
 		/>
 	)
 
+	useEffect(() =>
+	{
+		return () =>
+		{
+			mapItemsRef.clear()
+		}
+	})
+
 	return (
 		<Swipeable
 			ref={ref}
