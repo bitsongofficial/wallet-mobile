@@ -1,10 +1,15 @@
-import { SupportedCoins } from "constants/Coins"
+import { AlternativeChain } from "core/coin/cosmos/AlternativeChain"
 import { CosmosCoin } from "core/coin/cosmos/CosmosCoin"
 import { CoinClasses } from "core/types/coin/Dictionaries"
 import { fromObjectToMap } from "core/utils/Maps"
 import { makeAutoObservable, runInAction } from "mobx"
 import { mergeMaps } from "../core/utils/Maps"
 
+type AlternateChainOptions = {
+	name: string,
+	rpc: string,
+	lcd: string,
+}
 export default class ChainsStore {
 	private customChains = new Map<string, CosmosCoin> ()
 	constructor() {
@@ -30,8 +35,12 @@ export default class ChainsStore {
 		if(aliasChain) this.customChains.set(name, aliasChain)
 	}
 
-	addAlternateChain(name: string, original: string)
+	addAlternateChain(original: string, alternateChain: AlternateChainOptions)
 	{
-
+		const baseChain = this.chains.get(original)
+		if(baseChain)
+		{
+			this.customChains.set(alternateChain.name, new AlternativeChain(baseChain, alternateChain.rpc, alternateChain.lcd))
+		}
 	}
 }
