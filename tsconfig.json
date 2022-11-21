@@ -4,7 +4,7 @@
 		"jsx": "react-native",
 		"strict": true,
 		"baseUrl": "./",
-		"target": "ES5",
+		"target": "ES6",
 		"paths": {
 			"assets": ["./assets"],
 			"components": ["./components"],
