@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx"
-import { IChainCoinData, ICoin, IRemoteCoinData } from "classes/types"
+import { ICoin } from "classes/types"
 import { CosmosCoin } from "core/coin/cosmos/CosmosCoin"
 import { SupportedCoins } from "constants/Coins"
 import { CoinClasses } from "core/types/coin/Dictionaries"
@@ -8,6 +8,7 @@ import { PublicWallet } from "core/storing/Generic"
 import { Amount } from "core/types/coin/Generic"
 import { fromAmountToCoin, fromDenomToPrice } from "core/utils/Coin"
 import { store } from "stores/Store"
+import { IChainCoinData, IRemoteCoinData } from "./types_new"
 
 export default class CoinCompletedData {
 	Coin: CosmosCoin
