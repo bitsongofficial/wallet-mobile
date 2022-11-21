@@ -10,6 +10,7 @@ import ValidatorStore from "./ValidatorStore"
 import ProposalsStore from "./ProposalsStore"
 import BackgroundTimer from "react-native-background-timer"
 import NotificationsStore from "./NotificationsStore"
+import ChainsStore from "./ChainsStore"
 
 export default class MainStore {
 	auth = null
@@ -17,6 +18,7 @@ export default class MainStore {
 		remote: new RemoteConfigsStore(),
 	}
 	settings = new SettingsStore()
+	chains = new ChainsStore()
 	wallet = new WalletStore(this.settings, this.configs.remote)
 	coin = new CoinStore(this.wallet, this.configs.remote, this.settings)
 	validators = new ValidatorStore(this.configs.remote, this.coin, this.wallet)
