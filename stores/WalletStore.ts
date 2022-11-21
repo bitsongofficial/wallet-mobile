@@ -255,7 +255,10 @@ export default class WalletStore {
   {
     if(!this.loadedFromMemory) return
     if(!this.remoteConfigs.firstLoad) return
-    this.pinAsked = false
+    runInAction(() =>
+    {
+      this.pinAsked = false
+    })
     runInAction(() =>
     {
       this.loading = true
@@ -265,7 +268,10 @@ export default class WalletStore {
       const wallets: ProfileWallets[] = []
       const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
-      this.pinAsked = true
+      runInAction(() =>
+      {
+        this.pinAsked = true
+      })
       globalLoading.open()
       await Promise.all(toJS(this.profiles).map(async (profile, index) =>
       {
