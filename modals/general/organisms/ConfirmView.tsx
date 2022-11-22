@@ -1,4 +1,4 @@
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet'
 import { Button, Title } from 'components/atoms'
 import React, { PropsWithChildren } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,15 +16,15 @@ export default function ConfirmView(props: PropsWithChildren<Props>)
 	const { t } = useTranslation()
 	const {titleTranslationString = "ConfirmViewTitle", onPressConfirm, children} = props
 	return (
-		<View>
+		<BottomSheetView style={styles.container}>
 			<HorizontalWrapper style={styles.verticalMainLayout}>
 				<Title size={20} alignment="center" style={styles.marginBottom}>{t(titleTranslationString)}</Title>
-				<BottomSheetScrollView>
+				<BottomSheetScrollView style={styles.flexShrink}>
 					{children}
 				</BottomSheetScrollView>
 				<Button text={t("Confirm")} textAlignment="center" onPress={onPressConfirm} style={styles.marginTop} />
 			</HorizontalWrapper>
-		</View>
+		</BottomSheetView>
 	)
 }
 
@@ -42,4 +42,10 @@ const styles = StyleSheet.create({
 	marginBottom: {
 		marginBottom: s(20),
 	},
+	flexShrink: {
+		flexShrink: 1,
+	},
+	container: {
+		paddingBottom: s(20),
+	}
 })
