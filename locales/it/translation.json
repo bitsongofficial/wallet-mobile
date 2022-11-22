@@ -53,6 +53,8 @@
 	"Notifications": "Notifiche",
 	"WalletConnect": "Wallet Connect",
 	"KeplrGetKey": "Una DApp che usa keplr vuole sapere il tuo indirizzo",
+	"KeplrGetKeyDescription": "Keplr chiede i tuoi address disponibili per il profilo {{profileName}}",
+	"UnknownKeplrOperation": "Operazione sconosciuta",
 	"PreferencesSection": "Preferenze",
 	"Language": "Lingua",
 	"Currency": "Valuta",
