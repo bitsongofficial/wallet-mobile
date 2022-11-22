@@ -7,12 +7,10 @@ import { Tabs, Recap } from "components/organisms"
 import { SendController } from "../../controllers"
 import { SupportedCoins } from "constants/Coins"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { FOOTER_HEIGHT } from "utils/constants"
-import JSONTree from 'react-native-json-tree'
 import { fromCoinToAmount } from "core/utils/Coin"
-import { COLOR } from "utils"
 import { s } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
+import { JSONTree } from "components/Themed"
 
 type ValueTabs = "Details" | "Data"
 const tabs: ValueTabs[] = ["Details", "Data"]
@@ -74,24 +72,7 @@ export default observer(function SelectReceiver({ controller }: Props) {
 			)}
 			{activeTab === "Data" && (
 				<View style={{overflow: "hidden"}}>
-					<JSONTree data={json} invertTheme={false} theme={{
-						base00: COLOR.Dark2,
-						base01: '#383830',
-						base02: '#49483e',
-						base03: '#75715e',
-						base04: '#a59f85',
-						base05: '#f8f8f2',
-						base06: '#f5f4f1',
-						base07: '#f9f8f5',
-						base08: '#f92672',
-						base09: '#fd971f',
-						base0A: '#f4bf75',
-						base0B: '#a6e22e',
-						base0C: '#a1efe4',
-						base0D: '#66d9ef',
-						base0E: '#ae81ff',
-						base0F: '#cc6633'
-					}} />
+					<JSONTree data={json} />
 				</View>
 			)}
 			{/* <Data
