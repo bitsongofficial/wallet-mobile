@@ -7,6 +7,8 @@ import { askPin } from "navigation/AskPin";
 import { ListItem } from "components/moleculs"
 import { WalletConnectBaseEvents, WalletConnectCallback, WalletConnectConnectorV1, WalletConnectOptions, WalletConnectVersionedCallbacks } from "./ConnectorV1";
 import { aminoTypePrettyName } from "core/coin/cosmos/operations/utils";
+import KeplrConfirmDescription from "modals/walletconnect/keplr/KeplrConfirmDescription";
+import KeplrSignRecap from "modals/walletconnect/keplr/KeplrSignRecap";
 
 export interface KeplrEvents extends WalletConnectBaseEvents {
     keplr_enable_wallet_connect_v1: WalletConnectVersionedCallbacks,
@@ -76,6 +78,7 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     {
         const chainId = payload.params[0]
         const chain = chainIdToChain(chainId)
+        const profileName = this.walletInterface.Name
         if(chain)
         {
             openConfirm({
@@ -96,7 +99,8 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
                 onDismiss: () =>
                 {
                     this.reject(payload, new Error("user rejected permission"))
-                }
+                },
+                children: <KeplrConfirmDescription profile={profileName}></KeplrConfirmDescription>
             })
         }
         else
@@ -117,16 +121,7 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
         if(chain)
         {
             openConfirm({
-                children: <>
-                    {
-                        signDoc.msgs.map(msg =>
-                            <ListItem
-                                title={aminoTypePrettyName(msg.type) ?? "Name not found"}
-                                subtitle={msg.type}
-                            />
-                        )
-                    }
-                </>,
+                children: <KeplrSignRecap messages={[...signDoc.msgs]}></KeplrSignRecap>,
                 onConfirm: async () =>
                 {
                     const signedDoc = await this.walletInterface.Sign(chain, signDoc, signer)
@@ -137,7 +132,6 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
                         ])
                         return
                     }
-                    console.log(signedDoc)
                 },
                 onDismiss: () =>
                 {
@@ -146,6 +140,9 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
             })
 
         }
-        this.reject(payload, new Error("Chain not supported"))
+        else
+        {
+            this.reject(payload, new Error("Chain not supported"))
+        }
     }
 }
