@@ -44,6 +44,7 @@ import trash from "./trash.svg"
 import key from "./key.svg"
 import power from "./power.svg"
 import clock_counter from "./clock_counter.svg"
+import dev from "./dev.svg"
 
 import lock_key_open from "./lock_key_open.svg"
 import password from "./password.svg"
@@ -144,6 +145,7 @@ export default <const>{
 	bell_1,
 	trash,
 	plus,
+	dev,
 
 	kebab,
 
