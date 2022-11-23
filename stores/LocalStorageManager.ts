@@ -28,6 +28,7 @@ const recent_proposal_chains_location = "recent_proposal_chains"
 const blocking_date = "blocking_date"
 
 type connectionRaw = {
+	profileId: string,
 	session: IWalletConnectSession,
 	name: string,
 	date: Date,
@@ -147,12 +148,18 @@ export default class LocalStorageManager
 
 	saveConnections()
 	{
-		const raw = JSON.stringify(this.dappConnection.connections.filter(c => c.connector != null).map(c => (
-		{
-			session: c.connector?.session,
-			date: c.date?.getTime(),
-			name: c.name,
-		})))
+		const raw = JSON.stringify(this.dappConnection.connections.filter(c => c.connector.connector != null).map(c =>
+			{
+				if(c.connector.connector)
+				{
+					return {
+						profileId: c.profileId,
+						session: c.connector.connector.session,
+						date: c.connector.date?.getTime(),
+						name: c.connector.name,
+					}
+				}
+			}))
 		try {
 			AsyncStorageLib.setItem(connections_location, raw)
 		}
@@ -171,7 +178,7 @@ export default class LocalStorageManager
 			{
 				const connections = JSON.parse(storedConnections) as connectionRaw[]
 				connections.forEach(c => {
-					this.dappConnection.connect(undefined, c.session, c.name, new Date(c.date))
+					this.dappConnection.restoreConnection(c.profileId, c.name, new Date(c.date), c.session)
 				})
 			}
 		}

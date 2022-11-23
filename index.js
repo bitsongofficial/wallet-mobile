@@ -1,7 +1,7 @@
 import { registerRootComponent } from 'expo'
 
 import App from './App'
-
+import 'text-encoding'
 import 'intl-pluralrules'
 import './i18n'
 

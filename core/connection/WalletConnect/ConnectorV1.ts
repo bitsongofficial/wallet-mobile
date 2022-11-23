@@ -3,12 +3,12 @@ import WalletConnect from "@walletconnect/client"
 import { IWalletConnectSession, IWalletConnectOptions } from "@walletconnect/types"
 import { SupportedCoins } from "constants/Coins";
 import { Wallet } from "core/types/storing/Generic";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import Config from "react-native-config";
 
 export interface WalletInterface {
 	Address(chain: SupportedCoins): Promise<string>
-	Wallet(chain: SupportedCoins): Wallet
+	Wallet(chain: SupportedCoins): Wallet | undefined
 	get Name(): string
 	Algorithm(chain?: SupportedCoins): string
 	PubKey(chain: SupportedCoins): Promise<Uint8Array>
@@ -19,6 +19,8 @@ export type WalletConnectOptions = {
 	uri?: string,
 	session?: IWalletConnectSession,
 	fcmToken?: string,
+	name?: string,
+	date?: Date,
 	walletInterface: WalletInterface,
 }
 
@@ -42,18 +44,17 @@ export interface WalletConnectBaseEvents extends WalletConnectEventsMap {
 	[WalletConnectEvents.CallRequest]: WalletConnectVersionedCallbacks,
 }
 
-
-
 export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents> {
 	connector: WalletConnect | null = null
 	walletInterface: WalletInterface
 	name: string = ""
-	date: Date = new Date()
+	date: Date | null = null
 	abstract events: E
 	constructor(options: WalletConnectOptions)
 	{
 		this.walletInterface = options.walletInterface
-		makeAutoObservable(this, {}, { autoBind: true })
+		if(options.name) this.name = options.name
+		if(options.date) this.date = options.date
 		const wcOptions: IWalletConnectOptions = 
 		{
 			// Required
@@ -84,12 +85,22 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			if (error) {
 				throw error;
 			}
-			this.name = payload.params.peerMeta ? payload.params.peerMeta.name : undefined
+			runInAction(() =>
+			{
+				const peerMeta = payload.params[0].peerMeta
+				if(this.name == "") this.setName(peerMeta ? peerMeta.name : undefined)
+			})
 			this.events[WalletConnectEvents.SessionRequest](error, payload)
 		})
 		connector.on(WalletConnectEvents.Connect, async (error, payload) =>
 		{
-			this.setDate(new Date())
+			if (error) {
+				throw error;
+			}
+			runInAction(() =>
+			{
+				if(this.date == null) this.setDate(new Date())
+			})
 			this.events[WalletConnectEvents.Connect](error, payload)
 		})
 		connector.on(WalletConnectEvents.CallRequest, async (error, payload) =>
@@ -117,6 +128,11 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 	setDate(date: Date)
 	{
 		this.date = date
+	}
+
+	setName(name: string)
+	{
+		this.name = name
 	}
 
 	approve(payload: any | null, result: any[])

@@ -1,7 +1,6 @@
-import { useCallback, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { ListRenderItem, StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { FlatList, RectButton, Swipeable, TouchableOpacity } from "react-native-gesture-handler"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
@@ -11,38 +10,43 @@ import { Button, Icon2, ThemedGradient } from "components/atoms"
 // import { Header } from "./components/atoms";
 import { COLOR } from "utils"
 import { Circles, Subtitle, Title } from "./components/atoms"
-import { observable } from "mobx"
-import { WalletItem } from "./components/moleculs"
-import { ProfileWallets } from "stores/WalletStore"
-import { WalletConnectCosmosClientV1 } from "core/connection/WalletConnectV1"
+import { observable, toJS } from "mobx"
 import SwipeableItem from "components/organisms/SwipeableItem"
 import { s, vs } from "react-native-size-matters"
 import moment from "moment"
 import { withFullHeight } from "screens/layout/hocs"
 import { t } from "i18next"
+import { DappConnection } from "stores/DappConnectionStore"
+import { WalletConnectBaseEvents, WalletConnectConnectorV1 } from "core/connection/WalletConnect/ConnectorV1"
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">
 
 const WRAPPER = s(34)
 
+type ConnectionsListData = {
+	name: string,
+	date: Date | null,
+	connector: WalletConnectConnectorV1<WalletConnectBaseEvents>,
+}
+
 export default withFullHeight(observer<Props>(function WalletConnect({ navigation }) {
 	const { dapp } = useStore()
 
 	// ------- Wallets ------
-	const connections = dapp.connections
+	const connectors: ConnectionsListData[] = toJS(dapp.connections).map(c => ({name: c.connector.name, date: c.connector.date, connector: c.connector}))
 	const mapItemsRef = useMemo(() => observable.map<string, React.RefObject<Swipeable>>(), [])
 
-	const renderWallet = useCallback<ListRenderItem<WalletConnectCosmosClientV1>>(
+	const renderWallet = useCallback<ListRenderItem<ConnectionsListData>>(
 		({ item, index }) =>
 			item && item.connector ? (
-				<View key={item.connector.session.key} style={{ marginBottom: 13 }}>
+				<View key={index} style={{ marginBottom: 13 }}>
 					<SwipeableItem
 						wrapper={WRAPPER}
-						id={item.connector.session.key}
+						id={index.toString()}
 						date={item.date ? moment(item.date).format("MMM D, LT") : ""}
 						mapItemsRef={mapItemsRef}
-						onPressDelete={() => dapp.disconnect(item)}
-						name={item.name ?? "Unknown"}
+						onPressDelete={() => dapp.disconnect(item.connector)}
+						name={item.name != "" ? item.name : "Unknown"}
 						onPress={() => {}}
 					/>
 				</View>
@@ -74,20 +78,20 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 						title={t("WalletConnect")}
 						onPressScan={navToScanner}
 					/>
-					{connections.length > 0 && (
+					{connectors.length > 0 && (
 						<>
 							<Subtitle style={styles.caption}>Connessioni attive</Subtitle>
 							<FlatList
 								bounces={false}
 								style={styles.flatlist}
 								contentContainerStyle={styles.flatlistContent}
-								data={connections}
+								data={connectors}
 								renderItem={renderWallet}
 							/>
 						</>
 					)}
 					<View style={[styles.wrapper, { flex: 1 }]}>
-						{connections.length === 0 && (
+						{connectors.length === 0 && (
 							<>
 								<Circles style={styles.circles}>
 									<Icon2 name="qr_code" size={70} stroke={COLOR.White} />
@@ -113,7 +117,7 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 			</View>
 		</>
 	)
-}))
+}), false)
 
 type PropsHeader = {
 	onPressBack(): void
