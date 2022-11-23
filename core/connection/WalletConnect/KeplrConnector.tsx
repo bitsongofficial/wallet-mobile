@@ -7,8 +7,11 @@ import { askPin } from "navigation/AskPin";
 import { ListItem } from "components/moleculs"
 import { WalletConnectBaseEvents, WalletConnectCallback, WalletConnectConnectorV1, WalletConnectOptions, WalletConnectVersionedCallbacks } from "./ConnectorV1";
 import { aminoTypePrettyName } from "core/coin/cosmos/operations/utils";
+<<<<<<< HEAD
 import KeplrConfirmDescription from "modals/walletconnect/keplr/KeplrConfirmDescription";
 import KeplrSignRecap from "modals/walletconnect/keplr/KeplrSignRecap";
+=======
+>>>>>>> e486655b9ed5eabafb224cc21ecd14cf13ff373b
 
 export interface KeplrEvents extends WalletConnectBaseEvents {
     keplr_enable_wallet_connect_v1: WalletConnectVersionedCallbacks,
@@ -78,7 +81,10 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     {
         const chainId = payload.params[0]
         const chain = chainIdToChain(chainId)
+<<<<<<< HEAD
         const profileName = this.walletInterface.Name
+=======
+>>>>>>> e486655b9ed5eabafb224cc21ecd14cf13ff373b
         if(chain)
         {
             openConfirm({

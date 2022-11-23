@@ -1,7 +1,6 @@
 import { InteractionManager, Keyboard } from "react-native"
-import { gbs } from "modals"
 import ConfirmView from "./organisms/ConfirmView"
-import { Button, Title } from "components/atoms"
+import { gbs } from "modals"
 
 type Props = {
 	titleTranslationString?: string,
