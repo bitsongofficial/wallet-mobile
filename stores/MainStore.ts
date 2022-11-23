@@ -18,13 +18,14 @@ export default class MainStore {
 		remote: new RemoteConfigsStore(),
 	}
 	settings = new SettingsStore()
-	chains = new ChainsStore()
-	wallet = new WalletStore(this.settings, this.configs.remote)
-	coin = new CoinStore(this.wallet, this.configs.remote, this.settings)
+	chains = new ChainsStore(this.settings, this.configs.remote)
+	wallet = new WalletStore(this.chains, this.settings, this.configs.remote)
+	coin = new CoinStore(this.wallet, this.chains, this.configs.remote, this.settings)
 	validators = new ValidatorStore(this.configs.remote, this.coin, this.wallet)
 	proposals = new ProposalsStore(this.configs.remote, this.wallet, this.validators)
 	dapp = new DappConnectionStore(
 		this.wallet,
+		this.chains,
 		this.configs.remote,
 		this.settings,
 	)

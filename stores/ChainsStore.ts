@@ -4,6 +4,8 @@ import { CoinClasses } from "core/types/coin/Dictionaries"
 import { fromObjectToMap } from "core/utils/Maps"
 import { makeAutoObservable, runInAction } from "mobx"
 import { mergeMaps } from "../core/utils/Maps"
+import RemoteConfigsStore from "./RemoteConfigsStore"
+import SettingsStore from "./SettingsStore"
 
 type AlternateChainOptions = {
 	name: string,
@@ -12,7 +14,7 @@ type AlternateChainOptions = {
 }
 export default class ChainsStore {
 	private customChains = new Map<string, CosmosCoin> ()
-	constructor() {
+	constructor(private settingsStore: SettingsStore, private remoteStore: RemoteConfigsStore) {
 		makeAutoObservable(this, {}, { autoBind: true })
 		runInAction(() =>
 		{
@@ -42,5 +44,20 @@ export default class ChainsStore {
 		{
 			this.customChains.set(alternateChain.name, new AlternativeChain(baseChain, alternateChain.rpc, alternateChain.lcd))
 		}
+	}
+
+	get enabledCoins()
+	{
+		return this.remoteStore.enabledCoins.filter(ec =>
+			{
+				if(this.settingsStore.testnet)
+				{
+					return ec.indexOf("testnet") > -1
+				}
+				else
+				{
+					return ec.indexOf("testnet") < 0
+				}
+			})
 	}
 }
