@@ -283,7 +283,8 @@ export default class WalletStore {
             const store = new AskPinMnemonicStore(profile.data.mnemonicPath, askPin)
             store.Unlock(pin)
             const addressesWaitings: Promise<string>[] = []
-            for(const chain of this.chainsStore.enabledCoins)
+            const enabledCoins = this.remoteConfigs.enabledCoins
+            for(const chain of enabledCoins)
             {
               const wallet = CosmosWalletGenerator.CosmosWalletFromChain({
                 chain,

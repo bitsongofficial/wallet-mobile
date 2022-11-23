@@ -75,7 +75,8 @@ export default class CoinStore {
 		const balanceAwaits:Promise<any>[] = [] 
 		const infos:ICoin[] = [] 
 		const waitings: Promise<boolean>[] = []
-		for(const chain of this.chains.enabledCoins)
+		const enabledChains =this.chains.enabledCoins
+		for(const chain of enabledChains)
 		{
 			const coin = CoinClasses[chain]
 			const info = Object.assign({}, mock[chain])
@@ -87,14 +88,22 @@ export default class CoinStore {
 					waitings.push((async () =>
 					{
 						const profile = this.walletStore.activeWallet
-						info.address = await profile?.wallets[chain].Address()
-						info._id = coin.denom()
-						info.denom = coin.denom()
-						balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
-							wallet: new PublicWallet(info.address)
-						}))
-						infos.push(info)
-						return true
+						if(profile != null)
+						{
+							const chainWallet = profile.wallets[chain]
+							if(chainWallet)
+							{
+								info.address = await chainWallet.Address()
+								info._id = coin.denom()
+								info.denom = coin.denom()
+								balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
+									wallet: new PublicWallet(info.address)
+								}))
+								infos.push(info)
+								return true
+							}
+						}
+						return false
 					})())
 				}
 			}

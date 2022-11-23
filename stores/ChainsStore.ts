@@ -48,9 +48,10 @@ export default class ChainsStore {
 
 	get enabledCoins()
 	{
+		const testnet = this.settingsStore.testnet
 		return this.remoteStore.enabledCoins.filter(ec =>
 			{
-				if(this.settingsStore.testnet)
+				if(testnet)
 				{
 					return ec.indexOf("testnet") > -1
 				}
