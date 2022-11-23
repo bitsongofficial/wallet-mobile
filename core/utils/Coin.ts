@@ -1,10 +1,10 @@
 import { SupportedCoins } from "constants/Coins"
-import { ChainRegistryNames, CoinClasses } from "core/types/coin/Dictionaries"
+import { ChainIds, ChainRegistryNames, CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 import { assets, chains, ibc } from 'chain-registry'
 import { Asset } from '@chain-registry/types'
 import { getIbcAssets } from "@chain-registry/utils"
-import { CoingeckoPrices, Prices } from "core/types/rest/coingecko"
+import { Prices } from "core/types/rest/coingecko"
 
 const ibcPrefix = "ibc/"
 
@@ -134,16 +134,8 @@ function resolveCoin(coin: SupportedCoins)
 
 export function chainIdToChain(chainId: string)
 {
-	const chainRegistryInfo = chains.find((c: any) =>
-	{
-		return c.chain_id == chainId
-	})
-	if(chainRegistryInfo)
-	{
-		const chainRegistryName = chainRegistryInfo.chain_name
-		const chainEntry = Object.entries(ChainRegistryNames).find(e => e[1] == chainRegistryName)
-		if(chainEntry) return chainEntry[0] as SupportedCoins
-	}
+	const entry = Object.entries(ChainIds).find(ci => ci[1] == chainId)
+	if(entry) return entry[0] as SupportedCoins
 	return undefined
 }
 

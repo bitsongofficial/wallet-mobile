@@ -34,6 +34,9 @@ export default class ValidatorStore {
 		[SupportedCoins.BITSONG]: 0,
 		[SupportedCoins.BITSONG118]: 0,
 		[SupportedCoins.OSMOSIS]: 0,
+		[SupportedCoins.BITSONG_TESTNET]: 0,
+		[SupportedCoins.BITSONG118_TESTNET]: 0,
+		[SupportedCoins.OSMOSIS_TESTNET]: 0,
 	}
 
 	private aprRatio: SupportedCoinsMap = {}
