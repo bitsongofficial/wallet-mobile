@@ -98,14 +98,14 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
                 },
                 onDismiss: () =>
                 {
-                    this.reject(payload, new Error("user rejected permission"))
+                    this.reject(payload, new Error("User rejected permission"))
                 },
                 children: <KeplrConfirmDescription profile={profileName}></KeplrConfirmDescription>
             })
         }
         else
         {
-            this.reject(payload, new Error("chain id invalid"))
+            this.reject(payload, new Error("Chain id invalid"))
         }
     }
     
@@ -117,7 +117,7 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
         const identifier = chainId
         const version = 1
         console.log(chainId, identifier, version) */
-        const chain = chainIdToChain(identifier)
+        const chain = chainIdToChain(chainId)
         if(chain)
         {
             openConfirm({
@@ -135,7 +135,7 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
                 },
                 onDismiss: () =>
                 {
-                    this.reject(payload, new Error("user rejected permission"))
+                    this.reject(payload, new Error("User rejected permission"))
                 }
             })
 
