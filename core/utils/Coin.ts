@@ -1,10 +1,11 @@
-import { SupportedCoins } from "constants/Coins"
+import { SupportedCoins, SupportedCoinsMap } from "constants/Coins"
 import { ChainIds, ChainRegistryNames, CoinClasses } from "core/types/coin/Dictionaries"
 import { Amount, Denom } from "core/types/coin/Generic"
 import { assets, chains, ibc } from 'chain-registry'
 import { Asset } from '@chain-registry/types'
 import { getIbcAssets } from "@chain-registry/utils"
 import { Prices } from "core/types/rest/coingecko"
+import { Wallet } from "core/types/storing/Generic"
 
 const ibcPrefix = "ibc/"
 
@@ -218,4 +219,11 @@ export function getAssetDenomUnits(asset: string | SupportedCoins)
 export function getDenomExponent(denom: string | Denom | SupportedCoins)
 {
 	return getAssetDenomUnits(denom)?.find(du => du.denom == denom)?.exponent
+}
+
+export function firstAvailableWallet(wallets: SupportedCoinsMap<Wallet>)
+{
+	const walletItems = Object.values(wallets)
+	if(walletItems.length > 0) return walletItems[0]
+	return undefined
 }
