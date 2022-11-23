@@ -132,6 +132,21 @@ function resolveCoin(coin: SupportedCoins)
 	})
 }
 
+export function chainIdToChain(chainId: string)
+{
+	const chainRegistryInfo = chains.find((c: any) =>
+	{
+		return c.chain_id == chainId
+	})
+	if(chainRegistryInfo)
+	{
+		const chainRegistryName = chainRegistryInfo.chain_name
+		const chainEntry = Object.entries(ChainRegistryNames).find(e => e[1] == chainRegistryName)
+		if(chainEntry) return chainEntry[0] as SupportedCoins
+	}
+	return undefined
+}
+
 export function getCoinGasUnit(coin: SupportedCoins)
 {
 	const c = resolveCoin(coin)

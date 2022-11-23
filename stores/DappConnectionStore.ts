@@ -20,6 +20,44 @@ import { formatNumber } from "utils/numbers";
 import ProposalsStore from "./ProposalsStore";
 import { openDeposit, openVoteRecap } from "modals/proposal";
 import { DepositController } from "modals/proposal/components/templates";
+import { WalletInterface } from "core/connection/WalletConnect/ConnectorV1";
+import { Wallet } from "core/types/storing/Generic";
+import { CosmosWallet } from "core/storing/Wallet";
+import { Secp256k1HdWallet, StdSignDoc } from "@cosmjs-rn/amino";
+
+class storeDrivenWalletInterface implements WalletInterface {
+	constructor(private walletStore: WalletStore, private profileId: string) {}
+	async Address(chain: SupportedCoins) {
+		return await this.walletStore.address(this.profileId, chain) ?? ""
+	}
+	Wallet(chain: SupportedCoins): Wallet {
+		throw new Error("Method not implemented.");
+	}
+	get Name() {
+		return this.walletStore.name(this.profileId)
+	}
+	Algorithm(chain: SupportedCoins | undefined) {
+		return "secp256k1"
+	}
+	async PubKey(chain: SupportedCoins) {
+		const key = await this.walletStore.chainWallet(this.profileId, chain)?.PubKey()
+		return key ?? new Uint8Array()
+	}
+	async Sign(chain: SupportedCoins, signDoc: StdSignDoc, signerAddress?: string) {
+		try
+		{
+			const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
+			const [address, signer] = await Promise.all([wallet.Address(), wallet.AminoSigner()])
+			return await signer.signAmino(signerAddress ?? address, signDoc)
+		}
+		catch(e)
+		{
+			console.error("Catched", e)
+		}
+
+		return undefined
+	}
+}
 
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
