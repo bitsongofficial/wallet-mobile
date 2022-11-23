@@ -1,9 +1,8 @@
-import { View, Text, GestureResponderEvent, BackHandler } from 'react-native'
-import React, { useEffect, useMemo } from 'react'
+import { View, Text, GestureResponderEvent, BackHandler, NativeEventSubscription, TouchableOpacity } from 'react-native'
+import { useCallback, useEffect, useMemo } from 'react'
 import { AminoMsg } from '@cosmjs-rn/amino'
 import KeplrMessageItem from './KeplrMessageItem'
 import { useState } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import KeplrMessageDetails from './KeplrMessageDetails'
 
 type Props = {
@@ -12,29 +11,38 @@ type Props = {
 
 export default function KeplrSignRecap({messages}: Props) {
 	const [activeMessage, setActiveMessage] = useState<number>()
-	const messagesElements = useMemo(() => messages.map((msg, i) =>
-		<TouchableOpacity onPress={() => setActiveMessage(i)}>
-			<KeplrMessageItem key={i} msg={msg}></KeplrMessageItem>
-		</TouchableOpacity>
-	), [messages])
-	const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-		if(activeMessage) {
-			setActiveMessage(undefined)
-			return true
-		}
-		return false
-	})
 	useEffect(() =>
 	{
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+			if(activeMessage !== undefined) {
+				setActiveMessage(undefined)
+				return true
+			}
+			return false
+		})
 		return () =>
 		{
-			backHandler.remove()
+			if(backHandler) backHandler.remove()
 		}
-	}, [])
+	}, [activeMessage])
+
+	const messagesElements = useMemo(() => messages.map((msg, i) =>
+		{
+			const onPress = () =>
+			{
+				setActiveMessage(i)
+			}
+			return (
+				<TouchableOpacity key={i} onPress={onPress}>
+					<KeplrMessageItem msg={msg}></KeplrMessageItem>
+				</TouchableOpacity>
+			)
+		}
+	), [messages])
 	return (
 		<View>
 			{activeMessage == undefined && messagesElements}
-			{activeMessage != undefined && <KeplrMessageDetails msg={messages[activeMessage]}></KeplrMessageDetails>}
+			{activeMessage != undefined && <KeplrMessageDetails goBack={() => {setActiveMessage(undefined)}} msg={messages[activeMessage]}></KeplrMessageDetails>}
 		</View>
 	)
 }
