@@ -15,7 +15,7 @@ type SwitchProps = {
 export default ({ onPress, active = false, gradient, disabled = false }: SwitchProps) => {
   const activeStyle = useSpring({ left: active ? 31 : 4 });
 
-  const Background = gradient ? ThemedGradient : View;
+  const Background = (gradient && active) ? ThemedGradient : View;
 
   // isActive;
 
@@ -23,7 +23,7 @@ export default ({ onPress, active = false, gradient, disabled = false }: SwitchP
   return (
     <BaseButton onPress={onPress} enabled={!disabled}>
       <View style={[styles.container, !(gradient && active) && styles.background]}>
-        <Background style={{ flex: 1 }}>
+        <Background style={[{ flex: 1 }, !active && {backgroundColor: COLOR.Marengo}]}>
           <animated.View style={[styles.dot, activeStyle]}>
             <></>
           </animated.View>

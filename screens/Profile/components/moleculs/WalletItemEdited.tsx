@@ -6,6 +6,8 @@ import { Icon2, IconName, ThemedGradient } from "components/atoms";
 import { SwipeActions } from "../atoms";
 import { ProfileWallets } from "stores/WalletStore";
 import { WalletTypes } from "core/types/storing/Generic";
+import { firstAvailableWallet } from "core/utils/Coin";
+import { CosmosWallet } from "core/storing/Wallet";
 
 type Props = {
   value: ProfileWallets;
@@ -41,7 +43,11 @@ export default ({
     () =>
       mapItemsRef.forEach(
         async (ref, key) =>
-          await key.wallets.btsg.Address() !== await value.wallets.btsg.Address() && ref.current?.close()
+        {
+          const kw = firstAvailableWallet(key.wallets) as CosmosWallet
+          const vw = firstAvailableWallet(value.wallets) as CosmosWallet
+          return (await kw.Address() !== await vw.Address() && ref.current?.close())
+        }
       ),
     [value, mapItemsRef]
   );

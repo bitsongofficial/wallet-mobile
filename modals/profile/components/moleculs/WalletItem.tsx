@@ -5,6 +5,8 @@ import { COLOR, hexAlpha } from "utils";
 import { Icon2 } from "components/atoms";
 import { SwipeActions } from "../atoms";
 import { ProfileWallets } from "stores/WalletStore";
+import { firstAvailableWallet } from "core/utils/Coin";
+import { CosmosWallet } from "core/storing/Wallet";
 
 type Props = {
   value: ProfileWallets;
@@ -33,8 +35,12 @@ export default ({
   const closeOther = useCallback(
     () =>
       mapItemsRef.forEach(
-        (ref, key) =>
-          key.wallets.btsg?.Address() !== value.wallets.btsg?.Address() && ref.current?.close()
+        async (ref, key) =>
+          {
+            const kw = firstAvailableWallet(key.wallets) as CosmosWallet
+            const vw = firstAvailableWallet(value.wallets) as CosmosWallet
+            return (await kw?.Address() !== await vw?.Address() && ref.current?.close())
+          }
       ),
     [value, mapItemsRef]
   );

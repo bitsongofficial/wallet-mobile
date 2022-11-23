@@ -76,7 +76,9 @@ export default withFullHeight(observer<Props>(function MainScreen({ navigation }
 		if (settings.theme == "light") settings.setTheme("dark")
 		else settings.setTheme("light")
 	}, [])
-
+	const toggleTestnet = useCallback(() => {
+		settings.setTestnet(!settings.testnet)
+	}, [])
 	const openCurrencyApp = useCallback(() => {}, [])
 	const openFAQ = useCallback(() => {
 		Linking.openURL(FAQ_URL)
@@ -204,6 +206,19 @@ export default withFullHeight(observer<Props>(function MainScreen({ navigation }
 												active={settings.theme == "dark"}
 												onPress={toggleNightMode}
 												disabled={true}
+												gradient={true}
+											/>
+										}
+									/>
+									<ListButton
+										text={t("Testnet")}
+										onPress={toggleTestnet}
+										icon="dev"
+										style={styles.listButton}
+										Right={
+											<Switch
+												active={settings.testnet}
+												onPress={toggleTestnet}
 												gradient={true}
 											/>
 										}

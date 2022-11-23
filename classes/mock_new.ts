@@ -42,4 +42,7 @@ export default {
 	btsg,
 	btsg118,
 	osmo,
+	btsg_testnet: btsg,
+	btsg118_testnet: btsg118,
+	osmo_testnet: osmo,
 }

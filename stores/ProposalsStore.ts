@@ -29,6 +29,9 @@ export default class ProposalsStore {
 		[SupportedCoins.BITSONG]: 0,
 		[SupportedCoins.BITSONG118]: 0,
 		[SupportedCoins.OSMOSIS]: 0,
+		[SupportedCoins.BITSONG_TESTNET]: 0,
+		[SupportedCoins.BITSONG118_TESTNET]: 0,
+		[SupportedCoins.OSMOSIS_TESTNET]: 0,
 	}
 	minDeposits: SupportedCoinsFullMap<Amount> = {
 		[SupportedCoins.BITSONG]: {
@@ -40,6 +43,18 @@ export default class ProposalsStore {
 			amount: "0",
 		},
 		[SupportedCoins.OSMOSIS]: {
+			denom: Denom.UOSMO,
+			amount: "0",
+		},
+		[SupportedCoins.BITSONG_TESTNET]: {
+			denom: Denom.UBTSG,
+			amount: "0",
+		},
+		[SupportedCoins.BITSONG118_TESTNET]: {
+			denom: Denom.UBTSG,
+			amount: "0",
+		},
+		[SupportedCoins.OSMOSIS_TESTNET]: {
 			denom: Denom.UOSMO,
 			amount: "0",
 		},

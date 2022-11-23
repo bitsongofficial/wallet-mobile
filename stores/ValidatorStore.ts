@@ -1,4 +1,5 @@
 import { SupportedCoins, SupportedCoinsFullMap, SupportedCoinsMap } from "constants/Coins"
+import { CosmosWallet } from "core/storing/Wallet"
 import { ClaimData } from "core/types/coin/cosmos/ClaimData"
 import { DelegateData } from "core/types/coin/cosmos/DelegateData"
 import { DelegationsData } from "core/types/coin/cosmos/DelegationsData"
@@ -33,6 +34,9 @@ export default class ValidatorStore {
 		[SupportedCoins.BITSONG]: 0,
 		[SupportedCoins.BITSONG118]: 0,
 		[SupportedCoins.OSMOSIS]: 0,
+		[SupportedCoins.BITSONG_TESTNET]: 0,
+		[SupportedCoins.BITSONG118_TESTNET]: 0,
+		[SupportedCoins.OSMOSIS_TESTNET]: 0,
 	}
 
 	private aprRatio: SupportedCoinsMap = {}
@@ -309,17 +313,21 @@ export default class ValidatorStore {
 		if (activeWallet && validator) {
 			const chain = validator.chain ?? SupportedCoins.BITSONG
 			const coin = CoinClasses[chain]
-			const delegateData: DelegateData = {
-				delegator: activeWallet.wallets[chain],
-				validator,
-				amount: {
-					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
-					denom: coin.denom(),
-				},
+			const wallet = activeWallet.wallets[chain] as CosmosWallet
+			if(wallet)
+			{
+				const delegateData: DelegateData = {
+					delegator: wallet,
+					validator,
+					amount: {
+						amount: (amount * convertRateFromDenom(coin.denom())).toString(),
+						denom: coin.denom(),
+					},
+				}
+				const res = await coin.Do(CoinOperationEnum.Delegate, delegateData)
+				this.refreshData()
+				return res
 			}
-			const res = await coin.Do(CoinOperationEnum.Delegate, delegateData)
-			this.refreshData()
-			return res
 		}
 
 		return false
@@ -330,18 +338,22 @@ export default class ValidatorStore {
 		if (activeWallet && validator && newValidator) {
 			const chain = validator.chain ?? SupportedCoins.BITSONG
 			const coin = CoinClasses[chain]
-			const delegateData: RedelegateData = {
-				delegator: activeWallet.wallets[chain],
-				validator,
-				newValidator,
-				amount: {
-					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
-					denom: coin.denom(),
-				},
+			const wallet = activeWallet.wallets[chain] as CosmosWallet
+			if(wallet != undefined)
+			{
+				const delegateData: RedelegateData = {
+					delegator: wallet,
+					validator,
+					newValidator,
+					amount: {
+						amount: (amount * convertRateFromDenom(coin.denom())).toString(),
+						denom: coin.denom(),
+					},
+				}
+				const res = await await coin.Do(CoinOperationEnum.Redelegate, delegateData)
+				if (res) this.refreshData()
+				return res
 			}
-			const res = await await coin.Do(CoinOperationEnum.Redelegate, delegateData)
-			if (res) this.refreshData()
-			return res
 		}
 		return false
 	}
@@ -351,17 +363,21 @@ export default class ValidatorStore {
 		if (activeWallet && validator) {
 			const chain = validator.chain ?? SupportedCoins.BITSONG
 			const coin = CoinClasses[chain]
-			const delegateData: DelegateData = {
-				delegator: activeWallet.wallets[chain],
-				validator,
-				amount: {
-					amount: (amount * convertRateFromDenom(coin.denom())).toString(),
-					denom: coin.denom(),
-				},
+			const wallet = activeWallet.wallets[chain] as CosmosWallet
+			if(wallet != undefined)
+			{
+				const delegateData: DelegateData = {
+					delegator: wallet,
+					validator,
+					amount: {
+						amount: (amount * convertRateFromDenom(coin.denom())).toString(),
+						denom: coin.denom(),
+					},
+				}
+				const res = await coin.Do(CoinOperationEnum.Undelegate, delegateData)
+				if (res) this.refreshData()
+				return res
 			}
-			const res = await coin.Do(CoinOperationEnum.Undelegate, delegateData)
-			if (res) this.refreshData()
-			return res
 		}
 		return false
 	}
