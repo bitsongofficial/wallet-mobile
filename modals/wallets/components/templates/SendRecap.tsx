@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetScrollView, BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet"
-import { useStore } from "hooks"
+import { useStore, useTheme } from "hooks"
 import { Tabs, Recap } from "components/organisms"
 import { SendController } from "../../controllers"
 import { SupportedCoins } from "constants/Coins"
@@ -10,7 +10,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { fromCoinToAmount } from "core/utils/Coin"
 import { s } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
-import { JSONTree } from "components/Themed"
+import JSONTree from "react-native-json-tree"
+import { COLOR } from "utils"
 
 type ValueTabs = "Details" | "Data"
 const tabs: ValueTabs[] = ["Details", "Data"]
@@ -26,6 +27,7 @@ export default observer(function SelectReceiver({ controller }: Props) {
 	const [activeTab, setActiveTab] = useState<ValueTabs>("Details")
 	const scrollview = useRef<BottomSheetScrollViewMethods>(null)
 	const insets = useSafeAreaInsets()
+	const theme = useTheme()
 
 	const [json, setJson] = useState<any>({})
 
@@ -72,7 +74,7 @@ export default observer(function SelectReceiver({ controller }: Props) {
 			)}
 			{activeTab === "Data" && (
 				<View style={{overflow: "hidden"}}>
-					<JSONTree data={json} />
+					<JSONTree data={json} invertTheme={false} theme={theme.jsonTheme}/>
 				</View>
 			)}
 			{/* <Data
