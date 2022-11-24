@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { Pin } from "classes"
 import { COLOR } from "utils"
 import { useTheme } from "hooks"
-import { s } from "react-native-size-matters"
+import { s, vs } from "react-native-size-matters"
 
 type Props = {
 	value?: Pin["value"]
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 		fontFamily: "CircularStd",
 		fontStyle: "normal",
 		fontWeight: "500",
-		fontSize: s(40),
+		fontSize: vs(30),
 	},
 	placeholder: {
 		width: s(6),
