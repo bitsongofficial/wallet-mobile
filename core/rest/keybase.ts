@@ -8,7 +8,7 @@ export const keybaseAPI = axios.create({
 		'Content-Type': 'application/json',
 	},
 	responseType: 'json',
-	baseURL: Config.KEYBASE_URL + (Config.KEYBASE_URL[Config.KEYBASE_URL.length-1] == "/" ? "" : "/") + "_/api/1.0/"
+	baseURL: Config.KEYBASE_URL ? (Config.KEYBASE_URL + (Config.KEYBASE_URL[Config.KEYBASE_URL.length-1] == "/" ? "" : "/") + "_/api/1.0/") : ""
 })
 export async function validatorIdentity(identity: string)
 {

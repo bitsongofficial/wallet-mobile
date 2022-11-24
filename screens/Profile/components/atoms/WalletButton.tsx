@@ -7,6 +7,7 @@ import { ProfileWallets } from "stores/WalletStore"
 import { WalletTypes } from "core/types/storing/Generic"
 import { s } from "react-native-size-matters"
 import { trimAddress } from "core/utils/Address"
+import { firstAvailableWallet } from "core/utils/Coin"
 
 type Props = {
 	wallet: ProfileWallets | null
@@ -18,11 +19,15 @@ export default ({ onPress, wallet, style }: Props) => {
 	const handlePress = useCallback(() => onPress(wallet), [onPress, wallet])
 	const [address, setAddress] = useState("")
 	useEffect(() => {
-		wallet?.wallets.btsg
-			//
-			.Address()
-			.then(trimAddress)
-			.then(setAddress)
+		if(wallet)
+		{
+			const availableWalelt = firstAvailableWallet(wallet.wallets)
+			if(availableWalelt) availableWalelt
+				.Address()
+				.then(trimAddress)
+				.then(setAddress)
+
+		}
 	})
 	return (
 		<RectButton onPress={handlePress} style={style}>

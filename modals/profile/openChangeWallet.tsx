@@ -1,4 +1,6 @@
 import { BottomSheetProps } from "@gorhom/bottom-sheet"
+import { CosmosWallet } from "core/storing/Wallet"
+import { firstAvailableWallet } from "core/utils/Coin"
 import { gbs } from "modals"
 import { Dimensions, Keyboard } from "react-native"
 import { vs } from "react-native-size-matters"
@@ -37,10 +39,14 @@ export default async function openChangeAvatar({ props, onClose }: Options) {
 	const showMnemonic = async () => {
 		const edited = controller.edited
 		if (edited) {
-			close()
-			controller.setPhrase((await edited.wallets.btsg.Mnemonic()).split(" "))
-			controller.steps.goTo("View Mnemonic Seed")
-			open()
+			const wallet = firstAvailableWallet(edited.wallets) as CosmosWallet
+			if(wallet)
+			{
+				close()
+				controller.setPhrase((await wallet.Mnemonic()).split(" "))
+				controller.steps.goTo("View Mnemonic Seed")
+				open()
+			}
 		}
 	}
 

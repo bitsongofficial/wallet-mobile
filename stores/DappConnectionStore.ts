@@ -10,6 +10,7 @@ import { Wallet } from "core/types/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
 import { KeplrConnector } from "core/connection/WalletConnect/KeplrConnector";
 import { StdSignDoc } from "@cosmjs-rn/amino";
+import ChainsStore from "./ChainsStore";
 
 class StoreDrivenWalletInterface implements WalletInterface {
 	constructor(private walletStore: WalletStore, private profileId: string) {}
@@ -65,6 +66,7 @@ export default class DappConnectionStore {
 
 	constructor(
 		private walletStore: WalletStore,
+		private chainsStore: ChainsStore,
 		private remoteConfigsStore: RemoteConfigsStore,
 		private settingsStore: SettingsStore)
 	{
@@ -92,7 +94,7 @@ export default class DappConnectionStore {
 	{
 		try
 		{
-			const connector = new KeplrConnector(this.remoteConfigsStore.enabledCoins, {
+			const connector = new KeplrConnector(this.chainsStore.enabledCoins, {
 				uri: pairString,
 				session,
 				fcmToken: this.settingsStore.notifications.enable ? this.remoteConfigsStore.pushNotificationToken : undefined,

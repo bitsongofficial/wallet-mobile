@@ -22,7 +22,7 @@ export default observer(({ timer, style }: Props) => {
 
 	return (
 		<View style={[styles.container, style]}>
-			<Image source={require("assets/images/lock.png")} style={styles.icon} />
+			<Image source={require("assets/images/error.png")} style={styles.icon} />
 			<Title style={styles.title}>{t("AppBlocked")}</Title>
 			<Caption style={styles.caption}>{t("TooManyPinAttempts")}</Caption>
 			<View style={styles.timerContainer}>

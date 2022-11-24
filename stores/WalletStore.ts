@@ -17,6 +17,7 @@ import { navigate } from "navigation/utils";
 import { isPinSaved } from "utils/biometrics";
 import { fromPrefixToCoin } from "core/utils/Coin";
 import { globalLoading } from "modals";
+import ChainsStore from "./ChainsStore";
 
 export const cosmos_mnemonic_prefix = "mnemonic_"
 
@@ -54,7 +55,7 @@ export default class WalletStore {
 
   private setUpWalletsHandler?: IReactionDisposer
 
-  constructor(private settings: SettingsStore, private remoteConfigs: RemoteConfigsStore) {
+  constructor(private chainsStore: ChainsStore, private settings: SettingsStore, private remoteConfigs: RemoteConfigsStore) {
     makeAutoObservable(this, {}, { autoBind: true })
 
     this.setUpWalletsHandler = reaction(
@@ -255,7 +256,10 @@ export default class WalletStore {
   {
     if(!this.loadedFromMemory) return
     if(!this.remoteConfigs.firstLoad) return
-    this.pinAsked = false
+    runInAction(() =>
+    {
+      this.pinAsked = false
+    })
     runInAction(() =>
     {
       this.loading = true
@@ -265,7 +269,10 @@ export default class WalletStore {
       const wallets: ProfileWallets[] = []
       const pin = this.walletSetUpPin ?? await askPin()
       this.walletSetUpPin = undefined
-      this.pinAsked = true
+      runInAction(() =>
+      {
+        this.pinAsked = true
+      })
       globalLoading.open()
       await Promise.all(toJS(this.profiles).map(async (profile, index) =>
       {
@@ -276,7 +283,8 @@ export default class WalletStore {
             const store = new AskPinMnemonicStore(profile.data.mnemonicPath, askPin)
             store.Unlock(pin)
             const addressesWaitings: Promise<string>[] = []
-            for(const chain of this.remoteConfigs.enabledCoins)
+            const enabledCoins = this.remoteConfigs.enabledCoins
+            for(const chain of enabledCoins)
             {
               const wallet = CosmosWalletGenerator.CosmosWalletFromChain({
                 chain,

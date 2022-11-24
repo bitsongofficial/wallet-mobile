@@ -19,6 +19,7 @@ import { isValidAddress } from "core/utils/Address";
 import { getSendMessage } from "core/coin/cosmos/operations/Send";
 import { globalLoading } from "modals";
 import { FromToAmountIbc } from "core/types/coin/cosmos/FromToAmountIbc";
+import ChainsStore from "./ChainsStore";
 
 const maxRecentRecipients = 10
 
@@ -39,7 +40,7 @@ export default class CoinStore {
 		balance: null,
 		send: null,
 	}
-	constructor(private walletStore: WalletStore, private remoteConfigs: RemoteConfigsStore, private settingsStore: SettingsStore) {
+	constructor(private walletStore: WalletStore, private chains: ChainsStore, private remoteConfigs: RemoteConfigsStore, private settingsStore: SettingsStore) {
 		makeAutoObservable(this, {}, { autoBind: true });
 		autorun(() => {this.updateBalances()})
 	}
@@ -47,7 +48,7 @@ export default class CoinStore {
 	get Prices()
 	{
 		const prices: SupportedCoinsMap = {}
-		for(const k of this.remoteConfigs.enabledCoins)
+		for(const k of this.chains.enabledCoins)
 		{
 			const realKey = k as SupportedCoins
 			if(realKey)
@@ -74,7 +75,8 @@ export default class CoinStore {
 		const balanceAwaits:Promise<any>[] = [] 
 		const infos:ICoin[] = [] 
 		const waitings: Promise<boolean>[] = []
-		for(const chain of this.remoteConfigs.enabledCoins)
+		const enabledChains =this.chains.enabledCoins
+		for(const chain of enabledChains)
 		{
 			const coin = CoinClasses[chain]
 			const info = Object.assign({}, mock[chain])
@@ -86,14 +88,22 @@ export default class CoinStore {
 					waitings.push((async () =>
 					{
 						const profile = this.walletStore.activeWallet
-						info.address = await profile?.wallets[chain].Address()
-						info._id = coin.denom()
-						info.denom = coin.denom()
-						balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
-							wallet: new PublicWallet(info.address)
-						}))
-						infos.push(info)
-						return true
+						if(profile != null)
+						{
+							const chainWallet = profile.wallets[chain]
+							if(chainWallet)
+							{
+								info.address = await chainWallet.Address()
+								info._id = coin.denom()
+								info.denom = coin.denom()
+								balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
+									wallet: new PublicWallet(info.address)
+								}))
+								infos.push(info)
+								return true
+							}
+						}
+						return false
 					})())
 				}
 			}

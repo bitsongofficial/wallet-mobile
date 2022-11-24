@@ -20,7 +20,7 @@ type Props = {
 
 export default function SelectNetwork({title, description, activeChain, filter, onPress, style }: Props) {
 	const { t } = useTranslation()
-	const { configs } = useStore()
+	const { chains: chainStore } = useStore()
 	const theme = useTheme()
 
 	const selectCoin = useCallback(
@@ -29,7 +29,7 @@ export default function SelectNetwork({title, description, activeChain, filter, 
 		},
 		[onPress],
 	)
-	const chains = filter ? configs.remote.enabledCoins.filter(filter) : configs.remote.enabledCoins
+	const chains = filter ? chainStore.enabledCoins.filter(filter) : chainStore.enabledCoins
 
 	const infoExtractor = (item: SupportedCoins) =>
 	{

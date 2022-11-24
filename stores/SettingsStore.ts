@@ -17,6 +17,7 @@ export default class SettingsStore {
 	currency: Currencies = Currencies.USD
 	checkMethod: CheckMethod | null = null
 	biometric_enable = false
+	testnet = false
 
 	notifications: NotifSettings = {
 		enable: true,
@@ -83,6 +84,11 @@ export default class SettingsStore {
 			const res = await clearPin()
 			if(res) this.setBiometricInternal(biometric_enable)
 		}
+	}
+
+	setTestnet(testnet: boolean)
+	{
+		this.testnet = testnet
 	}
 
 	blockApp(value: Date | number) {
