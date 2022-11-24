@@ -2,14 +2,10 @@ import { useCallback, useMemo, useState } from "react"
 import {
 	RefreshControl,
 	StyleSheet,
-	Text,
 	TouchableOpacity,
 	View,
 	Platform,
-	BackHandler,
-	ScrollView,
 } from "react-native"
-import { StatusBar } from "expo-status-bar"
 import { CoinStat, Tabs } from "components/organisms"
 import { useGlobalBottomsheet, useStore } from "hooks"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
@@ -30,7 +26,6 @@ import { s, vs } from "react-native-size-matters"
 import { withStatusBar } from "screens/layout/hocs"
 import BottomNavigator from "screens/layout/BottomNavigator"
 import { useTranslation } from "react-i18next"
-import { toJS } from "mobx"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -214,15 +209,15 @@ export default
 							style={styles.tabs}
 						/>
 
-							<View style={styles.coins}>
-								{coin.multiChainCoins
-									.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
-									.map((coin) => (
-										<TouchableOpacity key={coin.info._id} disabled={true}>
-											<CoinStat coin={coin} style={{ marginBottom: 9 }} />
-										</TouchableOpacity>
-									))}
-							</View>
+						<View style={styles.coins}>
+							{coin.multiChainCoins
+								.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
+								.map((coin) => (
+									<TouchableOpacity key={coin.info._id} disabled={true}>
+										<CoinStat coin={coin} style={{ marginBottom: 9 }} />
+									</TouchableOpacity>
+								))}
+						</View>
 				</BottomNavigator>
 			</SafeAreaView>
 		)
