@@ -7,6 +7,7 @@ import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { DetailedSelect, Select } from "modals/general/organisms"
 import { getAssetSymbol, getCoinIcon, getCoinName, getCoinPrefix } from "core/utils/Coin"
 import { t } from "i18next"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	title?: string
@@ -18,6 +19,7 @@ type Props = {
 }
 
 export default function SelectNetwork({title, description, activeChain, filter, onPress, style }: Props) {
+	const { t } = useTranslation()
 	const { configs } = useStore()
 	const theme = useTheme()
 
@@ -35,7 +37,7 @@ export default function SelectNetwork({title, description, activeChain, filter, 
 			title: getCoinName(item) ?? "",
 			description: getAssetSymbol(item),
 			uri: getCoinIcon(item),
-			subtitle: item == SupportedCoins.BITSONG118 ? "(cosmos compatible)" : undefined
+			subtitle: item == SupportedCoins.BITSONG118 ? "(" + t("CosmosCompatible") + ")" : undefined
 		}
 	}
 

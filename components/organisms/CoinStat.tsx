@@ -10,6 +10,7 @@ import ListItem from "components/moleculs/ListItem"
 import { formatNumber } from "utils/numbers"
 import { SupportedCoins } from "constants/Coins"
 import { getAssetIcon, getAssetName, getAssetTag } from "core/utils/Coin"
+import { useTranslation } from "react-i18next"
 
 type Props = {
 	coin: Coin
@@ -17,11 +18,12 @@ type Props = {
 }
 
 export default observer(({ coin, style }: Props) => {
+	const { t } = useTranslation()
 	const { settings, coin: cs } = useStore()
 	const denom = coin.info.denom
 	const logo = getAssetIcon(denom)
 	const name = getAssetName(denom)
-	const display = getAssetTag(denom) + (coin.info.coin == SupportedCoins.BITSONG118 ? " (cosmos compatible)" : "")
+	const display = getAssetTag(denom) + (coin.info.coin == SupportedCoins.BITSONG118 ? " (" + t("CosmosCompatible") + ")" : "")
 	const balance = coin.balance.toLocaleString("en")
 	const balanceFIAT = cs.fromCoinToFiat(coin)
 

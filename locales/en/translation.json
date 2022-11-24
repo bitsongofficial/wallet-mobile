@@ -122,5 +122,6 @@
 	"ScanQRCode": "Scan QR Code",
 	"CopyAddress": "Copy address",
 	"AddressCopied": "Address copied!",
-	"ChangeDestinationNetwork": "Change destination network"
+	"ChangeDestinationNetwork": "Change destination network",
+	"CosmosCompatible": "cosmos compatible"
 }
