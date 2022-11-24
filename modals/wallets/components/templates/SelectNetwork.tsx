@@ -37,7 +37,7 @@ export default function SelectNetwork({title, description, activeChain, filter, 
 			title: getCoinName(item) ?? "",
 			description: getAssetSymbol(item),
 			uri: getCoinIcon(item),
-			subtitle: item == SupportedCoins.BITSONG118 ? "(" + t("CosmosCompatible") + ")" : undefined
+			subtitle: item == SupportedCoins.BITSONG118 || item == SupportedCoins.BITSONG118_TESTNET ? "(" + t("CosmosCompatible") + ")" : undefined
 		}
 	}
 
