@@ -26,12 +26,15 @@ enum COLOR {
 	Pink = "#DC004F",
 	Pink2 = "#EC0259",
 	Pink3 = "#FF015C",
+	Pink4 = "#EF015A",
+	Pink5 = "#674FCC",
 
 	LightGreyBlue = "#67BAB0",
 	PearlBlackberry = "#656476",
 	PaleBlue = "#EAEAEB",
 	PaleCornflowerBlue = "#ACACEC",
 	SlateBlue = "#6A50CC",
+
 }
 
 export default COLOR

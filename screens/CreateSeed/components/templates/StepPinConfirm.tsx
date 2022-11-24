@@ -21,6 +21,7 @@ export default observer<Props>(({ pin, isDisableNext, onPressBack, onPressNext }
 			<TitledParagraph
 				title={t("ConfirmWithPin")}
 				style={styles.title}
+				paragraphStyle={styles.paragraphStyle}
 			>
 				{t("OnlyWayToRecoverMnemonic")}
 			</TitledParagraph>
@@ -41,5 +42,8 @@ export default observer<Props>(({ pin, isDisableNext, onPressBack, onPressNext }
 
 const styles = StyleSheet.create({
 	title: { marginTop: vs(50) },
+	paragraphStyle: {
+		marginBottom: vs(8)
+	},
 	content: { flex: 1 },
 })

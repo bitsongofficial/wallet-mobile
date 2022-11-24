@@ -21,6 +21,7 @@ export default observer<Props>(({ pin, onPressBack, onPressNext, isDisableNext }
 			<TitledParagraph
 				title="Set PIN"
 				style={styles.title}
+				paragraphStyle={styles.paragraphStyle}
 			>
 				This is the only way you will be able to {"\n"}
 				recover your account. Please store it{"\n"}
@@ -43,6 +44,9 @@ export default observer<Props>(({ pin, onPressBack, onPressNext, isDisableNext }
 
 const styles = StyleSheet.create({
 	title: { marginTop: vs(50) },
+	paragraphStyle: {
+		marginBottom: vs(8)
+	},
 	content: {
 		flex: 1,
 	},

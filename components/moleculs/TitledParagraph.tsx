@@ -9,13 +9,14 @@ type Props = {
 	title: string
 	text?: string
 	style?: StyleProp<ViewStyle>
+	paragraphStyle?: StyleProp<ViewStyle>
 }
 
-export default ({ title, text, style, children }: React.PropsWithChildren<Props>) => {
+export default ({ title, text, style, paragraphStyle, children }: React.PropsWithChildren<Props>) => {
 	return (
 		<View style={style}>
 			<Title title={title} style={styles.title} size={20} />
-			<Paragraph text={text}>{children}</Paragraph>
+			<Paragraph style={paragraphStyle} text={text}>{children}</Paragraph>
 		</View>
 	)
 }

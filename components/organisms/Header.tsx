@@ -11,6 +11,7 @@ import { Icon2, Loader } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { s } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
+import TestnetInfoBar from "./TestnetInfoBar"
 
 type Props = {
 	style?: StyleProp<ViewStyle>
@@ -26,6 +27,7 @@ export default observer(function Header({ navigation, style }: Props) {
 
 	return (
 		<Animated.View style={[styles.container, style, { paddingTop: insets.top }]}>
+			<TestnetInfoBar></TestnetInfoBar>
 			<View style={styles.header}>
 				{/* <View style={styles.left}>
 					{!isOpen && <Icon2 name="logo" size={40} />}

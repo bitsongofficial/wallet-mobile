@@ -20,7 +20,7 @@ export default observer(({ coin, style }: Props) => {
 	const denom = coin.info.denom
 	const logo = getCoinIcon(chain)
 	const name = getCoinName(chain)
-	const display = getAssetTag(denom) + (coin.info.coin == SupportedCoins.BITSONG118 ? " (" + t("CosmosCompatible") + ")" : "")
+	const display = getAssetTag(denom) + (chain == SupportedCoins.BITSONG118 || chain == SupportedCoins.BITSONG118_TESTNET ? " (" + t("CosmosCompatible") + ")" : "")
 	const balance = coin.balance.toLocaleString("en")
 	const balanceFIAT = cs.fromCoinToFiat(coin)
 
