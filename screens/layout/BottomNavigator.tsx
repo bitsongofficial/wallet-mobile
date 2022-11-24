@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 	},
 	innerView: {
 		paddingHorizontal: HORIZONTAL_WRAPPER,
-		paddingTop: vs(11),
+		paddingTop: vs(48),
 		paddingBottom: vs(114),
 	},
 })
