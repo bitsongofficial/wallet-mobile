@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx"
-import { ICurrency, ILang } from "screens/Profile/type"
 import { LanguageData, Languages } from "constants/languages"
 import { Currencies, CurrenciesData } from "constants/currencies"
 import { CheckMethod, NotifSettings } from "./type"
@@ -17,7 +16,7 @@ export default class SettingsStore {
 	currency: Currencies = Currencies.USD
 	checkMethod: CheckMethod | null = null
 	biometric_enable = false
-	testnet = false
+	testnet = true
 
 	notifications: NotifSettings = {
 		enable: true,
