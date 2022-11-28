@@ -129,11 +129,6 @@ export default class DappConnectionStore {
 					connector: observable,
 				}))
 			})
-
-			autorun(() =>
-			{
-				console.log(toJS(this.connections).map(c => ({name: c.connector.name, date: c.connector.date})))
-			})
 		}
 		catch(e)
 		{

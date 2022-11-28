@@ -8,7 +8,7 @@ export default class Coin {
   }
 
   get balance() {
-    return round(this.info.balance);
+    return this.info.balance;
   }
 
   get balanceUSD() {
