@@ -108,6 +108,7 @@ export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
 export function fromDenomToCoin(denom: Denom | string): SupportedCoins | undefined
 {
 	const resolvedDenom = resolveAsset(denom)
+	console.log("fromDenomToCoinInner", resolvedDenom)
 	for(const chain of Object.values(SupportedCoins))
 	{
 		const chainAssets = assets.find(a => a.chain_name == ChainRegistryNames[chain])?.assets

@@ -19,6 +19,9 @@ const coinIds: {
 	[SupportedCoins.BITSONG]: "bitsong",
 	[SupportedCoins.BITSONG118]: "bitsong",
 	[SupportedCoins.OSMOSIS]: "osmosis",
+	[SupportedCoins.BITSONG_TESTNET]: "bitsong",
+	[SupportedCoins.BITSONG118_TESTNET]: "bitsong",
+	[SupportedCoins.OSMOSIS_TESTNET]: "osmosis",
 }
 
 function coingeckoCoinName(coin: SupportedCoins)

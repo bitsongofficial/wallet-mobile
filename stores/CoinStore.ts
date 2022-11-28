@@ -48,7 +48,7 @@ export default class CoinStore {
 	get Prices()
 	{
 		const prices: SupportedCoinsMap = {}
-		for(const k of this.chains.enabledCoins)
+		for(const k of this.remoteConfigs.enabledCoins)
 		{
 			const realKey = k as SupportedCoins
 			if(realKey)
@@ -172,8 +172,12 @@ export default class CoinStore {
 			this.coins.reduce(
 				(total, coin) =>
 				{
-					const b = this.fromCoinToFiat(coin)
-					return (b ? b + total : total)
+					if(coin.balance > 0)
+					{
+						const b = this.fromCoinToFiat(coin)
+						return (b ? b + total : total)
+					}
+					return total
 				},
 				0
 			)
@@ -333,16 +337,19 @@ export default class CoinStore {
 
 	fromAmountToFIAT(amount: Amount)
 	{
+		console.log("fromAmountToFIAT", amount, this.Prices)
 		return fromAmountToFIAT(amount, this.Prices)
 	}
 
 	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins | string)
 	{
+		console.log("fromCoinBalanceToFiat", fromCoinToAmount(balance, coin))
 		return this.fromAmountToFIAT(fromCoinToAmount(balance, coin))
 	}
 
 	fromCoinToFiat(coin: Coin)
 	{
+		console.log("fromCoinToFiat", coin.balance, coin.info.denom)
 		return this.fromCoinBalanceToFiat(coin.balance, coin.info.denom)
 	}
 
