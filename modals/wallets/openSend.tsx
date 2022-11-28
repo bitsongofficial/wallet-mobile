@@ -36,6 +36,7 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 			navigate("Loader", {
 				callback: async () =>
 				{
+					console.log(coin.info.coin, addressInput.value, balance, coin.info.denom)
 					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance, coin.info.denom)
 				},
 			})

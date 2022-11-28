@@ -34,7 +34,7 @@ export default observer<Props>(function SendModal({
 }) {
 	const { t } = useTranslation()
 	const store = useStore()
-	const hasCoins = toJS(store.coin.coins).length > 0
+	const hasCoins = store.coin.hasCoins
 	const [tempCoin, setTempCoin] = useState<Coin>()
 
 	const specificCoins = useMemo(() =>
@@ -154,7 +154,7 @@ export default observer<Props>(function SendModal({
 				</>
 			) : (
 				<View style={styles.verticallyCentered}>
-					<Text style={{ color: COLOR.White }}>No assets available to send</Text>
+					<Text style={{ color: COLOR.White }}>{t("NoAssets")}</Text>
 				</View>
 			)}
 		</BottomSheetView>

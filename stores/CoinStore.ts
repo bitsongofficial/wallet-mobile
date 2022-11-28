@@ -180,8 +180,12 @@ export default class CoinStore {
 		)
 	}
 
+	get availableCoins() {
+		return this.coins.filter(c => c.balance > 0)
+	}
+
 	get hasCoins() {
-		return this.coins.length > 0
+		return this.availableCoins.length > 0
 	}
 
 	get CanSend()

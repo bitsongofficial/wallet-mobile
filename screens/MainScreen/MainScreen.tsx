@@ -211,7 +211,7 @@ export default
 
 						<View style={styles.coins}>
 							{coin.multiChainCoins
-								.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
+								.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG || c.info.coin == SupportedCoins.BITSONG_TESTNET)
 								.map((coin) => (
 									<TouchableOpacity key={coin.info._id} disabled={true}>
 										<CoinStat coin={coin} style={{ marginBottom: 9 }} />
