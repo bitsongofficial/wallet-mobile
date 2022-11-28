@@ -35,6 +35,7 @@
 	"SendRecap": "Riepilogo",
 	"SendImportTitle": "Inserisci l'importo",
 	"SendReceiverTitle": "Seleziona il destinatario",
+	"NoAssets": "Nessun assets disponibile per l'invio",
 	"InvalidAddress": "Il formato dell'address non è valido",
 	"AddressFromDifferentChain": "L'address è di un network different da quello di destinazione",
 	"SelectCoinTitle": "Seleziona la coin",

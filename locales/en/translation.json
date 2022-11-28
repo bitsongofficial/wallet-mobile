@@ -35,6 +35,7 @@
 	"SendRecap": "Send Recap",
 	"SendImportTitle": "Insert Import",
 	"SendReceiverTitle": "Select Receiver",
+	"NoAssets": "No assets available to send",
 	"InvalidAddress": "Address is invalid",
 	"AddressFromDifferentChain": "Address is from a network different than the selected one",
 	"SelectCoinTitle": "Select coin",
