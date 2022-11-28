@@ -42,7 +42,7 @@ export default {
 	btsg,
 	btsg118,
 	osmo,
-	btsg_testnet: btsg,
-	btsg118_testnet: btsg118,
-	osmo_testnet: osmo,
+	btsg_testnet: {...btsg, coin: SupportedCoins.BITSONG_TESTNET},
+	btsg118_testnet: {...btsg118, coin: SupportedCoins.BITSONG118_TESTNET},
+	osmo_testnet: {...osmo, coin: SupportedCoins.OSMOSIS_TESTNET},
 }
