@@ -65,7 +65,6 @@ export default class CoinStore {
 
 	async updateBalances()
 	{
-		console.log(toJS(this.settingsStore.currency))
 		runInAction(() =>
 		{
 			this.loading.balance = true
@@ -337,19 +336,16 @@ export default class CoinStore {
 
 	fromAmountToFIAT(amount: Amount)
 	{
-		console.log("fromAmountToFIAT", amount, this.Prices)
 		return fromAmountToFIAT(amount, this.Prices)
 	}
 
 	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins | string)
 	{
-		console.log("fromCoinBalanceToFiat", fromCoinToAmount(balance, coin))
 		return this.fromAmountToFIAT(fromCoinToAmount(balance, coin))
 	}
 
 	fromCoinToFiat(coin: Coin)
 	{
-		console.log("fromCoinToFiat", coin.balance, coin.info.denom)
 		return this.fromCoinBalanceToFiat(coin.balance, coin.info.denom)
 	}
 
