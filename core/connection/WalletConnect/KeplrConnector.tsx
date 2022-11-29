@@ -9,6 +9,7 @@ import { WalletConnectBaseEvents, WalletConnectCallback, WalletConnectConnectorV
 import { aminoTypePrettyName } from "core/coin/cosmos/operations/utils";
 import KeplrConfirmDescription from "modals/walletconnect/keplr/KeplrConfirmDescription";
 import KeplrSignRecap from "modals/walletconnect/keplr/KeplrSignRecap";
+import KeplrConfirmHeader from "modals/walletconnect/keplr/KeplrConfirmHeader";
 
 export interface KeplrEvents extends WalletConnectBaseEvents {
     keplr_enable_wallet_connect_v1: WalletConnectVersionedCallbacks,
@@ -100,7 +101,8 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
                 {
                     this.reject(payload, new Error("User rejected permission"))
                 },
-                children: <KeplrConfirmDescription profile={profileName}></KeplrConfirmDescription>
+                header: <KeplrConfirmHeader name={this.meta.name} icon={this.meta.icon} url={this.meta.url}></KeplrConfirmHeader>,
+                children: <KeplrConfirmDescription profile={profileName} name={this.meta.name}></KeplrConfirmDescription>
             })
         }
         else
