@@ -54,7 +54,7 @@
 	"AddressBook": "Address Book",
 	"Notifications": "Notifications",
 	"WalletConnect": "Wallet Connect",
-	"ContinueOnTheBrowser": "Message signed successfully. Continue on the browser",
+	"ContinueOnTheBrowser": "Message signed successfully\nContinue on the browser",
 	"SignError": "There was an error signing your transaction",
 	"KeplrGetKeyDescription": "{{DApp}} is asking your available addresses for the {{profileName}} profile",
 	"UnknownKeplrOperation": "Unknown operation",
