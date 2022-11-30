@@ -1,3 +1,4 @@
+import { AminoMsg } from "@cosmjs-rn/amino";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 
 export enum AminoTypes {
@@ -10,7 +11,10 @@ export enum AminoTypes {
 	SubmitProposal = "/cosmos.gov.v1beta1.MsgSubmitProposal",
 	Deposit = "/cosmos.gov.v1beta1.MsgDeposit",
 }
-export const OperationAminoTypesMap: {[k in CoinOperationEnum]?: AminoTypes | string} = {
+
+type AminoTypesMap<T> = {[k in AminoTypes]?: T}
+type ReverseAminoTypesMap<T extends string | number | symbol> = {[k in T]?: AminoTypes}
+export const OperationAminoTypesMap: ReverseAminoTypesMap<CoinOperationEnum> = {
 	[CoinOperationEnum.Send]: AminoTypes.Send,
 	[CoinOperationEnum.Delegate]: AminoTypes.Delegate,
 	[CoinOperationEnum.Redelegate]: AminoTypes.Redelegate,
@@ -19,11 +23,6 @@ export const OperationAminoTypesMap: {[k in CoinOperationEnum]?: AminoTypes | st
 	[CoinOperationEnum.Vote]: AminoTypes.Vote,
 	[CoinOperationEnum.SubmitProposal]: AminoTypes.SubmitProposal,
 	[CoinOperationEnum.Deposit]: AminoTypes.Deposit,
-	[CoinOperationEnum.Balance]: "",
-	[CoinOperationEnum.Validators]: "",
-	[CoinOperationEnum.History]: "",
-	[CoinOperationEnum.Proposals]: "",
-	[CoinOperationEnum.Rewards]: "",
 }
 
 export function operationToAminoType(operation: CoinOperationEnum)
@@ -31,12 +30,29 @@ export function operationToAminoType(operation: CoinOperationEnum)
 	return OperationAminoTypesMap[operation]
 }
 
+export enum OsmosisAminoTypes {
+	SwapExact = "osmosis/gamm/swap-exact-amount-in",
+}
+
 const aminoTypesPrettyNames: {
 	[k in AminoTypes | string]?: string
 } = {
 	[AminoTypes.Send]: "Send",
+	[OsmosisAminoTypes.SwapExact]: "Swap"
 }
+
+const aminoTypesDescriptionKeys: {
+	[k in AminoTypes | string]?: string
+} = {
+	[OsmosisAminoTypes.SwapExact]: "SwapDescription"
+}
+
 export function aminoTypePrettyName(aminoType: AminoTypes | string)
 {
 	return aminoTypesPrettyNames[aminoType] ?? undefined
+}
+
+export function getAminoMessageDescriptionKey(msg: AminoMsg)
+{
+	return aminoTypesDescriptionKeys[msg.type] ?? "GenericType"
 }

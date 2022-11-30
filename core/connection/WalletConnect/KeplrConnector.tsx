@@ -117,11 +117,6 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     async KeplrSign(error: Error | null, payload: any)
     {
         const [chainId, signer, signDoc, signOptions] = payload.params as [string, string, StdSignDoc, KeplrSignOptions]
-
-        const [identifier, version] = chainId.split(KeplrConnector.VersionFormatRegExp)/* 
-        const identifier = chainId
-        const version = 1
-        console.log(chainId, identifier, version) */
         const chain = chainIdToChain(chainId)
         const snapPoints = ["20%"]
         if(chain)
