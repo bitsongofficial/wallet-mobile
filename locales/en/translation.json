@@ -54,6 +54,7 @@
 	"AddressBook": "Address Book",
 	"Notifications": "Notifications",
 	"WalletConnect": "Wallet Connect",
+	"SwapDescription": "You are swapping {{from}} to {{to}}",
 	"ContinueOnTheBrowser": "Message signed successfully\nContinue on the browser",
 	"SignError": "There was an error signing your transaction",
 	"KeplrGetKeyDescription": "{{DApp}} is asking your available addresses for the {{profileName}} profile",
