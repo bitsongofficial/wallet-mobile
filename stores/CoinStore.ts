@@ -8,10 +8,10 @@ import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
 import { Amount, Denom } from "core/types/coin/Generic";
 import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { WalletTypes } from "core/types/storing/Generic";
-import { autorun, keys, makeAutoObservable, runInAction, toJS, values } from "mobx";
+import { autorun, makeAutoObservable, runInAction, toJS, values } from "mobx";
 import { round } from "utils";
 import RemoteConfigsStore from "./RemoteConfigsStore";
-import WalletStore, { ProfileWallets } from "./WalletStore";
+import WalletStore from "./WalletStore";
 import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmount, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, resolveAsset, SupportedFiats } from "core/utils/Coin";
 import SettingsStore from "./SettingsStore";
 import { ICoin } from "classes/types";
@@ -48,7 +48,7 @@ export default class CoinStore {
 	get Prices()
 	{
 		const prices: SupportedCoinsMap = {}
-		for(const k of this.chains.enabledCoins)
+		for(const k of this.remoteConfigs.enabledCoins)
 		{
 			const realKey = k as SupportedCoins
 			if(realKey)
@@ -65,7 +65,6 @@ export default class CoinStore {
 
 	async updateBalances()
 	{
-		console.log(toJS(this.settingsStore.currency))
 		runInAction(() =>
 		{
 			this.loading.balance = true
@@ -154,7 +153,7 @@ export default class CoinStore {
 			})
 			runInAction(() =>
 			{
-				this.coins.splice(0, this.coins.length, ...coins.sort((c1, c2) => (this.fromCoinToFiat(c2) ?? 0) - (this.fromCoinToFiat(c1) ?? 0)))
+				this.coins.splice(0, this.coins.length, ...coins.sort((c1, c2) => (this.fromCoinToFiat(c2) ?? c2.info.balance) - (this.fromCoinToFiat(c1) ?? c1.info.balance)))
 				this.loading.balance = false
 				this.results.balance = errors
 			})
@@ -172,16 +171,24 @@ export default class CoinStore {
 			this.coins.reduce(
 				(total, coin) =>
 				{
-					const b = this.fromCoinToFiat(coin)
-					return (b ? b + total : total)
+					if(coin.balance > 0)
+					{
+						const b = this.fromCoinToFiat(coin)
+						return (b ? b + total : total)
+					}
+					return total
 				},
 				0
 			)
 		)
 	}
 
+	get availableCoins() {
+		return this.coins.filter(c => c.balance > 0)
+	}
+
 	get hasCoins() {
-		return this.coins.length > 0
+		return this.availableCoins.length > 0
 	}
 
 	get CanSend()
@@ -190,19 +197,21 @@ export default class CoinStore {
 	}
 
 	get multiChainCoins() {
-		return this.coins.reduce((prev: Coin[], current: Coin) =>
+		const res = this.coins.reduce((prev: Coin[], current: Coin) =>
 		{
 			const sameCoin = prev.find(p => resolveAsset(p.info.denom) == resolveAsset(current.info.denom))
-			if(sameCoin)
+			if(typeof sameCoin !== undefined && sameCoin !== undefined)
 			{
-				sameCoin.info.balance += current.balance
+				sameCoin.info.balance += current.info.balance
 			}
 			else
 			{
-				return prev.concat(new Coin(Object.assign(toJS(current.info), {denom: resolveAsset(current.info.denom)}), 1))
+				const c = new Coin(Object.assign(toJS(current.info), {denom: resolveAsset(current.info.denom)}), current.rate)
+				prev.push(c)
 			}
 			return prev
 		}, [])
+		return res
 	}
 
 	async sendAmount(coin: SupportedCoins, address: string, amount: Amount, destinationChain?: SupportedCoins)

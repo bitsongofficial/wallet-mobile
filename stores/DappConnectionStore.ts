@@ -52,6 +52,31 @@ export type DappConnection = {
 	connector: WalletConnectConnectorV1<WalletConnectBaseEvents>
 }
 
+export type ConnectionMeta = {
+	name?: string,
+	icon?: string,
+	url?: string,
+	description?: string,
+	date: Date | null,
+}
+
+type SessionConnectionInfo = {
+	session: IWalletConnectSession,
+}
+
+type PairStringConnectionInfo = {
+	pairString: string,
+}
+
+export type ConnectionInfo = {
+	session?: IWalletConnectSession,
+	pairString?: string,
+} & ({
+	session: IWalletConnectSession,
+} | {
+	pairString: string,
+})
+
 export default class DappConnectionStore {
 	localStorageManager?: LocalStorageManager
 	connections: DappConnection[] = []
@@ -75,9 +100,9 @@ export default class DappConnectionStore {
 
 	connect(pairString?: string)
 	{
-		if(this.walletStore.activeProfile)
+		if(this.walletStore.activeProfile && pairString)
 		{
-			this.addConnection(this.walletStore.activeProfile.id, pairString)
+			this.addConnection(this.walletStore.activeProfile.id, {pairString})
 		}
 		else
 		{
@@ -85,22 +110,21 @@ export default class DappConnectionStore {
 		}
 	}
 
-	restoreConnection(profileId: string, name: string, date: Date, session?: IWalletConnectSession)
+	restoreConnection(profileId: string, session: SessionConnectionInfo, connectionMeta?: ConnectionMeta)
 	{
-		this.addConnection(profileId, undefined, session, name, date)
+		this.addConnection(profileId, session, connectionMeta)
 	}
 
-	private addConnection(profileId: string, pairString?: string, session?: IWalletConnectSession, name?: string, date?: Date)
+	private addConnection(profileId: string, connectionInfo: ConnectionInfo, connectionMeta?: ConnectionMeta)
 	{
 		try
 		{
 			const connector = new KeplrConnector(this.chainsStore.enabledCoins, {
-				uri: pairString,
-				session,
+				uri: connectionInfo.pairString,
+				session: connectionInfo.session,
 				fcmToken: this.settingsStore.notifications.enable ? this.remoteConfigsStore.pushNotificationToken : undefined,
 				walletInterface: new StoreDrivenWalletInterface(this.walletStore, profileId),
-				name,
-				date,
+				meta: connectionMeta,
 			})
 			const oldConnect = connector.events.connect
 			connector.events.connect = (error, payload) =>
@@ -119,20 +143,10 @@ export default class DappConnectionStore {
 				
 				this.connections.push(makeObservable({
 					profileId,
-					connector: makeObservable(connector, {
-						name: observable,
-						date: observable,
-						setDate: action,
-						setName: action,
-					}),
+					connector: connector,
 				}, {
 					connector: observable,
 				}))
-			})
-
-			autorun(() =>
-			{
-				console.log(toJS(this.connections).map(c => ({name: c.connector.name, date: c.connector.date})))
 			})
 		}
 		catch(e)

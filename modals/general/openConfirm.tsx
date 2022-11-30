@@ -1,9 +1,11 @@
 import { InteractionManager, Keyboard } from "react-native"
 import ConfirmView from "./organisms/ConfirmView"
 import { gbs } from "modals"
+import { ReactNode } from "react"
 
 type Props = {
 	titleTranslationString?: string,
+	header?: ReactNode,
 	onDismiss?(): void
 	onConfirm?(): void
 }
@@ -14,6 +16,7 @@ export default async function openConfirm(props: React.PropsWithChildren<Props> 
 		titleTranslationString,
 		onDismiss,
 		onConfirm,
+		header,
 		children,
 		...otherProps
 	} = props
@@ -31,12 +34,17 @@ export default async function openConfirm(props: React.PropsWithChildren<Props> 
 		onConfirm && onConfirm()
 		close()
 	}
-	() => gbs.close()
 
 	const onClose = () =>
 	{
 		gbs.removeBackHandler()
 		if(onDismiss && (status.done === false)) onDismiss()
+	}
+
+	const dismiss = () =>
+	{
+		onDismiss && onDismiss()
+		close()
 	}
 
 	InteractionManager.runAfterInteractions(() => {
@@ -48,9 +56,14 @@ export default async function openConfirm(props: React.PropsWithChildren<Props> 
 			{
 				if(index < 0) onClose()
 			},
-			children: () => <ConfirmView titleTranslationString={titleTranslationString} onPressConfirm={confirm}>
-				{children}
-			</ConfirmView>,
+			children: () => 
+				<ConfirmView
+					header={header}
+					titleTranslationString={titleTranslationString}
+					onPressConfirm={confirm}
+					onPressReject={dismiss}>
+					{children}
+				</ConfirmView>,
 		})
 		gbs.expand()
 	})

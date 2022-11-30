@@ -26,6 +26,7 @@ import { s, vs } from "react-native-size-matters"
 import { withStatusBar } from "screens/layout/hocs"
 import BottomNavigator from "screens/layout/BottomNavigator"
 import { useTranslation } from "react-i18next"
+import { toJS } from "mobx"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -211,7 +212,10 @@ export default
 
 						<View style={styles.coins}>
 							{coin.multiChainCoins
-								.filter((c) => c.balance > 0 || c.info.coin == SupportedCoins.BITSONG)
+								.filter((c) => 
+								{
+									return c.info.balance > 0 || c.info.coin == SupportedCoins.BITSONG || c.info.coin == SupportedCoins.BITSONG_TESTNET
+								})
 								.map((coin) => (
 									<TouchableOpacity key={coin.info._id} disabled={true}>
 										<CoinStat coin={coin} style={{ marginBottom: 9 }} />

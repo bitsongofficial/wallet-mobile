@@ -1,6 +1,6 @@
 import AsyncStorageLib from "@react-native-async-storage/async-storage"
 import { autorun, IReactionDisposer, reaction, runInAction, toJS } from "mobx"
-import DappConnectionStore from "./DappConnectionStore"
+import DappConnectionStore, { ConnectionMeta } from "./DappConnectionStore"
 import SettingsStore from "./SettingsStore"
 import WalletStore, { ProfileInner } from "./WalletStore"
 import { IWalletConnectSession } from "@walletconnect/types"
@@ -27,12 +27,10 @@ const recent_recipients_location = "recent_recipients"
 const recent_proposal_chains_location = "recent_proposal_chains"
 const blocking_date = "blocking_date"
 
-type connectionRaw = {
+type ConnectionRaw = {
 	profileId: string,
 	session: IWalletConnectSession,
-	name: string,
-	date: Date,
-}
+} & ConnectionMeta
 
 export default class LocalStorageManager
 {
@@ -157,8 +155,11 @@ export default class LocalStorageManager
 					return {
 						profileId: c.profileId,
 						session: c.connector.connector.session,
-						date: c.connector.date?.getTime(),
-						name: c.connector.name,
+						date: c.connector.meta.date?.getTime(),
+						name: c.connector.meta.name,
+						url: c.connector.meta.url,
+						description: c.connector.meta.description,
+						icon: c.connector.meta.icon,
 					}
 				}
 			}))
@@ -178,9 +179,11 @@ export default class LocalStorageManager
 			const storedConnections = await AsyncStorageLib.getItem(connections_location)
 			if(storedConnections)
 			{
-				const connections = JSON.parse(storedConnections) as connectionRaw[]
+				const connections = JSON.parse(storedConnections) as ConnectionRaw[]
 				connections.forEach(c => {
-					this.dappConnection.restoreConnection(c.profileId, c.name, new Date(c.date), c.session)
+					const {session, profileId, ...meta} = c
+					meta.date = meta.date ? new Date(meta.date) : null
+					this.dappConnection.restoreConnection(profileId, {session}, meta)
 				})
 			}
 		}

@@ -9,6 +9,10 @@ import { WalletConnectBaseEvents, WalletConnectCallback, WalletConnectConnectorV
 import { aminoTypePrettyName } from "core/coin/cosmos/operations/utils";
 import KeplrConfirmDescription from "modals/walletconnect/keplr/KeplrConfirmDescription";
 import KeplrSignRecap from "modals/walletconnect/keplr/KeplrSignRecap";
+import KeplrConfirmHeader from "modals/walletconnect/keplr/KeplrConfirmHeader";
+import openModal from "modals/general/openModal";
+import SignMessageError from "modals/walletconnect/SignMessageError";
+import ContinueOnDesktop from "modals/walletconnect/ContinueOnDesktop";
 
 export interface KeplrEvents extends WalletConnectBaseEvents {
     keplr_enable_wallet_connect_v1: WalletConnectVersionedCallbacks,
@@ -100,7 +104,8 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
                 {
                     this.reject(payload, new Error("User rejected permission"))
                 },
-                children: <KeplrConfirmDescription profile={profileName}></KeplrConfirmDescription>
+                header: <KeplrConfirmHeader name={this.meta.name} icon={this.meta.icon} url={this.meta.url}></KeplrConfirmHeader>,
+                children: <KeplrConfirmDescription profile={profileName} name={this.meta.name}></KeplrConfirmDescription>
             })
         }
         else
@@ -112,25 +117,40 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     async KeplrSign(error: Error | null, payload: any)
     {
         const [chainId, signer, signDoc, signOptions] = payload.params as [string, string, StdSignDoc, KeplrSignOptions]
-
-        const [identifier, version] = chainId.split(KeplrConnector.VersionFormatRegExp)/* 
-        const identifier = chainId
-        const version = 1
-        console.log(chainId, identifier, version) */
         const chain = chainIdToChain(chainId)
+        const snapPoints = ["20%"]
         if(chain)
         {
             openConfirm({
                 children: <KeplrSignRecap messages={[...signDoc.msgs]}></KeplrSignRecap>,
                 onConfirm: async () =>
                 {
-                    const signedDoc = await this.walletInterface.Sign(chain, signDoc, signer)
-                    if(signedDoc)
+                    try
                     {
-                        this.approve(payload, [
-                            signedDoc
-                        ])
-                        return
+                        const signedDoc = await this.walletInterface.Sign(chain, signDoc, signer)
+                        if(signedDoc)
+                        {
+                            this.approve(payload, [
+                                signedDoc
+                            ])
+                            openModal({
+                                children: <ContinueOnDesktop></ContinueOnDesktop>,
+                                snapPoints,
+                            })
+                            return
+                        }
+                        else
+                        {
+                            throw "Sign failed exception"
+                        }
+                    }
+                    catch(e)
+                    {
+                        console.error("Catched", e)
+                        openModal({
+                            children: <SignMessageError></SignMessageError>,
+                            snapPoints,
+                        })
                     }
                 },
                 onDismiss: () =>

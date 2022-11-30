@@ -3,8 +3,10 @@ import WalletConnect from "@walletconnect/client"
 import { IWalletConnectSession, IWalletConnectOptions } from "@walletconnect/types"
 import { SupportedCoins } from "constants/Coins";
 import { Wallet } from "core/types/storing/Generic";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, makeObservable, runInAction } from "mobx";
 import Config from "react-native-config";
+import { ConnectionMeta } from "stores/DappConnectionStore";
+import { ConnectorMeta } from "./ConnectorMeta";
 
 export interface WalletInterface {
 	Address(chain: SupportedCoins): Promise<string>
@@ -19,8 +21,7 @@ export type WalletConnectOptions = {
 	uri?: string,
 	session?: IWalletConnectSession,
 	fcmToken?: string,
-	name?: string,
-	date?: Date,
+	meta?: ConnectionMeta,
 	walletInterface: WalletInterface,
 }
 
@@ -47,14 +48,19 @@ export interface WalletConnectBaseEvents extends WalletConnectEventsMap {
 export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents> {
 	connector: WalletConnect | null = null
 	walletInterface: WalletInterface
-	name: string = ""
-	date: Date | null = null
+	meta = new ConnectorMeta()
 	abstract events: E
 	constructor(options: WalletConnectOptions)
 	{
 		this.walletInterface = options.walletInterface
-		if(options.name) this.name = options.name
-		if(options.date) this.date = options.date
+		if(options.meta)
+		{
+			if(options.meta.name) this.meta.setName(options.meta.name)
+			if(options.meta.url) this.meta.setUrl(options.meta.url)
+			if(options.meta.icon) this.meta.setIcon(options.meta.icon)
+			if(options.meta.description) this.meta.setDescription(options.meta.description)
+			if(options.meta.date) this.meta.setDate(options.meta.date)
+		}
 		const wcOptions: IWalletConnectOptions = 
 		{
 			// Required
@@ -88,7 +94,10 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			runInAction(() =>
 			{
 				const peerMeta = payload.params[0].peerMeta
-				if(this.name == "") this.setName(peerMeta ? peerMeta.name : undefined)
+				if(this.meta.name == "") this.setName(peerMeta ? peerMeta.name : "")
+				if(this.meta.url == "") this.setUrl(peerMeta ? peerMeta.url : "")
+				if(this.meta.icon == "") this.setIcon(peerMeta && peerMeta.icons && peerMeta.icons.length > 0 ? peerMeta.icons[0] : "")
+				if(this.meta.description == "") this.setDescription(peerMeta ? peerMeta.description : "")
 			})
 			this.events[WalletConnectEvents.SessionRequest](error, payload)
 		})
@@ -99,7 +108,7 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 			}
 			runInAction(() =>
 			{
-				if(this.date == null) this.setDate(new Date())
+				if(this.meta.date == null) this.setDate(new Date())
 			})
 			this.events[WalletConnectEvents.Connect](error, payload)
 		})
@@ -127,12 +136,27 @@ export abstract class WalletConnectConnectorV1<E extends WalletConnectBaseEvents
 
 	setDate(date: Date)
 	{
-		this.date = date
+		this.meta.setDate(date)
 	}
 
 	setName(name: string)
 	{
-		this.name = name
+		this.meta.setName(name)
+	}
+
+	setUrl(url: string)
+	{
+		this.meta.setUrl(url)
+	}
+
+	setIcon(icon: string)
+	{
+		this.meta.setIcon(icon)
+	}
+
+	setDescription(description: string)
+	{
+		this.meta.setDescription(description)
 	}
 
 	approve(payload: any | null, result: any[])
