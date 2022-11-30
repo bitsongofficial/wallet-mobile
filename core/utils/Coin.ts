@@ -9,6 +9,8 @@ import { Wallet } from "core/types/storing/Generic"
 
 const ibcPrefix = "ibc/"
 
+type DenomAliases = string | Denom | SupportedCoins
+
 export enum SupportedFiats {
 	USD = "usd",
 	EUR = "eur",
@@ -216,9 +218,24 @@ export function getAssetDenomUnits(asset: string | SupportedCoins)
 	return infos ? infos.denom_units : undefined
 }
 
-export function getDenomExponent(denom: string | Denom | SupportedCoins)
+export function getDenomExponent(denom: DenomAliases)
 {
 	return getAssetDenomUnits(denom)?.find(du => du.denom == denom)?.exponent
+}
+
+export function getBaseDenom(denom: DenomAliases)
+{
+	const infos = getAssetsInfos(denom)
+	if(infos)
+	{
+		return infos.denom_units.find(du => du.exponent == 6)		
+	}
+	return undefined
+}
+
+export function getBaseDenomName(denom: DenomAliases)
+{
+	return getBaseDenom(denom)?.denom
 }
 
 export function firstAvailableWallet(wallets: SupportedCoinsMap<Wallet>)

@@ -5,7 +5,7 @@ import { aminoTypePrettyName, getAminoMessageDescriptionKey, OsmosisAminoTypes }
 import { AminoMsg } from '@cosmjs-rn/amino'
 import { useTranslation } from 'react-i18next'
 import { useStore } from 'hooks'
-import { resolveAsset } from 'core/utils/Coin'
+import { convertRateFromDenom, getBaseDenomName, getDenomExponent, resolveAsset } from 'core/utils/Coin'
 
 type Prop = {
 	msg: AminoMsg
@@ -18,8 +18,17 @@ export default function KeplrMessageItem({msg}: Prop) {
 	switch(msg.type)
 	{
 		case OsmosisAminoTypes.SwapExact:
-			args.from = msg.value.token_in.amount + " " + msg.value.token_in.denom
-			args.to = msg.value.token_out_min_amount + " " + resolveAsset(msg.value.routes[0].token_out_denom)
+			const threshold = 10000
+			const amountFrom = parseFloat(msg.value.token_in.amount)
+			const amountTo = parseFloat(msg.value.token_out_min_amount)
+			const denomFrom = resolveAsset(msg.value.token_in.denom)
+			const denomTo = resolveAsset(msg.value.routes[0].token_out_denom)
+			const displayDenomFrom = amountFrom > threshold ? getBaseDenomName(denomFrom) : denomFrom
+			const displayDenomTo = amountTo > threshold ? getBaseDenomName(denomTo) : denomTo
+			const displayAmountFrom = amountFrom > threshold ? (amountFrom / convertRateFromDenom(denomFrom)) : amountFrom
+			const displayAmountTo = amountTo > threshold ? (amountTo / convertRateFromDenom(denomTo)) : amountTo
+			args.from = displayAmountFrom + " " + displayDenomFrom ?? denomFrom
+			args.to = displayAmountTo + " " + displayDenomTo ?? denomTo
 			break
 	}
 	return (
