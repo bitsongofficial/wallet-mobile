@@ -95,6 +95,7 @@ export default class LocalStorageManager
 			notification_enable: this.settings.notifications.enable,
 			block: this.settings.blockingTimer.finish,
 			testnet: this.settings.testnet,
+			screenshot: this.settings.screenshot,
 		}),
 		(raw) =>
 		{
@@ -118,6 +119,7 @@ export default class LocalStorageManager
 				history: 10,
 			})
 			this.settings.setTestnet(settings.testnet)
+			this.settings.setScreenshot(settings.screenshot)
 			if(settings.block) this.settings.blockApp(new Date(settings.block))
 		}
 	}

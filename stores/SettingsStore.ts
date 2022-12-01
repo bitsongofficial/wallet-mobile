@@ -7,6 +7,7 @@ import { clearPin, savePin } from "utils/biometrics"
 import { askPin } from "navigation/AskPin"
 import { TimerCountdown } from "classes"
 import { changeLanguage } from "i18next"
+import { NativeModules } from "react-native"
 
 export default class SettingsStore {
 	localStorageManager?: LocalStorageManager
@@ -17,6 +18,7 @@ export default class SettingsStore {
 	checkMethod: CheckMethod | null = null
 	biometric_enable = false
 	testnet = true
+	screenshot = true
 
 	notifications: NotifSettings = {
 		enable: true,
@@ -82,6 +84,24 @@ export default class SettingsStore {
 		{
 			const res = await clearPin()
 			if(res) this.setBiometricInternal(biometric_enable)
+		}
+	}
+
+	setScreenshotInternal(screenshot: boolean) {
+		this.screenshot = screenshot
+	}
+
+	setScreenshot(screenshot: boolean)
+	{
+		if(!this.screenshot && screenshot)
+		{
+			NativeModules.ScreenshotModule.enableScreenshotAbility()
+			this.setScreenshotInternal(screenshot)
+		}
+		if(this.screenshot && !screenshot)
+		{
+			NativeModules.ScreenshotModule.disableScreenshotAbility()
+			this.setScreenshotInternal(screenshot)
 		}
 	}
 
