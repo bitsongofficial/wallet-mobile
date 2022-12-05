@@ -24,12 +24,7 @@ const coinIds: {
 	[SupportedCoins.OSMOSIS_TESTNET]: "osmosis",
 }
 
-function coingeckoCoinName(coin: SupportedCoins)
-{
-	return coinIds[coin]
-}
-
-export async function getCoinGeckoPrices(coins: SupportedCoins[])
+export async function getCoinGeckoPrices(ids: string[])
 {
 	let currencies = ""
 	let c: keyof typeof SupportedFiats
@@ -43,7 +38,7 @@ export async function getCoinGeckoPrices(coins: SupportedCoins[])
 	{
 		data = (await coinGeckoApi.get<CoingeckoPrices>(`simple/price`, {
 			params: {
-				ids: coins.map(coin => coingeckoCoinName(coin)).filter((item, index, arr) => index == arr.indexOf(item)).join(","),
+				ids: [...new Set(ids)].join(","),
 				vs_currencies: currencies,
 			}
 		})).data
@@ -51,16 +46,7 @@ export async function getCoinGeckoPrices(coins: SupportedCoins[])
 	catch(e)
 	{
 		console.error("Catched", e)
+		return {} as CoingeckoPrices
 	}
-	const formattedData: {
-		[k in SupportedCoins]?: CoingeckoPrice
-	} = {}
-	coins.forEach(c =>
-	{
-		for(const k in data)
-		{
-			if(coingeckoCoinName(c) == k) formattedData[c] = data[k]
-		}
-	})
-	return formattedData
+	return data
 }
