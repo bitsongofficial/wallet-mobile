@@ -21,6 +21,8 @@ export const ibcMap: {
 	[k: string]: string
 } = {}
 
+const assetsOnly = assets.reduce((res: Asset[], a) => res.concat(a.assets), [])
+
 Object.values(SupportedCoins).forEach(sc =>
 	{
 		const ibcChainAssets = getIbcAssets(ChainRegistryNames[sc], ibc, assets)
