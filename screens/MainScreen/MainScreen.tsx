@@ -41,7 +41,7 @@ export default
 	withStatusBar(
 	observer<Props>(
 	function MainScreen({ navigation }) {
-		const { coin, dapp, settings, validators } = useStore()
+		const { assets, coin, dapp, settings, validators } = useStore()
 		// need culc by wallet
 
 		const [activeTab, setActiveTab] = useState<ValueTabs>("Coins")
@@ -211,14 +211,14 @@ export default
 						/>
 
 						<View style={styles.coins}>
-							{coin.multiChainCoins
-								.filter((c) => 
+							{coin.multiChainBalance
+								.filter((b) => 
 								{
-									return c.info.balance > 0 || c.info.coin == SupportedCoins.BITSONG || c.info.coin == SupportedCoins.BITSONG_TESTNET
+									return b.balance > 0 || assets.IsBitsongMainAsset(b.denom)
 								})
-								.map((coin) => (
-									<TouchableOpacity key={coin.info._id} disabled={true}>
-										<CoinStat coin={coin} style={{ marginBottom: 9 }} />
+								.map((b) => (
+									<TouchableOpacity key={b.denom} disabled={true}>
+										<CoinStat assetBalance={b} style={{ marginBottom: 9 }} />
 									</TouchableOpacity>
 								))}
 						</View>
