@@ -30,7 +30,6 @@ const App = observer(() => {
 	const isLoadingComplete = useCachedResources()
 	const colorScheme = useColorScheme()
 
-	const loading = useLoading()
 	const bottomsheet = useGlobalBottomsheet()
 
 	useEffect(() =>

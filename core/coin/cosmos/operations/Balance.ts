@@ -1,6 +1,5 @@
 import { StargateClient } from "@cosmjs-rn/stargate";
 import { BalanceData } from "core/types/coin/cosmos/BalanceData";
-import { Denom } from "core/types/coin/Generic";
 import { CosmosOperation } from "./CosmosOperation";
 
 export class Balance extends CosmosOperation {
