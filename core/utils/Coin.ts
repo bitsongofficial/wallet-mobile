@@ -9,7 +9,7 @@ import { Wallet } from "core/types/storing/Generic"
 
 const ibcPrefix = "ibc/"
 
-type DenomAliases = string | Denom | SupportedCoins
+export type AssetIndex = Denom | string | SupportedCoins
 
 export enum SupportedFiats {
 	USD = "usd",
@@ -116,10 +116,7 @@ export function fromDenomToCoin(denom: Denom | string): SupportedCoins | undefin
 		if(chainAssets && chainAssets.find(ca => ca.base == resolvedDenom)) return chain
 	}
 
-	return undefined
-}
-
-export function resolveAsset(asset: string | SupportedCoins)
+export function resolveAsset(asset: AssetIndex)
 {
 	const chain = asset as SupportedCoins
 	if(asset && Object.values(SupportedCoins).includes(chain)) return fromCoinToDefaultDenom(chain)
@@ -182,48 +179,54 @@ export function getCoinDerivationPath(coin: SupportedCoins)
 	return ""
 }
 
-export function getAssetsInfos(asset: string | SupportedCoins)
+export function getAssetsInfos(asset: AssetIndex)
 {
 	asset = resolveAsset(asset)
-	return assets.reduce((res: Asset[], a) => res.concat(a.assets), []).find((a)=>(a.base===asset))
+	return assetsOnly.find((a)=>(a.denom_units.find(du => du.denom===asset) != undefined))
 }
 
-export function getAssetName(asset: string | SupportedCoins)
+export function getAssetName(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.name.replace("Fantoken", "") : "undefined"
 }
 
-export function getAssetSymbol(asset: string | SupportedCoins)
+export function getAssetSymbol(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.symbol : ""
 }
 
-export function getAssetTag(asset: string | SupportedCoins)
+export function getAssetTag(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.display.toUpperCase() : "Undefined"
 }
 
-export function getAssetIcon(asset: string | SupportedCoins)
+export function getAssetIcon(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos && infos.logo_URIs && infos.logo_URIs.png ? infos.logo_URIs.png : undefined
 }
 
-export function getAssetDenomUnits(asset: string | SupportedCoins)
+export function getAssetCoingeckoId(asset: AssetIndex)
+{
+	const infos = getAssetsInfos(asset)
+	return infos?.coingecko_id
+}
+
+export function getAssetDenomUnits(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.denom_units : undefined
 }
 
-export function getDenomExponent(denom: DenomAliases)
+export function getDenomExponent(denom: AssetIndex)
 {
 	return getAssetDenomUnits(denom)?.find(du => du.denom == denom)?.exponent
 }
 
-export function getBaseDenom(denom: DenomAliases)
+export function getBaseDenom(denom: AssetIndex)
 {
 	const infos = getAssetsInfos(denom)
 	if(infos)
