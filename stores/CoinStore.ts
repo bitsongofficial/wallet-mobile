@@ -1,5 +1,3 @@
-import { Coin } from "classes";
-import mock from "classes/mock_new";
 import { SupportedCoins, SupportedCoinsMap } from "constants/Coins";
 import { PublicWallet } from "core/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
@@ -10,21 +8,21 @@ import { CoinOperationEnum } from "core/types/coin/OperationTypes";
 import { WalletTypes } from "core/types/storing/Generic";
 import { autorun, makeAutoObservable, runInAction, toJS, values } from "mobx";
 import { round } from "utils";
-import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
-import { convertRateFromDenom, fromAmountToCoin, fromAmountToFIAT, fromCoinToAmount, fromCoinToDefaultDenom, fromDenomToPrice, fromFIATToAmount, resolveAsset, SupportedFiats } from "core/utils/Coin";
+import { convertRateFromDenom, fromCoinToAmount, fromCoinToDefaultDenom, resolveAsset } from "core/utils/Coin";
 import SettingsStore from "./SettingsStore";
-import { ICoin } from "classes/types";
 import { isValidAddress } from "core/utils/Address";
 import { getSendMessage } from "core/coin/cosmos/operations/Send";
 import { globalLoading } from "modals";
 import { FromToAmountIbc } from "core/types/coin/cosmos/FromToAmountIbc";
 import ChainsStore from "./ChainsStore";
+import { AssetBalance, ObservableAssetBalance } from "./models/AssetBalance";
+import AssetsStore from "./AssetsStore";
 
 const maxRecentRecipients = 10
 
 export default class CoinStore {
-	coins: Coin[] = []
+	balance: AssetBalance[] = []
 	recentRecipients: {
 		address: string,
 		date: Date,
@@ -40,27 +38,9 @@ export default class CoinStore {
 		balance: null,
 		send: null,
 	}
-	constructor(private walletStore: WalletStore, private chains: ChainsStore, private remoteConfigs: RemoteConfigsStore, private settingsStore: SettingsStore) {
+	constructor(private walletStore: WalletStore, private chainsStore: ChainsStore, private assetsStore: AssetsStore, private settingsStore: SettingsStore) {
 		makeAutoObservable(this, {}, { autoBind: true });
 		autorun(() => {this.updateBalances()})
-	}
-
-	get Prices()
-	{
-		const prices: SupportedCoinsMap = {}
-		for(const k of this.remoteConfigs.enabledCoins)
-		{
-			const realKey = k as SupportedCoins
-			if(realKey)
-			{
-				const currency: SupportedFiats = this.settingsStore.currency ? this.settingsStore.currency : SupportedFiats.USD
-				let price: number | undefined
-				const currenciesPrices = this.remoteConfigs.prices[realKey]
-				if(currenciesPrices) price = currenciesPrices[currency]
-				prices[realKey] = price ?? 1
-			}
-		}
-		return prices
 	}
 
 	async updateBalances()
@@ -70,21 +50,19 @@ export default class CoinStore {
 			this.loading.balance = true
 			this.results.balance = null
 		})
-		const coins:Coin[] = []
-		const balanceAwaits:Promise<any>[] = [] 
-		const infos:ICoin[] = [] 
+		const userBalance: AssetBalance[] = []
+		const balanceAwaits:Promise<Amount[]>[] = []
 		const waitings: Promise<boolean>[] = []
-		const enabledChains =this.chains.enabledCoins
+		const enabledChains =this.chainsStore.enabledCoins
 		for(const chain of enabledChains)
 		{
 			const coin = CoinClasses[chain]
-			const info = Object.assign({}, mock[chain])
 			try
 			{
 				if(this.walletStore.activeProfile)
 				{
 					globalLoading.open()
-					waitings.push((async () =>
+					balanceAwaits.push((async () =>
 					{
 						const profile = this.walletStore.activeWallet
 						if(profile != null)
@@ -92,17 +70,12 @@ export default class CoinStore {
 							const chainWallet = profile.wallets[chain]
 							if(chainWallet)
 							{
-								info.address = await chainWallet.Address()
-								info._id = coin.denom()
-								info.denom = coin.denom()
-								balanceAwaits.push(coin.Do(CoinOperationEnum.Balance, {
-									wallet: new PublicWallet(info.address)
-								}))
-								infos.push(info)
-								return true
+								return await coin.Do(CoinOperationEnum.Balance, {
+									wallet: new PublicWallet(await chainWallet.Address())
+								})
 							}
 						}
-						return false
+						throw "profile (" + profile + ") or wallet of chain (" + chain + ") not found"
 					})())
 				}
 			}
@@ -111,49 +84,42 @@ export default class CoinStore {
 			}
 		}
 		let errors = false
-		const a = await Promise.allSettled(waitings)
 		try
 		{
 			const balances = (await Promise.allSettled(balanceAwaits)).map(r =>
 				{
 					if(r.status == "fulfilled") return r.value
-					return 0
+					return undefined
 				})
-			balances.forEach((balance:Amount[], i) =>
+			balances.forEach((chainBalances:Amount[] | undefined, i) =>
 			{
-				if(balance)
+				if(chainBalances)
 				{
-					if(balance.length > 0) balance.forEach(asset => {
+					if(chainBalances.length > 0) chainBalances.forEach(amount => {
 						try
 						{
-							const currentInfo = Object.assign({}, infos[i])
-							currentInfo.denom = asset.denom
-							currentInfo._id = asset.denom
-							currentInfo.balance = fromAmountToCoin(asset)
-							const coin = new Coin(currentInfo, fromDenomToPrice(asset.denom, this.Prices))
-							coins.push(coin)
+							const balance = ObservableAssetBalance.fromAmount(amount)
+							if(balance)	userBalance.push(balance)
 						}
 						catch(e){
 							console.error("Catched", e)
 						}
 					})
-					else
-					{
-						const currentInfo = Object.assign({}, infos[i])
-						currentInfo.balance = 0
-						coins.push(new Coin(currentInfo, 1))
-					}
-				}
-				else
-				{
-					infos[i].balance = 0
-					coins.push(new Coin(infos[i], 1))					
-					errors = true
 				}
 			})
 			runInAction(() =>
 			{
-				this.coins.splice(0, this.coins.length, ...coins.sort((c1, c2) => (this.fromCoinToFiat(c2) ?? c2.info.balance) - (this.fromCoinToFiat(c1) ?? c1.info.balance)))
+				this.balance.splice(0, this.balance.length, ...userBalance.sort(
+					(c1, c2) =>
+					{
+						const c1Price = this.assetsStore.AssetPrice(c1.denom)
+						const c2Price = this.assetsStore.AssetPrice(c2.denom)
+						if(c1Price && c2Price) return c2Price - c1Price
+						if(c1Price) return -1
+						if(c2Price) return 1
+						return c2.balance - c1.balance
+					}
+				))
 				this.loading.balance = false
 				this.results.balance = errors
 			})
@@ -168,12 +134,12 @@ export default class CoinStore {
 	get totalBalance()
 	{
 		return round(
-			this.coins.reduce(
-				(total, coin) =>
+			this.balance.reduce(
+				(total, balance) =>
 				{
-					if(coin.balance > 0)
+					if(balance.balance > 0)
 					{
-						const b = this.fromCoinToFiat(coin)
+						const b = this.fiatAsExponent(this.fromAssetBalanceToFiat(balance) ?? 0, balance.denom)
 						return (b ? b + total : total)
 					}
 					return total
@@ -184,7 +150,7 @@ export default class CoinStore {
 	}
 
 	get availableCoins() {
-		return this.coins.filter(c => c.balance > 0)
+		return this.balance.filter(b => b.balance > 0)
 	}
 
 	get hasCoins() {
@@ -196,18 +162,18 @@ export default class CoinStore {
 		return this.walletStore.activeProfile?.type != WalletTypes.WATCH
 	}
 
-	get multiChainCoins() {
-		const res = this.coins.reduce((prev: Coin[], current: Coin) =>
+	get multiChainBalance() {
+		const res = this.balance.reduce((prev: AssetBalance[], current: AssetBalance) =>
 		{
-			const sameCoin = prev.find(p => resolveAsset(p.info.denom) == resolveAsset(current.info.denom))
+			const sameCoin = prev.find(p => resolveAsset(p.denom) == resolveAsset(current.denom))
 			if(typeof sameCoin !== undefined && sameCoin !== undefined)
 			{
-				sameCoin.info.balance += current.info.balance
+				sameCoin.balance += current.balance
 			}
 			else
 			{
-				const c = new Coin(Object.assign(toJS(current.info), {denom: resolveAsset(current.info.denom)}), current.rate)
-				prev.push(c)
+				const b = {denom: resolveAsset(current.denom), balance: current.balance}
+				prev.push(b)
 			}
 			return prev
 		}, [])
@@ -299,14 +265,9 @@ export default class CoinStore {
 		}
 	}
 
-	findAssetWithDenom(denom: Denom)
-	{
-		return this.coins.find(c => c.info.denom == denom)
-	}
-
 	findAssetWithCoin(coin: SupportedCoins)
 	{
-		return this.findAssetWithDenom(CoinClasses[coin].denom())
+		return this.balance.find(b => b.denom == (CoinClasses[coin].denom()))
 	}
 
 	async sendCoin(coin: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
@@ -321,24 +282,26 @@ export default class CoinStore {
 
 	async sendFiat(coin: SupportedCoins, address: string, fiat: number)
 	{
-		return await this.sendAmount(coin, address, fromFIATToAmount(fiat, fromCoinToDefaultDenom(coin), this.Prices))
+		return await this.sendAmount(coin, address, fromFIATToAmount(fiat, fromCoinToDefaultDenom(coin), this.assetsStore.Prices))
 	}
 
 	fromFIATToAssetAmount(fiat: number, asset: SupportedCoins)
 	{
-		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.Prices)
+		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.assetsStore.Prices)
 		return parseFloat(assetAmount.amount) /* / convertRateFromDenom(assetAmount.denom) */
 	}
 
 	fromFIATToCoin(fiat: number, asset: SupportedCoins)
 	{
-		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.Prices)
+		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.assetsStore.Prices)
 		return parseFloat(assetAmount.amount) / (convertRateFromDenom(assetAmount.denom) ?? 1)
 	}
 
 	fromAmountToFIAT(amount: Amount)
 	{
-		return fromAmountToFIAT(amount, this.Prices)
+		const assetPrice = this.assetsStore.AssetPrice(amount.denom)
+		const quantity = parseFloat(amount.amount)
+		return (assetPrice !== undefined && quantity !== NaN) ? assetPrice * quantity : undefined
 	}
 
 	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins | string)
@@ -346,9 +309,23 @@ export default class CoinStore {
 		return this.fromAmountToFIAT(fromCoinToAmount(balance, coin))
 	}
 
-	fromCoinToFiat(coin: Coin)
+	fromAssetBalanceToFiat(balance: AssetBalance)
 	{
-		return this.fromCoinBalanceToFiat(coin.balance, coin.info.denom)
+		const assetPrice = this.assetsStore.AssetPrice(balance.denom)
+		if(assetPrice) return balance.balance * assetPrice
+		return undefined
+	}
+
+	balanceAsExponent(balance: AssetBalance, exponent=6)
+	{
+		const asset = this.assetsStore.ResolveAsset(balance.denom)
+		return balance.balance * Math.pow(10, (asset?.exponent ?? exponent) - exponent)
+	}
+
+	fiatAsExponent(fiat: number, denom: string, exponent=6)
+	{
+		const asset = this.assetsStore.ResolveAsset(denom)
+		return fiat * Math.pow(10, (asset?.exponent ?? exponent) - exponent)
 	}
 
 	addToRecent(address : string, date?: Date)

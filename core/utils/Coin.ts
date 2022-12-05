@@ -4,13 +4,10 @@ import { Amount, Denom } from "core/types/coin/Generic"
 import { assets, chains, ibc } from 'chain-registry'
 import { Asset } from '@chain-registry/types'
 import { getIbcAssets } from "@chain-registry/utils"
-import { Prices } from "core/types/rest/coingecko"
 import { Wallet } from "core/types/storing/Generic"
 import { AssetIndex } from "core/types/coin/Assets"
 
 const ibcPrefix = "ibc/"
-
-export type AssetIndex = Denom | string | SupportedCoins
 
 export enum SupportedFiats {
 	USD = "usd",
@@ -84,40 +81,25 @@ export function fromCoinToAmount(balance: number, coin: SupportedCoins | Denom |
 	}
 }
 
-export function fromDenomToPrice(denom: Denom | string, prices: Prices): number
-{
-	const chain = fromDenomToCoin(denom)
-	if(chain) return prices[chain] ?? 0
-	return 0
-}
-
-export function fromAmountToFIAT(amount: Amount, prices: Prices)
-{
-	return fromAmountToCoin(amount) * fromDenomToPrice(amount.denom, prices)
-}
-
-export function fromFIATToAmount(fiat: number, denom: Denom, prices: Prices): Amount
-{
-	const price = fromDenomToPrice(denom, prices)
-	return {
-		amount: Math.round(fiat / (price ? price : 1) * convertRateFromDenom(denom)).toString(),
-		denom,
-	}
-}
-
 export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
 {
 	return CoinClasses[coin].denom()
 }
 
-export function fromDenomToCoin(denom: Denom | string): SupportedCoins | undefined
+export function fromDenomToChainName(denom: AssetIndex): string | undefined
 {
-	const resolvedDenom = resolveAsset(denom)
-	for(const chain of Object.values(SupportedCoins))
-	{
-		const chainAssets = assets.find(a => a.chain_name == ChainRegistryNames[chain])?.assets
-		if(chainAssets && chainAssets.find(ca => ca.base == resolvedDenom)) return chain
-	}
+	assets.forEach(a =>
+		{
+			if(a.assets.find(ca => ca.denom_units.find(du => du.denom == denom) != undefined) != undefined) return a.chain_name
+		})
+
+	return undefined
+}
+
+export function chainNameToChainId(chainName: string)
+{
+	return chains.find(c => c.chain_name == chainName)?.chain_id
+}
 
 export function resolveAsset(asset: AssetIndex)
 {
@@ -239,7 +221,14 @@ export function getBaseDenom(denom: AssetIndex)
 	return undefined
 }
 
-export function getBaseDenomName(denom: DenomAliases)
+export function getDenomsExponentDifference(denom1: AssetIndex, denom2: AssetIndex)
+{
+	const exp1 = getDenomExponent(denom1)
+	const exp2 = getDenomExponent(denom2)
+	return (exp1 && exp2) ? (exp2 - exp1) : undefined
+}
+
+export function getBaseDenomName(denom: AssetIndex)
 {
 	return getBaseDenom(denom)?.denom
 }
