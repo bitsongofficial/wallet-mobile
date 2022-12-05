@@ -4,6 +4,7 @@ import { CoinClasses } from "core/types/coin/Dictionaries"
 import { fromObjectToMap } from "core/utils/Maps"
 import { makeAutoObservable, runInAction } from "mobx"
 import { mergeMaps } from "../core/utils/Maps"
+import { Chain, CodedCosmosChain } from "./models/Chain"
 import RemoteConfigsStore from "./RemoteConfigsStore"
 import SettingsStore from "./SettingsStore"
 
@@ -13,36 +14,37 @@ type AlternateChainOptions = {
 	lcd: string,
 }
 export default class ChainsStore {
-	private customChains = new Map<string, CosmosCoin> ()
+	private customChains = new Map<string, Chain> ()
 	constructor(private settingsStore: SettingsStore, private remoteStore: RemoteConfigsStore) {
 		makeAutoObservable(this, {}, { autoBind: true })
 		runInAction(() =>
 		{
 			Object.entries(CoinClasses).forEach(([key, coin]) =>
 			{
-				this.customChains.set(key, coin)
+				this.customChains.set(key, new CodedCosmosChain(coin))
 			})
 		})
 	}
 
 	get Chains()
 	{
-		const coins = fromObjectToMap<CosmosCoin>(CoinClasses)
-		return mergeMaps<string, CosmosCoin>(coins, this.customChains)
+		const coins = fromObjectToMap<Chain>(CoinClasses)
+		return mergeMaps<string, Chain>(coins, this.customChains)
 	}
 
 	addAliasChain(name: string, alias: string)
 	{
-		const aliasChain = this.chains.get(alias)
+		const aliasChain = this.Chains.get(alias)
 		if(aliasChain) this.customChains.set(name, aliasChain)
 	}
 
 	addAlternateChain(original: string, alternateChain: AlternateChainOptions)
 	{
-		const baseChain = this.chains.get(original)
+		const baseChain = this.Chains.get(original)
 		if(baseChain)
 		{
-			this.customChains.set(alternateChain.name, new AlternativeChain(baseChain, alternateChain.rpc, alternateChain.lcd))
+			const chainBaseClass = (baseChain as CodedCosmosChain).chain
+			this.customChains.set(alternateChain.name, new CodedCosmosChain(new AlternativeChain(chainBaseClass, alternateChain.rpc, alternateChain.lcd)))
 		}
 	}
 
@@ -60,5 +62,10 @@ export default class ChainsStore {
 					return ec.indexOf("testnet") < 0
 				}
 			})
+	}
+
+	ChainId(chainIndex: string)
+	{
+		return this.Chains.get(chainIndex)?.id
 	}
 }
