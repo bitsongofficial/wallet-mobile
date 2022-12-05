@@ -1,5 +1,5 @@
 import { createRef } from "react"
-import { makeAutoObservable } from "mobx"
+import { action, makeAutoObservable, makeObservable, observable } from "mobx"
 import { BottomSheetProps } from "@gorhom/bottom-sheet"
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types"
 import { WithSpringConfig, WithTimingConfig } from "react-native-reanimated"
@@ -23,10 +23,16 @@ export default class GlobalBottomSheet implements BottomSheetMethods {
 	}
 
 	constructor() {
-		makeAutoObservable(this, {}, { autoBind: true })
+		makeObservable(this, {
+			setProps: action,
+			updProps: action,
+			clear: action,
+			removeBackHandler: action,
+			ref: observable,
+		}, { autoBind: true })
 	}
 
-	async setProps(props?: Partial<BottomSheetProps>) {
+	setProps(props?: Partial<BottomSheetProps>) {
 		this.props = props || {}
 	}
 
@@ -43,8 +49,8 @@ export default class GlobalBottomSheet implements BottomSheetMethods {
 		return this.props.children || this.defaultProps.children
 	}
 
-	async openDefault(children: JSX.Element) {
-		await this.setProps({ children })
+	openDefault(children: JSX.Element) {
+		this.setProps({ children })
 		this.expand()
 	}
 
