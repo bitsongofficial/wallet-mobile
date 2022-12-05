@@ -25,7 +25,7 @@ export default class ChainsStore {
 		})
 	}
 
-	get chains()
+	get Chains()
 	{
 		const coins = fromObjectToMap<CosmosCoin>(CoinClasses)
 		return mergeMaps<string, CosmosCoin>(coins, this.customChains)
