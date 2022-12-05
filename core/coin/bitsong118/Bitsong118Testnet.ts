@@ -20,8 +20,11 @@ import { Validators } from "../cosmos/operations/Validators";
 import { Vote } from "../cosmos/operations/Vote";
 
 export class Bitsong118Testnet extends CosmosCoin {
+	public apiEndpoint(): string {
+		return Config.BITSONG_TESTNET_EXPLORER ?? "";
+	}
 	private innerExplorer = axios.create({
-		baseURL: Config.BITSONG_TESTNET_EXPLORER
+		baseURL: this.apiEndpoint()
 	})
 	public chain(): SupportedCoins {
 		return SupportedCoins.BITSONG118_TESTNET

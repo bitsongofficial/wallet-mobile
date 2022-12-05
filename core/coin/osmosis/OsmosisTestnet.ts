@@ -20,8 +20,11 @@ import { Validators } from "../cosmos/operations/Validators";
 import { Vote } from "../cosmos/operations/Vote";
 
 export class OsmosisTestnet extends CosmosCoin {
+	public apiEndpoint(): string {
+		return Config.OSMOSIS_TESTNET_EXPLORER ?? "";
+	}
 	private innerExplorer = axios.create({
-		baseURL: Config.OSMOSIS_TESTNET_EXPLORER
+		baseURL: this.apiEndpoint()
 	})
 	public chain(): SupportedCoins {
 		return SupportedCoins.OSMOSIS_TESTNET

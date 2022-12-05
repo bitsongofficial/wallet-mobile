@@ -7,6 +7,7 @@ import { Coin } from "../Generic"
 export abstract class CosmosCoin extends Coin {
 	public abstract chain(): SupportedCoins
 	public abstract denom(): Denom
+	public abstract apiEndpoint(): string
 	public abstract explorer(): Axios
 	public gasUnit(): string
 	{
