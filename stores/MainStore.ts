@@ -11,6 +11,7 @@ import ProposalsStore from "./ProposalsStore"
 import BackgroundTimer from "react-native-background-timer"
 import NotificationsStore from "./NotificationsStore"
 import ChainsStore from "./ChainsStore"
+import AssetsStore from "./AssetsStore"
 
 export default class MainStore {
 	auth = null
@@ -19,8 +20,9 @@ export default class MainStore {
 	}
 	settings = new SettingsStore()
 	chains = new ChainsStore(this.settings, this.configs.remote)
+	assets = new AssetsStore(this.chains, this.settings)
 	wallet = new WalletStore(this.chains, this.settings, this.configs.remote)
-	coin = new CoinStore(this.wallet, this.chains, this.configs.remote, this.settings)
+	coin = new CoinStore(this.wallet, this.chains, this.assets, this.settings)
 	validators = new ValidatorStore(this.configs.remote, this.coin, this.wallet)
 	proposals = new ProposalsStore(this.configs.remote, this.wallet, this.validators)
 	dapp = new DappConnectionStore(
