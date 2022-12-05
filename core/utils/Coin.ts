@@ -6,6 +6,7 @@ import { Asset } from '@chain-registry/types'
 import { getIbcAssets } from "@chain-registry/utils"
 import { Prices } from "core/types/rest/coingecko"
 import { Wallet } from "core/types/storing/Generic"
+import { AssetIndex } from "core/types/coin/Assets"
 
 const ibcPrefix = "ibc/"
 
