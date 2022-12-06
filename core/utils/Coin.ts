@@ -160,7 +160,7 @@ export function fromPrefixToCoin(prefix: string)
 
 export function getCoinDerivationPath(coin: SupportedCoins)
 {
-	const c = resolveCoin(coin)	
+	const c = resolveCoin(coin)
 	return ""
 }
 
@@ -168,6 +168,11 @@ export function getAssetsInfos(asset: AssetIndex)
 {
 	asset = resolveAsset(asset)
 	return assetsOnly.find((a)=>(a.denom_units.find(du => du.denom===asset) != undefined))
+}
+
+export function doesChainRegistryAssetExists(asset: AssetIndex)
+{
+	return getAssetsInfos(asset) != undefined
 }
 
 export function getAssetName(asset: AssetIndex)
