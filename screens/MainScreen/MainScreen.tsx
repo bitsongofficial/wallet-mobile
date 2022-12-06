@@ -211,7 +211,7 @@ export default
 						/>
 
 						<View style={styles.coins}>
-							{coin.multiChainBalance
+							{coin.multiChainOrderedBalance
 								.filter((b) => 
 								{
 									return b.balance > 0 || assets.IsBitsongMainAsset(b.denom)
