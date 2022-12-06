@@ -5,7 +5,12 @@ export function fromObjectToMap<T extends any>(obj: any)
 	return m
 }
 
-export function mergeMaps<K extends any, T extends any>(map1: Map<K, T>, map2: Map<K, T>)
+export function mergeMaps<K extends any, T extends any>(...maps: Map<K, T>[])
 {
-	return new Map<K, T>([...map1, ...map2])
+	const elements: any[] = []
+	maps.forEach(m =>
+		{
+			elements.push(...m)
+		})
+	return new Map<K, T>(elements)
 }
