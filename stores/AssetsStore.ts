@@ -3,7 +3,7 @@ import { getCoinGeckoPrices } from "core/rest/coingecko"
 import { AssetIndex } from "core/types/coin/Assets"
 import { CoinClasses } from "core/types/coin/Dictionaries"
 import { CoingeckoPrice } from "core/types/rest/coingecko"
-import { chainIdToChain, getAssetDenomUnits, getDenomsExponentDifference, resolveAsset } from "core/utils/Coin"
+import { chainIdToChain, doesChainRegistryAssetExists, getAssetDenomUnits, getDenomsExponentDifference, resolveAsset } from "core/utils/Coin"
 import { mergeMaps } from "core/utils/Maps"
 import { autorun, get, makeAutoObservable, runInAction, set, toJS } from "mobx"
 import ChainsStore from "./ChainsStore"
@@ -12,6 +12,7 @@ import SettingsStore from "./SettingsStore"
 
 export default class AssetsStore {
 	private customAssets = new Map<AssetIndex, Asset> ()
+	private userAssets = new Map<AssetIndex, Asset> ()
 	private prices = new Map<AssetIndex, CoingeckoPrice>()
 	private baseAssets = new Map<AssetIndex, Asset>()
 	constructor(private chainsStore: ChainsStore, private settingsStore: SettingsStore)
@@ -23,8 +24,8 @@ export default class AssetsStore {
 		autorun(async () =>
 		{
 			const assets = this.Assets
-			const coinGeckoAssets = [...assets.values()].filter(a => a.coingeckoId != undefined).map(a => a.coingeckoId as string)
-			const prices = await getCoinGeckoPrices(coinGeckoAssets)
+			const missingCoinGeckoAssets = [...assets.values()].filter(a => a.coingeckoId != undefined && !this.prices.has(a.coingeckoId)).map(a => a.coingeckoId as string)
+			const prices = await getCoinGeckoPrices(missingCoinGeckoAssets)
 			runInAction(() =>
 			{
 				for(const prop in prices)
@@ -41,14 +42,22 @@ export default class AssetsStore {
 
 	get Assets() {
 		const customAssets = this.customAssets
-		return mergeMaps<AssetIndex, Asset>(this.baseAssets, customAssets)
+		const userAssets = this.userAssets
+		console.log("BBB")
+		return mergeMaps<AssetIndex, Asset>(this.baseAssets, customAssets, userAssets)
 	}
 
 	ResolveAsset(asset: AssetIndex)
 	{
 		const resolvedAsset = resolveAsset(asset)
+		console.log("A", resolvedAsset, this.Assets.has(resolvedAsset), doesChainRegistryAssetExists(resolvedAsset), this.Assets)
 		if(this.Assets.has(resolvedAsset)) return this.Assets.get(resolvedAsset)
-		else return new ChainRegistryAsset(asset)
+		else if (doesChainRegistryAssetExists(resolvedAsset))
+		{
+			const userAsset = new ChainRegistryAsset(asset)
+			this.userAssets.set(asset, userAsset)
+			return userAsset
+		}
 	}
 
 	AssetChainId(asset: AssetIndex)
