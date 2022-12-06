@@ -52,7 +52,6 @@ export default class CoinStore {
 		})
 		const userBalance: AssetBalance[] = []
 		const balanceAwaits:Promise<Amount[]>[] = []
-		const waitings: Promise<boolean>[] = []
 		const enabledChains =this.chainsStore.enabledCoins
 		for(const chain of enabledChains)
 		{
@@ -109,17 +108,7 @@ export default class CoinStore {
 			})
 			runInAction(() =>
 			{
-				this.balance.splice(0, this.balance.length, ...userBalance.sort(
-					(c1, c2) =>
-					{
-						const c1Price = this.assetsStore.AssetPrice(c1.denom)
-						const c2Price = this.assetsStore.AssetPrice(c2.denom)
-						if(c1Price && c2Price) return c2Price - c1Price
-						if(c1Price) return -1
-						if(c2Price) return 1
-						return c2.balance - c1.balance
-					}
-				))
+				this.balance.splice(0, this.balance.length, ...userBalance)
 				this.loading.balance = false
 				this.results.balance = errors
 			})
@@ -133,19 +122,17 @@ export default class CoinStore {
 
 	get totalBalance()
 	{
-		return round(
-			this.balance.reduce(
-				(total, balance) =>
+		return  this.balance.reduce(
+			(total, balance) =>
+			{
+				if(balance.balance > 0)
 				{
-					if(balance.balance > 0)
-					{
-						const b = this.fiatAsExponent(this.fromAssetBalanceToFiat(balance) ?? 0, balance.denom)
-						return (b ? b + total : total)
-					}
-					return total
-				},
-				0
-			)
+					const b = this.fiatAsExponent(this.fromAssetBalanceToFiat(balance) ?? 0, balance.denom)
+					return (b ? b + total : total)
+				}
+				return total
+			},
+			0
 		)
 	}
 
@@ -160,6 +147,26 @@ export default class CoinStore {
 	get CanSend()
 	{
 		return this.walletStore.activeProfile?.type != WalletTypes.WATCH
+	}
+
+	private sortByPrice(balance: AssetBalance[]) {
+		const sortedBalance = [...balance]
+		sortedBalance.sort(
+			(c1, c2) =>
+			{
+				const c1Price = this.assetsStore.AssetPrice(c1.denom)
+				const c2Price = this.assetsStore.AssetPrice(c2.denom)
+				if(c1Price && c2Price) return c1Price - c2Price
+				if(c1Price) return -1
+				if(c2Price) return 1
+				return c2.balance - c1.balance
+			}
+		)
+		return sortedBalance
+	}
+
+	get orderedBalance() {
+		return this.sortByPrice(this.balance)
 	}
 
 	get multiChainBalance() {
@@ -178,6 +185,10 @@ export default class CoinStore {
 			return prev
 		}, [])
 		return res
+	}
+
+	get multiChainOrderedBalance() {
+		return this.sortByPrice(this.multiChainBalance)
 	}
 
 	async sendAmount(coin: SupportedCoins, address: string, amount: Amount, destinationChain?: SupportedCoins)
