@@ -45,12 +45,12 @@ export default observer(function CardWillSend({
 	}, [address])
 
 	const coinsValue = parseFloat(amount)
-	const dollars = useMemo(() => coin.fromCoinBalanceToFiat(parseFloat(amount), coinData.denom), [amount])
+	const dollars = useMemo(() => (coinData ? coin.fromCoinBalanceToFiat(parseFloat(amount), coinData.denom) : 0), [amount])
 	const coinsIntegerValue = Math.floor(coinsValue)
 	const coinsDecimalValue = coinsValue - coinsIntegerValue
 
 	const shortAddress = `${address.substring(0, 10)}..${address.slice(-7)}`
-	const shortFrom = `${coinData.address.substring(0, 10)}..${coinData.address.slice(-7)}`
+	const shortFrom = coinData ? `${coinData.address.substring(0, 10)}..${coinData.address.slice(-7)}` : ""
 
 	return (
 		<View style={[styles.container, style]}>

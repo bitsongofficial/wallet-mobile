@@ -20,14 +20,14 @@ type Props = {
 
 export default observer(({ assetBalance, style }: Props) => {
 	const { t } = useTranslation()
-	const { settings, coin: cs,  assets} = useStore()
+	const { settings, coin: cs,  assets, chains} = useStore()
 	const denom = assetBalance.denom
 	const asset = assets.ResolveAsset(denom)
-	console.log(denom, toJS(asset))
 	const chain = assets.AssetChain(denom)
+	const chainKey = assetBalance.chain
 	const logo = asset?.icon
 	const name = asset?.name
-	const display = asset?.tag + (chain == SupportedCoins.BITSONG118 || chain == SupportedCoins.BITSONG118_TESTNET ? " (" + t("CosmosCompatible") + ")" : "")
+	const display = asset?.tag + (chainKey == SupportedCoins.BITSONG118 || chainKey == SupportedCoins.BITSONG118_TESTNET ? " (" + t("CosmosCompatible") + ")" : "")
 	const balance = formatNumber(cs.balanceAsExponent(assetBalance))
 	const balanceFIAT = cs.fiatAsExponent(cs.fromAssetBalanceToFiat(assetBalance) ?? 0, denom)
 

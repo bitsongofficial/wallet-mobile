@@ -6,16 +6,17 @@ import { COLOR } from "utils"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { CoinSelect, CoinSelectProps } from "modals/general/organisms"
+import { AssetBalance } from "stores/models/AssetBalance"
 
 type Props = {
-	activeCoin?: Coin | null
-	onPress(coin: Coin): void
+	activeAsset?: AssetBalance | null
+	onPress(coin: AssetBalance): void
 	style?: StyleProp<ViewStyle>
-	filter?(coin: Coin): boolean
-	coins?: Coin[]
+	filter?(asset: AssetBalance): boolean
+	assets?: AssetBalance[]
 } & CoinSelectProps
 
-export default function SelectCoin({ coins, activeCoin, onPress, filter, style, ...props }: Props) {
+export default function SelectCoin({ assets, activeAsset, onPress, filter, style, ...props }: Props) {
 	const { coin } = useStore()
 
 	const selectCoin = useCallback(
@@ -25,16 +26,16 @@ export default function SelectCoin({ coins, activeCoin, onPress, filter, style, 
 		},
 		[onPress],
 	)
-	const baseCoins = coins ?? coin.coins
-	const nonZeroCoins = baseCoins.filter(c => c.balance > 0)
-	const availableCoins = filter ? nonZeroCoins.filter(filter) : nonZeroCoins
+	const baseAssets = assets ?? coin.balance
+	const nonZeroAssets = baseAssets.filter(c => c.balance > 0)
+	const availableAssets = filter ? nonZeroAssets.filter(filter) : nonZeroAssets
 
 	return (
 		<BottomSheetView style={[styles.container, style]}>
 			<CoinSelect
-				coins={availableCoins}
+				assets={availableAssets}
 				onPress={selectCoin}
-				active={activeCoin ? activeCoin : undefined}
+				active={activeAsset ? activeAsset : undefined}
 				{...props}
 			></CoinSelect>
 		</BottomSheetView>

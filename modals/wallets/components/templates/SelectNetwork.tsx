@@ -12,9 +12,9 @@ import { useTranslation } from "react-i18next"
 type Props = {
 	title?: string
 	description?: string
-	activeChain?: SupportedCoins | null
-	filter?(chain: SupportedCoins): boolean
-	onPress(chain: SupportedCoins): void
+	activeChain?: string | null
+	filter?(chain: string): boolean
+	onPress(chain: string): void
 	style?: StyleProp<ViewStyle>
 }
 
