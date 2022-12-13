@@ -5,6 +5,7 @@ import { fromObjectToMap } from "core/utils/Maps"
 import { makeAutoObservable, runInAction } from "mobx"
 import { mergeMaps } from "../core/utils/Maps"
 import { Chain, CodedCosmosChain } from "./models/Chain"
+import { DynamicCosmosChain } from "./proxies/DynamicCosmosChain"
 import RemoteConfigsStore from "./RemoteConfigsStore"
 import SettingsStore from "./SettingsStore"
 
@@ -96,5 +97,21 @@ export default class ChainsStore {
 	ChainLogo(chainIndex: string)
 	{
 		return this.ResolveChain(chainIndex)?.logo
+	}
+
+	ChainPrefix(chainIndex: string)
+	{
+		return this.ResolveChain(chainIndex)?.prefix
+	}
+
+	ChainDefaultDenom(chainIndex: string)
+	{
+		return this.ResolveChain(chainIndex)?.defaultDenom
+	}
+
+	ChainOperator(chainIndex: string)
+	{
+		const chain = this.ResolveChain(chainIndex)
+		return (chain !== undefined ? new DynamicCosmosChain(chain) : undefined)
 	}
 }
