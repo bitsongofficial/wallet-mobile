@@ -43,14 +43,12 @@ export default class AssetsStore {
 	get Assets() {
 		const customAssets = this.customAssets
 		const userAssets = this.userAssets
-		console.log("BBB")
 		return mergeMaps<AssetIndex, Asset>(this.baseAssets, customAssets, userAssets)
 	}
 
 	ResolveAsset(asset: AssetIndex)
 	{
 		const resolvedAsset = resolveAsset(asset)
-		console.log("A", resolvedAsset, this.Assets.has(resolvedAsset), doesChainRegistryAssetExists(resolvedAsset), this.Assets)
 		if(this.Assets.has(resolvedAsset)) return this.Assets.get(resolvedAsset)
 		else if (doesChainRegistryAssetExists(resolvedAsset))
 		{
@@ -75,6 +73,10 @@ export default class AssetsStore {
 	}
 
 	AssetDenom(asset: AssetIndex)
+	{
+		return this.ResolveAsset(asset)?.denom
+	}
+
 	AssetPrice(asset: AssetIndex)
 	{
 		const assetItem = this.ResolveAsset(asset)
