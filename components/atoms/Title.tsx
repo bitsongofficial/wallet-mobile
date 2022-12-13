@@ -22,6 +22,7 @@ type Props = {
 	subtitleStyle?: StyleProp<TextStyle>
 	alignment?: "center" | "left"
 	size?: Size | {uppertitle?: Size, title?: Size, subtitle?: Size}
+	titleElement?: React.ReactNode
 }
 
 export default ({
@@ -33,6 +34,7 @@ export default ({
 	subtitleStyle,
 	uppertitleStyle,
 	alignment = "left",
+	titleElement,
 	size,
 	children
 }: React.PropsWithChildren<Props>) =>
@@ -67,9 +69,12 @@ export default ({
 	return (
 		<View style={[styles.container, style]}>
 			{uppertitle && <Text style={[styles.uppertitle, uppertitleStyle, sizes.uppertitle, align]}>{uppertitle}</Text>}
-			<Text style={[styles.title, titleStyle, sizes.title, subtitle ? styles.titleMarginBottom : undefined, align]}>
-				{children ?? title}
-			</Text>
+			{titleElement}
+			{titleElement === undefined &&
+				<Text style={[styles.title, titleStyle, sizes.title, subtitle ? styles.titleMarginBottom : undefined, align]}>
+					{children ?? title}
+				</Text>
+			}
 			{subtitle && <Text style={[styles.subtitle, subtitleStyle, sizes.subtitle, align]}>{subtitle}</Text>}
 		</View>
 	)

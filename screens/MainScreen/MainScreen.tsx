@@ -18,7 +18,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { ReceiveModal } from "modals/wallets/modals"
 import { SupportedCoins } from "constants/Coins"
-import { Button, Title } from "components/atoms"
+import { Button, Loader, Title } from "components/atoms"
 import { openClaim } from "modals/validator"
 import { formatNumber } from "utils/numbers"
 import { openSend, openSendIbc } from "modals/wallets"
@@ -179,8 +179,8 @@ export default
 								uppertitle={t("TotalBalance")}
 								size={{title: 32, uppertitle: 18}}
 								style={styles.mb34}
+								titleElement={coin.loading.balance ? <Loader style={styles.total_balance_loader}></Loader> : undefined}
 							></Title>
-							{/* <Text style={styles.balance_variation}>Variation {variation} %</Text> */}
 
 							<View style={[styles.reward]}>
 								<Title
@@ -199,8 +199,8 @@ export default
 							onPressInquire={undefined}
 							onPressReceive={openReceive}
 							onPressScan={openScanner}
-							onPressSend={openSendModal}
-							onPressSendIbc={openSendIbcModal}
+							onPressSend={coin.loading.balance ? undefined : openSendModal}
+							onPressSendIbc={coin.loading.balance ? undefined : openSendIbcModal}
 						/>
 						<Tabs
 							values={tabs}
@@ -210,18 +210,25 @@ export default
 							style={styles.tabs}
 						/>
 
-						<View style={styles.coins}>
-							{coin.multiChainOrderedBalance
-								.filter((b) => 
-								{
-									return b.balance > 0 || assets.IsBitsongMainAsset(b.denom)
-								})
-								.map((b) => (
-									<TouchableOpacity key={b.denom} disabled={true}>
-										<CoinStat assetBalance={b} style={{ marginBottom: 9 }} />
-									</TouchableOpacity>
-								))}
-						</View>
+						{!coin.loading.balance &&
+							<View style={styles.coins}>
+								{coin.multiChainOrderedBalance
+									.filter((b) => 
+									{
+										return b.balance > 0 || assets.IsBitsongMainAsset(b.denom)
+									})
+									.map((b) => (
+										<TouchableOpacity key={b.denom} disabled={true}>
+											<CoinStat assetBalance={b} style={{ marginBottom: 9 }} />
+										</TouchableOpacity>
+									))}
+							</View>
+						}
+						{coin.loading.balance &&
+							<View style={styles.balance_loader}>
+								<Loader size={64}></Loader>
+							</View>
+						}
 				</BottomNavigator>
 			</SafeAreaView>
 		)
@@ -238,6 +245,14 @@ const styles = StyleSheet.create({
 	},
 	balance: {
 		marginBottom: vs(34),
+	},
+	balance_loader: {
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "center",
+	},
+	total_balance_loader: {
+		marginLeft: s(16),
 	},
 	balance_title: {
 		fontFamily: "CircularStd",

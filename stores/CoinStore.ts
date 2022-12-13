@@ -24,23 +24,32 @@ import { Chain } from "./models/Chain";
 
 const maxRecentRecipients = 10
 
+class LoadingState {
+	balance: boolean = false
+	send: boolean = false
+	constructor()
+	{
+		makeAutoObservable(this)
+	}
+}
+
+class ResultsState {
+	balance: boolean | null = null
+	send: boolean | null = null
+	constructor()
+	{
+		makeAutoObservable(this)
+	}
+}
+
 export default class CoinStore {
 	balance: AssetBalance[] = []
 	recentRecipients: {
 		address: string,
 		date: Date,
 	}[] = []
-	loading = {
-		balance: false,
-		send: false,
-	}
-	results: {
-		balance: boolean | null,
-		send: boolean | null,
-	} = {
-		balance: null,
-		send: null,
-	}
+	loading = new LoadingState()
+	results = new ResultsState()
 	constructor(private walletStore: WalletStore, private chainsStore: ChainsStore, private assetsStore: AssetsStore, private settingsStore: SettingsStore) {
 		makeAutoObservable(this, {}, { autoBind: true });
 		autorun(() => {this.updateBalances()})
@@ -56,20 +65,21 @@ export default class CoinStore {
 		const userBalance: AssetBalance[] = []
 		const balanceAwaits:Promise<Amount[]>[] = []
 		const enabledChains =this.chainsStore.enabledCoins
+		const activeProfile = this.walletStore.activeProfile
+		const activeWallet = this.walletStore.activeWallet
 		for(const chain of enabledChains)
 		{
 			const coin = CoinClasses[chain]
 			try
 			{
-				if(this.walletStore.activeProfile)
+				if(activeProfile)
 				{
 					globalLoading.open()
 					balanceAwaits.push((async () =>
 					{
-						const profile = this.walletStore.activeWallet
-						if(profile != null)
+						if(activeWallet != null)
 						{
-							const chainWallet = profile.wallets[chain]
+							const chainWallet = activeWallet.wallets[chain]
 							if(chainWallet)
 							{
 								return await coin.Do(CoinOperationEnum.Balance, {
@@ -77,7 +87,7 @@ export default class CoinStore {
 								})
 							}
 						}
-						throw "profile (" + profile + ") or wallet of chain (" + chain + ") not found"
+						throw "profile (" + activeWallet + ") or wallet of chain (" + chain + ") not found"
 					})())
 				}
 			}
