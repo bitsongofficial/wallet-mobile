@@ -23,17 +23,11 @@ export class Bitsong extends CosmosCoin {
 	public apiEndpoint(): string {
 		return Config.BITSONG_EXPLORER ?? "";
 	}
-	private innerExplorer = axios.create({
-		baseURL: this.apiEndpoint()
-	})
 	public chain(): SupportedCoins {
 		return SupportedCoins.BITSONG
 	}
 	public denom(): Denom {
 		return Denom.UBTSG
-	}
-	public explorer(): Axios {
-		return this.innerExplorer
 	}
 	public RPCEndpoint(): string {
 		return Config.BITSONG_RPC ?? ""

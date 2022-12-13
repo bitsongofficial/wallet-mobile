@@ -23,17 +23,11 @@ export class Osmosis extends CosmosCoin {
 	public apiEndpoint(): string {
 		return Config.OSMOSIS_EXPLORER ?? "";
 	}
-	private innerExplorer = axios.create({
-		baseURL: this.apiEndpoint()
-	})
 	public chain(): SupportedCoins {
 		return SupportedCoins.OSMOSIS
 	}
 	public denom(): Denom {
 		return Denom.UOSMO
-	}
-	public explorer(): Axios {
-		return this.innerExplorer
 	}
 	public RPCEndpoint(): string {
 		return Config.OSMOSIS_RPC ?? ""
