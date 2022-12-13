@@ -24,11 +24,12 @@ export default class GlobalBottomSheet implements BottomSheetMethods {
 
 	constructor() {
 		makeObservable(this, {
+			ref: observable,
+			props: observable,
 			setProps: action,
 			updProps: action,
 			clear: action,
 			removeBackHandler: action,
-			ref: observable,
 		}, { autoBind: true })
 	}
 
