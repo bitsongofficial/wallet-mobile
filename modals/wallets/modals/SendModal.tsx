@@ -206,8 +206,8 @@ export const FooterSend = observer(
 								onPress={() => controller.isIbc ? steps.goTo(SendSteps.DestinationNetwork) :  steps.goTo(SendSteps.Receiver)}
 								disable={
 									creater.asset == null || (
-										!(Number(creater.balance) <= (store.coin.balanceOf(creater.asset) ?? 0) &&
-										Number(creater.balance) > 0)
+										!(creater.balance <= (store.coin.balanceOf(creater.asset) ?? 0)) &&
+										!(creater.balance > 0)
 									)
 								}
 								contentContainerStyle={styles.buttonContinue}

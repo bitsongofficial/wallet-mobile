@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import { observer } from "mobx-react-lite"
 import { BottomSheetScrollView, BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet"
@@ -22,12 +22,13 @@ type Props = {
 
 export default observer(function SelectReceiver({ controller }: Props) {
 	const { t } = useTranslation()
-	const { coin: coinStore } = useStore()
+	const { coin: coinStore, chains } = useStore()
 
 	const [activeTab, setActiveTab] = useState<ValueTabs>("Details")
 	const scrollview = useRef<BottomSheetScrollViewMethods>(null)
-	const insets = useSafeAreaInsets()
 	const theme = useTheme()
+
+	const chain = useMemo(() => (controller.creater.chain ? chains.ResolveChain(controller.creater.chain) : undefined), [controller.creater.chain])
 
 	const [json, setJson] = useState<any>({})
 
@@ -35,12 +36,12 @@ export default observer(function SelectReceiver({ controller }: Props) {
 	{
 		(async () =>
 		{
-			const { coin, addressInput, balance } = controller.creater
-			const chain = coin?.info.coin ?? SupportedCoins.BITSONG
-			setJson(await coinStore.sendMessage(
-				chain,
+			const { asset, addressInput, balance } = controller.creater
+			const chainId = chain?.id
+			if(asset && chainId) setJson(await coinStore.getSendMessage(
+				chainId,
 				addressInput.value,
-				fromCoinToAmount(balance, chain)))
+				fromCoinToAmount(balance, asset?.denom)))
 		})()
 	}, [controller])
 
@@ -66,7 +67,8 @@ export default observer(function SelectReceiver({ controller }: Props) {
 						style={{ marginTop: 0 }}
 						address={controller.creater.address}
 						amount={controller.creater.balance.toString()}
-						coin={controller.creater.coin?.info}
+						asset={controller.creater.asset}
+						chain={chain}
 						onPress={() => {}}
 						memoInput={controller.creater.memo}
 					/>

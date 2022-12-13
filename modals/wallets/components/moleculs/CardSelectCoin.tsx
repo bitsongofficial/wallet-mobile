@@ -10,13 +10,14 @@ import { Asset } from "stores/models/Asset"
 
 type Props = {
 	asset?: Asset
+	chain?: string
 	style?: StyleProp<ViewStyle>
 }
 
-export default observer<Props>(function CardWallet({ asset, style }) {
+export default observer<Props>(function CardWallet({ asset, chain, style }) {
 	const theme = useTheme()
 	const { coin } = useStore()
-	const balance = asset ? coin.balanceOfAsExponent(asset) : 0
+	const balance = asset ? coin.balanceOfAsExponent(asset, chain) : 0
 	return (
 		<Card style={[styles.card, style]}>
 			<View style={styles.left}>

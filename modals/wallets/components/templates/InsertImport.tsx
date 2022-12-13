@@ -53,7 +53,7 @@ export default observer<Props>(function InsertImport({ controller, onPressSelect
 			)}
 
 			<TouchableOpacity onPress={onPressSelectCoin}>
-				<CardSelectCoin asset={creater.asset ?? undefined} style={styles.select} />
+				<CardSelectCoin asset={creater.asset ?? undefined} chain={creater.chain} style={styles.select} />
 			</TouchableOpacity>
 
 			<Numpad

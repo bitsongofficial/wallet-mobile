@@ -4,9 +4,12 @@ import { COLOR, InputHandler } from "utils"
 import { CardWillSend } from "components/moleculs"
 import { observer } from "mobx-react-lite"
 import { ICoin } from "classes/types"
+import { Asset } from "stores/models/Asset"
+import { Chain } from "stores/models/Chain"
 
 type Props = {
-	coin: ICoin
+	asset: Asset | null
+	chain?: Chain
 	amount: string
 	address: string
 
@@ -20,7 +23,8 @@ type Props = {
 export default observer(function Recap({
 	address,
 	amount,
-	coin,
+	asset,
+	chain,
 	onPress,
 
 	style,
@@ -29,7 +33,7 @@ export default observer(function Recap({
 }: Props) {
 	return (
 		<View style={[styles.container, style]}>
-			<CardWillSend address={address} amount={amount} coinData={coin} onPressUp={onPress} />
+			<CardWillSend address={address} amount={amount} asset={asset} chain={chain} onPressUp={onPress} />
 
 			<Input
 				bottomsheet={bottomSheet}

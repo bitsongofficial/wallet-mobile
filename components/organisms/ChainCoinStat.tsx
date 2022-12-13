@@ -21,9 +21,9 @@ export default observer(({ assetBalance, style }: Props) => {
 	const asset = assets.ResolveAsset(denom)
 	const chain = assets.AssetChain(denom)
 	const chainKey = assetBalance.chain
-	const logo = chain ? chains.ChainLogo(chain) ?? "" : ""
-	const name = chain ? chains.ChainName(chain) ?? "" : ""
-	const display = asset?.tag + (chainKey == SupportedCoins.BITSONG118 || chainKey == SupportedCoins.BITSONG118_TESTNET ? " (" + t("CosmosCompatible") + ")" : "")
+	const logo = chain ? chains.ChainLogo(assetBalance.chain) ?? "" : ""
+	const name = asset ? asset.tag : ""
+	const display =chains.ChainName(assetBalance.chain) + (chainKey == SupportedCoins.BITSONG118 || chainKey == SupportedCoins.BITSONG118_TESTNET ? " (" + t("CosmosCompatible") + ")" : "")
 	const balance = formatNumber(cs.balanceAsExponent(assetBalance))
 	const balanceFIAT = cs.fiatAsExponent(cs.fromAssetBalanceToFiat(assetBalance) ?? 0, denom)
 
