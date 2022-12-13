@@ -1,5 +1,5 @@
 import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
-import { FromToAmount } from "core/types/coin/cosmos/FromToAmount";
+import { FromToAmountIbc } from "core/types/coin/cosmos/FromToAmountIbc";
 import Long from "long";
 import { CosmosOperation } from "./CosmosOperation";
 
@@ -14,7 +14,7 @@ function ibcTimeout()
 }
 
 export class SendIbc extends CosmosOperation {
-	async Run(data: FromToAmount) {
+	async Run(data: FromToAmountIbc) {
 		const wallet = await data.from.Signer()
 		const [firstAccount] = await wallet.getAccounts()
 		const client = await SigningStargateClient.connectWithSigner(this.coin.RPCEndpoint(), wallet, {
@@ -27,7 +27,8 @@ export class SendIbc extends CosmosOperation {
 			const srcAddress = firstAccount.address
 			const destAddress = await data.to.Address()
 			const amount = Array.isArray(data.amount) ? data.amount[0] : data.amount
-			result = await client.sendIbcTokens(srcAddress, destAddress, amount, "transfer", "channel-0", undefined, ibcTimeout(), "auto", data.description)
+			const { port, channel } = data.ibcCoordinates
+			result = await client.sendIbcTokens(srcAddress, destAddress, amount, port, channel, undefined, ibcTimeout(), "auto", data.description)
 
 			assertIsDeliverTxSuccess(result)
 			return {

@@ -3,9 +3,10 @@ import { ChainIds, ChainRegistryNames, CoinClasses } from "core/types/coin/Dicti
 import { Amount, Denom } from "core/types/coin/Generic"
 import { assets, chains, ibc } from 'chain-registry'
 import { Asset } from '@chain-registry/types'
-import { getIbcAssets } from "@chain-registry/utils"
+import { getIbcAssets, getIbcInfo } from "@chain-registry/utils"
 import { Wallet } from "core/types/storing/Generic"
 import { AssetIndex } from "core/types/coin/Assets"
+import { ChainIndex, IBCCordinates } from "core/types/coin/Coin"
 
 const ibcPrefix = "ibc/"
 
@@ -64,16 +65,16 @@ export function fromAmountToCoin(amount: Amount)
 	return Number(amount.amount) / (cr ? cr : 1)
 }
 
-export function fromCoinToAmount(balance: number, coin: AssetIndex)
+export function fromCoinToAmount(balance: number, asset: AssetIndex)
 {
 	let denom
-	if(coin in SupportedCoins)
+	if(asset in SupportedCoins)
 	{
-		denom = CoinClasses[coin as SupportedCoins].denom()
+		denom = CoinClasses[asset as SupportedCoins].denom()
 	}
 	else
 	{
-		denom = coin
+		denom = asset
 	}
 	return {
 		amount: (balance * convertRateFromDenom(denom)).toString(),
@@ -81,7 +82,7 @@ export function fromCoinToAmount(balance: number, coin: AssetIndex)
 	}
 }
 
-export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
+export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom | string
 {
 	return CoinClasses[coin].denom()
 }
@@ -113,11 +114,12 @@ export function resolveAsset(asset: AssetIndex)
 	return asset
 }
 
-function resolveCoin(coin: SupportedCoins)
+function resolveCoin(chain: ChainIndex)
 {
-	return chains.find((c: any) =>
+	return chains.find((c) =>
 	{
-		return c.chain_name == ChainRegistryNames[coin]
+		const sc = chain as SupportedCoins
+		return (c.chain_name == ChainRegistryNames[sc] || c.chain_name == chain || c.chain_id == chain)
 	})
 }
 
@@ -128,7 +130,7 @@ export function chainIdToChain(chainId: string)
 	return undefined
 }
 
-export function getCoinGasUnit(coin: SupportedCoins)
+export function getCoinGasUnit(coin: ChainIndex)
 {
 	const c = resolveCoin(coin)
 	if(c && c.fees && c.fees.fee_tokens && c.fees.fee_tokens.length > 0)
@@ -247,4 +249,18 @@ export function firstAvailableWallet(wallets: SupportedCoinsMap<Wallet>)
 	const walletItems = Object.values(wallets)
 	if(walletItems.length > 0) return walletItems[0]
 	return undefined
+}
+
+export function getIbcCoordinates(fromName: string, toName: string): IBCCordinates
+{
+	const ibcInfos = getIbcInfo(ibc, fromName, toName)
+	const coordinates = (ibcInfos.chain_1.chain_name == fromName ?
+		ibcInfos.channels[0].chain_1 :
+		ibcInfos.channels[0].chain_2
+	)
+
+	return {
+		port: coordinates.port_id,
+		channel: coordinates.channel_id,
+	}
 }
