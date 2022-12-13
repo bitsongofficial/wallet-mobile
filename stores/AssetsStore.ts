@@ -74,6 +74,7 @@ export default class AssetsStore {
 		return chainIdToChain(chainId)
 	}
 
+	AssetDenom(asset: AssetIndex)
 	AssetPrice(asset: AssetIndex)
 	{
 		const assetItem = this.ResolveAsset(asset)
