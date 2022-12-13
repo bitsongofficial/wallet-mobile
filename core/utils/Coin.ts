@@ -64,7 +64,7 @@ export function fromAmountToCoin(amount: Amount)
 	return Number(amount.amount) / (cr ? cr : 1)
 }
 
-export function fromCoinToAmount(balance: number, coin: SupportedCoins | Denom | string)
+export function fromCoinToAmount(balance: number, coin: AssetIndex)
 {
 	let denom
 	if(coin in SupportedCoins)
@@ -88,11 +88,15 @@ export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
 
 export function fromDenomToChainName(denom: AssetIndex): string | undefined
 {
-	assets.forEach(a =>
-		{
-			if(a.assets.find(ca => ca.denom_units.find(du => du.denom == denom) != undefined) != undefined) return a.chain_name
-		})
-
+	for(const a of assets)
+	{
+		const foundAsset = a.assets.find(ca =>
+			{
+				const foundDenom = ca.denom_units.find(du => (du.denom == denom))
+				return foundDenom != undefined
+			})
+		if(foundAsset != undefined) return a.chain_name
+	}
 	return undefined
 }
 
@@ -146,7 +150,7 @@ export function getCoinName(coin: SupportedCoins)
 	return resolveCoin(coin)?.pretty_name
 }
 
-export function getCoinIcon(coin: SupportedCoins)
+export function getCoinIcon(coin: string)
 {
 	return getAssetIcon(coin)
 }
