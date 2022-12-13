@@ -20,7 +20,8 @@ import { AssetBalance, ObservableAssetBalance } from "./models/AssetBalance";
 import AssetsStore from "./AssetsStore";
 import { Asset } from "./models/Asset";
 import { AssetIndex } from "core/types/coin/Assets";
-import { Chain } from "./models/Chain";
+import { Chain, CosmosChain } from "./models/Chain";
+import { ChainIndex } from "core/types/coin/Coin";
 
 const maxRecentRecipients = 10
 
@@ -204,16 +205,19 @@ export default class CoinStore {
 		return this.sortByPrice(this.multiChainBalance)
 	}
 
-	async sendAmount(chain: Chain, address: string, amount: Amount, destinationChain?: SupportedCoins)
+	private getWalletForChain(chain: ChainIndex | Chain)
 	{
-		runInAction(() =>
-		{
-			this.results.send = null
-			this.loading.send = true
-		})
-		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
-		const coinClass = CoinClasses[coin]
-		const wallet = this.walletStore.activeWallet.wallets[coin]
+		const chainAsItem = chain as Chain
+		const chainKey = this.chainsStore.ChainKey(chainAsItem.id ?? chain)
+		if(!(chainKey && this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[chainKey as SupportedCoins])) return undefined
+		return this.walletStore.activeWallet.wallets[chainKey as SupportedCoins]
+	}
+
+	async sendAmount(chain: ChainIndex, address: string, amount: Amount, destinationChain?: ChainIndex)
+	{
+		const wallet = this.getWalletForChain(chain)
+		const chainOperator = this.chainsStore.ChainOperator(chain)
+		if(chainOperator === undefined) return
 		if(!(wallet instanceof CosmosWallet) || !this.CanSend)
 		{
 			runInAction(() =>
@@ -223,18 +227,31 @@ export default class CoinStore {
 			})
 			throw {error: "operation not permitted"}
 		}
+
+		runInAction(() =>
+		{
+			this.results.send = null
+			this.loading.send = true
+		})
 		try
 		{
 			let res: any
 			if(destinationChain)
 			{
+				const chainAsCosmosChain = this.chainsStore.ResolveChain(chain) as CosmosChain
+				if(chainAsCosmosChain === undefined) return
+				const destinationChainId = this.chainsStore.ChainId(destinationChain)
+				if(destinationChainId === undefined) return
+				const destinationChainName = this.chainsStore.ChainName(destinationChain)
+				if(destinationChainName === undefined) return
 				const data: FromToAmountIbc = {
 					from:  wallet as CosmosWallet,
 					to: new PublicWallet(address),
 					amount,
-					destinationNetwork: destinationChain,
+					destinationNetworkId: destinationChainId,
+					ibcCoordinates: chainAsCosmosChain.ibcCoordinates(destinationChainName)
 				}
-				res = await coinClass.Do(CoinOperationEnum.SendIbc, data)
+				res = await chainOperator.Do(CoinOperationEnum.SendIbc, data)
 			}
 			else
 			{
@@ -243,7 +260,7 @@ export default class CoinStore {
 					to: new PublicWallet(address),
 					amount,
 				}
-				res = await coinClass.Do(CoinOperationEnum.Send, data)
+				res = await chainOperator.Do(CoinOperationEnum.Send, data)
 			}
 			this.addToRecent(address)
 			runInAction(() =>
@@ -261,19 +278,9 @@ export default class CoinStore {
 		}
 	}
 
-	async sendMessage(coin: SupportedCoins, address: string, amount: Amount)
+	async getSendMessage(chain: ChainIndex, address: string, amount: Amount)
 	{
-		if(!(this.walletStore.activeWallet && this.walletStore.activeWallet.wallets[coin])) return
-		const wallet = this.walletStore.activeWallet.wallets[coin]
-		if(!(wallet instanceof CosmosWallet) || !this.CanSend)
-		{
-			runInAction(() =>
-			{
-				this.loading.send = false
-				this.results.send = false
-			})
-			throw {error: "operation not permitted"}
-		}
+		const wallet = this.getWalletForChain(chain)
 		try
 		{
 			const data: FromToAmount = {
@@ -294,25 +301,16 @@ export default class CoinStore {
 		return this.balance.find(b => b.denom == (CoinClasses[coin].denom()))
 	}
 
-	async sendAsset(coin: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
+	async sendAsset(chain: ChainIndex, address: string, balance: number, denom?: SupportedCoins | Denom | string)
 	{
-		return await this.sendAmount(coin, address, fromCoinToAmount(balance, denom ?? coin))
+		const actualDenom = denom ?? this.chainsStore.ChainDefaultDenom(chain)
+		if(actualDenom === undefined) return
+		return await this.sendAmount(chain, address, fromCoinToAmount(balance, actualDenom))
 	}
 
-	async sendAssetIbc(coin: SupportedCoins, destinationChain: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
+	async sendAssetIbc(coin: ChainIndex, destinationChain: ChainIndex, address: string, balance: number, denom?: SupportedCoins | Denom | string)
 	{
 		return await this.sendAmount(coin, address, fromCoinToAmount(balance, denom ?? coin), destinationChain)
-	}
-
-	async sendFiat(coin: SupportedCoins, address: string, fiat: number)
-	{
-		return await this.sendAmount(coin, address, fromFIATToAmount(fiat, fromCoinToDefaultDenom(coin), this.assetsStore.Prices))
-	}
-
-	fromFIATToAmount(fiat: number, asset: AssetIndex)
-	{
-		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.assetsStore.Prices)
-		return parseFloat(assetAmount.amount)
 	}
 
 	fromFIATToBalance(fiat: number, asset: AssetIndex)
@@ -325,7 +323,7 @@ export default class CoinStore {
 	{
 		const assetPrice = this.assetsStore.AssetPrice(amount.denom)
 		const quantity = parseFloat(amount.amount)
-		return (assetPrice !== undefined && quantity !== NaN) ? assetPrice * quantity : undefined
+		return (assetPrice !== undefined && !Number.isNaN(quantity)) ? assetPrice * quantity : undefined
 	}
 
 	fromCoinBalanceToFiat(balance: number, coin: SupportedCoins | string)
@@ -352,27 +350,28 @@ export default class CoinStore {
 		return fiat * Math.pow(10, (asset?.exponent ?? exponent) - exponent)
 	}
 
-	balanceOf(asset: Asset)
+	balanceOf(asset: Asset, chain?: ChainIndex)
 	{
-		return this.balance.find(ab => ab.denom == asset.denom)
+		const chainKey = chain ? this.chainsStore.ChainKey(chain) : undefined
+		return this.balance.find(ab => (resolveAsset(ab.denom) == resolveAsset(asset.denom) && (chainKey === undefined || ab.chain == chainKey)))
 	}
 
-	balanceOfAsExponent(asset: Asset, exponent?: number)
+	balanceOfAsExponent(asset: Asset, chain?: ChainIndex, exponent?: number)
 	{
-		const balance = this.balanceOf(asset)
+		const balance = this.balanceOf(asset, chain)
 		if(balance === undefined) return undefined
 		return this.balanceAsExponent(balance, exponent)
 	}
 
-	fiatValueOf(asset: Asset)
+	fiatValueOf(asset: Asset, chain?: ChainIndex)
 	{
-		const assetBalance = this.balance.find(ab => ab.denom == asset.denom)
+		const assetBalance = this.balanceOf(asset, chain)
 		return assetBalance ? this.fromAssetBalanceToFiat(assetBalance) : undefined
 	}
 
-	fiatValueOfAsExponent(asset: Asset, exponent?: number)
+	fiatValueOfAsExponent(asset: Asset, chain?: ChainIndex, exponent?: number)
 	{
-		const fiat = this.fiatValueOf(asset)
+		const fiat = this.fiatValueOf(asset, chain)
 		if(fiat === undefined) return undefined
 		return this.fiatAsExponent(fiat, asset.denom, exponent)
 	}

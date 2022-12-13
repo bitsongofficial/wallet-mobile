@@ -21,13 +21,13 @@ export default class TransactionCreater {
 
   getAssetBalanceFromStore() {
     const coinStore = store.coin
-    const assetBalance = this.asset ? coinStore.balanceOfAsExponent(this.asset) ?? 0 : 0
+    const assetBalance = this.asset ? coinStore.balanceOfAsExponent(this.asset, this.chain) ?? 0 : 0
     return assetBalance
   }
 
   getAssetFiatValueFromStore() {
     const coinStore = store.coin
-    const assetBalance = this.asset ? coinStore.fiatValueOfAsExponent(this.asset) ?? 0 : 0
+    const assetBalance = this.asset ? coinStore.fiatValueOfAsExponent(this.asset, this.chain) ?? 0 : 0
     return assetBalance
   }
 
