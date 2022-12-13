@@ -1,14 +1,16 @@
-import Coin from "classes/Coin";
 import { IPerson, ITransaction } from "classes/types";
 import { SupportedCoins } from "constants/Coins";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
+import { Asset } from "stores/models/Asset";
+import { store } from "stores/Store";
 import { InputHandler } from "utils";
 
 export default class TransactionCreater {
-  coin: Coin | null = null;
+  asset: Asset | null = null
   balance: number = 0
-  receiver?: IPerson | null = null; //
-  destinationChain?: SupportedCoins
+  receiver?: IPerson | null = null //
+  destinationChainId?: string
+  chain?: string
 
   addressInput = new InputHandler();
   memo = new InputHandler()
@@ -17,14 +19,40 @@ export default class TransactionCreater {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-	setCoin(coin: Coin | null) {
-		this.coin = coin
-    if(this.destinationChain === undefined) this.destinationChain = coin?.info.coin
+  getAssetBalanceFromStore() {
+    const coinStore = store.coin
+    const assetBalance = this.asset ? coinStore.balanceOfAsExponent(this.asset) ?? 0 : 0
+    return assetBalance
+  }
+
+  getAssetFiatValueFromStore() {
+    const coinStore = store.coin
+    const assetBalance = this.asset ? coinStore.fiatValueOfAsExponent(this.asset) ?? 0 : 0
+    return assetBalance
+  }
+
+  getFiatValue() {
+    const coinStore = store.coin
+    if(this.chain === undefined || this.asset === null) return 0
+    const fiat = coinStore.fromAssetBalanceToFiat({chain: this.chain, denom: this.asset.denom, balance: this.balance})
+    if(fiat === undefined) return 0
+    return fiat
+  }
+
+	setAsset(asset: Asset | null) {
+		this.asset = asset
+    if(this.destinationChainId === undefined) this.destinationChainId = asset?.chainId
 	}
+
+  setChain(chain: string) {
+    this.chain = chain
+    if(this.destinationChainId === undefined) this.destinationChainId = chain
+  }
+
   setBalance(balance: number) {
-    const coin = this.coin
+    const assetBalance = this.getAssetBalanceFromStore()
     let actualBalance = balance
-    if(coin && balance > coin.balance) actualBalance = coin.balance
+    if(this.asset && balance > assetBalance) actualBalance = assetBalance
     this.balance = actualBalance
   }
   setReceiver(receiver: IPerson) {
@@ -32,14 +60,15 @@ export default class TransactionCreater {
   }
 
   setMax() {
-    if (this.coin?.balance) {
-      this.balance = this.coin.balance;
+    const assetBalance = this.getAssetBalanceFromStore()
+    if (assetBalance) {
+      this.balance = assetBalance;
     }
   }
 
-  setDestinationChain(destinationChain: SupportedCoins | undefined)
+  setDestinationChainId(destinationChainId: string | undefined)
   {
-    this.destinationChain = destinationChain
+    this.destinationChainId = destinationChainId
   }
 
   get address() {
@@ -52,16 +81,16 @@ export default class TransactionCreater {
   }
 
   get isReady() {
-    return !!this.coin && !!this.balance && this.isAddressValid && this.receiver;
+    return !!this.asset && !!this.balance && this.isAddressValid && this.receiver;
   }
 
   create(): ITransaction | undefined {
-    if (!!this.coin && !!this.balance && this.isAddressValid && this.receiver) {
-      const { address, balance, coin, receiver } = this;
+    if (!!this.asset && !!this.balance && this.isAddressValid && this.receiver) {
+      const { address, balance, asset, receiver } = this;
       return {
         address,
         balance,
-        coin: coin.info,
+        asset: asset,
         receiver,
       };
     }

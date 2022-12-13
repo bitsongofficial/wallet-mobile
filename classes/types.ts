@@ -1,4 +1,5 @@
 import { SupportedCoins } from "constants/Coins";
+import { Asset } from "stores/models/Asset";
 
 export interface ICoinMultiChain {
 	_id: string;
@@ -25,7 +26,7 @@ export type IPerson = {
 
 // WIP
 export type ITransaction = {
-  coin: ICoin;
+  asset: Asset;
   balance: number;
   address: string;
   receiver: IPerson;
