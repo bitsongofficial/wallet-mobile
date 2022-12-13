@@ -55,7 +55,7 @@ export default class AssetsStore {
 		else if (doesChainRegistryAssetExists(resolvedAsset))
 		{
 			const userAsset = new ChainRegistryAsset(asset)
-			this.userAssets.set(asset, userAsset)
+			runInAction(() => set(this.userAssets, asset, userAsset))
 			return userAsset
 		}
 	}
