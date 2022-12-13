@@ -64,8 +64,37 @@ export default class ChainsStore {
 			})
 	}
 
+	ResolveChain(chainIndex: string)
+	{
+		const chains = this.Chains
+		if(chains.has(chainIndex)) return chains.get(chainIndex)
+
+		return [...chains.values()].find(c => (c.id == chainIndex || c.name == chainIndex))
+	}
+
+	ChainKey(chainIndex: string)
+	{
+		const searchValue = this.ResolveChain(chainIndex)
+		const chains = this.Chains
+		for (let [key, value] of chains.entries())
+		{
+			if (value === searchValue)
+				return key
+		}
+	}
+
 	ChainId(chainIndex: string)
 	{
-		return this.Chains.get(chainIndex)?.id
+		return this.ResolveChain(chainIndex)?.id
+	}
+
+	ChainName(chainIndex: string)
+	{
+		return this.ResolveChain(chainIndex)?.name
+	}
+
+	ChainLogo(chainIndex: string)
+	{
+		return this.ResolveChain(chainIndex)?.logo
 	}
 }
