@@ -15,11 +15,9 @@ import { s, vs } from "react-native-size-matters"
 import { HORIZONTAL_WRAPPER } from "utils/constants"
 import { useTranslation } from "react-i18next"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { SupportedCoins } from "constants/Coins"
-import { Coin } from "classes"
 import SelectCoinByNetwork from "../components/templates/SelectCoinByNetwork"
 import { SendSteps } from "../controllers/SendController"
-import { resolveAsset } from "core/utils/Coin"
+import { AssetBalance } from "stores/models/AssetBalance"
 
 type Props = {
 	controller: SendController
@@ -35,12 +33,12 @@ export default observer<Props>(function SendModal({
 	const { t } = useTranslation()
 	const store = useStore()
 	const hasCoins = store.coin.hasCoins
-	const [tempCoin, setTempCoin] = useState<Coin>()
+	const [tempAsset, setTempAsset] = useState<AssetBalance>()
 
-	const specificCoins = useMemo(() =>
+	const specificAssets = useMemo(() =>
 	{
-		return store.coin.coins.filter(c => (tempCoin != undefined && c.balance > 0 && resolveAsset(c.info.denom) == resolveAsset(tempCoin.info.denom)))
-	}, [tempCoin, store.coin.coins])
+		return store.coin.orderedBalance.filter(b => (tempAsset != undefined && b.balance > 0 && store.assets.AssetDenom(b.denom) == store.assets.AssetDenom(tempAsset.denom)))
+	}, [tempAsset, store.coin.orderedBalance])
 
 	const { steps } = controller
 
@@ -55,43 +53,45 @@ export default observer<Props>(function SendModal({
 		return ""
 	}
 
-	const networkSelect = useCallback((coin: Coin) =>
+	const networkSelect = useCallback((assetBalance: AssetBalance) =>
 	{
-		controller.creater.setDestinationChain(undefined)
-		controller.creater.setCoin(coin)
+		controller.creater.setDestinationChainId(undefined)
+		controller.creater.setChain(assetBalance.chain)
+		const asset = store.assets.ResolveAsset(assetBalance.denom)
+		if(asset) controller.creater.setAsset(asset)
 		steps.clear()
 		steps.goTo(SendSteps.Import)
-	}, [])
+	}, [store.assets])
 
-	const coinSelect = useCallback((coin: Coin) =>
+	const assetSelect = useCallback((asset: AssetBalance) =>
 	{
-		setTempCoin(coin)		
-	}, [specificCoins])
+		setTempAsset(asset)		
+	}, [specificAssets])
 
 	useEffect(() =>
 	{
-		if(specificCoins.length > 0)
+		if(specificAssets.length > 0)
 		{
-			if(specificCoins.length > 1)
+			if(specificAssets.length > 1)
 			{
 				steps.next()
 			}
 			else
 			{
-				networkSelect(specificCoins[0])
+				networkSelect(specificAssets[0])
 			}
 		}
-	}, [specificCoins])
+	}, [specificAssets])
 
 	const selectCoinStep = () =>
 	{
-		setTempCoin(undefined)
+		setTempAsset(undefined)
 		steps.goTo(SendSteps.Coin)
 	}
 
-	const changeDestinationNetwork = (chain: SupportedCoins) =>
+	const changeDestinationNetwork = (chain: string) =>
 	{
-		controller.creater.setDestinationChain(chain)
+		controller.creater.setDestinationChainId(chain)
 		steps.goTo(SendSteps.Receiver)
 	}
 
@@ -102,24 +102,24 @@ export default observer<Props>(function SendModal({
 					{steps.title === SendSteps.Coin ? 
 					(
 						<SelectCoin
-							onPress={coinSelect}
-							activeCoin={tempCoin}
-							coins={store.coin.multiChainCoins}
+							onPress={assetSelect}
+							activeAsset={tempAsset}
+							assets={store.coin.multiChainOrderedBalance}
 						/>
 					) : (
 						steps.title === SendSteps.SourceNetwork ?
 						(
 							<SelectCoinByNetwork
-								activeCoin={controller.creater.coin}
+								activeChain={controller.creater.chain}
 								onPress={networkSelect}
 								description={t("SelectNetworkForSend")}
 								title={t("SelectNetworkTitle")}
-								coins={specificCoins}
+								assets={specificAssets}
 							/>
 						) : (
 						steps.title === SendSteps.DestinationNetwork ? (
 							<SelectNetwork
-								activeChain={controller.creater.destinationChain}
+								activeChain={controller.creater.destinationChainId}
 								onPress={changeDestinationNetwork}
 								description={t("SelectNetworkForSend")}
 								title={t("SelectNetworkForIBC")}
@@ -177,7 +177,7 @@ export const FooterSend = observer(
 		const keyboard = useKeyboard()
 
 		const store = useStore()
-		const hasCoins = toJS(store.coin.coins).length > 0
+		const hasCoins = toJS(store.coin.balance).length > 0
 
 		if (!hasCoins) return null
 		if (steps.title === SendSteps.Recap && keyboard.keyboardShown) return null
@@ -205,8 +205,10 @@ export const FooterSend = observer(
 								text={t("Continue")}
 								onPress={() => controller.isIbc ? steps.goTo(SendSteps.DestinationNetwork) :  steps.goTo(SendSteps.Receiver)}
 								disable={
-									!(Number(creater.balance) <= (creater.coin?.balance ?? 0) &&
-									Number(creater.balance) > 0)
+									creater.asset == null || (
+										!(Number(creater.balance) <= (store.coin.balanceOf(creater.asset) ?? 0) &&
+										Number(creater.balance) > 0)
+									)
 								}
 								contentContainerStyle={styles.buttonContinue}
 								textStyle={styles.buttonText}

@@ -30,7 +30,7 @@ export default observer<Props>(function InsertImport({ controller, onPressSelect
 			<View style={styles.row}>
 				<Text style={[styles.usd, theme.text.primary]}>
 					{controller.readableInput}{" "}
-					<Text style={!controller.inverted && {fontSize: s(24)}}>{controller.inverted ? fiatSymbol : creater.coin?.info.coinName}</Text>
+					<Text style={!controller.inverted && {fontSize: s(24)}}>{controller.inverted ? fiatSymbol : creater.asset?.tag}</Text>
 				</Text>
 				<View>
 					<Button
@@ -42,18 +42,18 @@ export default observer<Props>(function InsertImport({ controller, onPressSelect
 				</View>
 			</View>
 
-			{creater.coin && (
+			{creater.asset && (
 				<View style={styles.coin}>
 					<Text style={styles.coinBalance}>
 						{(controller.inverted ? controller.balance : controller.fiat) || 0}{" "}
-						{controller.inverted ? creater.coin?.info.coinName : fiatSymbol}
+						{controller.inverted ? creater.asset.name : fiatSymbol}
 					</Text>
 					<Icon2 name="upNdown" size={18} stroke={COLOR.RoyalBlue} onPress={controller.invert} />
 				</View>
 			)}
 
 			<TouchableOpacity onPress={onPressSelectCoin}>
-				<CardSelectCoin coin={creater.coin} style={styles.select} />
+				<CardSelectCoin asset={creater.asset ?? undefined} style={styles.select} />
 			</TouchableOpacity>
 
 			<Numpad
