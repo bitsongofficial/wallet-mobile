@@ -24,7 +24,7 @@ type Props = {
 
 export default observer<Props>(function ReceiveModal({ style, close }) {
 	const { t } = useTranslation()
-	const { wallet, coin } = useStore()
+	const { wallet, coin, chains } = useStore()
 	const [address, setAddress] = useState("")
 
 	const [isCopied, setCopied] = useState(false)
@@ -59,7 +59,8 @@ export default observer<Props>(function ReceiveModal({ style, close }) {
 		<BottomSheetView style={[styles.wrapper, style]}>
 			{isSelectingCoin && <SelectNetwork
 				onPress={(chain) => {
-					setSelectedChain(chain)
+					const chainKey = chains.ChainKey(chain)
+					if(chainKey) setSelectedChain(chainKey as SupportedCoins)
 					setIsSelectingCoin(false)
 				}}
 				description={t("SelectNetworkForSend")}
