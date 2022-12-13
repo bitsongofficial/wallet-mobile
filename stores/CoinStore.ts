@@ -18,6 +18,9 @@ import { FromToAmountIbc } from "core/types/coin/cosmos/FromToAmountIbc";
 import ChainsStore from "./ChainsStore";
 import { AssetBalance, ObservableAssetBalance } from "./models/AssetBalance";
 import AssetsStore from "./AssetsStore";
+import { Asset } from "./models/Asset";
+import { AssetIndex } from "core/types/coin/Assets";
+import { Chain } from "./models/Chain";
 
 const maxRecentRecipients = 10
 
@@ -97,7 +100,7 @@ export default class CoinStore {
 					if(chainBalances.length > 0) chainBalances.forEach(amount => {
 						try
 						{
-							const balance = ObservableAssetBalance.fromAmount(amount)
+							const balance = ObservableAssetBalance.fromChainAmount(enabledChains[i], amount)
 							if(balance)	userBalance.push(balance)
 						}
 						catch(e){
@@ -156,7 +159,7 @@ export default class CoinStore {
 			{
 				const c1Price = this.assetsStore.AssetPrice(c1.denom)
 				const c2Price = this.assetsStore.AssetPrice(c2.denom)
-				if(c1Price && c2Price) return c1Price - c2Price
+				if(c1Price && c2Price) return c2Price * c2.balance - c1Price * c1.balance
 				if(c1Price) return -1
 				if(c2Price) return 1
 				return c2.balance - c1.balance
@@ -179,7 +182,7 @@ export default class CoinStore {
 			}
 			else
 			{
-				const b = {denom: resolveAsset(current.denom), balance: current.balance}
+				const b = {chain: current.chain, denom: resolveAsset(current.denom), balance: current.balance}
 				prev.push(b)
 			}
 			return prev
@@ -191,7 +194,7 @@ export default class CoinStore {
 		return this.sortByPrice(this.multiChainBalance)
 	}
 
-	async sendAmount(coin: SupportedCoins, address: string, amount: Amount, destinationChain?: SupportedCoins)
+	async sendAmount(chain: Chain, address: string, amount: Amount, destinationChain?: SupportedCoins)
 	{
 		runInAction(() =>
 		{
@@ -281,12 +284,12 @@ export default class CoinStore {
 		return this.balance.find(b => b.denom == (CoinClasses[coin].denom()))
 	}
 
-	async sendCoin(coin: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
+	async sendAsset(coin: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
 	{
 		return await this.sendAmount(coin, address, fromCoinToAmount(balance, denom ?? coin))
 	}
 
-	async sendCoinIbc(coin: SupportedCoins, destinationChain: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
+	async sendAssetIbc(coin: SupportedCoins, destinationChain: SupportedCoins, address: string, balance: number, denom?: SupportedCoins | Denom | string)
 	{
 		return await this.sendAmount(coin, address, fromCoinToAmount(balance, denom ?? coin), destinationChain)
 	}
@@ -296,16 +299,16 @@ export default class CoinStore {
 		return await this.sendAmount(coin, address, fromFIATToAmount(fiat, fromCoinToDefaultDenom(coin), this.assetsStore.Prices))
 	}
 
-	fromFIATToAssetAmount(fiat: number, asset: SupportedCoins)
+	fromFIATToAmount(fiat: number, asset: AssetIndex)
 	{
 		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.assetsStore.Prices)
-		return parseFloat(assetAmount.amount) /* / convertRateFromDenom(assetAmount.denom) */
+		return parseFloat(assetAmount.amount)
 	}
 
-	fromFIATToCoin(fiat: number, asset: SupportedCoins)
+	fromFIATToBalance(fiat: number, asset: AssetIndex)
 	{
-		const assetAmount = fromFIATToAmount(fiat, fromCoinToDefaultDenom(asset), this.assetsStore.Prices)
-		return parseFloat(assetAmount.amount) / (convertRateFromDenom(assetAmount.denom) ?? 1)
+		const assetPrice = this.assetsStore.AssetPrice(asset)
+		if(assetPrice) return fiat / assetPrice
 	}
 
 	fromAmountToFIAT(amount: Amount)
@@ -337,6 +340,31 @@ export default class CoinStore {
 	{
 		const asset = this.assetsStore.ResolveAsset(denom)
 		return fiat * Math.pow(10, (asset?.exponent ?? exponent) - exponent)
+	}
+
+	balanceOf(asset: Asset)
+	{
+		return this.balance.find(ab => ab.denom == asset.denom)
+	}
+
+	balanceOfAsExponent(asset: Asset, exponent?: number)
+	{
+		const balance = this.balanceOf(asset)
+		if(balance === undefined) return undefined
+		return this.balanceAsExponent(balance, exponent)
+	}
+
+	fiatValueOf(asset: Asset)
+	{
+		const assetBalance = this.balance.find(ab => ab.denom == asset.denom)
+		return assetBalance ? this.fromAssetBalanceToFiat(assetBalance) : undefined
+	}
+
+	fiatValueOfAsExponent(asset: Asset, exponent?: number)
+	{
+		const fiat = this.fiatValueOf(asset)
+		if(fiat === undefined) return undefined
+		return this.fiatAsExponent(fiat, asset.denom, exponent)
 	}
 
 	addToRecent(address : string, date?: Date)
