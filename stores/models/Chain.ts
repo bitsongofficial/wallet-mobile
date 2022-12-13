@@ -1,24 +1,28 @@
 import { CosmosCoin } from "core/coin/cosmos/CosmosCoin";
 import { ChainIds, ChainRegistryNames } from "core/types/coin/Dictionaries";
+import { getCoinIcon } from "core/utils/Coin";
 
 export interface Chain {
-	name: string,
 	id: string,
+	name: string,
+	logo?: string,
 	rpc: string,
 	api: string,
 }
 
 export class CodedCosmosChain implements Chain{
-	name: string;
 	id: string;
+	name: string;
+	logo?: string;
 	rpc: string;
 	api: string;
 
 	constructor(public chain: CosmosCoin)
 	{
 		const chainIdentifier = chain.chain()
-		this.name = ChainRegistryNames[chainIdentifier]
 		this.id = ChainIds[chainIdentifier]
+		this.name = ChainRegistryNames[chainIdentifier]
+		this.logo = getCoinIcon(chain.denom())
 		this.rpc = chain.RPCEndpoint()
 		this.api = chain.apiEndpoint()
 	}
