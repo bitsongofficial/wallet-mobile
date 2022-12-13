@@ -235,6 +235,11 @@ export default class WalletStore {
     return await this.wallet(profile)?.wallets[chain]?.Address()
   }
 
+  async activeAddress(chain: SupportedCoins)
+  {
+    return this.activeProfile ? await this.address(this.activeProfile, chain) : undefined
+  }
+
   changeActive(profile: profileIndexer | null)
   {
     if(profile == null) return
