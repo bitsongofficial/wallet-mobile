@@ -34,12 +34,15 @@ type Props = {
 
 export default observer(function SelectReceiver({ controller, onPressScanner, style }: Props) {
 	const { t } = useTranslation()
-	const { contacts: contactsStore, coin } = useStore()
+	const { contacts: contactsStore, wallet, chains } = useStore()
 	const theme = useTheme()
 	const { creater } = controller
 	const { addressInput } = creater
 
 	const hidden = useSpring({ opacity: addressInput.isFocused ? 0.1 : 1 })
+	const [userAddressForChain, setUserAddressForChain] = useState<string>()
+	const targetChain = creater.destinationChainId ?? creater.chain
+	const destinationChainPrefix = targetChain ? chains.ChainPrefix(targetChain) : ""
 	useEffect(() => addressInput.focusOFF, [])
 
 	const setAddress = (contact?: Contact | string) => {
@@ -61,6 +64,18 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 		),
 		[contactsStore.contacts.length],
 	)
+	
+	useEffect(() =>
+	{
+		if(creater.chain)
+		{
+			(async () =>
+			{
+				console.log(creater.chain)
+				if(creater.chain) setUserAddressForChain(await wallet.activeAddress(creater.chain as SupportedCoins))
+			})()
+		}
+	}, [wallet.activeProfile, creater.chain])
 
 	return (
 		<View style={style}>
@@ -76,7 +91,7 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 							style={styles.input}
 							isError={addressInput.value == "" ? false : [
 								!isValidAddress(addressInput.value) && t("InvalidAddress"),
-								(getPrefixFromAddress(addressInput.value) != getCoinPrefix(creater.destinationChain ?? (creater.coin as Coin).info.coin)) && t("AddressFromDifferentChain")
+								(getPrefixFromAddress(addressInput.value) != destinationChainPrefix) && t("AddressFromDifferentChain")
 							]}
 						/>
 					</View>
@@ -98,9 +113,9 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 					)}
 
 					<View style={styles.wrapper}>
-						<Text style={[styles.subtitle, theme.text.primary]}>Recents</Text>
-						<TouchableOpacity onPress={() => setAddress(creater.coin?.info.address)}>
-							<CardAdressSelf address={creater.coin?.info.address ?? ""} style={styles.self} />
+						<Text style={[styles.subtitle, theme.text.primary]}>Self</Text>
+						<TouchableOpacity onPress={() => setAddress(userAddressForChain)}>
+							<CardAdressSelf address={userAddressForChain ?? ""} style={styles.self} />
 						</TouchableOpacity>
 					</View>
 				</animated.View>

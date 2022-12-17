@@ -5,7 +5,6 @@ import { NativeStackHeaderProps, NativeStackNavigationProp } from "@react-naviga
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { observer } from "mobx-react-lite"
 import { COLOR, hexAlpha } from "utils"
-import { useLoading, useStore } from "hooks"
 import { RootStackParamList } from "types"
 import { Icon2, Loader } from "components/atoms"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -19,8 +18,6 @@ type Props = {
 } & (BottomTabHeaderProps | NativeStackHeaderProps)
 
 export default observer(function Header({ navigation, style }: Props) {
-	const { wallet } = useStore()
-	const { isOpen } = useLoading()
 	const openProfile = useCallback(() => navigation?.navigate("Profile"), [])
 
 	const insets = useSafeAreaInsets()

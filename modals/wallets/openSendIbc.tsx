@@ -10,11 +10,11 @@ import { BottomSheetFooterProps } from "@gorhom/bottom-sheet"
 import { SendSteps } from "./controllers/SendController"
 
 export default function openSendIbcModal(style: StyleProp<ViewStyle>) {
-	const { coin } = store
+	const { coin, assets } = store
 	const controller = new SendController(true)
 	const { creater, steps } = controller
 	steps.goTo(SendSteps.Coin)
-	creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
+	creater.setAsset(assets.ResolveAsset(coin.multiChainOrderedBalance[0].denom) ?? null)
 
 	const scanReciver = async () => {
 		Keyboard.dismiss()
@@ -29,12 +29,12 @@ export default function openSendIbcModal(style: StyleProp<ViewStyle>) {
 	}
 
 	const send = () => {
-		const { coin, addressInput, balance, destinationChain } = creater
-		if (store.coin.hasCoins && coin && addressInput && balance) {
+		const { asset, addressInput, balance, chain, destinationChainId } = creater
+		if (store.coin.hasCoins && asset && addressInput && balance && chain && destinationChainId) {
 			navigate("Loader", {
 				callback: async () =>
 				{
-					return await store.coin.sendCoinIbc(coin.info.coin, destinationChain ?? coin.info.coin, addressInput.value, balance, coin.info.denom)
+					return await store.coin.sendAssetIbc(chain, destinationChainId, addressInput.value, balance, asset.denom)
 				},
 			})
 		}

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react"
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
+import { Platform, StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
@@ -34,6 +34,10 @@ export default withFullHeight(observer<Props>(function SettingsSecurityScreen({ 
 		() => settings.setBiometric(!settings.biometric_enable),
 		[],
 	)
+	const toggleDisableScreenshot = useCallback(
+		() => settings.setScreenshot(!settings.screenshot),
+		[],
+	)
 	const goToChangePin = useCallback(async () => {
 		const pin = await askPin({ isBiometricAllowed: false })
 		const newPin = await askPin({ disableVerification: true, isBiometricAllowed: false })
@@ -49,27 +53,9 @@ export default withFullHeight(observer<Props>(function SettingsSecurityScreen({ 
 					<Header onPressBack={goBack} style={styles.header} />
 					<ScrollView>
 						<View style={styles.section}>
-							<Subtitle style={styles.subtitle}>PIN settings</Subtitle>
-							{/* <ListButton
-				icon="lock_key_open"
-				text="Enable PIN code"
-				onPress={toggleEnablePIN}
-				Right={
-				<Switch
-					active={settings.pin.enable}
-					onPress={toggleEnablePIN}
-				/>
-				}
-				// Right={}
-			/> */}
+							<Subtitle style={styles.subtitle}>{t("PINSettings")}</Subtitle>
 							<ListButton icon="password" text={t("ChangePIN")} arrow onPress={goToChangePin} />
 						</View>
-
-						{/* <View style={styles.section}>
-			<Subtitle style={styles.subtitle}>Account</Subtitle>
-			<ListButton icon="key" text="View Mnemonic" arrow />
-			</View> */}
-
 						<View style={styles.section}>
 							<Subtitle style={styles.subtitle}>{t("Account")}</Subtitle>
 							<ListButton
@@ -81,6 +67,18 @@ export default withFullHeight(observer<Props>(function SettingsSecurityScreen({ 
 								}
 							/>
 						</View>
+						{Platform.OS == "android" &&
+							<View style={styles.section}>
+								<Subtitle style={styles.subtitle}>{t("Miscellaneous")}</Subtitle>
+								<ListButton
+									icon="eye"
+									text={t("DisableScreenshot")}
+									onPress={toggleDisableScreenshot}
+									Right={
+										<Switch gradient active={!settings.screenshot} onPress={toggleDisableScreenshot} />
+									} />
+							</View>
+						}						
 					</ScrollView>
 				</View>
 			</View>

@@ -5,7 +5,6 @@ import { COLOR } from "utils"
 import { Icon2 } from "components/atoms"
 import { Validator, ValidatorStatus, SignerInfo } from "core/types/coin/cosmos/Validator"
 import { useStore } from "hooks"
-import { validatorIdentity } from "core/rest/keybase"
 import { SupportedCoins } from "constants/Coins"
 import { s } from "react-native-size-matters"
 import ListItem from "components/moleculs/ListItem"
@@ -25,23 +24,6 @@ export default ({ item, onPressKebab, style }: ValidatorProps) => {
 	const handlePressKebab = useCallback(() => onPressKebab(validator), [validator])
 
 	const source = useMemo(() => ({ uri: validator?.logo || "" }), [validator?.logo])
-
-	// const [logo, setLogo] = useState("")
-
-	// useEffect(() =>
-	// {
-	// 	validatorIdentity(validator.identity).then((identity) =>
-	// 	{
-	// 		if(validator.identity)
-	// 		{
-	// 			console.log("A", validator.identity, identity)
-	// 			setLogo(identity.picture_url)
-	// 		}
-	// 	}).catch((e) =>
-	// 	{
-	// 		console.error("Catched", e)
-	// 	})
-	// }, [validator, validator.identity])
 
 	return (
 		<ListItem

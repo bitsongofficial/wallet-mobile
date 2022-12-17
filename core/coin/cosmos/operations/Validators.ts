@@ -1,6 +1,6 @@
 import { assertIsDeliverTxSuccess, GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
 import axios from "axios";
-import { validatorIdentity } from "core/rest/keybase";
+import { validatorIdentity, validatorsPictures } from "core/rest/keybase";
 import { DelegateData } from "core/types/coin/cosmos/DelegateData";
 import { SignerInfo, Validator, ValidatorStatus, ValidatorStatusRequest } from "core/types/coin/cosmos/Validator";
 import { CosmosOperation } from "./CosmosOperation";
@@ -33,7 +33,7 @@ export class Validators extends CosmosOperation {
 			const service = this.coin.explorer()
 			const results = (await service.get("/cosmos/staking/v1beta1/validators")).data.validators
 
-			const validators:Validator[] = results.map((v:any):Validator =>
+			const validators: Validator[] = results.map((v:any):Validator =>
 				({
 					id: v.description.moniker,
 					identity: v.description.identity,
@@ -57,21 +57,29 @@ export class Validators extends CosmosOperation {
 						}
 					},
 				}))
-			await Promise.allSettled(validators.map(v => (new Promise(async (resolve, reject) =>
+			const usernames = validators.map(v => v.id.slice(0, 15).replace(/\s+/g, '').replace(/\[.*\]/g, '').replace(/\(.*\)/g, '').replace(/\W/g, ''))
+			const emptyUsernameIndexes: number[] = []
+			usernames.forEach((u, i) =>
 				{
-					try
-					{
-						const valIdentity = await validatorIdentity(v.identity)
-						// v.name = valIdentity.full_name ?? ""
-						v.logo = valIdentity.picture_url
-						resolve(true)
-					}
-					catch(e)
-					{
-						console.error(e)
-						reject()
-					}
-				}))))
+					if(u == undefined || u == "") emptyUsernameIndexes.push(i)
+				})
+			const validUsernames = usernames.filter(u => u != undefined && u != "")
+			const usernameChunks: string[][] = []
+			const chunkSize = 50
+			for (let i = 0; i < validUsernames.length; i += chunkSize)
+			{
+				usernameChunks.push(validUsernames.slice(i, i + chunkSize))
+			}
+			let pictures: string[] = []
+			await Promise.all(usernameChunks.map(async c =>
+				{
+					pictures = pictures.concat(await validatorsPictures(c))
+				}))
+			validators.forEach((v, index) =>
+			{
+				const offset = emptyUsernameIndexes.reduce((count, i) => (index >= i ? count + 1 : count), 0)
+				validators[index].logo = emptyUsernameIndexes.indexOf(index) >= 0 ? undefined : pictures[index - offset]
+			})
 			return validators
 		}
 		catch(e)

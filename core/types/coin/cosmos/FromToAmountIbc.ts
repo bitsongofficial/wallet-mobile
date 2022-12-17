@@ -1,6 +1,8 @@
 import { SupportedCoins } from "constants/Coins"
+import { IBCCordinates } from "../Coin"
 import { FromToAmount } from "./FromToAmount"
 
 export interface FromToAmountIbc extends FromToAmount {
-	destinationNetwork: SupportedCoins,
+	destinationNetworkId: string,
+	ibcCoordinates: IBCCordinates,
 }

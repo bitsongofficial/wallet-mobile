@@ -10,17 +10,17 @@ export const keybaseAPI = axios.create({
 	responseType: 'json',
 	baseURL: Config.KEYBASE_URL ? (Config.KEYBASE_URL + (Config.KEYBASE_URL[Config.KEYBASE_URL.length-1] == "/" ? "" : "/") + "_/api/1.0/") : ""
 })
-export async function validatorIdentity(identity: string)
+export async function validatorsIdentities(identities: string[])
 {
-	if(identity)
+	if(identities)
 	{
-		const valIdentity = (await keybaseAPI.get<KeybaseResponse>("user/user_search.json", {
+		const valIdentity = (await keybaseAPI.get<KeybaseResponse>("user/lookup.json", {
 			params: {
-				q: identity,
-				num_wanted: 1,
+				usernames: identities.join(","),
+				fields: "profile",
 			}
 		})).data
-		if(valIdentity.list[0]) return valIdentity.list[0].keybase
+		if(valIdentity.list && valIdentity.list[0]) return valIdentity.list[0].keybase
 	}
 	const empty: KeybaseUser = {
 		full_name: "",
@@ -32,5 +32,22 @@ export async function validatorIdentity(identity: string)
 		username: ""
 	}
 
-	return empty
+	return [empty]
+}
+
+export async function validatorsPictures(identities: string[])
+{
+	if(identities && identities.length > 0)
+	{
+		const pictures = (await keybaseAPI.get<KeybaseResponse>("user/lookup.json", {
+			params: {
+				usernames: identities.join(","),
+				fields: "pictures",
+			}
+		})).data
+		if(pictures.status.code == 100) console.log(identities.join(","), pictures)
+		if(pictures.them) return pictures.them.map(p => (p && p.pictures) ? p.pictures.primary.url : undefined)
+	}
+
+	return []
 }

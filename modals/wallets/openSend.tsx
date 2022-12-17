@@ -12,11 +12,11 @@ import { FooterSend } from "./modals/SendModal"
 import { s } from "react-native-size-matters"
 
 export default function openSendModal(style: StyleProp<ViewStyle>) {
-	const { coin } = store
+	const { coin, assets } = store
 	const controller = new SendController()
 	const { creater, steps } = controller
 	steps.goTo(SendSteps.Coin)
-	creater.setCoin(coin.findAssetWithCoin(SupportedCoins.BITSONG) ?? coin.coins[0])
+	creater.setAsset(assets.ResolveAsset(coin.multiChainOrderedBalance[0].denom) ?? null)
 
 	const scanReciver = async () => {
 		Keyboard.dismiss()
@@ -31,12 +31,12 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 	}
 
 	const send = () => {
-		const { coin, addressInput, balance } = creater
-		if (store.coin.hasCoins && coin && addressInput && balance) {
+		const { asset, addressInput, balance, chain } = creater
+		if (store.coin.hasCoins && asset && addressInput && balance && chain) {
 			navigate("Loader", {
 				callback: async () =>
 				{
-					return await store.coin.sendCoin(coin.info.coin, addressInput.value, balance, coin.info.denom)
+					return await store.coin.sendAsset(chain, addressInput.value, balance, asset.denom)
 				},
 			})
 		}
@@ -50,7 +50,7 @@ export default function openSendModal(style: StyleProp<ViewStyle>) {
 			goBack()
 		}
 
-		await gbs.setProps({
+		gbs.setProps({
 			snapPoints: ["85%"],
 			keyboardBehavior: "interactive",
 			enableContentPanningGesture: false,

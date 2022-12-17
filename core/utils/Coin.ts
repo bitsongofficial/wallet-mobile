@@ -3,13 +3,12 @@ import { ChainIds, ChainRegistryNames, CoinClasses } from "core/types/coin/Dicti
 import { Amount, Denom } from "core/types/coin/Generic"
 import { assets, chains, ibc } from 'chain-registry'
 import { Asset } from '@chain-registry/types'
-import { getIbcAssets } from "@chain-registry/utils"
-import { Prices } from "core/types/rest/coingecko"
+import { getIbcAssets, getIbcInfo } from "@chain-registry/utils"
 import { Wallet } from "core/types/storing/Generic"
+import { AssetIndex } from "core/types/coin/Assets"
+import { ChainIndex, IBCCordinates } from "core/types/coin/Coin"
 
 const ibcPrefix = "ibc/"
-
-type DenomAliases = string | Denom | SupportedCoins
 
 export enum SupportedFiats {
 	USD = "usd",
@@ -19,6 +18,8 @@ export enum SupportedFiats {
 export const ibcMap: {
 	[k: string]: string
 } = {}
+
+const assetsOnly = assets.reduce((res: Asset[], a) => res.concat(a.assets), [])
 
 Object.values(SupportedCoins).forEach(sc =>
 	{
@@ -64,16 +65,16 @@ export function fromAmountToCoin(amount: Amount)
 	return Number(amount.amount) / (cr ? cr : 1)
 }
 
-export function fromCoinToAmount(balance: number, coin: SupportedCoins | Denom | string)
+export function fromCoinToAmount(balance: number, asset: AssetIndex)
 {
 	let denom
-	if(coin in SupportedCoins)
+	if(asset in SupportedCoins)
 	{
-		denom = CoinClasses[coin as SupportedCoins].denom()
+		denom = CoinClasses[asset as SupportedCoins].denom()
 	}
 	else
 	{
-		denom = coin
+		denom = asset
 	}
 	return {
 		amount: (balance * convertRateFromDenom(denom)).toString(),
@@ -81,45 +82,31 @@ export function fromCoinToAmount(balance: number, coin: SupportedCoins | Denom |
 	}
 }
 
-export function fromDenomToPrice(denom: Denom | string, prices: Prices): number
-{
-	const chain = fromDenomToCoin(denom)
-	if(chain) return prices[chain] ?? 0
-	return 0
-}
-
-export function fromAmountToFIAT(amount: Amount, prices: Prices)
-{
-	return fromAmountToCoin(amount) * fromDenomToPrice(amount.denom, prices)
-}
-
-export function fromFIATToAmount(fiat: number, denom: Denom, prices: Prices): Amount
-{
-	const price = fromDenomToPrice(denom, prices)
-	return {
-		amount: Math.round(fiat / (price ? price : 1) * convertRateFromDenom(denom)).toString(),
-		denom,
-	}
-}
-
-export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom
+export function fromCoinToDefaultDenom(coin: SupportedCoins): Denom | string
 {
 	return CoinClasses[coin].denom()
 }
 
-export function fromDenomToCoin(denom: Denom | string): SupportedCoins | undefined
+export function fromDenomToChainName(denom: AssetIndex): string | undefined
 {
-	const resolvedDenom = resolveAsset(denom)
-	for(const chain of Object.values(SupportedCoins))
+	for(const a of assets)
 	{
-		const chainAssets = assets.find(a => a.chain_name == ChainRegistryNames[chain])?.assets
-		if(chainAssets && chainAssets.find(ca => ca.base == resolvedDenom)) return chain
+		const foundAsset = a.assets.find(ca =>
+			{
+				const foundDenom = ca.denom_units.find(du => (du.denom == denom))
+				return foundDenom != undefined
+			})
+		if(foundAsset != undefined) return a.chain_name
 	}
-
 	return undefined
 }
 
-export function resolveAsset(asset: string | SupportedCoins)
+export function chainNameToChainId(chainName: string)
+{
+	return chains.find(c => c.chain_name == chainName)?.chain_id
+}
+
+export function resolveAsset(asset: AssetIndex)
 {
 	const chain = asset as SupportedCoins
 	if(asset && Object.values(SupportedCoins).includes(chain)) return fromCoinToDefaultDenom(chain)
@@ -127,11 +114,12 @@ export function resolveAsset(asset: string | SupportedCoins)
 	return asset
 }
 
-function resolveCoin(coin: SupportedCoins)
+function resolveCoin(chain: ChainIndex)
 {
-	return chains.find((c: any) =>
+	return chains.find((c) =>
 	{
-		return c.chain_name == ChainRegistryNames[coin]
+		const sc = chain as SupportedCoins
+		return (c.chain_name == ChainRegistryNames[sc] || c.chain_name == chain || c.chain_id == chain)
 	})
 }
 
@@ -142,7 +130,7 @@ export function chainIdToChain(chainId: string)
 	return undefined
 }
 
-export function getCoinGasUnit(coin: SupportedCoins)
+export function getCoinGasUnit(coin: ChainIndex)
 {
 	const c = resolveCoin(coin)
 	if(c && c.fees && c.fees.fee_tokens && c.fees.fee_tokens.length > 0)
@@ -164,7 +152,7 @@ export function getCoinName(coin: SupportedCoins)
 	return resolveCoin(coin)?.pretty_name
 }
 
-export function getCoinIcon(coin: SupportedCoins)
+export function getCoinIcon(coin: string)
 {
 	return getAssetIcon(coin)
 }
@@ -178,52 +166,63 @@ export function fromPrefixToCoin(prefix: string)
 
 export function getCoinDerivationPath(coin: SupportedCoins)
 {
-	const c = resolveCoin(coin)	
+	const c = resolveCoin(coin)
 	return ""
 }
 
-export function getAssetsInfos(asset: string | SupportedCoins)
+export function getAssetsInfos(asset: AssetIndex)
 {
 	asset = resolveAsset(asset)
-	return assets.reduce((res: Asset[], a) => res.concat(a.assets), []).find((a)=>(a.base===asset))
+	return assetsOnly.find((a)=>(a.denom_units.find(du => du.denom===asset) != undefined))
 }
 
-export function getAssetName(asset: string | SupportedCoins)
+export function doesChainRegistryAssetExists(asset: AssetIndex)
+{
+	return getAssetsInfos(asset) != undefined
+}
+
+export function getAssetName(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.name.replace("Fantoken", "") : "undefined"
 }
 
-export function getAssetSymbol(asset: string | SupportedCoins)
+export function getAssetSymbol(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.symbol : ""
 }
 
-export function getAssetTag(asset: string | SupportedCoins)
+export function getAssetTag(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.display.toUpperCase() : "Undefined"
 }
 
-export function getAssetIcon(asset: string | SupportedCoins)
+export function getAssetIcon(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos && infos.logo_URIs && infos.logo_URIs.png ? infos.logo_URIs.png : undefined
 }
 
-export function getAssetDenomUnits(asset: string | SupportedCoins)
+export function getAssetCoingeckoId(asset: AssetIndex)
+{
+	const infos = getAssetsInfos(asset)
+	return infos?.coingecko_id
+}
+
+export function getAssetDenomUnits(asset: AssetIndex)
 {
 	const infos = getAssetsInfos(asset)
 	return infos ? infos.denom_units : undefined
 }
 
-export function getDenomExponent(denom: DenomAliases)
+export function getDenomExponent(denom: AssetIndex)
 {
 	return getAssetDenomUnits(denom)?.find(du => du.denom == denom)?.exponent
 }
 
-export function getBaseDenom(denom: DenomAliases)
+export function getBaseDenom(denom: AssetIndex)
 {
 	const infos = getAssetsInfos(denom)
 	if(infos)
@@ -233,7 +232,14 @@ export function getBaseDenom(denom: DenomAliases)
 	return undefined
 }
 
-export function getBaseDenomName(denom: DenomAliases)
+export function getDenomsExponentDifference(denom1: AssetIndex, denom2: AssetIndex)
+{
+	const exp1 = getDenomExponent(denom1)
+	const exp2 = getDenomExponent(denom2)
+	return (exp1 && exp2) ? (exp2 - exp1) : undefined
+}
+
+export function getBaseDenomName(denom: AssetIndex)
 {
 	return getBaseDenom(denom)?.denom
 }
@@ -243,4 +249,18 @@ export function firstAvailableWallet(wallets: SupportedCoinsMap<Wallet>)
 	const walletItems = Object.values(wallets)
 	if(walletItems.length > 0) return walletItems[0]
 	return undefined
+}
+
+export function getIbcCoordinates(fromName: string, toName: string): IBCCordinates
+{
+	const ibcInfos = getIbcInfo(ibc, fromName, toName)
+	const coordinates = (ibcInfos.chain_1.chain_name == fromName ?
+		ibcInfos.channels[0].chain_1 :
+		ibcInfos.channels[0].chain_2
+	)
+
+	return {
+		port: coordinates.port_id,
+		channel: coordinates.channel_id,
+	}
 }

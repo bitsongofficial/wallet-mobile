@@ -20,17 +20,14 @@ import { Validators } from "../cosmos/operations/Validators";
 import { Vote } from "../cosmos/operations/Vote";
 
 export class Bitsong extends CosmosCoin {
-	private innerExplorer = axios.create({
-		baseURL: Config.BITSONG_EXPLORER
-	})
+	public apiEndpoint(): string {
+		return Config.BITSONG_EXPLORER ?? "";
+	}
 	public chain(): SupportedCoins {
 		return SupportedCoins.BITSONG
 	}
 	public denom(): Denom {
 		return Denom.UBTSG
-	}
-	public explorer(): Axios {
-		return this.innerExplorer
 	}
 	public RPCEndpoint(): string {
 		return Config.BITSONG_RPC ?? ""

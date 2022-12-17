@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { Button, Icon2 } from "components/atoms"
@@ -10,12 +10,16 @@ import { useCallback } from "react"
 import { Contact } from "stores/ContactsStore"
 import { s } from "react-native-size-matters"
 import { useTranslation } from "react-i18next"
+import { Asset } from "stores/models/Asset"
+import { Chain } from "stores/models/Chain"
+import { SupportedCoins } from "constants/Coins"
 
 type Props = {
 	/** How many coin we will send */
 	amount: string
 	/** Account details from which we send */
-	coinData: ICoin
+	asset: Asset | null
+	chain?: Chain
 	/** The address we ship to */
 	address: string
 
@@ -26,15 +30,17 @@ type Props = {
 export default observer(function CardWillSend({
 	address,
 	amount,
-	coinData,
+	asset,
+	chain,
 
 	onPressUp,
 	style,
 }: Props) {
 	const { t } = useTranslation()
 	const theme = useTheme()
-	const { settings, contacts, coin } = useStore()
-
+	const { settings, contacts, coin, wallet, chains } = useStore()
+	
+	const [userAddressForChain, setUserAddressForChain] = useState<string>()
 	const receiver: Contact | undefined = contacts.contacts.find((c) => c.address === address)
 
 	const addContact = useCallback(() => {
@@ -45,12 +51,25 @@ export default observer(function CardWillSend({
 	}, [address])
 
 	const coinsValue = parseFloat(amount)
-	const dollars = useMemo(() => coin.fromCoinBalanceToFiat(parseFloat(amount), coinData.denom), [amount])
+	const dollars = useMemo(() => (asset ? coin.fromAssetBalanceToFiat({balance: parseFloat(amount), denom: asset.denom, chain: asset.chainId}) : 0), [amount])
 	const coinsIntegerValue = Math.floor(coinsValue)
 	const coinsDecimalValue = coinsValue - coinsIntegerValue
 
 	const shortAddress = `${address.substring(0, 10)}..${address.slice(-7)}`
-	const shortFrom = `${coinData.address.substring(0, 10)}..${coinData.address.slice(-7)}`
+	const shortFrom = userAddressForChain ? `${userAddressForChain.substring(0, 10)}..${userAddressForChain.slice(-7)}` : ""
+	
+	useEffect(() =>
+	{
+		if(chain)
+		{
+			const chainKey = chains.ChainKey(chain.id);
+
+			(async () =>
+			{
+				if(chainKey) setUserAddressForChain(await wallet.activeAddress(chainKey as SupportedCoins))
+			})()
+		}
+	}, [wallet.activeProfile, chains, chain])
 
 	return (
 		<View style={[styles.container, style]}>
@@ -65,7 +84,7 @@ export default observer(function CardWillSend({
 			<Text style={[styles.transferAmount, theme.text.primary]}>
 				{coinsIntegerValue}
 				{coinsDecimalValue != 0 && <Text style={styles.transferAmountDecimal}>.{coinsDecimalValue.toString().substring(2)}</Text>}
-				<Text style={styles.coinName}> {coinData.coinName.toUpperCase()}</Text>
+				{asset && <Text style={styles.coinName}> {asset.tag.toUpperCase()}</Text>}
 			</Text>
 
 			<Text style={[styles.fiatText]}>

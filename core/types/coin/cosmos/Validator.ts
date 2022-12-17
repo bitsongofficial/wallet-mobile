@@ -30,7 +30,7 @@ export interface Validator {
 	id: string,
 	identity: string,
 	name: string,
-	logo: string,
+	logo?: string,
 	description: string,
 	status: DetailedValidatorStatus,
 	commission: {

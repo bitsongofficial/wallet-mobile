@@ -20,17 +20,14 @@ import { Validators } from "../cosmos/operations/Validators";
 import { Vote } from "../cosmos/operations/Vote";
 
 export class Osmosis extends CosmosCoin {
-	private innerExplorer = axios.create({
-		baseURL: Config.OSMOSIS_EXPLORER
-	})
+	public apiEndpoint(): string {
+		return Config.OSMOSIS_EXPLORER ?? "";
+	}
 	public chain(): SupportedCoins {
 		return SupportedCoins.OSMOSIS
 	}
 	public denom(): Denom {
 		return Denom.UOSMO
-	}
-	public explorer(): Axios {
-		return this.innerExplorer
 	}
 	public RPCEndpoint(): string {
 		return Config.OSMOSIS_RPC ?? ""

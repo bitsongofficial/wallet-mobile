@@ -1,23 +1,27 @@
 import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import { observer } from "mobx-react-lite"
 import { Coin } from "classes"
-import { useTheme } from "hooks"
+import { useStore, useTheme } from "hooks"
 import { COLOR, hexAlpha } from "utils"
 import { Card, Icon2 } from "components/atoms"
 import { mvs, s, vs } from "react-native-size-matters"
 import { formatNumber } from "utils/numbers"
+import { Asset } from "stores/models/Asset"
 
 type Props = {
-	coin?: Coin | null
+	asset?: Asset
+	chain?: string
 	style?: StyleProp<ViewStyle>
 }
 
-export default observer<Props>(function CardWallet({ coin, style }) {
+export default observer<Props>(function CardWallet({ asset, chain, style }) {
 	const theme = useTheme()
+	const { coin } = useStore()
+	const balance = asset ? coin.balanceOfAsExponent(asset, chain) : 0
 	return (
 		<Card style={[styles.card, style]}>
 			<View style={styles.left}>
-				<Text style={[styles.title, theme.text.primary]}>{coin?.info.brand}</Text>
+				<Text style={[styles.title, theme.text.primary]}>{asset?.tag}</Text>
 				<View
 					style={{
 						flexDirection: "row",
@@ -26,7 +30,7 @@ export default observer<Props>(function CardWallet({ coin, style }) {
 					}}
 				>
 					<Text style={styles.balance}>
-						{formatNumber(coin?.info.balance ?? 0)} {coin?.info.coinName}
+						{formatNumber(balance ?? 0)} {asset?.name}
 					</Text>
 				</View>
 			</View>

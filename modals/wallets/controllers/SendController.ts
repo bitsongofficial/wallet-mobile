@@ -17,7 +17,7 @@ export enum SendSteps {
 export default class SendController {
   steps: Steps<SendSteps>;
 
-  private currentInput = ""
+  private currentInput = "0"
   private invertedInner = false
 
   creater = new Transaction.Creater();
@@ -51,15 +51,14 @@ export default class SendController {
   }
 
   private maxAvailableValue() {
-    const coinStore = store.coin
-    const coin = this.creater.coin
+    const balance = this.creater.getAssetBalanceFromStore()
     let max = 0
-    if(coin)
+    if(balance)
     {
-      max = coin.balance
+      max = balance
       if(this.inverted)
       {
-        max = coinStore.fromCoinBalanceToFiat(max, coin.info.coin)
+        max = this.creater.getAssetFiatValueFromStore()
       }
     }
 
@@ -76,28 +75,27 @@ export default class SendController {
 
   get fiat(): string {
     const balance = this.creater.balance
-    const coin = this.creater.coin?.info.denom
-    if(balance && coin) return this.limitDecimal(store.coin.fromCoinBalanceToFiat(balance, coin).toString(), 2)
+    if(balance !== undefined) return this.limitDecimal(this.creater.getFiatValue().toString(), 2)
     return ""
   }
 
   set fiat(value) {
     const f = parseFloat(value ?? 0)
-    const coin = this.creater.coin?.info.coin
-    if(coin)
+    const denom = this.creater.asset?.denom
+    if(denom)
     {
-      const balance = store.coin.fromFIATToCoin(f, coin)
-      this.creater.setBalance(balance)
+      const balance = store.coin.fromFIATToBalance(f, denom)
+      if(balance !== undefined) this.creater.setBalance(balance)
     }
   }
 
   get balance () {
     const balance = this.creater.balance
-    return balance ? this.limitDecimal(balance.toString(), 4) : ""
+    return balance ? this.limitDecimal(balance.toString(), 4) : "0"
   }
 
   set balance(value) {
-    this.creater.setBalance(parseFloat(value))
+    this.creater.setBalance(parseFloat(value ? value : "0"))
   }
 
   isValidNumberString(current: string, num: string) {
@@ -113,10 +111,10 @@ export default class SendController {
     const isDotIsOnce = this.isValidNumberString(this.currentInput, num)
 
     if (isDotIsOnce) {
-      this.currentInput = this.currentInput + num
+      this.currentInput = (this.currentInput == "0" && num != ".") ? num : (this.currentInput + num)
       const max = this.maxAvailableValue()
       if(parseFloat(this.currentInput) > max) this.currentInput = max.toString()
-      if(this.currentInput == "0") this.currentInput = ""
+      if(this.currentInput == "00") this.currentInput = "0"
       let limit = 2
       if(!this.inverted) limit = 5
       this.currentInput = this.limitDecimal(this.currentInput, limit)
@@ -128,6 +126,7 @@ export default class SendController {
     if(this.currentInput.length > 0)
     {
       this.currentInput = (this.currentInput.slice(0, -1))
+      if(this.currentInput == "") this.currentInput = "0"
       this.setActive(this.currentInput)
     }
   }
@@ -149,14 +148,13 @@ export default class SendController {
 	clear() {
 		this.steps.clear()
 
-		const coin = this.creater.coin
+		const asset = this.creater.asset
 		this.creater = new Transaction.Creater()
-		this.creater.setCoin(coin)
+		this.creater.setAsset(asset)
 	}
   setMax() {
     this.creater.setMax()
-    if(this.inverted) this.currentInput = this.fiat
+    if(this.inverted) this.currentInput = this.creater.getAssetFiatValueFromStore().toString()
     else this.currentInput = this.balance
-    // this.updateBalanceFromAmount()
   }
 }

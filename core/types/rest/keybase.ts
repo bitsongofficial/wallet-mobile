@@ -31,7 +31,8 @@ export interface KeybaseItem {
 }
 
 export interface KeybaseResponse {
-	list: KeybaseItem[],
+	list?: KeybaseItem[],
+	them?: any[],
 	status: KeybaseResponseStatus,
 }
 
