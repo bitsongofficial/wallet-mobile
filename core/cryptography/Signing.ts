@@ -41,6 +41,19 @@ function getADR36SignDoc(signer: string, data: string): StdSignDoc
 	}
 }
 
+function makeADR36AminoSignDoc(
+	signer: string,
+	data: string | Uint8Array
+  ): StdSignDoc {
+	if (typeof data === "string") {
+		data = Buffer.from(data).toString("base64")
+	} else {
+		data = Buffer.from(data).toString("base64")
+	}
+  
+	return getADR36SignDoc(signer, data)
+}
+
 function signAmino(
 	signer: Secp256k1Wallet | Secp256k1HdWallet,
     signerAddress: string,
@@ -74,4 +87,15 @@ export async function signArbitrary(
 ): Promise<StdSignature>
 {
 	return (await aminoSignature(signer, signerAddress, data)).signature
+}
+
+export function verifyArbitrary(
+    signer: string,
+    data: string | Uint8Array,
+    signature: StdSignature): Promise<boolean>
+{
+	const pubKey = fromBase64(signature.pub_key.value)
+	const secpSignature = Secp256k1Signature.fromFixedLength(fromBase64(signature.signature))
+	const hash = sha256(serializeSignDoc(makeADR36AminoSignDoc(signer, data)))
+	return Secp256k1.verifySignature(secpSignature, hash, pubKey)
 }
