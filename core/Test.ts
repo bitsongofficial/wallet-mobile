@@ -1,152 +1,31 @@
-import { VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov"
-import Long from "long"
-import { Bitsong } from "./coin/bitsong/Bitsong"
-
-import { PublicWallet } from "./storing/Generic"
-import { AskPinMnemonicStore } from "./storing/MnemonicStore"
-import { CosmosWallet, CosmosWalletGenerator } from "./storing/Wallet"
-import { ClaimData } from "./types/coin/cosmos/ClaimData"
-import { DelegateData } from "./types/coin/cosmos/DelegateData"
-import { ProposalVote } from "./types/coin/cosmos/ProposalVote"
-import { RedelegateData } from "./types/coin/cosmos/RedelegateData"
-import { Denom } from "./types/coin/Generic"
-import { CoinOperationEnum } from "./types/coin/OperationTypes"
-import { Wallet } from "./types/storing/Generic"
-import { argon2Encode, argon2Verify } from "utils/argon"
-import Config from "react-native-config"
-import { CoinClasses } from "./types/coin/Dictionaries"
-import { Validator } from "./types/coin/cosmos/Validator"
-
-const amount = {
-	denom: Denom.UBTSG,
-	amount: "100",
-}
-
-const Bitsong = CoinClasses.btsg
-
-async function trySend(wallet: any, pubWallet: any, transaction: any)
-{
-	try
-	{
-		let senderBalance = await Bitsong.Do(CoinOperationEnum.Balance, {wallet: wallet})
-		let receiverBalance = await Bitsong.Do(CoinOperationEnum.Balance, {wallet: pubWallet})
-		await Bitsong.Do(CoinOperationEnum.Send, transaction)
-		senderBalance = await Bitsong.Do(CoinOperationEnum.Balance, {wallet: wallet})
-		receiverBalance = await Bitsong.Do(CoinOperationEnum.Balance, {wallet: pubWallet})
-		// const pairString = 'wc:8caefe47-7adf-4bbc-a819-38441d1309ed@1?bridge=https%3A%2F%2Fy.bridge.walletconnect.org&key=6d8c314ab81d5f70c4365c3781e8c190d0844853dc5508210f6cf6a3ba78e144'
-		// const wc = new WalletConnectCosmosClientV1(pairString, [pubWallet])
-	}
-	catch(e)
-	{
-		console.log("TE:", e)
-	}
-
-}
-
-async function tryDelegate(delegator: CosmosWallet, validator: Validator) {
-	const data: DelegateData = {
-		delegator: delegator,
-		validator: validator,
-		amount,
-	}
-	Bitsong.Do(CoinOperationEnum.Delegate, data)
-}
-
-async function tryUndelegate(delegator: CosmosWallet, validator: Validator) {
-	const data: DelegateData = {
-		delegator: delegator,
-		validator: validator,
-		amount,
-	}
-	Bitsong.Do(CoinOperationEnum.Undelegate, data)
-}
-
-async function tryRedelegate(delegator: CosmosWallet, validator1: Validator, validator2: Validator) {
-	const data: RedelegateData = {
-		delegator: delegator,
-		validator: validator1,
-		newValidator: validator2,
-		amount,
-	}
-	Bitsong.Do(CoinOperationEnum.Redelegate, data)
-}
-
-async function tryVote(voter: CosmosWallet, proposalId: Long, choice: VoteOption) {
-	const data: ProposalVote = {
-		voter,
-		proposal: {
-			id: proposalId
-		},
-		choice
-	}
-	Bitsong.Do(CoinOperationEnum.Vote, data)
-}
-
-async function tryClaim(owner: CosmosWallet, validators: Validator[]) {
-	const data: ClaimData = {
-		owner,
-		validators
-	}
-	Bitsong.Do(CoinOperationEnum.Claim, data)
-}
-
-async function tryValidators() {
-	Bitsong.Do(CoinOperationEnum.Validators)
-}
-
-async function tryProposals() {
-	Bitsong.Do(CoinOperationEnum.Proposals)
-}
-
-async function tryRewards(wallet: Wallet) {
-	Bitsong.Do(CoinOperationEnum.Rewards, {wallet})
-}
+import { Secp256k1HdWallet, Secp256k1Wallet } from "@cosmjs-rn/amino";
+import { stringToPath } from "@cosmjs-rn/crypto";
+import { signArbitrary, verifyArbitrary } from "./cryptography/Signing";
 
 export async function test()
 {
-	const savePhase = false
-	const store = new AskPinMnemonicStore("test_wallet", async () => "1234567")
-	const wallet = CosmosWalletGenerator.BitsongWallet(store)
-	if(savePhase)
-	{
-		const a = 'man hungry enjoy price timber girl omit type absent target enrich butter'
-		store.Set(a)
+	const payload = {
+		domain: "test.com",
+		expire_at: 1657293505
 	}
-	else
-	{
-		const pubWallet = new PublicWallet("bitsong1s0aj6f7hgzr3gfcmm9xz0lg0442qdq9su9llq0")
-		const validator1 = new PublicWallet("bitsongvaloper16h2ry9axyvzwkftv93h6nusdqeqdn552skxxtw")
-		const validator2 = new PublicWallet("bitsongvaloper16h2ry9axyvzwkftv93h6nusdqeqdn552skxxtw")
-		const reward1 = new PublicWallet("bitsong1s0aj6f7hgzr3gfcmm9xz0lg0442qdq9su9llq0")
-		const reward2 = new PublicWallet("bitsong1s0aj6f7hgzr3gfcmm9xz0lg0442qdq9su9llq0")
-		const rewards = new PublicWallet("bitsong1q077tu8lftmn3e5nvgpdyke9us8zfn03q2h3rj")
-		const transaction = {
-			from: wallet,
-			to: pubWallet,
-			amount,
-		}
-		
-		try {
-			console.log("RPC", Config.BITSONG_RPC)
-			// const bin2String = (array: number[]) =>
-			// {
-			// 	const result = String.fromCharCode(...array)
-			// 	return result;
-			// }
-			// const s = "WnDWzhwa5uIu6OHKGhuWHbaHoHNoCDsyu4iYzqb7n+A="
-			// const b = Buffer.from(s, 'base64')
-			// const salt = b.toString("utf-8")
-			// console.log(b.length, salt.length)
-			// const result = await argon2("password", salt, {
-			// 	memory: 4096,
-			// 	hashLength: 20,
-			// })
-			// const { encodedHash } = result
-			// console.log(encodedHash)
-		}
-		catch(e)
-		{
-			console.error("Catched", e)
-		}
+	const fakePayload = {
+		domain: "testa.com",
+		expire_at: 1657293505
 	}
+	const wallet = await Secp256k1HdWallet.fromMnemonic("onion check wise range six laundry index tuition orchard broccoli climb permit",
+	{
+		hdPaths: [stringToPath(`m/44'/639'/0'/` + 0 + "/" + 0)],
+		prefix: "bitsong",
+	})
+	const address = (await wallet.getAccounts())[0]
+	console.log("Add", address.address)
+	const signature = await signArbitrary(wallet, address.address, JSON.stringify(payload))
+	console.log("Sign", signature)
+
+	const verify = await verifyArbitrary(address.address, JSON.stringify(payload), signature)
+	console.log("ver true", verify)
+
+
+	const verifyFalse = await verifyArbitrary(address.address, JSON.stringify(fakePayload), signature)
+	console.log("ver false", verifyFalse)
 }
