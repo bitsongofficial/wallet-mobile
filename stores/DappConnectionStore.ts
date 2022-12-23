@@ -1,4 +1,4 @@
-import { action, autorun, makeAutoObservable, makeObservable, observable, runInAction, toJS } from "mobx";
+import { makeAutoObservable, makeObservable, observable, runInAction } from "mobx";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
 import { IWalletConnectSession } from "@walletconnect/types"
@@ -9,11 +9,16 @@ import { WalletConnectBaseEvents, WalletConnectConnectorV1, WalletInterface } fr
 import { Wallet } from "core/types/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
 import { KeplrConnector } from "core/connection/WalletConnect/KeplrConnector";
-import { StdSignDoc } from "@cosmjs-rn/amino";
+import {  StdFee, StdSignature, StdSignDoc } from "@cosmjs-rn/amino";
 import ChainsStore from "./ChainsStore";
+import { BitsongJSConnector } from "core/connection/WalletConnect/BitsongJSConnector";
+import { EncodeObject } from "@cosmjs-rn/proto-signing";
+import { GasPrice, SigningStargateClient } from "@cosmjs-rn/stargate";
+import { getCoinGasUnit } from "core/utils/Coin";
+import { signArbitrary } from "core/cryptography/Signing";
 
 class StoreDrivenWalletInterface implements WalletInterface {
-	constructor(private walletStore: WalletStore, private profileId: string) {}
+	constructor(private walletStore: WalletStore, private chainsStore: ChainsStore, private profileId: string) {}
 	async Address(chain: SupportedCoins) {
 		return await this.walletStore.address(this.profileId, chain) ?? ""
 	}
@@ -45,11 +50,36 @@ class StoreDrivenWalletInterface implements WalletInterface {
 
 		return undefined
 	}
+	async SignAndBroadCast(chain: SupportedCoins, messages: EncodeObject[], fee: number | StdFee | "auto" = "auto", memo: string = "", signerAddress?: string)
+	{
+		const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
+		const [address, signer, rpcEndpoint] = await Promise.all([wallet.Address(), wallet.Signer(), this.chainsStore.ChainRPC(chain)])
+		const gas = getCoinGasUnit(chain)
+		if(rpcEndpoint && gas)
+		{
+			const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, signer, {
+				gasPrice: GasPrice.fromString(gas),
+			})
+			return await client.signAndBroadcast(signerAddress ?? address, messages, fee, memo)
+		}
+	}
+
+	async SignArbitrary(chain: SupportedCoins, payload: any, signerAddress: string): Promise<StdSignature> {
+		const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
+		const [address, signer] = await Promise.all([wallet.Address(), wallet.AminoSigner(), this.chainsStore.ChainRPC(chain)])
+		return signArbitrary(signer, signerAddress ?? address, payload)
+	}
+}
+
+export enum Connectors {
+	BitsongJS,
+	Keplr,
 }
 
 export type DappConnection = {
 	profileId: string,
-	connector: WalletConnectConnectorV1<WalletConnectBaseEvents>
+	connector: WalletConnectConnectorV1<WalletConnectBaseEvents>,
+	type: Connectors,
 }
 
 export type ConnectionMeta = {
@@ -98,11 +128,11 @@ export default class DappConnectionStore {
 		makeAutoObservable(this, {}, { autoBind: true })
 	}
 
-	connect(pairString?: string)
+	connect(pairString: string, type: Connectors)
 	{
-		if(this.walletStore.activeProfile && pairString)
+		if(this.walletStore.activeProfile)
 		{
-			this.addConnection(this.walletStore.activeProfile.id, {pairString})
+			this.addConnection(this.walletStore.activeProfile.id, type, {pairString})
 		}
 		else
 		{
@@ -110,22 +140,32 @@ export default class DappConnectionStore {
 		}
 	}
 
-	restoreConnection(profileId: string, session: SessionConnectionInfo, connectionMeta?: ConnectionMeta)
+	restoreConnection(profileId: string, type: Connectors, session: SessionConnectionInfo, connectionMeta?: ConnectionMeta)
 	{
-		this.addConnection(profileId, session, connectionMeta)
+		this.addConnection(profileId, type, session, connectionMeta)
 	}
 
-	private addConnection(profileId: string, connectionInfo: ConnectionInfo, connectionMeta?: ConnectionMeta)
+	private addConnection(profileId: string, type: Connectors, connectionInfo: ConnectionInfo, connectionMeta?: ConnectionMeta)
 	{
 		try
 		{
-			const connector = new KeplrConnector(this.chainsStore.enabledCoins, {
+			const infos = {
 				uri: connectionInfo.pairString,
 				session: connectionInfo.session,
 				fcmToken: this.settingsStore.notifications.enable ? this.remoteConfigsStore.pushNotificationToken : undefined,
-				walletInterface: new StoreDrivenWalletInterface(this.walletStore, profileId),
+				walletInterface: new StoreDrivenWalletInterface(this.walletStore, this.chainsStore, profileId),
 				meta: connectionMeta,
-			})
+			}
+			let connector: WalletConnectConnectorV1<WalletConnectBaseEvents>
+			switch (type)
+			{
+				case Connectors.Keplr:
+					connector = new KeplrConnector(this.chainsStore.enabledCoins, infos)					
+					break
+				default:
+					connector = new BitsongJSConnector(this.chainsStore.enabledCoins, infos)	
+					break
+			}
 			const oldConnect = connector.events.connect
 			connector.events.connect = (error, payload) =>
 			{
