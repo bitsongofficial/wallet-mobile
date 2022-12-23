@@ -114,4 +114,9 @@ export default class ChainsStore {
 		const chain = this.ResolveChain(chainIndex)
 		return (chain !== undefined ? new DynamicCosmosChain(chain) : undefined)
 	}
+
+	ChainRPC(chainIndex: string)
+	{
+		return this.ResolveChain(chainIndex)?.rpc
+	}
 }
