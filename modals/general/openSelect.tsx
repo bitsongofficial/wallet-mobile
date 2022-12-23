@@ -1,7 +1,9 @@
-import { Keyboard } from "react-native"
-import { BottomSheetProps } from "@gorhom/bottom-sheet"
+import { Keyboard, StyleSheet } from "react-native"
+import { BottomSheetProps, BottomSheetView } from "@gorhom/bottom-sheet"
 import { gbs } from "modals"
 import { default as Select, Props as SelectProps } from "./organisms/Select"
+import HorizontalWrapper from "screens/layout/HorizontalWrapper"
+import { s } from "react-native-size-matters"
 
 type Props = {
 	onClose?(): void
@@ -28,7 +30,7 @@ export default async function openSelect<T>(
 		rightExtractor,
 		snapPoints,
 		...props
-	}: Props & SelectProps<T> & BottomSheetProps) {
+	}: Props & SelectProps<T> & Omit<BottomSheetProps, "children">) {
 	const status = { done: false }
 	const close = () => {
 		Keyboard.dismiss()
@@ -54,20 +56,34 @@ export default async function openSelect<T>(
 				onDismiss && !status.done && onDismiss()
 			}
 		},
-		children: () => <Select
-			title={title}
-			description={description}
-			searchText={searchText}
-			items={items}
-			onPress={select}
-			active={active}
-			activeIndex={activeIndex}
-			searchCriteria={searchCriteria}
-			keyExtractor={keyExtractor}
-			labelExtractor={labelExtractor}
-			leftExtractor={leftExtractor}
-			rightExtractor={rightExtractor}
-		/>,
+		children: () =>
+		<BottomSheetView style={[styles.container, styles.minFullHeight]}>
+			<HorizontalWrapper style={styles.minFullHeight}>
+				<Select
+					title={title}
+					description={description}
+					searchText={searchText}
+					items={items}
+					onPress={select}
+					active={active}
+					activeIndex={activeIndex}
+					searchCriteria={searchCriteria}
+					keyExtractor={keyExtractor}
+					labelExtractor={labelExtractor}
+					leftExtractor={leftExtractor}
+					rightExtractor={rightExtractor}
+				/>
+			</HorizontalWrapper>
+		</BottomSheetView>,
 	})
 	requestAnimationFrame(() => gbs.expand())
 }
+
+const styles = StyleSheet.create({
+	container: {
+		paddingBottom: s(8),
+	},
+	minFullHeight: {
+		minHeight: "100%",
+	},
+})
