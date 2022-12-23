@@ -1,6 +1,6 @@
 import AsyncStorageLib from "@react-native-async-storage/async-storage"
 import { autorun, IReactionDisposer, reaction, runInAction, toJS } from "mobx"
-import DappConnectionStore, { ConnectionMeta } from "./DappConnectionStore"
+import DappConnectionStore, { ConnectionMeta, Connectors } from "./DappConnectionStore"
 import SettingsStore from "./SettingsStore"
 import WalletStore, { ProfileInner } from "./WalletStore"
 import { IWalletConnectSession } from "@walletconnect/types"
@@ -30,6 +30,7 @@ const blocking_date = "blocking_date"
 type ConnectionRaw = {
 	profileId: string,
 	session: IWalletConnectSession,
+	type: Connectors
 } & ConnectionMeta
 
 export default class LocalStorageManager
@@ -162,6 +163,7 @@ export default class LocalStorageManager
 						url: c.connector.meta.url,
 						description: c.connector.meta.description,
 						icon: c.connector.meta.icon,
+						type: c.type,
 					}
 				}
 			}))
@@ -183,9 +185,9 @@ export default class LocalStorageManager
 			{
 				const connections = JSON.parse(storedConnections) as ConnectionRaw[]
 				connections.forEach(c => {
-					const {session, profileId, ...meta} = c
+					const {session, profileId, type, ...meta} = c
 					meta.date = meta.date ? new Date(meta.date) : null
-					this.dappConnection.restoreConnection(profileId, {session}, meta)
+					this.dappConnection.restoreConnection(profileId, type, {session}, meta)
 				})
 			}
 		}

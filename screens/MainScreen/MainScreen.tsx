@@ -27,6 +27,8 @@ import { withStatusBar } from "screens/layout/hocs"
 import BottomNavigator from "screens/layout/BottomNavigator"
 import { useTranslation } from "react-i18next"
 import { toJS } from "mobx"
+import { Connectors } from "stores/DappConnectionStore"
+import openSelectConnector from "modals/walletconnect/openSelectConnector"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -79,17 +81,24 @@ export default
 
 		const openScannerMemorized = useCallback(
 			() =>
-				navigation.navigate("ScannerQR", {
-					onBarCodeScanned: (uri: string) => {
-						try {
-							if (uri.startsWith("wc")) {
-								dapp.connect(uri)
-							}
-						} catch (e) {
-							console.error("Catched", e)
-						}
-					},
-				}),
+			{
+				openSelectConnector((connector: Connectors) =>
+					{
+						navigation.navigate("ScannerQR",
+						{
+							onBarCodeScanned: (uri: string) => {
+								try {
+									if (uri.startsWith("wc"))
+									{
+										dapp.connect(uri, connector)
+									}
+								} catch (e) {
+									console.error("Catched", e)
+								}
+							},
+						})
+					})
+			},
 			[],
 		)
 

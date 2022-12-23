@@ -144,6 +144,7 @@ export default class DappConnectionStore {
 				this.connections.push(makeObservable({
 					profileId,
 					connector: connector,
+					type,
 				}, {
 					connector: observable,
 				}))
