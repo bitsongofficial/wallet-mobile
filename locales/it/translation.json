@@ -58,6 +58,7 @@
 	"Notifications": "Notifiche",
 	"WalletConnect": "Wallet Connect",
 	"SwapDescription": "Stai scambiando {{from}} con {{to}}",
+	"GenericType": "Premi per avere più informazioni",
 	"ContinueOnTheBrowser": "Messaggio firmato con successo\nContinua nel browser",
 	"SignError": "C'è stato un errore durante la firma della transazione",
 	"ConnectorsSelect": "Scegli il tipo di DApp",
