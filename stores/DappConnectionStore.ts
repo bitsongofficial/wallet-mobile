@@ -65,11 +65,12 @@ class StoreDrivenWalletInterface implements WalletInterface {
 		}
 		else throw "Invalid params, rpc endpoint or gas not found"
 	}
-
-	async SignArbitrary(chain: SupportedCoins, payload: any, signerAddress: string): Promise<StdSignature> {
+	
+	async SignArbitrary(chain: string, payload: any, signerAddress: string): Promise<StdSignature> {
 		const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
-		const [address, signer] = await Promise.all([wallet.Address(), wallet.AminoSigner(), this.chainsStore.ChainRPC(chain)])
-		return signArbitrary(signer, signerAddress ?? address, payload)
+		const signer = await wallet.AminoSigner()
+		const address = (await signer.getAccounts())[0].address
+		return signArbitrary(signer, signerAddress ?? address, JSON.stringify(payload))
 	}
 }
 
