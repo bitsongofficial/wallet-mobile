@@ -18,13 +18,8 @@ import { Contact } from "stores/ContactsStore"
 import { SendController } from "../../controllers"
 import { CardAddress, CardAdressSelf } from "../moleculs"
 import { Contact as ContactItem } from "../atoms"
-import { FOOTER_HEIGHT } from "utils/constants"
-import InputActionText from "components/moleculs/InputActionText"
 import { useTranslation } from "react-i18next"
-import SelectNetwork from "./SelectNetwork"
 import { SupportedCoins } from "constants/Coins"
-import { getCoinPrefix } from "core/utils/Coin"
-import { Coin } from "classes"
 
 type Props = {
 	controller: SendController
@@ -71,7 +66,6 @@ export default observer(function SelectReceiver({ controller, onPressScanner, st
 		{
 			(async () =>
 			{
-				console.log(creater.chain)
 				if(creater.chain) setUserAddressForChain(await wallet.activeAddress(creater.chain as SupportedCoins))
 			})()
 		}
@@ -164,55 +158,3 @@ const styles = StyleSheet.create({
 		paddingBottom: 8,
 	},
 })
-
-// const mockContacts: Contact[] = [
-// 	{
-// 		name: "Delogu",
-// 		address: "bitsong1",
-// 		avatar: "test",
-// 		starred: true,
-// 	},
-// 	{
-// 		name: "Vacchi",
-// 		address: "bitsong2",
-// 		avatar: "test",
-// 		starred: true,
-// 	},
-// 	{
-// 		name: "Aleandri",
-// 		address: "bitsong3",
-// 		avatar: "test",
-// 		starred: false,
-// 	},
-// 	{
-// 		name: "Rossi",
-// 		address: "bitsong4",
-// 		avatar: "test",
-// 		starred: false,
-// 	},
-
-// 	{
-// 		name: "Delogu",
-// 		address: "bitsong1",
-// 		avatar: "test",
-// 		starred: true,
-// 	},
-// 	{
-// 		name: "Vacchi",
-// 		address: "bitsong2",
-// 		avatar: "test",
-// 		starred: true,
-// 	},
-// 	{
-// 		name: "Aleandri",
-// 		address: "bitsong3",
-// 		avatar: "test",
-// 		starred: false,
-// 	},
-// 	{
-// 		name: "Rossi",
-// 		address: "bitsong4",
-// 		avatar: "test",
-// 		starred: false,
-// 	},
-// ]

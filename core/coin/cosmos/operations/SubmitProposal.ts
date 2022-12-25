@@ -1,8 +1,7 @@
-import { assertIsDeliverTxSuccess, GasPrice, MsgDepositEncodeObject, MsgSubmitProposalEncodeObject, SigningStargateClient } from "@cosmjs-rn/stargate";
-import { DepositData } from "core/types/coin/cosmos/DepositData";
+import { assertIsDeliverTxSuccess, GasPrice, MsgSubmitProposalEncodeObject, SigningStargateClient } from "@cosmjs-rn/stargate";
 import { SubmitProposalData } from "core/types/coin/cosmos/SubmitProposalData";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
-import { MsgDeposit, MsgSubmitProposal } from "cosmjs-types/cosmos/gov/v1beta1/tx";
+import { MsgSubmitProposal } from "cosmjs-types/cosmos/gov/v1beta1/tx";
 import { CosmosOperation } from "./CosmosOperation";
 
 export class SubmitProposal extends CosmosOperation {
@@ -30,7 +29,6 @@ export class SubmitProposal extends CosmosOperation {
 				proposer: walletInfos[0],
 			})
 		}
-
 		try
 		{
 			const result = await client.signAndBroadcast(walletInfos[0], [message], "auto")

@@ -56,7 +56,7 @@ export default async function openConfirm(props: React.PropsWithChildren<Props> 
 			{
 				if(index < 0) onClose()
 			},
-			children: () => 
+			children: () =>
 				<ConfirmView
 					header={header}
 					titleTranslationString={titleTranslationString}

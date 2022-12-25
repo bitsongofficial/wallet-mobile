@@ -1,6 +1,5 @@
 import WalletConnect from "@walletconnect/client"
 import { IWalletConnectSession, IWalletConnectOptions } from "@walletconnect/types"
-import { Bitsong } from "core/coin/bitsong/Bitsong";
 import { operationToAminoType } from "core/coin/cosmos/operations/utils";
 import { PublicWallet } from "core/storing/Generic";
 import { CosmosWallet } from "core/storing/Wallet";
@@ -298,7 +297,7 @@ export class WalletConnectCosmosClientV1 {
 		}
 		const actualFromWallet: CosmosWallet = fromWallet
 
-		return fromWallet
+		return actualFromWallet
 	}
 
 	async getAccounts()

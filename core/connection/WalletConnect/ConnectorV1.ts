@@ -18,7 +18,7 @@ export interface WalletInterface {
 	PubKey(chain: SupportedCoins): Promise<Uint8Array>
 	Sign(chain: SupportedCoins, signDoc: StdSignDoc, signerAddress?: string): Promise<AminoSignResponse | undefined>
 	SignAndBroadCast(chain: SupportedCoins, messages: EncodeObject[], fee: number | StdFee | "auto", memo: string, signerAddress?: string): Promise<DeliverTxResponse | undefined>
-	SignArbitrary(chain: SupportedCoins, payload: any, signerAddress: string): Promise<StdSignature>
+	SignArbitrary(chain: string, payload: any, signerAddress: string): Promise<StdSignature>
 }
 
 export type WalletConnectOptions = {

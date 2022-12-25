@@ -73,7 +73,6 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
     KeplrEnableWallet(error: Error | null, payload: any)
     {
         this.keplrChainsIds = payload.params
-        console.log(this.keplrChainsIds)
 
         this.approve(payload, [])
     }
@@ -113,7 +112,7 @@ export class KeplrConnector extends WalletConnectConnectorV1<KeplrEvents> {
             this.reject(payload, new Error("Chain id invalid"))
         }
     }
-    
+
     async KeplrSign(error: Error | null, payload: any)
     {
         const [chainId, signer, signDoc, signOptions] = payload.params as [string, string, StdSignDoc, KeplrSignOptions]
