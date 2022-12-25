@@ -17,14 +17,14 @@ export default ({ style, onPressConfirm, onPressMintscan }: FooterProps) =>
 	return  (
 		<Animated.View style={style}>
 			<Button text={t("Confirm")} textAlignment="center" onPress={onPressConfirm} />
-			<View style={{ justifyContent: "center", alignItems: "center" }}>
+			{onPressMintscan && <View style={{ justifyContent: "center", alignItems: "center" }}>
 				<Button
 					text={t("ViewOnMintscan")}
 					mode="fill"
 					onPress={onPressMintscan}
 					Right={<Icon2 name="chevron_right" stroke={COLOR.White} size={18} />}
 				/>
-			</View>
+			</View>}
 		</Animated.View>
 	)
 }

@@ -100,11 +100,11 @@ export default function LoaderScreen({
 					{status == "fulfilled" && <StepSuccess title={t("TransactionSuccess")} caption={t("TransactionSuccessfullText")} />}
 					{status == "rejected" && <StepError onPressBack={goBack} />}
 
-					<FooterSuccess
+					{status == "fulfilled" && <FooterSuccess
 						style={footerStyle}
 						onPressConfirm={goBack}
 						// onPressMintscan={() => {}}
-					/>
+					/>}
 				</View>
 			</SafeAreaView>
 		</>
