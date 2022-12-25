@@ -29,8 +29,17 @@ export default function openSelectConnector(onConnectorSelect: ((connector: Conn
 		gbs.close()
 		onConnectorSelect(item)
 	}
+	gbs.backHandler = () =>
+	{
+		gbs.close()
+	}
 	gbs.setProps({
 		snapPoints: ["44%"],
+		onChange(index) {
+			if (index === -1) {
+				gbs.removeBackHandler()
+			}
+		},
 		children: () => (
 			<BottomSheetView style={[styles.container, styles.minFullHeight]}>
 				<HorizontalWrapper style={styles.minFullHeight}>
@@ -45,22 +54,6 @@ export default function openSelectConnector(onConnectorSelect: ((connector: Conn
 		),
 	})
 	requestAnimationFrame(() => gbs.expand())
-	// openSelect<Connectors>({
-	// 	items: enumValues(Connectors),
-	// 	title: t("ConnectorsSelect"),
-	// 	snapPoints: ["40%"],
-	// 	onSelect: onConnectorSelect,
-	// 	labelExtractor: (c) =>
-	// 	{
-	// 		switch(c)
-	// 		{
-	// 			case Connectors.Keplr:
-	// 				return t("KeplrConnector")
-	// 			default:
-	// 				return t("BitsongJSConnector")
-	// 		}
-	// 	}
-	// })
 }
 
 const styles = StyleSheet.create({
