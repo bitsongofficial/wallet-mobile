@@ -52,9 +52,10 @@ class StoreDrivenWalletInterface implements WalletInterface {
 	}
 	async SignAndBroadCast(chain: SupportedCoins, messages: EncodeObject[], fee: number | StdFee | "auto" = "auto", memo: string = "", signerAddress?: string)
 	{
+		const codedChain = this.chainsStore.ChainOperator(chain)
 		const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
 		const [address, signer, rpcEndpoint] = await Promise.all([wallet.Address(), wallet.Signer(), this.chainsStore.ChainRPC(chain)])
-		const gas = getCoinGasUnit(chain)
+		const gas = codedChain?.gasUnit()
 		if(rpcEndpoint && gas)
 		{
 			const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, signer, {
@@ -62,6 +63,7 @@ class StoreDrivenWalletInterface implements WalletInterface {
 			})
 			return await client.signAndBroadcast(signerAddress ?? address, messages, fee, memo)
 		}
+		else throw "Invalid params, rpc endpoint or gas not found"
 	}
 
 	async SignArbitrary(chain: SupportedCoins, payload: any, signerAddress: string): Promise<StdSignature> {
