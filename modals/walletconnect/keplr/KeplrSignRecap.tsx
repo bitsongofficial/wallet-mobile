@@ -1,9 +1,11 @@
-import { View, Text, GestureResponderEvent, BackHandler, NativeEventSubscription, TouchableOpacity } from 'react-native'
-import { useCallback, useEffect, useMemo } from 'react'
+import { BackHandler, TouchableOpacity } from 'react-native'
+import { useEffect, useMemo } from 'react'
 import { AminoMsg } from '@cosmjs-rn/amino'
 import KeplrMessageItem from './KeplrMessageItem'
 import { useState } from 'react'
 import KeplrMessageDetails from './KeplrMessageDetails'
+import { s } from 'react-native-size-matters'
+import { ScrollView } from 'react-native-gesture-handler'
 
 type Props = {
 	messages: AminoMsg[]
@@ -33,16 +35,22 @@ export default function KeplrSignRecap({messages}: Props) {
 				setActiveMessage(i)
 			}
 			return (
-				<TouchableOpacity key={i} onPress={onPress}>
+				<TouchableOpacity key={i} onPress={onPress} style={{marginBottom: s(10)}}>
 					<KeplrMessageItem msg={msg}></KeplrMessageItem>
 				</TouchableOpacity>
 			)
 		}
 	), [messages])
 	return (
-		<View>
-			{activeMessage == undefined && messagesElements}
-			{activeMessage != undefined && <KeplrMessageDetails goBack={() => {setActiveMessage(undefined)}} msg={messages[activeMessage]}></KeplrMessageDetails>}
-		</View>
+		<>
+			{activeMessage == undefined &&
+				<ScrollView>
+					{messagesElements}
+				</ScrollView>
+			}
+			{activeMessage != undefined &&
+				<KeplrMessageDetails goBack={() => {setActiveMessage(undefined)}} msg={messages[activeMessage]}></KeplrMessageDetails>
+			}
+		</>
 	)
 }
