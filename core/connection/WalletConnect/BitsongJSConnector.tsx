@@ -176,12 +176,12 @@ export class BitsongJSConnector extends WalletConnectConnectorV1<BitsongEvents> 
         if(chain)
         {
             openConfirm({
-                children: <SignArbitraryRecap data={payload}></SignArbitraryRecap>,
+                children: <SignArbitraryRecap data={signerArbitraryPayload}></SignArbitraryRecap>,
                 onConfirm: async () =>
                 {
                     try
                     {
-                        const stdSignature = await this.walletInterface.SignArbitrary(chain as SupportedCoins, signerArbitraryPayload, signerAddress)
+                        const stdSignature = await this.walletInterface.SignArbitrary(chain, signerArbitraryPayload, signerAddress)
                         if(stdSignature)
                         {
                             this.approve(payload, [
