@@ -362,9 +362,10 @@ export default class WalletStore {
     return this.activeProfile ? this.wallet(this.activeProfile) : null
   }
 
-  chainWallet(profile: profileIndexer, chain: SupportedCoins)
+  chainWallet(profile: profileIndexer, chain: string)
   {
-    return this.wallet(profile)?.wallets[chain]
+    const codedChain = this.chainsStore.ChainAsSupportedOne(chain)
+    return this.wallet(profile)?.wallets[codedChain]
   }
 
   changeProfileName(profile: profileIndexer, name: string)
