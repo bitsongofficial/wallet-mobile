@@ -136,7 +136,7 @@ export function getCoinGasUnit(coin: ChainIndex)
 	if(c && c.fees && c.fees.fee_tokens && c.fees.fee_tokens.length > 0)
 	{
 		const token = c.fees.fee_tokens[0]
-		return token.fixed_min_gas_price + token.denom
+		return (token.average_gas_price !== undefined ? token.average_gas_price : token.fixed_min_gas_price) + token.denom
 	}
 
 	return undefined
