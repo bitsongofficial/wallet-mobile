@@ -1,3 +1,4 @@
+import { SupportedCoins } from "constants/Coins"
 import { AlternativeChain } from "core/coin/cosmos/AlternativeChain"
 import { CosmosCoin } from "core/coin/cosmos/CosmosCoin"
 import { CoinClasses } from "core/types/coin/Dictionaries"
@@ -118,5 +119,10 @@ export default class ChainsStore {
 	ChainRPC(chainIndex: string)
 	{
 		return this.ResolveChain(chainIndex)?.rpc
+	}
+
+	ChainAsSupportedOne(chainIndex: string)
+	{
+		return (this.ResolveChain(chainIndex) as CodedCosmosChain).chain.chain() as SupportedCoins
 	}
 }
