@@ -23,11 +23,11 @@ export default function ConfirmView(props: PropsWithChildren<Props>)
 				<>
 					{header}
 					<Title size={20} alignment="center" style={styles.marginBottom}>{t(titleTranslationString)}</Title>
-					<BottomSheetScrollView style={styles.flexShrink}>
+					<View style={styles.flex}>
 						{children}
-					</BottomSheetScrollView>
+					</View>
 					{onPressConfirm != undefined && <Button text={t("Confirm")} textAlignment="center" onPress={onPressConfirm} style={styles.marginTop} />}
-					{onPressReject != undefined && <Button mode="gradient_border" text={t("Reject")} textAlignment="center" onPress={onPressConfirm} style={styles.marginTopSmall} />}
+					{onPressReject != undefined && <Button mode="gradient_border" text={t("Reject")} textAlignment="center" onPress={onPressReject} style={styles.marginTopSmall} />}
 				</>
 			</HorizontalWrapper>
 		</BottomSheetView>
@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
 	marginBottom: {
 		marginBottom: s(20),
 	},
-	flexShrink: {
-		flexShrink: 1,
+	flex: {
+		flex: 1,
 	},
 	container: {
 		paddingTop: s(10),
