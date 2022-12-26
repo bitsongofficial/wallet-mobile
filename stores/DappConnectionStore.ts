@@ -160,13 +160,40 @@ export default class DappConnectionStore {
 				meta: connectionMeta,
 			}
 			let connector: WalletConnectConnectorV1<WalletConnectBaseEvents>
+			const addConnection = () =>
+			{
+				runInAction(() =>
+				{
+					
+					this.connections.push(makeObservable({
+						profileId,
+						connector: connector,
+						type,
+					}, {
+						connector: observable,
+					}))
+				})
+			}
 			switch (type)
 			{
 				case Connectors.Keplr:
-					connector = new KeplrConnector(this.chainsStore.enabledCoins, infos)					
+					connector = new KeplrConnector(this.chainsStore.enabledCoins, infos)
 					break
 				default:
 					connector = new BitsongJSConnector(this.chainsStore.enabledCoins, infos)	
+					const oldConnect = connector.events.connect
+					connector.events.connect = (error, payload) =>
+					{
+						try
+						{
+							oldConnect(error, payload)
+							addConnection()
+						}
+						catch(e)
+						{
+							throw e
+						}
+					}
 					break
 			}
 			const oldConnect = connector.events.connect
@@ -181,17 +208,6 @@ export default class DappConnectionStore {
 				oldDisconnect(error, payload)
 				this.onDisconnect(connector)
 			}
-			runInAction(() =>
-			{
-				
-				this.connections.push(makeObservable({
-					profileId,
-					connector: connector,
-					type,
-				}, {
-					connector: observable,
-				}))
-			})
 		}
 		catch(e)
 		{
