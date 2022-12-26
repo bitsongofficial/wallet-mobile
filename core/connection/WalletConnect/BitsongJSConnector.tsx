@@ -9,6 +9,8 @@ import ContinueOnDesktop from "modals/walletconnect/ContinueOnDesktop";
 import { EncodeObject } from "@cosmjs-rn/proto-signing";
 import SignArbitraryRecap from "modals/walletconnect/bitsongjs/SignArbitraryRecap";
 import { navigate } from "navigation/utils";
+import KeplrConfirmHeader from "modals/walletconnect/keplr/KeplrConfirmHeader";
+import KeplrConfirmDescription from "modals/walletconnect/keplr/KeplrConfirmDescription";
 
 export interface BitsongEvents extends WalletConnectBaseEvents {
     sign: WalletConnectVersionedCallbacks,
@@ -48,11 +50,23 @@ export class BitsongJSConnector extends WalletConnectConnectorV1<BitsongEvents> 
 
     SessionRequest(error: Error | null, payload: any)
     {
-        this.connector?.approveSession({
-            chainId: 1,
-            accounts: [
-                this.walletInterface.Name
-            ],
+        const profileName = this.walletInterface.Name
+        openConfirm({
+            onConfirm: async () =>
+            {
+                this.connector?.approveSession({
+                    chainId: 1,
+                    accounts: [
+                        this.walletInterface.Name
+                    ],
+                })
+            },
+            onDismiss: () =>
+            {
+                this.reject(payload, new Error("User rejected permission"))
+            },
+            header: <KeplrConfirmHeader name={this.meta.name} icon={this.meta.icon} url={this.meta.url}></KeplrConfirmHeader>,
+            children: <KeplrConfirmDescription profile={profileName} name={this.meta.name} descriptionKey={"DAppConnectionRequest"}></KeplrConfirmDescription>
         })
     }
 
