@@ -18,6 +18,7 @@ import { withFullHeight } from "screens/layout/hocs"
 import { t } from "i18next"
 import { DappConnection } from "stores/DappConnectionStore"
 import { WalletConnectBaseEvents, WalletConnectConnectorV1 } from "core/connection/WalletConnect/ConnectorV1"
+import { openWalletConnectScan } from "modals/walletconnect/openWalletConnectScan"
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">
 
@@ -33,7 +34,7 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 	const { dapp } = useStore()
 
 	// ------- Wallets ------
-	const connectors: ConnectionsListData[] = toJS(dapp.connections).map(c => ({name: c.connector.name, date: c.connector.date, connector: c.connector}))
+	const connectors: ConnectionsListData[] = toJS(dapp.connections).map(c => ({name: c.connector.meta.name, date: c.connector.meta.date, connector: c.connector}))
 	const mapItemsRef = useMemo(() => observable.map<string, React.RefObject<Swipeable>>(), [])
 
 	const renderWallet = useCallback<ListRenderItem<ConnectionsListData>>(
@@ -54,15 +55,7 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 		[],
 	)
 
-	const navToScanner = useCallback(
-		() =>
-			navigation.navigate("ScannerQR", {
-				onBarCodeScanned(data) {
-					dapp.connect(data)
-				},
-			}),
-		[],
-	)
+	const navToScanner = useCallback(openWalletConnectScan,[])
 
 	const goBack = useCallback(() => navigation.goBack(), [])
 

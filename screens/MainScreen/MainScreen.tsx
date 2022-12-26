@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next"
 import { toJS } from "mobx"
 import { Connectors } from "stores/DappConnectionStore"
 import openSelectConnector from "modals/walletconnect/openSelectConnector"
+import { openWalletConnectScan } from "modals/walletconnect/openWalletConnectScan"
 
 type ValueTabs = "Coins" | "Fan Tokens"
 
@@ -82,22 +83,7 @@ export default
 		const openScannerMemorized = useCallback(
 			() =>
 			{
-				openSelectConnector((connector: Connectors) =>
-					{
-						navigation.navigate("ScannerQR",
-						{
-							onBarCodeScanned: (uri: string) => {
-								try {
-									if (uri.startsWith("wc"))
-									{
-										dapp.connect(uri, connector)
-									}
-								} catch (e) {
-									console.error("Catched", e)
-								}
-							},
-						})
-					})
+				openWalletConnectScan()
 			},
 			[],
 		)
