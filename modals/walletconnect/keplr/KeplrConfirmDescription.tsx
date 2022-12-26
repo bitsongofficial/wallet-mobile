@@ -9,15 +9,16 @@ import { COLOR } from 'utils'
 type Prop = {
 	profile: string,
 	name?: string,
+	descriptionKey?: string,
 }
 
-export default function KeplrConfirmDescription({profile, name}: Prop)
+export default function KeplrConfirmDescription({profile, name, descriptionKey}: Prop)
 {
 	const theme = useTheme()
 	return (
 		<>
 			<Text style={[theme.text.primary, styles.description]}>
-				<Trans i18nKey={"KeplrGetKeyDescription"} values={{profileName: profile, DApp: name}}>
+				<Trans i18nKey={descriptionKey ?? "KeplrGetKeyDescription"} values={{profileName: profile, DApp: name}}>
 
 				</Trans>
 			</Text>
