@@ -64,6 +64,7 @@
 	"ConnectorsSelect": "Scegli il tipo di DApp",
 	"KeplrConnector": "Keplr DApp",
 	"BitsongJSConnector": "BitsongJS DApp",
+	"DAppConnectionRequest": "{{DApp}} chiede di connettersi al tuo device con il profilo {{profileName}}",
 	"KeplrGetKeyDescription": "{{DApp}} chiede i tuoi address disponibili per il profilo {{profileName}}",
 	"UnknownKeplrOperation": "Operazione sconosciuta",
 	"PreferencesSection": "Preferenze",
