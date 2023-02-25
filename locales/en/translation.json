@@ -57,6 +57,7 @@
 	"AddressBook": "Address Book",
 	"Notifications": "Notifications",
 	"WalletConnect": "Wallet Connect",
+	"NoRegisteredConnections": "No registered DApps. Scan a Keplr or BitsongJS QRCode to start",
 	"SwapDescription": "You are swapping {{from}} to {{to}}",
 	"GenericType": "Press for more infos",
 	"ContinueOnTheBrowser": "Message signed successfully\nContinue on the browser",

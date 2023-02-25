@@ -27,11 +27,8 @@ export default ({ initialRouteName }: { initialRouteName?: keyof RootStackParamL
 			<Stack.Screen name="Splash" component={Screens.Splash} />
 			<Stack.Screen name="Start" component={Screens.Start} />
 			<Stack.Screen name="CreateWallet" component={Screens.CreateWallet} />
-			<Stack.Screen name="WalletConnect" component={Screens.WalletConnect} />
-			<Stack.Screen name="SendRecap" component={Screens.SendRecap} />
 			<Stack.Screen name="PinRequest" component={Screens.Pin} />
 			{/* auth */}
-			<Stack.Screen name="AddressBook" component={Screens.AddressBook} />
 			<Stack.Screen name="ImportFromSeed" component={Screens.ImportFromSeed} />
 			<Stack.Screen name="ImportWithKeplr" component={Screens.ImportWithKeplr} />
 			<Stack.Screen name="SettingsSecurity" component={Screens.SettingsSecurity} />
@@ -39,19 +36,6 @@ export default ({ initialRouteName }: { initialRouteName?: keyof RootStackParamL
 			<Stack.Screen name="Profile" component={Screens.Profile} />
 			<Stack.Screen name="Root" component={BottomTabNavigator} />
 			<Stack.Screen name="Loader" component={Screens.Loader} />
-
-			<Stack.Screen name="Validator" component={Screens.Validator} options={WithHeaderOption} />
-			<Stack.Screen name="NewProposal" component={Screens.NewProposal} options={WithHeaderOption} />
-			<Stack.Screen
-				name="ProposalDetails"
-				component={Screens.ProposalDetails}
-				options={WithHeaderOption}
-			/>
-			<Stack.Screen
-				name="Notifications"
-				component={Screens.Notificatoins}
-				options={WithHeaderOption}
-			/>
 
 			<Stack.Group screenOptions={{ presentation: "modal" }}>
 				<Stack.Screen name="ScannerQR" component={Screens.ScannerQR} />

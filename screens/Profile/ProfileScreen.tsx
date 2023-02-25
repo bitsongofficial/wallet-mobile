@@ -166,14 +166,6 @@ export default withFullHeight(observer<Props>(function MainScreen({ navigation }
 										arrow
 										style={styles.listButton}
 									/>
-									<ListButton
-										disabled={wallet.activeProfile?.type == WalletTypes.WATCH}
-										text={t("WalletConnect")}
-										icon="wallet_connect"
-										onPress={openWalletConnect}
-										style={styles.listButton}
-										arrow
-									/>
 								</View>
 								<View style={styles.section}>
 									<Subtitle style={styles.subtitle}>{t("PreferencesSection")}</Subtitle>

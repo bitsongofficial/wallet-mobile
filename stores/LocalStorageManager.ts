@@ -39,10 +39,8 @@ export default class LocalStorageManager
 	private walletsLoadHandler?: IReactionDisposer
 	constructor(
 		private wallet: WalletStore,
-		private coin: CoinStore,
 		private dappConnection: DappConnectionStore,
 		private contacts: ContactsStore,
-		private proposals: ProposalsStore,
 		private settings: SettingsStore,
 		private remoteConfigs: RemoteConfigsStore,
 	)
@@ -55,9 +53,7 @@ export default class LocalStorageManager
 		const loadings: Promise<any>[] = []
 		await this.loadSettings()
 		if(!this.settings.biometric_enable && await isPinSaved()) await clearPin()
-		this.loadCoinStore()
 		this.loadContacts()
-		this.loadProposals()
 
 		this.connectionsLoadHandler = autorun(() =>
 		{
@@ -76,11 +72,9 @@ export default class LocalStorageManager
 			}
 		})
 
-		this.saveCoinStore()
 		this.saveContacts()
 		this.saveSettings()
 		this.saveWallets()
-		this.saveProposalsInner()
 		return true
 	}
 
@@ -125,30 +119,6 @@ export default class LocalStorageManager
 		}
 	}
 
-	async loadCoinStore()
-	{
-		const raw = await AsyncStorageLib.getItem(recent_recipients_location)
-		if(raw)
-		{
-			const recipients: any[] = JSON.parse(raw, (k, v) =>
-			{
-				v.date = new Date(v.date)
-				return v
-			})
-			recipients.forEach(r => {
-				this.coin.addToRecent(r.address, r.date)
-			})
-		} 
-	}
-
-	saveCoinStore()
-	{
-		reaction(
-			() => JSON.stringify(toJS(this.coin.recentRecipients)),
-			json => AsyncStorageLib.setItem(recent_recipients_location, json)
-		)
-	}
-
 	saveConnections()
 	{
 		const raw = JSON.stringify(this.dappConnection.connections.filter(c => c.connector.connector != null).map(c =>
@@ -187,7 +157,7 @@ export default class LocalStorageManager
 				connections.forEach(c => {
 					const {session, profileId, type, ...meta} = c
 					meta.date = meta.date ? new Date(meta.date) : null
-					this.dappConnection.restoreConnection(profileId, type, {session}, meta)
+					this.dappConnection.restoreConnection(profileId, type, session, meta)
 				})
 			}
 		}
@@ -204,7 +174,6 @@ export default class LocalStorageManager
 			this.settings.localStorageManager = this
 			this.dappConnection.localStorageManager = this
 			this.wallet.localStorageManager = this
-			this.proposals.localStorageManager = this
 		})
 	}
 
@@ -411,57 +380,6 @@ export default class LocalStorageManager
 
 			}			
 		}
-	}
-
-	private saveProposalsInner()
-	{
-		reaction(
-			() => JSON.stringify(toJS(this.proposals.recentChains)),
-			json => AsyncStorageLib.setItem(recent_proposal_chains_location, json)	
-		)
-	}
-
-	saveProposals()
-	{
-		AsyncStorageLib.setItem(proposal_draft_location, JSON.stringify(this.proposals.proposalDraft))
-	}
-
-	async loadProposals()
-	{
-		return await Promise.allSettled(
-		[
-			AsyncStorageLib.getItem(proposal_draft_location).then(raw =>
-				{
-					if(raw)
-					{
-						try
-						{
-							this.proposals.proposalDraft = JSON.parse(raw)
-						}
-						catch
-						{
-			
-						}
-					}
-				}),
-			AsyncStorageLib.getItem(recent_proposal_chains_location).then(raw =>
-				{
-					if(raw)
-					{
-						try
-						{
-							const chains: any[] = JSON.parse(raw)
-							chains.reverse().forEach((e: any) => {
-								this.proposals.addToRecent(e)
-							})
-						}
-						catch
-						{
-			
-						}
-					}
-				}),
-		])
 	}
 	
 	// for example

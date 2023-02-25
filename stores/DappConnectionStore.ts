@@ -1,4 +1,4 @@
-import { makeAutoObservable, makeObservable, observable, runInAction } from "mobx";
+import { makeAutoObservable, makeObservable, observable, runInAction, toJS } from "mobx";
 import RemoteConfigsStore from "./RemoteConfigsStore";
 import WalletStore from "./WalletStore";
 import { IWalletConnectSession } from "@walletconnect/types"
@@ -147,9 +147,9 @@ export default class DappConnectionStore {
 		}
 	}
 
-	restoreConnection(profileId: string, type: Connectors, session: SessionConnectionInfo, connectionMeta?: ConnectionMeta)
+	restoreConnection(profileId: string, type: Connectors, session: IWalletConnectSession, connectionMeta?: ConnectionMeta)
 	{
-		this.addConnection(profileId, type, session, connectionMeta)
+		this.addConnection(profileId, type, {session}, connectionMeta)
 	}
 
 	private addConnection(profileId: string, type: Connectors, connectionInfo: ConnectionInfo, connectionMeta?: ConnectionMeta)
@@ -168,7 +168,6 @@ export default class DappConnectionStore {
 			{
 				runInAction(() =>
 				{
-					
 					this.connections.push(makeObservable({
 						profileId,
 						connector: connector,
@@ -182,6 +181,7 @@ export default class DappConnectionStore {
 			{
 				case Connectors.Keplr:
 					connector = new KeplrConnector(this.chainsStore.enabledCoins, infos)
+					addConnection()
 					break
 				default:
 					connector = new BitsongJSConnector(this.chainsStore.enabledCoins, infos)	
@@ -198,6 +198,7 @@ export default class DappConnectionStore {
 							throw e
 						}
 					}
+					if(connectionInfo.session) addConnection()
 					break
 			}
 			const oldConnect = connector.events.connect

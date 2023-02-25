@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { ListRenderItem, StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { FlatList, RectButton, Swipeable, TouchableOpacity } from "react-native-gesture-handler"
+import { FlatList, RectButton, Swipeable } from "react-native-gesture-handler"
 import { StatusBar } from "expo-status-bar"
 import { observer } from "mobx-react-lite"
 import { RootStackParamList } from "types"
 import { useStore } from "hooks"
-import { Button, Icon2, ThemedGradient } from "components/atoms"
+import { Button, Icon2 } from "components/atoms"
 // import { Header } from "./components/atoms";
 import { COLOR } from "utils"
 import { Circles, Subtitle, Title } from "./components/atoms"
@@ -16,9 +16,9 @@ import { s, vs } from "react-native-size-matters"
 import moment from "moment"
 import { withFullHeight } from "screens/layout/hocs"
 import { t } from "i18next"
-import { DappConnection } from "stores/DappConnectionStore"
 import { WalletConnectBaseEvents, WalletConnectConnectorV1 } from "core/connection/WalletConnect/ConnectorV1"
 import { openWalletConnectScan } from "modals/walletconnect/openWalletConnectScan"
+import { useTranslation } from "react-i18next"
 
 type Props = NativeStackScreenProps<RootStackParamList, "WalletConnect">
 
@@ -32,9 +32,11 @@ type ConnectionsListData = {
 
 export default withFullHeight(observer<Props>(function WalletConnect({ navigation }) {
 	const { dapp } = useStore()
+	const { t } = useTranslation()
 
 	// ------- Wallets ------
-	const connectors: ConnectionsListData[] = toJS(dapp.connections).map(c => ({name: c.connector.meta.name, date: c.connector.meta.date, connector: c.connector}))
+	const connections = dapp.connections
+	const connectors: ConnectionsListData[] = connections.map(c => ({name: c.connector.meta.name, date: c.connector.meta.date, connector: c.connector}))
 	const mapItemsRef = useMemo(() => observable.map<string, React.RefObject<Swipeable>>(), [])
 
 	const renderWallet = useCallback<ListRenderItem<ConnectionsListData>>(
@@ -57,8 +59,6 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 
 	const navToScanner = useCallback(openWalletConnectScan,[])
 
-	const goBack = useCallback(() => navigation.goBack(), [])
-
 	return (
 		<>
 			<StatusBar style="light" />
@@ -66,10 +66,8 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 			<View style={styles.container}>
 				<View style={[styles.safeArea]}>
 					<Header
-						onPressBack={goBack}
 						style={styles.header}
 						title={t("WalletConnect")}
-						onPressScan={navToScanner}
 					/>
 					{connectors.length > 0 && (
 						<>
@@ -85,18 +83,16 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 					)}
 					<View style={[styles.wrapper, { flex: 1 }]}>
 						{connectors.length === 0 && (
-							<>
+							<View style={{flex: 1, justifyContent: "center", paddingBottom: s(110)}}>
 								<Circles style={styles.circles}>
 									<Icon2 name="qr_code" size={70} stroke={COLOR.White} />
 								</Circles>
-								<View style={{ flex: 1 }}>
-									<Title style={styles.title}>Non hai ancora aggiunto alcun contatto</Title>
+								<View>
 									<Subtitle style={styles.subtitle}>
-										Access VIP experiences, exclusive previews, finance your own music projects and
-										have your say.
+										{t("NoRegisteredConnections")}
 									</Subtitle>
 								</View>
-							</>
+							</View>
 						)}
 						<View style={styles.buttonContainer}>
 							<Button
@@ -113,25 +109,17 @@ export default withFullHeight(observer<Props>(function WalletConnect({ navigatio
 }), false)
 
 type PropsHeader = {
-	onPressBack(): void
-	onPressScan(): void
 	style?: StyleProp<ViewStyle>
 	title?: string
 }
 
-const Header = ({ onPressBack, style, title, onPressScan }: PropsHeader) => (
+const Header = ({ style, title }: PropsHeader) => (
 	<View style={[styles.header_container, style]}>
 		<View style={styles.header_left}>
-			<TouchableOpacity onPress={onPressBack} style={styles.header_backButton}>
-				<Icon2 name="arrow_left" size={24} stroke={COLOR.White} />
-			</TouchableOpacity>
 			<Title style={{ marginLeft: 19, fontSize: s(18) }}>{title}</Title>
 		</View>
 		<View style={styles.header_right}>
 			<View style={styles.header_scanButtonContainer}>
-				<RectButton style={styles.header_scanButton} onPress={onPressScan}>
-					<Icon2 name="scan_2" size={20} stroke={COLOR.White} />
-				</RectButton>
 			</View>
 		</View>
 	</View>
@@ -151,7 +139,7 @@ const styles = StyleSheet.create({
 		marginBottom: vs(30),
 	},
 	circles: {
-		marginBottom: s(10),
+		marginBottom: s(30),
 	},
 
 	wrapper: { marginHorizontal: WRAPPER },
@@ -194,6 +182,16 @@ const styles = StyleSheet.create({
 	buttonText: {
 		fontSize: s(14),
 		lineHeight: s(18),
+	},
+	scanButton: {
+		width: s(33),
+		height: s(33),
+		alignItems: "center",
+		justifyContent: "center",
+		position: "absolute",
+		bottom: s(10),
+		right: s(10),
+		zIndex: 1,
 	},
 
 	// ------- Header ----------

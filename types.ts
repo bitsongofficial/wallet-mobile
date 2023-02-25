@@ -32,11 +32,6 @@ export type RootStackParamList = {
 	CreateWallet: undefined
 	ImportFromSeed: undefined
 	ImportWithKeplr: { data: string }
-	SendRecap: {
-		creater: TransactionCreater
-		accept: Function
-		reject: Function
-	}
 
 	// Common
 	ScannerQR: {
@@ -51,8 +46,7 @@ export type RootStackParamList = {
 	Profile: undefined
 	SettingsSecurity: undefined
 	SettingsNotifications: undefined
-	WalletConnect: undefined
-	AddressBook: undefined
+	WalletConnect: NavigatorScreenParams<RootTabParamList> | undefined
 
 	Loader: LoaderParams | undefined
 	PinRequest: {
@@ -65,18 +59,6 @@ export type RootStackParamList = {
 		disableVerification?: boolean
 		isBiometricAllowed?: boolean
 	}
-	Validator: { id: string }
-	NewProposal: {
-		chain?: SupportedCoins
-		title?: string
-		description?: string
-		initialDeposit?: number
-		passive?: boolean
-		onDone?: () => any
-		onDismiss?: () => any
-	}
-	ProposalDetails: { proposal: Proposal }
-	Notifications: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

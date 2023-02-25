@@ -26,13 +26,7 @@ export default observer(function Header({ navigation, style }: Props) {
 		<Animated.View style={[styles.container, style, { paddingTop: insets.top }]}>
 			<TestnetInfoBar></TestnetInfoBar>
 			<View style={styles.header}>
-				{/* <View style={styles.left}>
-					{!isOpen && <Icon2 name="logo" size={40} />}
-					{isOpen && <Loader size={40} />}
-				</View> */}
-
 				<View style={styles.right}>
-					{/* <Icon2 name="bell_1" size={16} stroke={COLOR.Marengo} /> */}
 					<TouchableOpacity onPress={openProfile}>
 						<Icon2
 							name="user"
@@ -40,14 +34,6 @@ export default observer(function Header({ navigation, style }: Props) {
 							stroke={hexAlpha(COLOR.White, 80)}
 							size={40}
 						/>
-						{/* <Image
-							source={
-								wallet.activeProfile && wallet.activeProfile.avatar
-									? { uri: wallet.activeProfile.avatar }
-									: require("assets/images/mock/avatar.png")
-							}
-							style={styles.avatar}
-						/> */}
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -64,7 +50,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		paddingHorizontal: HORIZONTAL_WRAPPER,
 		justifyContent: "flex-end",
-		paddingVertical: s(10),
+		paddingVertical: s(18),
 	},
 	left: {
 		position: "relative",

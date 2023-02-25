@@ -57,6 +57,7 @@
 	"AddressBook": "Rubrica",
 	"Notifications": "Notifiche",
 	"WalletConnect": "Wallet Connect",
+	"NoRegisteredConnections": "Nessuna DApp registrata. Inizia scansionando un QRCode di Keplr o BitsongJS",
 	"SwapDescription": "Stai scambiando {{from}} con {{to}}",
 	"GenericType": "Premi per avere più informazioni",
 	"ContinueOnTheBrowser": "Messaggio firmato con successo\nContinua nel browser",
