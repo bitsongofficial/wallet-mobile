@@ -11,8 +11,8 @@ import { ConnectionMeta } from "stores/DappConnectionStore";
 import { ConnectorMeta } from "./ConnectorMeta";
 
 export interface WalletInterface {
-	Address(chain: SupportedCoins): Promise<string>
-	Wallet(chain: SupportedCoins): Wallet | undefined
+	Address(chain: SupportedCoins | string): Promise<string>
+	Wallet(chain: SupportedCoins | string): Wallet | undefined
 	get Name(): string
 	Algorithm(chain?: SupportedCoins): string
 	PubKey(chain: SupportedCoins): Promise<Uint8Array>

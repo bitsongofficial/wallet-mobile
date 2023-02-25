@@ -53,7 +53,7 @@ export class WalletConnectCosmosClientV1 {
 		const connector = options.fcmToken ? new WalletConnect(
 			wcOptions,
 			{
-			   url: Config.PUSH_NOTIFICATION_SERVER_URL,
+			   url: Config.PUSH_NOTIFICATION_SERVER_URL ?? "",
 			   type: 'fcm',
 			   token: options.fcmToken,
 			   peerMeta: true,

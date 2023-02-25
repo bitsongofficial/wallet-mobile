@@ -19,11 +19,15 @@ import { signArbitrary } from "core/cryptography/Signing";
 
 class StoreDrivenWalletInterface implements WalletInterface {
 	constructor(private walletStore: WalletStore, private chainsStore: ChainsStore, private profileId: string) {}
-	async Address(chain: SupportedCoins) {
-		return await this.walletStore.address(this.profileId, chain) ?? ""
+	async Address(chain: SupportedCoins | string) {
+		const supportedChain = this.chainsStore.ChainAsSupportedOne(chain)
+		if(supportedChain === undefined) return ""
+		return await this.walletStore.address(this.profileId, supportedChain) ?? ""
 	}
-	Wallet(chain: SupportedCoins): Wallet | undefined {
-		return this.walletStore.chainWallet(this.profileId, chain)
+	Wallet(chain: SupportedCoins | string): Wallet | undefined {
+		const supportedChain = this.chainsStore.ChainAsSupportedOne(chain)
+		if(supportedChain === undefined) return undefined
+		return this.walletStore.chainWallet(this.profileId, supportedChain)
 	}
 	get Name() {
 		return this.walletStore.name(this.profileId)
@@ -32,14 +36,14 @@ class StoreDrivenWalletInterface implements WalletInterface {
 		return "secp256k1"
 	}
 	async PubKey(chain: SupportedCoins) {
-		const wallet = await this.walletStore.chainWallet(this.profileId, chain)
+		const wallet = this.Wallet(chain)
 		const key = wallet?.PubKey()
 		return key ?? new Uint8Array()
 	}
 	async Sign(chain: SupportedCoins, signDoc: StdSignDoc, signerAddress?: string) {
 		try
 		{
-			const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
+			const wallet = this.Wallet(chain) as CosmosWallet
 			const [address, signer] = await Promise.all([wallet.Address(), wallet.AminoSigner()])
 			return await signer.signAmino(signerAddress ?? address, signDoc)
 		}
@@ -53,7 +57,7 @@ class StoreDrivenWalletInterface implements WalletInterface {
 	async SignAndBroadCast(chain: SupportedCoins, messages: EncodeObject[], fee: number | StdFee | "auto" = "auto", memo: string = "", signerAddress?: string)
 	{
 		const codedChain = this.chainsStore.ChainOperator(chain)
-		const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
+		const wallet = this.Wallet(chain) as CosmosWallet
 		const [address, signer, rpcEndpoint] = await Promise.all([wallet.Address(), wallet.Signer(), this.chainsStore.ChainRPC(chain)])
 		const gas = codedChain?.gasUnit()
 		if(rpcEndpoint && gas)
@@ -67,7 +71,7 @@ class StoreDrivenWalletInterface implements WalletInterface {
 	}
 	
 	async SignArbitrary(chain: string, payload: any, signerAddress: string): Promise<StdSignature> {
-		const wallet = this.walletStore.chainWallet(this.profileId, chain) as CosmosWallet
+		const wallet = this.Wallet(chain) as CosmosWallet
 		const signer = await wallet.AminoSigner()
 		const address = (await signer.getAccounts())[0].address
 		return signArbitrary(signer, signerAddress ?? address, JSON.stringify(payload))

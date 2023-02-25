@@ -24,6 +24,7 @@ export class BitsongJSConnector extends WalletConnectConnectorV1<BitsongEvents> 
         sign: this.Sign.bind(this),
         signAndBroadcast: this.SignAndBroadCast.bind(this),
         signArbitrary: this.SignArbitrary.bind(this),
+        getAddress: this.GetAddress.bind(this),
         session_request: this.SessionRequest.bind(this),
         connect: function (error: Error | null, payload: any): void
         {
@@ -68,6 +69,31 @@ export class BitsongJSConnector extends WalletConnectConnectorV1<BitsongEvents> 
             header: <KeplrConfirmHeader name={this.meta.name} icon={this.meta.icon} url={this.meta.url}></KeplrConfirmHeader>,
             children: <KeplrConfirmDescription profile={profileName} name={this.meta.name} descriptionKey={"DAppConnectionRequest"}></KeplrConfirmDescription>
         })
+    }
+
+    async GetAddress(error: Error | null, payload: any)
+    {
+        const {chain} = payload.params[0] as {chain: string}
+        if(chain)
+        {
+            try
+            {
+                const address = await this.walletInterface.Address(chain)
+                if(address !== "")
+                {
+                    this.approve(payload, [
+                        address
+                    ])
+                }
+                else
+                this.reject(payload, new Error("No address found for this chain"))
+            }
+            catch(e: any)
+            {
+                console.error("Catched", e)
+                this.reject(payload, new Error(e))
+            }
+        }
     }
 
     async Sign(error: Error | null, payload: any)
